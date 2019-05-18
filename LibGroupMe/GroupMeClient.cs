@@ -40,7 +40,7 @@ namespace LibGroupMe
             }
         }
 
-        public async Task<IList<Group>> GetGroupMessagesAsync(Group group, int limit = 20, MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
+        public async Task<IList<Message>> GetGroupMessagesAsync(Group group, int limit = 20, MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
         {
             var request = new RestRequest($"/groups/{group.Id}/messages", Method.GET);
             request.AddParameter("token", AuthToken);
@@ -67,8 +67,7 @@ namespace LibGroupMe
             if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var results = JsonConvert.DeserializeObject<MessagesList>(restResponse.Content);
-                return null;
-                //return results.M;
+                return results.Response.Messages;
             }
             else
             {
