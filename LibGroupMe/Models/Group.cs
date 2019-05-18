@@ -62,9 +62,6 @@ namespace LibGroupMe.Models
 
             public DateTime LastMessageCreatedAtTime => DateTimeOffset.FromUnixTimeSeconds(this.LastMessageCreatedAtUnixTime).ToLocalTime().DateTime;
 
-            [JsonProperty("preview")]
-            public PreviewContents Preview { get; set; }
-
             public class PreviewContents
             {
                 [JsonProperty("nickname")]
@@ -79,6 +76,9 @@ namespace LibGroupMe.Models
                 [JsonProperty("attachments")]
                 public IList<Attachments.Attachment> Attachments { get; set; }
             }
+
+            [JsonProperty("preview")]
+            public PreviewContents Preview { get; set; }
         }
     }
 }

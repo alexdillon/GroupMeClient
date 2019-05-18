@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LibGroupMe.Models
 {
-    public class MessagesList
+    public class GroupMessagesList
     {
         public class MessageListResponse
         {

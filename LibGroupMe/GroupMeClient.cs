@@ -66,7 +66,7 @@ namespace LibGroupMe
 
             if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                var results = JsonConvert.DeserializeObject<MessagesList>(restResponse.Content);
+                var results = JsonConvert.DeserializeObject<GroupMessagesList>(restResponse.Content);
                 return results.Response.Messages;
             }
             else
@@ -94,11 +94,61 @@ namespace LibGroupMe
             }
         }
 
+        public async Task<IList<Message>> GetChatMessagesAsync(Chat chat, MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
+        {
+            var request = new RestRequest($"/direct_messages", Method.GET);
+            request.AddParameter("token", AuthToken);
+            request.AddParameter("other_user_id", chat.OtherUser.Id);
+            switch (mode)
+            {
+                case MessageRetreiveMode.AfterId:
+                    request.AddParameter("after_id", messageId);
+                    break;
+
+                case MessageRetreiveMode.SinceId:
+                    request.AddParameter("since_id", messageId);
+                    break;
+
+            }
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var restResponse = await this.Client.ExecuteTaskAsync(request, cancellationTokenSource.Token);
+
+            if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var results = JsonConvert.DeserializeObject<ChatMessagesList>(restResponse.Content);
+                return results.Response.Messages;
+            }
+            else
+            {
+                throw new System.Net.WebException($"Failure retreving Messages from Chat. Status Code {restResponse.StatusCode}");
+            }
+        }
+
+        /// <summary>
+        /// Specifies which subset of messages should be returned
+        /// </summary>
         public enum MessageRetreiveMode
         {
+            /// <summary>
+            /// No filtering is applied
+            /// </summary>
             None,
+
+            /// <summary>
+            /// Return messages immediately preceding the given message will be returned, in descending order
+            /// </summary>
             BeforeId,
+
+            /// <summary>
+            /// Return messages that immediately follow a given message, this time in ascending order
+            /// This mode is not supported for Direct Messages (Chats)
+            /// </summary>
             AfterId,
+
+            /// <summary>
+            /// Return messages created after the given message, but it retrieves the most recent messages
+            /// </summary>
             SinceId
         }
     }
