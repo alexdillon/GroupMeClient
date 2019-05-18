@@ -76,7 +76,24 @@ namespace LibGroupMe
             }
         }
 
-       
+        public async Task<IList<Chat>> GetChatsAsync()
+        {
+            var request = new RestRequest($"/chats", Method.GET);
+            request.AddParameter("token", AuthToken);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var restResponse = await this.Client.ExecuteTaskAsync(request, cancellationTokenSource.Token);
+
+            if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var results = JsonConvert.DeserializeObject<ChatsList>(restResponse.Content);
+                return results.Chats;
+            }
+            else
+            {
+                throw new System.Net.WebException($"Failure retreving /Groups. Status Code {restResponse.StatusCode}");
+            }
+        }
 
         public enum MessageRetreiveMode
         {
