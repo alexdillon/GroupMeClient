@@ -7,19 +7,19 @@ namespace LibGroupMe.Models
 {
     public class MessagesList
     {
-        [JsonProperty("count")]
-        public int Count { get; set; }
+        public class MessageListResponse
+        {
+            [JsonProperty("count")]
+            public int Count { get; set; }
 
-        [JsonProperty("last_message_id")]
-        public string LastMessageId { get; set; }
+            [JsonProperty("messages")]
+            public IList<Message> Messages { get; set; }
+        }
 
-        [JsonProperty("last_message_created_at")]
-        public int LastMessageCreatedAtUnixTime { get; set; }
+        [JsonProperty("response")]
+        public MessageListResponse Response { get; set; }
 
-        public DateTime LastMessageCreatedAtTime => DateTimeOffset.FromUnixTimeSeconds(this.LastMessageCreatedAtUnixTime).ToLocalTime().DateTime;
-
-        [JsonProperty("preview")]
-        public Message PreviewMessage { get; set; }
-
+        [JsonProperty("meta")]
+        public Meta Meta { get; set; }
     }
 }

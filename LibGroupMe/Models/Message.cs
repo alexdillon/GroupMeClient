@@ -33,6 +33,15 @@ namespace LibGroupMe.Models
         public bool System { get; set; }
 
         [JsonProperty("favorited_by")]
-        public IList<int> FavoritedBy { get; set; }
+        public IList<string> FavoritedBy { get; set; }
+
+        [JsonProperty("sender_type")]
+        public string SenderType { get; set; }
+
+        [JsonProperty("platform")]
+        public string Platform { get; set; }
+
+        [JsonProperty("attachments")]
+        public IList<Attachments.Attachment> Attachments { get; set; }
     }
 }

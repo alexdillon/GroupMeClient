@@ -77,9 +77,8 @@ namespace LibGroupMe.Models
                 [JsonProperty("image_url")]
                 public string ImageUrl { get; set; }
 
-                // TODO: what is this supposed to be
                 [JsonProperty("attachments")]
-                public IList<object> Attachments { get; set; }
+                public IList<Attachments.Attachment> Attachments { get; set; }
             }
         }
     }
