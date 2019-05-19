@@ -155,6 +155,32 @@ namespace LibGroupMe
             }
         }
 
-       
+        public async Task<bool> SendMessage(Group group, Message message)
+        {
+            var request = new RestRequest($"/groups/{group.Id}/messages", Method.POST);
+            request.AddParameter("token", AuthToken);
+
+            request.AddJsonBody(message);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var restResponse = await this.Client.ExecuteTaskAsync(request, cancellationTokenSource.Token);
+
+            return (restResponse.StatusCode == System.Net.HttpStatusCode.OK);
+        }
+
+        public async Task<bool> SendMessage(Chat chat, Message message)
+        {
+            var request = new RestRequest($"/direct_messages", Method.POST);
+            request.AddParameter("token", AuthToken);
+
+            request.AddJsonBody(message);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var restResponse = await this.Client.ExecuteTaskAsync(request, cancellationTokenSource.Token);
+
+            return (restResponse.StatusCode == System.Net.HttpStatusCode.OK);
+        }
+
+
     }
 }

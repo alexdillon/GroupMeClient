@@ -14,6 +14,9 @@ namespace LibGroupMe.Models
         [JsonProperty("source_guid")]
         public string SourceGuid { get; set; }
 
+        [JsonProperty("recipient_id")]
+        public string RecipientId { get; set; }
+
         [JsonProperty("created_at")]
         public int CreatedAtUnixTime { get; set; }
 
