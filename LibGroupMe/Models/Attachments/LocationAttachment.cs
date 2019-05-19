@@ -7,12 +7,12 @@ namespace LibGroupMe.Models.Attachments
         public override string Type { get; } = "location";
 
         [JsonProperty("lat")]
-        public string Latitude { get; set; }
+        public string Latitude { get; internal set; }
 
         [JsonProperty("lng")]
-        public string Longitude { get; set; }
+        public string Longitude { get; internal set; }
 
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; internal set; }
     }
 }

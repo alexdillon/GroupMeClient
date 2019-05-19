@@ -9,9 +9,9 @@ namespace LibGroupMe.Models.Attachments
         public override string Type { get; } = "emoji";
 
         [JsonProperty("placeholder")]
-        public string Placeholder { get; set; }
+        public string Placeholder { get; internal set; }
 
         [JsonProperty("charmap")]
-        public IList<IList<int>> Charmap { get; set; }
+        public IList<IList<int>> Charmap { get; internal set; }
     }
 }

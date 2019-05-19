@@ -7,6 +7,6 @@ namespace LibGroupMe.Models.Attachments
         public override string Type { get; } = "image";
 
         [JsonProperty("url")]
-        public string Url { get; set; }
+        public string Url { get; internal set; }
     }
 }

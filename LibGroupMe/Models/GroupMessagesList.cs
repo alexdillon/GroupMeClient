@@ -8,16 +8,16 @@ namespace LibGroupMe.Models
         public class MessageListResponse
         {
             [JsonProperty("count")]
-            public int Count { get; set; }
+            public int Count { get; internal set; }
 
             [JsonProperty("messages")]
-            public IList<Message> Messages { get; set; }
+            public IList<Message> Messages { get; internal set; }
         }
 
         [JsonProperty("response")]
-        public MessageListResponse Response { get; set; }
+        public MessageListResponse Response { get; internal set; }
 
         [JsonProperty("meta")]
-        public Meta Meta { get; set; }
+        public Meta Meta { get; internal set; }
     }
 }

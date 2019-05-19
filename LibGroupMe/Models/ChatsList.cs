@@ -12,12 +12,12 @@ namespace LibGroupMe.Models
         /// Gets or sets the list of Chats
         /// </summary>
         [JsonProperty("response")]
-        public IList<Chat> Chats { get; set; }
+        public IList<Chat> Chats { get; internal set; }
 
         /// <summary>
         /// Gets or sets the Metadata for the API Call
         /// </summary>
         [JsonProperty("meta")]
-        public Meta Meta { get; set; }
+        public Meta Meta { get; internal set; }
     }
 }

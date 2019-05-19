@@ -7,6 +7,6 @@ namespace LibGroupMe.Models.Attachments
         public override string Type { get; } = "split";
 
         [JsonProperty("token")]
-        public string Token { get; set; }
+        public string Token { get; internal set; }
     }
 }

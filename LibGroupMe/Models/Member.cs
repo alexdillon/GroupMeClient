@@ -6,27 +6,27 @@ namespace LibGroupMe.Models
     public class Member
     {
         [JsonProperty("user_id")]
-        public int UserId { get; set; }
+        public int UserId { get; internal set; }
 
         [JsonProperty("nickname")]
-        public string Nickname { get; set; }
+        public string Nickname { get; internal set; }
 
         [JsonProperty("image_url")]
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; internal set; }
 
         [JsonProperty("id")]
-        public int Id { get; set; }
+        public int Id { get; internal set; }
 
         [JsonProperty("muted")]
-        public bool Muted { get; set; }
+        public bool Muted { get; internal set; }
 
         [JsonProperty("autokicked")]
-        public bool Autokicked { get; set; }
+        public bool Autokicked { get; internal set; }
 
         [JsonProperty("roles")]
-        public IList<string> Roles { get; set; }
+        public IList<string> Roles { get; internal set; }
 
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; internal set; }
     }
 }
