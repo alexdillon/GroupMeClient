@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace LibGroupMe.Models
 {
+    /// <summary>
+    /// <see cref="Message"/> represents a message in a GroupMe <see cref="Group"/> or <see cref="Chat"/>
+    /// </summary>
     public class Message
     {
         [JsonProperty("id")]

@@ -8,6 +8,9 @@ using RestSharp;
 
 namespace LibGroupMe
 {
+    /// <summary>
+    /// <see cref="GroupMeClient"/> allows for interaction with the GroupMe API for messaging functionality
+    /// </summary>
     public class GroupMeClient
     {
         private const string GroupMeAPIUrl = "https://api.groupme.com/v3";
@@ -16,11 +19,19 @@ namespace LibGroupMe
 
         private RestClient Client { get; } = new RestClient(GroupMeAPIUrl);
 
+        /// <summary>
+        /// Creates a new client to perform GroupMe API Operations
+        /// </summary>
+        /// <param name="authToken">The OAuth Token used to authenticate the client</param>
         public GroupMeClient(string authToken)
         {
             this.AuthToken = authToken;
         }
 
+        /// <summary>
+        /// Returns a listing of all Group Chats a user is a member of
+        /// </summary>
+        /// <returns>A list of <see cref="Group"/></returns>
         public async Task<IList<Group>> GetGroupsAsync()
         {
             var request = new RestRequest($"/groups", Method.GET);
@@ -40,6 +51,14 @@ namespace LibGroupMe
             }
         }
 
+        /// <summary>
+        /// Returns a set of messages from a specific Group Chat
+        /// </summary>
+        /// <param name="group">Group Chat the messages should be retreived from</param>
+        /// <param name="limit">Number of messages that should be returned. GroupMe allows a range of 20 to 100 messages at a time.</param>
+        /// <param name="mode">The method that should be used to determine the set of messages returned </param>
+        /// <param name="messageId">The Message Id that will be used by the sorting mode set in <paramref name="mode"/></param>
+        /// <returns>A list of <see cref="Message"/></returns>
         public async Task<IList<Message>> GetGroupMessagesAsync(Group group, int limit = 20, MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
         {
             var request = new RestRequest($"/groups/{group.Id}/messages", Method.GET);
@@ -75,6 +94,10 @@ namespace LibGroupMe
             }
         }
 
+        /// <summary>
+        /// Returns a listing of all Direct Messages / Chats a user is a member of
+        /// </summary>
+        /// <returns>A list of <see cref="Chat"/></returns>
         public async Task<IList<Chat>> GetChatsAsync()
         {
             var request = new RestRequest($"/chats", Method.GET);
@@ -94,6 +117,13 @@ namespace LibGroupMe
             }
         }
 
+        /// <summary>
+        /// Returns a set of messages from a specific Direct Message
+        /// </summary>
+        /// <param name="chat">Direct Chat the messages should be retreived from</param>
+        /// <param name="mode">The method that should be used to determine the set of messages returned </param>
+        /// <param name="messageId">The Message Id that will be used by the sorting mode set in <paramref name="mode"/></param>
+        /// <returns>A list of <see cref="Message"/></returns>
         public async Task<IList<Message>> GetChatMessagesAsync(Chat chat, MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
         {
             var request = new RestRequest($"/direct_messages", Method.GET);
