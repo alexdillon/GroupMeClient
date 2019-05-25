@@ -6,7 +6,7 @@ namespace LibGroupMe.Models
     public class Member
     {
         [JsonProperty("user_id")]
-        public int UserId { get; internal set; }
+        public string UserId { get; internal set; }
 
         [JsonProperty("nickname")]
         public string Nickname { get; internal set; }
@@ -15,7 +15,7 @@ namespace LibGroupMe.Models
         public string ImageUrl { get; internal set; }
 
         [JsonProperty("id")]
-        public int Id { get; internal set; }
+        public string Id { get; internal set; }
 
         [JsonProperty("muted")]
         public bool Muted { get; internal set; }
