@@ -1,21 +1,21 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
-
-namespace LibGroupMe.Models
+﻿namespace LibGroupMe.Models
 {
+    using System.Collections.Generic;
+    using Newtonsoft.Json;
+
     /// <summary>
-    /// <see cref="ChatsList"/> provides a list of Chats, along with additional status information
+    /// <see cref="ChatsList"/> provides a list of Chats, along with additional status information.
     /// </summary>
     public class ChatsList
     {
         /// <summary>
-        /// Gets or sets the list of Chats
+        /// Gets the list of Chats.
         /// </summary>
         [JsonProperty("response")]
         public IList<Chat> Chats { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the Metadata for the API Call
+        /// Gets the Metadata for the API Call.
         /// </summary>
         [JsonProperty("meta")]
         public Meta Meta { get; internal set; }

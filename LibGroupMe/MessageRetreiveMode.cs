@@ -1,7 +1,7 @@
 ﻿namespace LibGroupMe
 {
     /// <summary>
-    /// Specifies which subset of messages should be returned
+    /// Specifies which subset of messages should be returned.
     /// </summary>
     public enum MessageRetreiveMode
     {
