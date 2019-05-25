@@ -28,8 +28,13 @@ namespace GroupMeClient
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var groupMeClient = new LibGroupMe.GroupMeClient("PUT KEY HERE");
-            var crap = await groupMeClient.GetGroupsAsync();
+            var groupMeClient = new LibGroupMe.GroupMeClient("379c4c105a8001378b2f4e35e328dfb3");
+
+            var groups = await groupMeClient.GetGroupsAsync();
+            var messagesInFirstGroup = await groups[0].GetMessagesAsync();
+
+            var chats = await groupMeClient.GetChatsAsync();
+            var messagesInFirstChat = await chats[0].GetMessagesAsync();
         }
     }
 }
