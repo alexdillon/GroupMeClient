@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace LibGroupMe.Models
@@ -49,5 +50,35 @@ namespace LibGroupMe.Models
 
         [JsonProperty("attachments")]
         public IList<Attachments.Attachment> Attachments { get; internal set; }
+
+        internal Message()
+        {
+        }
+
+        public Message CreateGroupMessage(Group group, string body, IEnumerable<Attachments.Attachment> attachments)
+        {
+            var msg = new Message()
+            {
+                SourceGuid = Guid.NewGuid().ToString(),
+                Text = body,
+                Attachments = new List<Attachments.Attachment>(attachments)
+            };
+
+            return msg;
+
+        }
+
+        public Message CreateDirectMessage(Member otherUser, string body, IEnumerable<Attachments.Attachment> attachments)
+        {
+            var msg = new Message()
+            {
+                SourceGuid = Guid.NewGuid().ToString(),
+                RecipientId = otherUser.Id,
+                Text = body,
+                Attachments = new List<Attachments.Attachment>(attachments)
+            };
+
+            return msg;
+        }
     }
 }
