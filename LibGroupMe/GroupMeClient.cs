@@ -26,14 +26,14 @@
         }
 
         /// <summary>
-        /// Gets the Auth Token used to authenticate a GroupMe API Call.
-        /// </summary>
-        internal string AuthToken { get; }
-
-        /// <summary>
         /// Gets the <see cref="RestClient"/> that is used to perform GroupMe API calls.
         /// </summary>
         internal RestClient ApiClient { get; } = new RestClient(GroupMeAPIUrl);
+
+        /// <summary>
+        /// Gets the Auth Token used to authenticate a GroupMe API Call.
+        /// </summary>
+        private string AuthToken { get; }
 
         /// <summary>
         /// Returns a listing of all Group Chats a user is a member of.
@@ -41,12 +41,10 @@
         /// <returns>A list of <see cref="Group"/>.</returns>
         public async Task<IList<Group>> GetGroupsAsync()
         {
-            var request = new RestRequest($"/groups", Method.GET);
-            request.AddParameter("token", this.AuthToken);
+            var request = this.CreateRestRequest($"/groups", Method.GET);
 
             var cancellationTokenSource = new CancellationTokenSource();
             var restResponse = await this.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
-
             if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var results = JsonConvert.DeserializeObject<GroupsList>(restResponse.Content);
@@ -71,8 +69,7 @@
         /// <returns>A list of <see cref="Chat"/>.</returns>
         public async Task<IList<Chat>> GetChatsAsync()
         {
-            var request = new RestRequest($"/chats", Method.GET);
-            request.AddParameter("token", this.AuthToken);
+            var request = this.CreateRestRequest($"/chats", Method.GET);
 
             var cancellationTokenSource = new CancellationTokenSource();
             var restResponse = await this.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
@@ -92,6 +89,24 @@
             {
                 throw new System.Net.WebException($"Failure retreving /Groups. Status Code {restResponse.StatusCode}");
             }
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="RestRequest"/> object to perform a GroupMe API Call including the Authorization Token.
+        /// </summary>
+        /// <param name="resource">The GroupMe API resource to call.</param>
+        /// <param name="method">The method used for the API Call.</param>
+        /// <returns>A <see cref="RestRequest"/> with the user's access token.</returns>
+        internal RestRequest CreateRestRequest(string resource, Method method)
+        {
+            var request = new RestRequest(resource, method)
+            {
+                JsonSerializer = JsonAdapter.Default,
+            };
+
+            request.AddHeader("X-Access-Token", this.AuthToken);
+
+            return request;
         }
     }
 }

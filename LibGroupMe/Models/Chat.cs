@@ -59,8 +59,7 @@
         /// <returns>A list of <see cref="Message"/>.</returns>
         public async Task<IList<Message>> GetMessagesAsync(MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
         {
-            var request = new RestRequest($"/direct_messages", Method.GET);
-            request.AddParameter("token", this.Client.AuthToken);
+            var request = this.Client.CreateRestRequest($"/direct_messages", Method.GET);
             request.AddParameter("other_user_id", this.OtherUser.Id);
             switch (mode)
             {
@@ -95,15 +94,22 @@
         /// <returns>A <see cref="bool"/> indicating the success of the send operation.</returns>
         public async Task<bool> SendMessage(Message message)
         {
-            var request = new RestRequest($"/direct_messages", Method.POST);
-            request.AddParameter("token", this.Client.AuthToken);
+            var request = this.Client.CreateRestRequest($"/direct_messages", Method.POST);
 
-            request.AddJsonBody(message);
+            // Add the Recipient ID into the message, as GroupMe's API requires for DM's
+            message.RecipientId = this.OtherUser.Id;
+
+            var payload = new
+            {
+                direct_message = message,
+            };
+
+            request.AddJsonBody(payload);
 
             var cancellationTokenSource = new CancellationTokenSource();
             var restResponse = await this.Client.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
 
-            return restResponse.StatusCode == System.Net.HttpStatusCode.OK;
+            return restResponse.StatusCode == System.Net.HttpStatusCode.Created;
         }
     }
 }

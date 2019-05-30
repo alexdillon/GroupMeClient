@@ -114,8 +114,7 @@
         /// <returns>A list of <see cref="Message"/>.</returns>
         public async Task<IList<Message>> GetMessagesAsync(int limit = 20, MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
         {
-            var request = new RestRequest($"/groups/{this.Id}/messages", Method.GET);
-            request.AddParameter("token", this.Client.AuthToken);
+            var request = this.Client.CreateRestRequest($"/groups/{this.Id}/messages", Method.GET);
             request.AddParameter("limit", limit);
             switch (mode)
             {
@@ -154,15 +153,18 @@
         /// <returns>A <see cref="bool"/> indicating the success of the send operation.</returns>
         public async Task<bool> SendMessage(Message message)
         {
-            var request = new RestRequest($"/groups/{this.Id}/messages", Method.POST);
-            request.AddParameter("token", this.Client.AuthToken);
+            var request = this.Client.CreateRestRequest($"/groups/{this.Id}/messages", Method.POST);
+            var payload = new
+            {
+                message,
+            };
 
-            request.AddJsonBody(message);
+            request.AddJsonBody(payload);
 
             var cancellationTokenSource = new CancellationTokenSource();
             var restResponse = await this.Client.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
 
-            return restResponse.StatusCode == System.Net.HttpStatusCode.OK;
+            return restResponse.StatusCode == System.Net.HttpStatusCode.Created;
         }
 
         /// <summary>
