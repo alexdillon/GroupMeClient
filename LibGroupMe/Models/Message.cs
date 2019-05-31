@@ -123,7 +123,7 @@
         /// </summary>
         /// <param name="body">The message contents.</param>
         /// <param name="attachments">A list of attachments to be included with the message.</param>
-        /// <returns>True if successful, false otherwise</returns>
+        /// <returns>True if successful, false otherwise.</returns>
         public static Message CreateMessage(string body, IEnumerable<Attachments.Attachment> attachments = null)
         {
             if (attachments == null)

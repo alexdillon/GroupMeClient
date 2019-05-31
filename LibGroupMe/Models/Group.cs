@@ -130,7 +130,6 @@
                 case MessageRetreiveMode.SinceId:
                     request.AddParameter("since_id", messageId);
                     break;
-
             }
 
             var cancellationTokenSource = new CancellationTokenSource();

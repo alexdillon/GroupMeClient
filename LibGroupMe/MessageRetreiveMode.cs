@@ -24,6 +24,6 @@
         /// <summary>
         /// Return messages created after the given message, but it retrieves the most recent messages
         /// </summary>
-        SinceId
+        SinceId,
     }
 }
