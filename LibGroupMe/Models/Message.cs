@@ -3,8 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
+    using RestSharp;
 
     /// <summary>
     /// <see cref="Message"/> represents a message in a GroupMe <see cref="Group"/> or <see cref="Chat"/>.
@@ -50,9 +52,17 @@
 
         /// <summary>
         /// Gets the identifier for a <see cref="Group"/> where this message was sent.
+        /// If this <see cref="Message"/> represents a Direct Message, this field will be null.
         /// </summary>
         [JsonProperty("group_id")]
         public string GroupId { get; internal set; }
+
+        /// <summary>
+        /// Gets the conversation identifier for a <see cref="Chat"/> where this message was sent.
+        /// If this <see cref="Message"/> represents a Group Message, this field will be null.
+        /// </summary>
+        [JsonProperty("conversation_id")]
+        public string ConversationId { get; internal set; }
 
         /// <summary>
         /// Gets the name of the <see cref="Member"/> who sent the message.
@@ -71,12 +81,6 @@
         /// </summary>
         [JsonProperty("text")]
         public string Text { get; internal set; }
-
-        /// <summary>
-        /// Gets a value indicating whether gets the message is a system message (GroupMe internal parameter).
-        /// </summary>
-        [JsonProperty("system", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool System { get; internal set; }
 
         /// <summary>
         /// Gets a list of identifiers for <see cref="Member"/> who 'liked' this message.
@@ -101,6 +105,18 @@
         /// </summary>
         [JsonProperty("attachments")]
         public IList<Attachments.Attachment> Attachments { get; internal set; }
+
+        /// <summary>
+        /// Gets the <see cref="Chat"/> this message belongs to.
+        /// If this message is a Group Message, this field will be null.
+        /// </summary>
+        public Chat Chat { get; internal set; }
+
+        /// <summary>
+        /// Gets the <see cref="Group"/> this messages belongs to.
+        /// If this message is a Direct message, this field will be null.
+        /// </summary>
+        public Group Group { get; internal set; }
 
         /// <summary>
         /// Creates a new <see cref="Message"/> that can be sent to a <see cref="Group"/>.
@@ -128,8 +144,35 @@
         /// <summary>
         /// Likes this <see cref="Message"/>.
         /// </summary>
+        /// <returns>True if successful.</returns>
+        public async Task<bool> LikeMessage()
         {
+            var conversationId = this.ConversationId ?? this.GroupId;
+            var groupmeClient = this.Chat?.Client ?? this.Group?.Client;
 
+            var request = groupmeClient.CreateRestRequest($"/messages/{conversationId}/{this.Id}/like", Method.POST);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var restResponse = await groupmeClient.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
+
+            return restResponse.StatusCode == System.Net.HttpStatusCode.OK;
+        }
+
+        /// <summary>
+        /// Unlikes this <see cref="Message"/>.
+        /// </summary>
+        /// <returns>True if successful.</returns>
+        public async Task<bool> UnlikeMessage()
+        {
+            var conversationId = this.ConversationId ?? this.GroupId;
+            var groupmeClient = this.Chat?.Client ?? this.Group?.Client;
+
+            var request = groupmeClient.CreateRestRequest($"/messages/{conversationId}/{this.Id}/unlike", Method.POST);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var restResponse = await groupmeClient.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
+
+            return restResponse.StatusCode == System.Net.HttpStatusCode.OK;
         }
     }
 }

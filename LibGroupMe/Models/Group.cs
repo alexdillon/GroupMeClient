@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
@@ -138,6 +139,12 @@
             if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var results = JsonConvert.DeserializeObject<GroupMessagesList>(restResponse.Content);
+                results.Response.Messages.All(m =>
+                {
+                    // ensure every Message has a reference to the parent Group (this)
+                    m.Group = this;
+                    return true;
+                });
                 return results.Response.Messages;
             }
             else
