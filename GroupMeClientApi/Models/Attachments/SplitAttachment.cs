@@ -1,4 +1,4 @@
-﻿namespace LibGroupMe.Models.Attachments
+﻿namespace GroupMeClientApi.Models.Attachments
 {
     using Newtonsoft.Json;
 

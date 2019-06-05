@@ -1,4 +1,4 @@
-﻿namespace LibGroupMe
+﻿namespace GroupMeClientApi
 {
     using System;
     using System.Collections.Generic;
@@ -74,7 +74,7 @@
                 {
                     using (System.IO.StreamWriter sw = new System.IO.StreamWriter(context.Response.OutputStream))
                     {
-                        string successPage = LibGroupMe.Properties.Resources.SuccessPage;
+                        string successPage = GroupMeClientApi.Properties.Resources.SuccessPage;
                         successPage = successPage.Replace("{CLIENTNAME}", this.ClientName);
 
                         sw.WriteLine(successPage);

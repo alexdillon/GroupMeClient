@@ -1,4 +1,4 @@
-﻿namespace LibGroupMe
+﻿namespace GroupMeClientApi
 {
     /// <summary>
     /// Specifies which subset of messages should be returned.

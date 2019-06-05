@@ -99,9 +99,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibGroupMe\LibGroupMe.csproj">
+    <ProjectReference Include="..\GroupMeClientApi\GroupMeClientApi.csproj">
       <Project>{25b268ce-04b4-45fb-81f1-309cbe8edf9d}</Project>
-      <Name>LibGroupMe</Name>
+      <Name>GroupMeClientApi</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

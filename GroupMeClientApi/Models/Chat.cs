@@ -1,4 +1,4 @@
-﻿namespace LibGroupMe.Models
+﻿namespace GroupMeClientApi.Models
 {
     using System;
     using System.Collections.Generic;
