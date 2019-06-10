@@ -59,5 +59,14 @@ namespace GroupMeClient.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to e6zucCgRruqYZmEUMFF9uC4OoaCxmb54MuSOt3yFGtVloQcM.
+        /// </summary>
+        internal static string GroupMeAPIClientId {
+            get {
+                return ResourceManager.GetString("GroupMeAPIClientId", resourceCulture);
+            }
+        }
     }
 }
