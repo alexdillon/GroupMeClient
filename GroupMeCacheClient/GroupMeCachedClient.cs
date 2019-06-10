@@ -1,4 +1,4 @@
-﻿namespace GroupMeCacheClient
+﻿namespace GroupMeClientCached
 {
     using System;
     using GroupMeClientApi;
