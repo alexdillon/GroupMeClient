@@ -8,6 +8,9 @@
     /// </summary>
     public class Member
     {
+        /// <summary>
+        /// Gets the Member's Global Id for GroupMe. Not used in <see cref="Chat"/>.
+        /// </summary>
         [JsonProperty("user_id")]
         public string UserId { get; internal set; }
 
@@ -23,6 +26,9 @@
         [JsonProperty("image_url")]
         public string ImageUrl { get; internal set; }
 
+        /// <summary>
+        /// Gets the Member's unique identifier within a <see cref="Group"/>, or global identifier within a <see cref="Chat"/>.
+        /// </summary>
         [JsonProperty("id")]
         public string Id { get; internal set; }
 

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -110,12 +111,14 @@
         /// Gets the <see cref="Chat"/> this message belongs to.
         /// If this message is a Group Message, this field will be null.
         /// </summary>
+        [NotMapped]
         public Chat Chat { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="Group"/> this messages belongs to.
         /// If this message is a Direct message, this field will be null.
         /// </summary>
+        [NotMapped]
         public Group Group { get; internal set; }
 
         /// <summary>

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupMeClient", "GroupMeCli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClientApi", "GroupMeClientApi\GroupMeClientApi.csproj", "{25B268CE-04B4-45FB-81F1-309CBE8EDF9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupMeClientCached", "GroupMeCacheClient\GroupMeClientCached.csproj", "{BE89E618-6529-4179-BC29-341954677E18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClientCached", "GroupMeCacheClient\GroupMeClientCached.csproj", "{BE89E618-6529-4179-BC29-341954677E18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

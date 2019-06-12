@@ -99,10 +99,19 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GroupMeCacheClient\GroupMeClientCached.csproj">
+      <Project>{be89e618-6529-4179-bc29-341954677e18}</Project>
+      <Name>GroupMeClientCached</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GroupMeClientApi\GroupMeClientApi.csproj">
       <Project>{25b268ce-04b4-45fb-81f1-309cbe8edf9d}</Project>
       <Name>GroupMeClientApi</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SQLitePCLRaw.bundle_green">
+      <Version>1.1.14</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
