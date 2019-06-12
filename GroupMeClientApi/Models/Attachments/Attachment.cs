@@ -17,5 +17,7 @@
         /// Gets the attachment type.
         /// </summary>
         public virtual string Type { get; }
+
+        public int FakeId { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -46,6 +47,23 @@
         /// </summary>
         [JsonProperty("last_message")]
         public Message LatestMessage { get; internal set; }
+
+        /// <summary>
+        /// Gets the Identifier of this Chat. See <seealso cref="OtherUser"/> for more information.
+        /// </summary>
+        [Key]
+        public string Id
+        {
+            get
+            {
+                return this.OtherUser.Id;
+            }
+
+            internal set
+            {
+                // Does nothing. A property must have gets and sets to be a PrimaryKey
+            }
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="GroupMeClient"/> that manages this <see cref="Chat"/>.

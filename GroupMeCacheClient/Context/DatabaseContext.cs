@@ -5,7 +5,6 @@
     using System.Linq;
     using GroupMeClientApi.Models;
     using GroupMeClientApi.Models.Attachments;
-    using GroupMeClientCached.Models;
     using Microsoft.EntityFrameworkCore;
     using Newtonsoft.Json;
 
@@ -33,12 +32,12 @@
         /// <summary>
         /// Gets or sets the <see cref="Group"/>s stored in the database.
         /// </summary>
-        public DbSet<CachedGroup> Groups { get; set; }
+        public DbSet<Group> Groups { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="Chat"/>s stored in the database.
         /// </summary>
-        public DbSet<CachedChat> Chats { get; set; }
+        public DbSet<Chat> Chats { get; set; }
 
         private string DatabaseName { get; set; } = "cache.db";
 
@@ -71,6 +70,43 @@
             .HasConversion(
                 v => JsonConvert.SerializeObject(v),
                 v => JsonConvert.DeserializeObject<List<Attachment>>(v));
+
+            // Primary key for Attachment is never used
+            modelBuilder.Entity<Attachment>()
+                .HasKey(x => x.FakeId);
+
+            this.WorkaroundsForGroupConversion(modelBuilder);
+        }
+
+        /// <summary>
+        /// Provides workarounds to serialize the <see cref="Group"/> object with EntityFramework.
+        /// Without Primary Keys or IDs provided by GroupMe, some parts cannot be serialized to the Database.
+        /// Convert unserializable parts to JSON and store as BLOBs instead.
+        /// </summary>
+        /// <param name="modelBuilder">The EF ModelBuilder Object.</param>
+        protected void WorkaroundsForGroupConversion(ModelBuilder modelBuilder)
+        {
+            // Provide JSON serialization for MessagePreview
+            modelBuilder.Entity<Group>()
+            .Property(x => x.MsgPreview)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<Group.MessagesPreview>(v));
+
+            // Primary key for Message Preview is never used
+            modelBuilder.Entity<Group.MessagesPreview>()
+                .HasKey(x => x.LastMessageId);
+
+            // Provide JSON serialization for PreviewContents
+            modelBuilder.Entity<Group.MessagesPreview>()
+            .Property(x => x.Preview)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<Group.MessagesPreview.PreviewContents>(v));
+
+            // Primary key for Message Preview is never used
+            modelBuilder.Entity<Group.MessagesPreview.PreviewContents>()
+                .HasKey(x => x.Text);
         }
     }
 }
