@@ -13,19 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GroupMeClient
+namespace GroupMeClient.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for SecondView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class SecondView : UserControl
     {
-        public MainWindow()
+        public SecondView()
         {
-            //InitializeComponent();
-        
+            InitializeComponent();
         }
-
-      
     }
 }
