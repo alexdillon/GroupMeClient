@@ -81,6 +81,9 @@
                 {
                     // ensure every Chat has a reference to the parent client (this)
                     c.Client = this;
+
+                    // required to establish a constant, non-foreign-key Primary Key for Chat
+                    c.Id = c.OtherUser.Id;
                     return true;
                 });
                 return results.Chats;

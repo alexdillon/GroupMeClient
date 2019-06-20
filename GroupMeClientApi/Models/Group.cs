@@ -14,6 +14,14 @@
     public class Group
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="Group"/> class.
+        /// </summary>
+        public Group()
+        {
+            this.Messages = new List<Message>();
+        }
+
+        /// <summary>
         /// Gets the group identifier.
         /// </summary>
         [JsonProperty("group_id")]
@@ -102,6 +110,17 @@
         public MessagesPreview MsgPreview { get; internal set; }
 
         /// <summary>
+        /// Gets a list of <see cref="Message"/>s in this <see cref="Group"/>.
+        /// </summary>
+        public List<Message> Messages { get; internal set; }
+
+        /// <summary>
+        /// Gets a unique value to determine if the internal state of the Group has changed.
+        /// If two accesses to this property return a different string, a state change has occured.
+        /// </summary>
+        public string InternalStateChanged { get; internal set; }
+
+        /// <summary>
         /// Gets or sets the <see cref="GroupMeClient"/> that manages this <see cref="Group"/>.
         /// </summary>
         internal GroupMeClient Client { get; set; }
@@ -138,12 +157,20 @@
             if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var results = JsonConvert.DeserializeObject<GroupMessagesList>(restResponse.Content);
-                results.Response.Messages.All(m =>
+
+                foreach (var message in results.Response.Messages)
                 {
                     // ensure every Message has a reference to the parent Group (this)
-                    m.Group = this;
-                    return true;
-                });
+                    message.Group = this;
+
+                    if (!this.Messages.Any(m => m.Id == message.Id))
+                    {
+                        this.Messages.Add(message);
+                    }
+                }
+
+                this.InternalStateChanged = Guid.NewGuid().ToString();
+
                 return results.Response.Messages;
             }
             else

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -14,6 +15,14 @@
     /// </summary>
     public class Chat
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Chat"/> class.
+        /// </summary>
+        public Chat()
+        {
+            this.Messages = new List<Message>();
+        }
+
         /// <summary>
         /// Gets the <see cref="Member"/> that this chat is being held with.
         /// </summary>
@@ -43,27 +52,48 @@
         public DateTime UpdatedAtTime => DateTimeOffset.FromUnixTimeSeconds(this.UpdatedAtUnixTime).ToLocalTime().DateTime;
 
         /// <summary>
-        /// Gets the latest message in this chat.
+        /// Gets the most recent entry in the <see cref="Messages"/> list.
         /// </summary>
+        [NotMapped]
         [JsonProperty("last_message")]
-        public Message LatestMessage { get; internal set; }
-
-        /// <summary>
-        /// Gets the Identifier of this Chat. See <seealso cref="OtherUser"/> for more information.
-        /// </summary>
-        [Key]
-        public string Id
+        public Message LatestMessage
         {
             get
             {
-                return this.OtherUser.Id;
+                return this.Messages.LastOrDefault();
             }
 
             internal set
             {
-                // Does nothing. A property must have gets and sets to be a PrimaryKey
+                // ensure the Message has a reference to the parent Chat (this)
+                value.Chat = this;
+
+                if (!this.Messages.Any(m => m.Id == value.Id))
+                {
+                    this.Messages.Add(value);
+                }
             }
         }
+
+        /// <summary>
+        /// Gets the Identifier of this Chat. See <seealso cref="OtherUser"/> for more information.
+        /// </summary>
+        /// <remarks>
+        /// This key is required for EF. It must always match OtherUser.Id.
+        /// </remarks>
+        [Key]
+        public string Id { get; internal set; }
+
+        /// <summary>
+        /// Gets a list of <see cref="Message"/>s in this <see cref="Chat"/>.
+        /// </summary>
+        public List<Message> Messages { get; internal set; }
+
+        /// <summary>
+        /// Gets a unique value to determine if the internal state of the Group has changed.
+        /// If two accesses to this property return a different string, a state change has occured.
+        /// </summary>
+        public string InternalStateChanged { get; internal set; }
 
         /// <summary>
         /// Gets or sets the <see cref="GroupMeClient"/> that manages this <see cref="Chat"/>.
@@ -97,12 +127,21 @@
             if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var results = JsonConvert.DeserializeObject<ChatMessagesList>(restResponse.Content);
-                results.Response.Messages.All(m =>
+
+                foreach (var message in results.Response.Messages)
                 {
                     // ensure every Message has a reference to the parent Chat (this)
-                    m.Chat = this;
-                    return true;
-                });
+                    message.Chat = this;
+
+                    if (!this.Messages.Any(m => m.Id == message.Id))
+                    {
+                        this.Messages.Add(message);
+                        Console.WriteLine(message.Id);
+                    }
+                }
+
+                this.InternalStateChanged = Guid.NewGuid().ToString();
+
                 return results.Response.Messages;
             }
             else
