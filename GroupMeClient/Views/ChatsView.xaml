@@ -3,31 +3,37 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="350" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="257*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button Command="{Binding ShowPopUp}" Content="Show Pop Up" />
-        <Button Grid.Row="1"
-                Command="{Binding IncrementValue}"
-                Content="Increment value" />
-        <TextBlock Grid.Row="1"
-                   Grid.Column="1"
-                   MinWidth="50"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Text="{Binding ExampleValue}"
-                   TextAlignment="Center" />
-        <CheckBox Content="CheckBox" Grid.Column="1" HorizontalAlignment="Left" Margin="10,67,0,0" Grid.Row="2" VerticalAlignment="Top"/>
-        <RadioButton Content="RadioButton" Grid.Column="1" HorizontalAlignment="Left" Margin="28,105,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+
+
+        <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Visible" CanContentScroll="True" VerticalAlignment="Stretch">
+            <ItemsControl ItemsSource="{Binding ActiveGroups}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:GroupControl Content="{Binding Path=.}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        
     </Grid>
 </UserControl>
