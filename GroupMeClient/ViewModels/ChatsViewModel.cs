@@ -18,7 +18,7 @@ namespace GroupMeClient.ViewModels
             LoadedCommand = new RelayCommand(async () => await Loaded(), () => true);
             ExampleValue = 0;
 
-            this.ActiveGroups = new ObservableCollection<Group>();
+            this.ActiveGroups = new ObservableCollection<Controls.GroupControlViewModel>();
         }
 
         public ICommand ShowPopUp { get; private set; }
@@ -51,13 +51,13 @@ namespace GroupMeClient.ViewModels
             this.ActiveGroups.Clear();
             foreach (var group in groupMeClient.Groups)
             {
-                this.ActiveGroups.Add((group));
+                this.ActiveGroups.Add(new Controls.GroupControlViewModel(group));
             }
         }
 
         int _exampleValue;
 
-        public ObservableCollection<Group> ActiveGroups { get; set; }
+        public ObservableCollection<ViewModels.Controls.GroupControlViewModel> ActiveGroups { get; set; }
 
         public int ExampleValue
         {

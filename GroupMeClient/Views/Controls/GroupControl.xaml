@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              Background="White"
              d:DesignHeight="150" d:DesignWidth="400">
-    
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="MouseLeftButtonDown">
             <i:InvokeCommandAction Command="{Binding Path=DisplayCommand}"/>
@@ -32,11 +32,11 @@
                 <Grid.RowDefinitions>
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <Label Content="{Binding Name}" Grid.Column="0" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="17" FontFamily="Segoe UI"/>
-                <Label Content="99:99 PM" Grid.Column="1" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="14" Foreground="#637182" FontFamily="Segoe UI"/>
+                <Label Content="{Binding Group.Name}" Grid.Column="0" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="17" FontFamily="Segoe UI"/>
+                <Label Content="{Binding LastUpdatedFriendlyTime}" Grid.Column="1" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="14" Foreground="#637182" FontFamily="Segoe UI"/>
             </Grid>
 
-            <Label Content="{Binding MsgPreview.Preview.Text}" Grid.Column="2" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="14"  FontFamily="Segoe UI"/>
+            <Label Content="{Binding QuickPreview}" Grid.Column="2" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="14"  FontFamily="Segoe UI"/>
         </StackPanel>
     </Grid>
 </UserControl>

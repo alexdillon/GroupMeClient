@@ -6,6 +6,8 @@
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:views="clr-namespace:GroupMeClient.Views"
              xmlns:vm="clr-namespace:GroupMeClient.ViewModels"
+             xmlns:ctrlviews="clr-namespace:GroupMeClient.Views.Controls"
+             xmlns:ctrlvm="clr-namespace:GroupMeClient.ViewModels.Controls"
              StartupUri="MainWindow.xaml"
              mc:Ignorable="d">
     <Application.Resources>
@@ -41,6 +43,7 @@
             <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
                 <views:SettingsView />
             </DataTemplate>
+
             <DataTemplate DataType="{x:Type ctrlvm:GroupControlViewModel}">
                 <ctrlviews:GroupControl />
             </DataTemplate>
@@ -128,4 +131,6 @@
             </Style>
         </ResourceDictionary>
     </Application.Resources>
+    
+    
 </Application>

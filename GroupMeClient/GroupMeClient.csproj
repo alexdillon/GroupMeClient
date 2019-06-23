@@ -64,6 +64,7 @@
     </ApplicationDefinition>
     <Compile Include="SelectedItemToContentConverter.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\GroupControlViewModel.cs" />
     <Compile Include="Views\Controls\GroupControl.xaml.cs">
       <DependentUpon>GroupControl.xaml</DependentUpon>
     </Compile>
