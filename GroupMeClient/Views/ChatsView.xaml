@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
@@ -24,9 +25,16 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <Grid.Resources>
+            <CollectionViewSource Source="{Binding Path=ActiveGroupsChats}" x:Key="GrousChatsViewSource">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="LastUpdated" Direction="Descending"/>
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+        </Grid.Resources>
 
         <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Visible" CanContentScroll="True" VerticalAlignment="Stretch">
-            <ItemsControl ItemsSource="{Binding ActiveGroups}">
+            <ItemsControl ItemsSource="{Binding Source={StaticResource GrousChatsViewSource}}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <controls:GroupControl Content="{Binding Path=.}"/>
@@ -34,6 +42,5 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-        
     </Grid>
 </UserControl>

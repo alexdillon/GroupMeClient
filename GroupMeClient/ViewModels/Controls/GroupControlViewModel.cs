@@ -21,6 +21,11 @@ namespace GroupMeClient.ViewModels.Controls
             this.group = group;
         }
 
+        public GroupControlViewModel(Chat chat)
+        {
+            this.chat = chat;
+        }
+
         private Group group;
 
         public Group Group
@@ -42,18 +47,41 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        private Chat chat;
+
+        public Chat Chat
+        {
+            get
+            {
+                return this.chat;
+            }
+
+            set
+            {
+                if (this.chat == value)
+                {
+                    return;
+                }
+
+                this.chat = value;
+                RaisePropertyChanged("Chat");
+            }
+        }
+
         public string LastUpdatedFriendlyTime
         {
             get
             {
-                var elapsedTime = DateTime.Now.Subtract(this.Group.UpdatedAtTime).Duration();
+                var updatedAtTime = this.LastUpdated;
+
+                var elapsedTime = DateTime.Now.Subtract(updatedAtTime).Duration();
                 if (elapsedTime < TimeSpan.FromDays(1))
                 {
-                    return this.Group.UpdatedAtTime.ToShortTimeString();
+                    return updatedAtTime.ToShortTimeString();
                 }
                 else
                 {
-                    return this.Group.UpdatedAtTime.ToString("MMM d");
+                    return updatedAtTime.ToString("MMM d");
                 }
             }
         }
@@ -62,10 +90,11 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get
             {
-                var sender = this.Group.MsgPreview.Preview.Nickname;
+                var sender = this.Group?.MsgPreview.Preview.Nickname ?? this.Chat?.LatestMessage.Name;
+                var attachments = this.Group?.MsgPreview.Preview.Attachments ?? this.Chat?.LatestMessage.Attachments;
 
                 bool wasImageSent = false;
-                foreach (var attachment in this.Group.MsgPreview.Preview.Attachments)
+                foreach (var attachment in attachments)
                 {
                     if (attachment.GetType() == typeof(GroupMeClientApi.Models.Attachments.ImageAttachment))
                     {
@@ -79,9 +108,27 @@ namespace GroupMeClient.ViewModels.Controls
                 }
                 else
                 {
-                    var message = this.Group.MsgPreview.Preview.Text;
+                    var message = this.Group?.MsgPreview.Preview.Text ?? this.Chat?.LatestMessage.Text;
                     return $"{sender}: {message}";
                 }
+            }
+        }
+
+        public string Title
+        {
+            get
+            {
+                var title = this.Group?.Name ?? this.Chat?.OtherUser.Name;
+
+                return title;
+            }
+        }
+
+        public DateTime LastUpdated
+        {
+            get
+            {
+                return this.Group?.UpdatedAtTime ?? this.Chat?.UpdatedAtTime ?? DateTime.Now;
             }
         }
     }

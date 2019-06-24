@@ -2,10 +2,12 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Linq;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupMeClient.ViewModels
 {
@@ -18,7 +20,7 @@ namespace GroupMeClient.ViewModels
             LoadedCommand = new RelayCommand(async () => await Loaded(), () => true);
             ExampleValue = 0;
 
-            this.ActiveGroups = new ObservableCollection<Controls.GroupControlViewModel>();
+            this.ActiveGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
         }
 
         public ICommand ShowPopUp { get; private set; }
@@ -42,22 +44,30 @@ namespace GroupMeClient.ViewModels
             string token = System.IO.File.ReadAllText("../../../DevToken.txt");
             var groupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
 
-            var groups = await groupMeClient.GetGroupsAsync();
+            //var groups = await groupMeClient.GetGroupsAsync();
             //var messagesInFirstGroup = await groups[0].GetMessagesAsync();
 
             //var chats = await groupMeClient.GetChatsAsync();
             //var messagesInFirstChat = await chats[0].GetMessagesAsync();
 
-            this.ActiveGroups.Clear();
+            this.ActiveGroupsChats.Clear();
+
             foreach (var group in groupMeClient.Groups)
             {
-                this.ActiveGroups.Add(new Controls.GroupControlViewModel(group));
+                this.ActiveGroupsChats.Add(new Controls.GroupControlViewModel(group));
             }
+
+            foreach (var chat in groupMeClient.Chats)
+            {
+                this.ActiveGroupsChats.Add(new Controls.GroupControlViewModel(chat));
+            }
+
+
         }
 
         int _exampleValue;
 
-        public ObservableCollection<ViewModels.Controls.GroupControlViewModel> ActiveGroups { get; set; }
+        public ObservableCollection<ViewModels.Controls.GroupControlViewModel> ActiveGroupsChats { get; set; }
 
         public int ExampleValue
         {
