@@ -93,8 +93,6 @@
         /// </summary>
         public async void SaveAll()
         {
-            //Console.WriteLine("Context tracking changes of {0} entities.", this.Database.ChangeTracker.Entries().Count());
-
             await this.Database.SaveChangesAsync();
         }
     }

@@ -27,7 +27,7 @@
         /// Gets the <see cref="Member"/> that this chat is being held with.
         /// </summary>
         [JsonProperty("other_user")]
-        public Member OtherUser { get; internal set; }
+        public virtual Member OtherUser { get; internal set; }
 
         /// <summary>
         /// Gets the Unix Timestamp for when this chat was created.
@@ -87,7 +87,7 @@
         /// <summary>
         /// Gets a list of <see cref="Message"/>s in this <see cref="Chat"/>.
         /// </summary>
-        public List<Message> Messages { get; internal set; }
+        public virtual List<Message> Messages { get; internal set; }
 
         /// <summary>
         /// Gets a unique value to determine if the internal state of the Group has changed.

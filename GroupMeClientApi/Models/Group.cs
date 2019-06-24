@@ -95,7 +95,7 @@
         /// Gets a list of <see cref="Members"/> in the group.
         /// </summary>
         [JsonProperty("members")]
-        public IList<Member> Members { get; internal set; }
+        public virtual IList<Member> Members { get; internal set; }
 
         /// <summary>
         /// Gets the maximum number of members who can be in this group.
@@ -112,7 +112,7 @@
         /// <summary>
         /// Gets a list of <see cref="Message"/>s in this <see cref="Group"/>.
         /// </summary>
-        public List<Message> Messages { get; internal set; }
+        public virtual List<Message> Messages { get; internal set; }
 
         /// <summary>
         /// Gets a unique value to determine if the internal state of the Group has changed.
@@ -261,7 +261,7 @@
                 /// Gets a list of <see cref="Attachments.Attachment"/> contained with the message.
                 /// </summary>
                 [JsonProperty("attachments")]
-                public IList<Attachments.Attachment> Attachments { get; internal set; }
+                public virtual IList<Attachments.Attachment> Attachments { get; internal set; }
             }
         }
     }

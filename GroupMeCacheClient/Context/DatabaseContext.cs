@@ -44,6 +44,7 @@
         /// <inheritdoc/>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.UseLazyLoadingProxies();
             optionsBuilder.UseSqlite($"Data Source={this.DatabaseName}");
         }
 
