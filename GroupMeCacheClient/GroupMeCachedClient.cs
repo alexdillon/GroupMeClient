@@ -26,17 +26,31 @@
             this.Database.Database.EnsureCreated();
         }
 
+        private Context.DatabaseContext Database { get; set; }
+
         /// <summary>
         /// Gets a enumeration of <see cref="Group"/>s controlled by the cache system.
         /// </summary>
-        public IEnumerable<Group> Groups => this.Database.Groups;
+        public IEnumerable<Group> Groups()
+        {
+            foreach (var group in this.Database.Groups)
+            {
+                group.Client = this;
+                yield return group;
+            }
+        }
 
         /// <summary>
         /// Gets a enumeration of <see cref="Chat"/>s controlled by the cache system.
         /// </summary>
-        public IEnumerable<Chat> Chats => this.Database.Chats;
-
-        private Context.DatabaseContext Database { get; set; }
+        public IEnumerable<Chat> Chats()
+        {
+            foreach (var chat in this.Database.Chats)
+            {
+                chat.Client = this;
+                yield return chat;
+            }
+        }
 
         /// <inheritdoc/>
         public override async Task<IList<Group>> GetGroupsAsync()
