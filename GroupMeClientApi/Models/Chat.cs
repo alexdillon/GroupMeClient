@@ -52,28 +52,12 @@
         public DateTime UpdatedAtTime => DateTimeOffset.FromUnixTimeSeconds(this.UpdatedAtUnixTime).ToLocalTime().DateTime;
 
         /// <summary>
-        /// Gets the most recent entry in the <see cref="Messages"/> list.
+        /// Gets a copy of the latest message for preview purposes.
+        /// Note that API Operations, like <see cref="Message.LikeMessage"/> cannot be performed.
+        /// See <see cref="Messages"/> list instead for full message objects.
         /// </summary>
-        [NotMapped]
         [JsonProperty("last_message")]
-        public Message LatestMessage
-        {
-            get
-            {
-                return this.Messages.LastOrDefault();
-            }
-
-            internal set
-            {
-                // ensure the Message has a reference to the parent Chat (this)
-                value.Chat = this;
-
-                if (!this.Messages.Any(m => m.Id == value.Id))
-                {
-                    this.Messages.Add(value);
-                }
-            }
-        }
+        public Message LatestMessage { get; internal set; }
 
         /// <summary>
         /// Gets the Identifier of this Chat. See <seealso cref="OtherUser"/> for more information.

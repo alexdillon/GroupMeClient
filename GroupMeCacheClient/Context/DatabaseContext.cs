@@ -77,6 +77,7 @@
                 .HasKey(x => x.FakeId);
 
             this.WorkaroundsForGroupConversion(modelBuilder);
+            this.WorkaroundsForChatConversion(modelBuilder);
         }
 
         /// <summary>
@@ -109,5 +110,22 @@
             modelBuilder.Entity<Group.MessagesPreview.PreviewContents>()
                 .HasKey(x => x.Text);
         }
+
+        /// <summary>
+        /// Provides workarounds to serialize the <see cref="Chat"/> object with EntityFramework.
+        /// The LatestMessage member can conflict with the Messages list since that message
+        /// will have the same ID. As a workaround consistent with the Group object
+        /// Convert to JSON and store as BLOBs instead.
+        /// </summary>
+        /// <param name="modelBuilder">The EF ModelBuilder Object.</param>
+        protected void WorkaroundsForChatConversion(ModelBuilder modelBuilder)
+        {
+            // Provide JSON serialization for MessagePreview
+            modelBuilder.Entity<Chat>()
+            .Property(x => x.LatestMessage)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<Message>(v));
+        }
     }
-}
+ }
