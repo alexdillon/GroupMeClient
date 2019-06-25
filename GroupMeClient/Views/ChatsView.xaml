@@ -19,14 +19,14 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="350" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Grid.Resources>
-            <CollectionViewSource Source="{Binding Path=ActiveGroupsChats}" x:Key="GrousChatsViewSource">
+            <CollectionViewSource Source="{Binding Path=AllGroupsChats}" x:Key="GroupsChatsViewSource">
                 <CollectionViewSource.SortDescriptions>
                     <scm:SortDescription PropertyName="LastUpdated" Direction="Descending"/>
                 </CollectionViewSource.SortDescriptions>
@@ -34,7 +34,7 @@
         </Grid.Resources>
 
         <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Visible" CanContentScroll="True" VerticalAlignment="Stretch">
-            <ItemsControl ItemsSource="{Binding Source={StaticResource GrousChatsViewSource}}">
+            <ItemsControl ItemsSource="{Binding Source={StaticResource GroupsChatsViewSource}}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <controls:GroupControl Content="{Binding Path=.}"/>
@@ -42,5 +42,19 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <ItemsControl ItemsSource="{Binding Path=ActiveGroupsChats}" Grid.Column="1" Grid.Row="0">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <controls:GroupContentsControl Content="{Binding Path=.}" HorizontalAlignment="Stretch" Margin="5,5,5,5" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </UserControl>

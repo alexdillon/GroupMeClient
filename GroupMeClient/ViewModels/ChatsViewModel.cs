@@ -15,72 +15,71 @@ namespace GroupMeClient.ViewModels
     {
         public ChatsViewModel()
         {
-            ShowPopUp = new RelayCommand(() => ShowPopUpExecute(), () => true);
-            IncrementValue = new RelayCommand(() => IncrementValueExecute(), () => true);
             LoadedCommand = new RelayCommand(async () => await Loaded(), () => true);
-            ExampleValue = 0;
+            
+            this.AllGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
+            this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
 
-            this.ActiveGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
+            //ExampleValue = 0;
+            //IncrementValue = new RelayCommand(() => IncrementValueExecute(), () => true);
         }
-
-        public ICommand ShowPopUp { get; private set; }
-
-        public ICommand IncrementValue { get; private set; }
 
         public ICommand LoadedCommand { get; private set; }
 
-        private static void ShowPopUpExecute()
-        {
-            MessageBox.Show("Hello World!");
-        }
+        public ObservableCollection<Controls.GroupControlViewModel> AllGroupsChats { get; set; }
+        public ObservableCollection<Controls.GroupContentsControlViewModel> ActiveGroupsChats { get; set; }
 
-        private void IncrementValueExecute()
-        {
-            ExampleValue += 1;
-        }
+        //public ICommand IncrementValue { get; private set; }
+
+        //private void IncrementValueExecute()
+        //{
+        //    ExampleValue += 1;
+        //}
 
         private async Task Loaded()
         {
             string token = System.IO.File.ReadAllText("../../../DevToken.txt");
             var groupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
 
-            //var groups = await groupMeClient.GetGroupsAsync();
-            //var messagesInFirstGroup = await groups[0].GetMessagesAsync();
+            var groups = await groupMeClient.GetGroupsAsync();
+            var chats = await groupMeClient.GetChatsAsync();
 
-            //var chats = await groupMeClient.GetChatsAsync();
-            //var messagesInFirstChat = await chats[0].GetMessagesAsync();
+            this.AllGroupsChats.Clear();
 
-            this.ActiveGroupsChats.Clear();
-
-            foreach (var group in groupMeClient.Groups)
+            foreach (var group in groupMeClient.Groups())
             {
-                this.ActiveGroupsChats.Add(new Controls.GroupControlViewModel(group));
+                var groupVm = new Controls.GroupControlViewModel(group);
+                groupVm.GroupSelected = new RelayCommand<Controls.GroupControlViewModel>((g) => OpenNewGroupChat(g), (g) => true);
+                this.AllGroupsChats.Add(groupVm);
             }
 
-            foreach (var chat in groupMeClient.Chats)
+            foreach (Chat chat in groupMeClient.Chats())
             {
-                this.ActiveGroupsChats.Add(new Controls.GroupControlViewModel(chat));
+                var groupVm = new Controls.GroupControlViewModel(chat);
+                groupVm.GroupSelected = new RelayCommand<Controls.GroupControlViewModel>((g) => OpenNewGroupChat(g), (g) => true);
+                this.AllGroupsChats.Add(groupVm);
             }
-
-
         }
 
-        int _exampleValue;
-
-        public ObservableCollection<ViewModels.Controls.GroupControlViewModel> ActiveGroupsChats { get; set; }
-
-        public int ExampleValue
+        private void OpenNewGroupChat(Controls.GroupControlViewModel group)
         {
-            get
+            if (this.ActiveGroupsChats.Any(g => g.Id == group.Id))
             {
-                return _exampleValue;
+                // this group or chat is already open, we just need to move it to the front
             }
-            set
+            else
             {
-                if (_exampleValue == value)
-                    return;
-                _exampleValue = value;
-                RaisePropertyChanged("ExampleValue");
+                // open a new group or chat
+                if (group.Group != null)
+                {
+                    var groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Group);
+                    this.ActiveGroupsChats.Add(groupContentsDisplay);
+                }
+                else
+                {
+                    var groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Chat);
+                    this.ActiveGroupsChats.Add(groupContentsDisplay);
+                }
             }
         }
     }
