@@ -10,7 +10,7 @@
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="MouseLeftButtonDown">
-            <i:InvokeCommandAction Command="{Binding Path=DisplayCommand}"/>
+            <i:InvokeCommandAction Command="{Binding Path=GroupSelected}" CommandParameter="{Binding Path=.}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
 

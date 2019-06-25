@@ -64,7 +64,15 @@
     </ApplicationDefinition>
     <Compile Include="SelectedItemToContentConverter.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\GroupContentsControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupControlViewModel.cs" />
+    <Compile Include="Views\Controls\GroupContentsControl.xaml.cs">
+      <DependentUpon>GroupContentsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\MessageControl.xaml.cs">
+      <DependentUpon>MessageControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\GroupControl.xaml.cs">
       <DependentUpon>GroupControl.xaml</DependentUpon>
     </Compile>
@@ -92,6 +100,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\Controls\GroupContentsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\MessageControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Controls\GroupControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

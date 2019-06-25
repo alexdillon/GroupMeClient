@@ -47,6 +47,12 @@
             <DataTemplate DataType="{x:Type ctrlvm:GroupControlViewModel}">
                 <ctrlviews:GroupControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:GroupContentsControlViewModel}">
+                <ctrlviews:GroupContentsControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:MessageControlViewModel}">
+                <ctrlviews:MessageControl />
+            </DataTemplate>
 
             <!-- Adapted from https://stackoverflow.com/questions/10969292/apple-style-scrollbar-wpf-->
             <!--Scrollbar Thumbs-->

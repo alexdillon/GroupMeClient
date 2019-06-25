@@ -26,6 +26,8 @@ namespace GroupMeClient.ViewModels.Controls
             this.chat = chat;
         }
 
+        public ICommand GroupSelected { get; set; }
+
         private Group group;
 
         public Group Group
@@ -129,6 +131,14 @@ namespace GroupMeClient.ViewModels.Controls
             get
             {
                 return this.Group?.UpdatedAtTime ?? this.Chat?.UpdatedAtTime ?? DateTime.Now;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return this.Group?.Id ?? this.Chat?.Id;
             }
         }
     }

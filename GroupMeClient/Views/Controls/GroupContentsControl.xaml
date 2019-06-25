@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="GroupMeClient.Views.Controls.GroupContentsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             mc:Ignorable="d" 
+             Background="White"
+             d:DesignHeight="150" d:DesignWidth="400">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <ScrollViewer VerticalScrollBarVisibility="Visible" CanContentScroll="True" VerticalAlignment="Stretch">
+        <ScrollViewer.Resources>
+            <CollectionViewSource Source="{Binding Path=Messages}" x:Key="MessagesViewSource">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="Id" Direction="Ascending"/>
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+        </ScrollViewer.Resources>
+
+        <ItemsControl ItemsSource="{Binding Source={StaticResource MessagesViewSource}}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <controls:MessageControl Content="{Binding Path=.}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>
