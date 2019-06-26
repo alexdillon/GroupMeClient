@@ -6,7 +6,6 @@
     using System.Threading.Tasks;
     using GroupMeClientApi;
     using GroupMeClientApi.Models;
-    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// <see cref="GroupMeCachedClient"/> provides access to the GroupMe API backed with a local cache database.
@@ -22,15 +21,22 @@
             : base(authToken)
         {
             this.Database = new Context.DatabaseContext(databasePath);
+            this.ImageDownloader = new Images.CachedImageDownloader(this.Database);
 
             this.Database.Database.EnsureCreated();
         }
+
+        /// <inheritdoc/>
+        public override ImageDownloader ImageDownloader { get; }
 
         private Context.DatabaseContext Database { get; set; }
 
         /// <summary>
         /// Gets a enumeration of <see cref="Group"/>s controlled by the cache system.
         /// </summary>
+        /// <returns>
+        /// An <see cref="IEnumerable{T}"/> for the cached <see cref="Group"/>.
+        /// </returns>
         public IEnumerable<Group> Groups()
         {
             foreach (var group in this.Database.Groups)
@@ -43,6 +49,9 @@
         /// <summary>
         /// Gets a enumeration of <see cref="Chat"/>s controlled by the cache system.
         /// </summary>
+        /// <returns>
+        /// An <see cref="IEnumerable{T}"/> for the cached <see cref="Chat"/>.
+        /// </returns>
         public IEnumerable<Chat> Chats()
         {
             foreach (var chat in this.Database.Chats)

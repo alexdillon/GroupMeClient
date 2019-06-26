@@ -61,6 +61,26 @@ namespace GroupMeClientApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DefaultGroupAvatar {
+            get {
+                object obj = ResourceManager.GetObject("DefaultGroupAvatar", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DefaultPersonAvatar {
+            get {
+                object obj = ResourceManager.GetObject("DefaultPersonAvatar", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
         ///&lt;html&gt;
         ///   &lt;head&gt;

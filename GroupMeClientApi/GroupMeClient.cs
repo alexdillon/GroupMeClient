@@ -26,6 +26,11 @@
         }
 
         /// <summary>
+        /// Gets the <see cref="ImageDownloader"/> that is used for image downloads.
+        /// </summary>
+        public virtual ImageDownloader ImageDownloader { get; } = new ImageDownloader();
+
+        /// <summary>
         /// Gets the <see cref="RestClient"/> that is used to perform GroupMe API calls.
         /// </summary>
         internal RestClient ApiClient { get; } = new RestClient(GroupMeAPIUrl);

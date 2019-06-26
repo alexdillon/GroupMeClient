@@ -39,6 +39,16 @@
         /// </summary>
         public DbSet<Chat> Chats { get; set; }
 
+        /// <summary>
+        /// Gets or sets the cached avatar images stored in the database.
+        /// </summary>
+        public DbSet<Images.CachedAvatar> AvatarImages { get; set; }
+
+        /// <summary>
+        /// Gets or sets the cached post images stored in the database.
+        /// </summary>
+        public DbSet<Images.CachedImage> PostImages { get; set; }
+
         private string DatabaseName { get; set; } = "cache.db";
 
         /// <inheritdoc/>
