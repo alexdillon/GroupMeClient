@@ -201,6 +201,26 @@
         }
 
         /// <summary>
+        /// Downloads the Group Avatar using the default <see cref="ImageDownloader"/>.
+        /// </summary>
+        /// <returns>The avatar image.</returns>
+        public async Task<System.Drawing.Image> DownloadAvatar()
+        {
+            string newUrl;
+            if (!string.IsNullOrEmpty(this.ImageUrl))
+            {
+                 newUrl = $"{this.ImageUrl}.avatar";
+            }
+            else
+            {
+                newUrl = string.Empty;
+            }
+
+            var result = await this.Client.ImageDownloader.DownloadAvatarImage(newUrl, true);
+            return result;
+        }
+
+        /// <summary>
         /// Preview of the most recent message in a <see cref="Group"/> and information about when it was last updated.
         /// </summary>
         public class MessagesPreview

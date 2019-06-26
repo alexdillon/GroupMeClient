@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
@@ -19,11 +21,15 @@ namespace GroupMeClient.ViewModels.Controls
         public GroupControlViewModel(Group group)
         {
             this.group = group;
+
+            _ = LoadAvatar();
         }
 
         public GroupControlViewModel(Chat chat)
         {
             this.chat = chat;
+
+            _ = LoadAvatar();
         }
 
         public ICommand GroupSelected { get; set; }
@@ -139,6 +145,58 @@ namespace GroupMeClient.ViewModels.Controls
             get
             {
                 return this.Group?.Id ?? this.Chat?.Id;
+            }
+        }
+
+        private ImageSource avatar;
+
+        public ImageSource Avatar
+        {
+            get
+            {
+                return avatar;
+            }
+
+            set
+            {
+                if (value == avatar)
+                {
+                    return;
+                }
+
+                avatar = value;
+                RaisePropertyChanged("Avatar");
+            }
+        }
+
+        public async Task LoadAvatar()
+        {
+            System.Drawing.Image image;
+            if (this.Group != null)
+            {
+                image = await this.Group.DownloadAvatar();
+            }
+            else if (this.Chat != null)
+            {
+                image = await this.Chat.DownloadAvatar();
+            }
+            else
+            {
+                return;
+            }
+
+            using (var ms = new System.IO.MemoryStream())
+            {
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                ms.Seek(0, System.IO.SeekOrigin.Begin);
+
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = ms;
+                bitmapImage.EndInit();
+
+                this.Avatar = bitmapImage;
             }
         }
     }

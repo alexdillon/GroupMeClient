@@ -120,7 +120,6 @@
                     if (!this.Messages.Any(m => m.Id == message.Id))
                     {
                         this.Messages.Add(message);
-                        Console.WriteLine(message.Id);
                     }
                 }
 
@@ -157,6 +156,26 @@
             var restResponse = await this.Client.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
 
             return restResponse.StatusCode == System.Net.HttpStatusCode.Created;
+        }
+
+        /// <summary>
+        /// Downloads the Group Avatar using the default <see cref="ImageDownloader"/>.
+        /// </summary>
+        /// <returns>The avatar image.</returns>
+        public async Task<System.Drawing.Image> DownloadAvatar()
+        {
+            string newUrl;
+            if (!string.IsNullOrEmpty(this.OtherUser.ImageOrAvatarUrl))
+            {
+                newUrl = $"{this.OtherUser.ImageOrAvatarUrl}.avatar";
+            }
+            else
+            {
+                newUrl = string.Empty;
+            }
+
+            var result = await this.Client.ImageDownloader.DownloadAvatarImage(newUrl, true);
+            return result;
         }
     }
 }
