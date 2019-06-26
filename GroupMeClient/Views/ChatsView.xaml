@@ -33,7 +33,7 @@
             </CollectionViewSource>
         </Grid.Resources>
 
-        <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Visible" CanContentScroll="True" VerticalAlignment="Stretch">
+        <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Visible" PanningMode="VerticalOnly" CanContentScroll="True" VerticalAlignment="Stretch">
             <ItemsControl ItemsSource="{Binding Source={StaticResource GroupsChatsViewSource}}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

@@ -16,7 +16,7 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <ScrollViewer VerticalScrollBarVisibility="Visible" CanContentScroll="True" VerticalAlignment="Stretch">
+    <ScrollViewer VerticalScrollBarVisibility="Visible" CanContentScroll="True" PanningMode="VerticalOnly" VerticalAlignment="Stretch">
         <ScrollViewer.Resources>
             <CollectionViewSource Source="{Binding Path=Messages}" x:Key="MessagesViewSource">
                 <CollectionViewSource.SortDescriptions>
