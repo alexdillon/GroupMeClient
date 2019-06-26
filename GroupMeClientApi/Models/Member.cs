@@ -21,10 +21,34 @@
         public string Nickname { get; internal set; }
 
         /// <summary>
-        /// Gets the Url to the user's avatar or profile picture.
+        /// Gets the Url to the user's profile picture.
         /// </summary>
         [JsonProperty("image_url")]
         public string ImageUrl { get; internal set; }
+
+        /// <summary>
+        /// Gets the Url to the user's avatar picture.
+        /// </summary>
+        [JsonProperty("avatar_url")]
+        public string AvatarUrl { get; internal set; }
+
+        /// <summary>
+        /// Gets the Url to the user's avatar or group profile picture.
+        /// </summary>
+        public string ImageOrAvatarUrl
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.ImageUrl))
+                {
+                    return this.AvatarUrl;
+                }
+                else
+                {
+                    return this.ImageUrl;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the Member's unique identifier within a <see cref="Group"/>, or global identifier within a <see cref="Chat"/>.
