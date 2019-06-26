@@ -48,15 +48,19 @@ namespace GroupMeClient.ViewModels
 
             foreach (var group in groupMeClient.Groups())
             {
-                var groupVm = new Controls.GroupControlViewModel(group);
-                groupVm.GroupSelected = new RelayCommand<Controls.GroupControlViewModel>((g) => OpenNewGroupChat(g), (g) => true);
+                var groupVm = new Controls.GroupControlViewModel(group)
+                {
+                    GroupSelected = new RelayCommand<Controls.GroupControlViewModel>((g) => OpenNewGroupChat(g), (g) => true)
+                };
                 this.AllGroupsChats.Add(groupVm);
             }
 
             foreach (Chat chat in groupMeClient.Chats())
             {
-                var groupVm = new Controls.GroupControlViewModel(chat);
-                groupVm.GroupSelected = new RelayCommand<Controls.GroupControlViewModel>((g) => OpenNewGroupChat(g), (g) => true);
+                var groupVm = new Controls.GroupControlViewModel(chat)
+                {
+                    GroupSelected = new RelayCommand<Controls.GroupControlViewModel>((g) => OpenNewGroupChat(g), (g) => true)
+                };
                 this.AllGroupsChats.Add(groupVm);
             }
         }
@@ -67,8 +71,8 @@ namespace GroupMeClient.ViewModels
             {
                 // this group or chat is already open, we just need to move it to the front
                 var openGroup = this.ActiveGroupsChats.First(g => g.Id == group.Id);
-                this.ActiveGroupsChats.Remove(openGroup);
-                this.ActiveGroupsChats.Insert(0, openGroup);
+                var indexOpenGroup = this.ActiveGroupsChats.IndexOf(openGroup);
+                this.ActiveGroupsChats.Move(indexOpenGroup, 0);
             }
             else
             {

@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -83,7 +82,10 @@ namespace GroupMeClient.ViewModels.Controls
                 await group.GetMessagesAsync();
                 foreach (var msg in group.Messages)
                 {
-                    this.Messages.Add(new MessageControlViewModel(msg));
+                    if (!this.Messages.Any(m => m.Id == msg.Id))
+                    {
+                        this.Messages.Add(new MessageControlViewModel(msg));
+                    }
                 }
             } 
             else if (this.Chat != null)
@@ -91,7 +93,10 @@ namespace GroupMeClient.ViewModels.Controls
                 await chat.GetMessagesAsync();
                 foreach (var msg in chat.Messages)
                 {
-                    this.Messages.Add(new MessageControlViewModel(msg));
+                    if (!this.Messages.Any(m => m.Id == msg.Id))
+                    {
+                        this.Messages.Add(new MessageControlViewModel(msg));
+                    }
                 }
             }
         }
