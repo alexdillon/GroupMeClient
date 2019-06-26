@@ -66,6 +66,9 @@ namespace GroupMeClient.ViewModels
             if (this.ActiveGroupsChats.Any(g => g.Id == group.Id))
             {
                 // this group or chat is already open, we just need to move it to the front
+                var openGroup = this.ActiveGroupsChats.First(g => g.Id == group.Id);
+                this.ActiveGroupsChats.Remove(openGroup);
+                this.ActiveGroupsChats.Insert(0, openGroup);
             }
             else
             {
@@ -73,13 +76,19 @@ namespace GroupMeClient.ViewModels
                 if (group.Group != null)
                 {
                     var groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Group);
-                    this.ActiveGroupsChats.Add(groupContentsDisplay);
+                    this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
                 }
                 else
                 {
                     var groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Chat);
-                    this.ActiveGroupsChats.Add(groupContentsDisplay);
+                    this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
                 }
+            }
+
+            // limit to three multi-chats at a time
+            while (this.ActiveGroupsChats.Count > 3)
+            {
+                this.ActiveGroupsChats.RemoveAt(this.ActiveGroupsChats.Count - 1);
             }
         }
     }
