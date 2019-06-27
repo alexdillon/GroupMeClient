@@ -35,6 +35,10 @@
                     return this.GetDefaultPersonAvatar();
                 }
             }
+            else
+            {
+                url = $"{url}.avatar";
+            }
 
             var dbResults = await this.Database.AvatarImages.FindAsync(new object[] { url });
 
@@ -52,7 +56,7 @@
                     Image = bytes,
                 };
                 this.Database.AvatarImages.Add(cachedAvatar);
-                this.Database.SaveChanges();
+                await this.Database.SaveChangesAsync();
 
                 var images = this.BytesToImage(bytes);
                 return images;

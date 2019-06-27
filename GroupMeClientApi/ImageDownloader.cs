@@ -40,6 +40,10 @@
                     return this.GetDefaultPersonAvatar();
                 }
             }
+            else
+            {
+                url = $"{url}.avatar";
+            }
 
             return await this.DownloadRawImage(url);
         }

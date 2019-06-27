@@ -208,17 +208,7 @@
         /// <returns>The avatar image.</returns>
         public async Task<System.Drawing.Image> DownloadAvatar()
         {
-            string newUrl;
-            if (!string.IsNullOrEmpty(this.ImageUrl))
-            {
-                 newUrl = $"{this.ImageUrl}.avatar";
-            }
-            else
-            {
-                newUrl = string.Empty;
-            }
-
-            var result = await this.Client.ImageDownloader.DownloadAvatarImage(newUrl, true);
+            var result = await this.Client.ImageDownloader.DownloadAvatarImage(this.ImageUrl, true);
             return result;
         }
 
