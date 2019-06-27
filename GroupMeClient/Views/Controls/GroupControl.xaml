@@ -25,8 +25,13 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        
-        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Width="55" Height="55" Margin="0, -10, 0, 0"  Source="{Binding Avatar}"/>
+
+        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Width="55" Height="55" Margin="0, -10, 0, 0"  Source="{Binding AvatarSquare}"/>
+        <Ellipse Grid.Column="0" Grid.Row="0"  Grid.RowSpan="2" Width="55" Height="55" Margin="0, -10, 0, 0">
+            <Ellipse.Fill>
+                <ImageBrush ImageSource="{Binding AvatarRound}" />
+            </Ellipse.Fill>
+        </Ellipse>
 
         <Label Content="{Binding Title}" Grid.Column="1" Grid.Row="0" Padding="0,0,0,0" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="16"/>
         <Label Content="{Binding LastUpdatedFriendlyTime}" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="14" Foreground="#637182"/>

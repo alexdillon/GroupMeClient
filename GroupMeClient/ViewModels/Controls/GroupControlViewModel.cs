@@ -150,11 +150,22 @@ namespace GroupMeClient.ViewModels.Controls
 
         private ImageSource avatar;
 
-        public ImageSource Avatar
+        /// <summary>
+        /// Gets the image that should be used for rounded avatars.
+        /// If the avatar shouldn't be rounded, null is returned.
+        /// </summary>
+        public ImageSource AvatarRound
         {
             get
             {
-                return avatar;
+                if (this.Chat != null)
+                {
+                    return avatar;
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             set
@@ -165,7 +176,38 @@ namespace GroupMeClient.ViewModels.Controls
                 }
 
                 avatar = value;
-                RaisePropertyChanged("Avatar");
+                RaisePropertyChanged("AvatarRound");
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the image that should be used for square avatars.
+        /// If the avatar shouldn't be rectangular, null is returned.
+        /// </summary>
+        public ImageSource AvatarSquare
+        {
+            get
+            {
+                if (this.Group != null)
+                {
+                    return avatar;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            set
+            {
+                if (value == avatar)
+                {
+                    return;
+                }
+
+                avatar = value;
+                RaisePropertyChanged("AvatarSquare");
             }
         }
 
@@ -196,7 +238,10 @@ namespace GroupMeClient.ViewModels.Controls
                 bitmapImage.StreamSource = ms;
                 bitmapImage.EndInit();
 
-                this.Avatar = bitmapImage;
+                // set the avatar and make sure both updates fire
+                // let the UI bind to the correct one
+                this.AvatarRound = bitmapImage;
+                this.AvatarSquare = bitmapImage;
             }
         }
     }
