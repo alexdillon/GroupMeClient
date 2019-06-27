@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Linq;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace GroupMeClient.ViewModels
 {
@@ -19,22 +16,12 @@ namespace GroupMeClient.ViewModels
             
             this.AllGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
-
-            //ExampleValue = 0;
-            //IncrementValue = new RelayCommand(() => IncrementValueExecute(), () => true);
         }
 
         public ICommand LoadedCommand { get; private set; }
 
         public ObservableCollection<Controls.GroupControlViewModel> AllGroupsChats { get; set; }
         public ObservableCollection<Controls.GroupContentsControlViewModel> ActiveGroupsChats { get; set; }
-
-        //public ICommand IncrementValue { get; private set; }
-
-        //private void IncrementValueExecute()
-        //{
-        //    ExampleValue += 1;
-        //}
 
         private async Task Loaded()
         {

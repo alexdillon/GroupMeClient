@@ -36,7 +36,7 @@
         <TextBlock  Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                 Height="Auto" FontSize="16"
                 TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
-                       Text="{Binding Title}" />
+                Text="{Binding Title}" />
         
         
         <Label Content="{Binding LastUpdatedFriendlyTime}" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="14" Foreground="#637182"/>
@@ -44,6 +44,6 @@
         <TextBlock  Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
                 Height="50" FontSize="13" Foreground="#637182"
                 TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
-                       Text="{Binding QuickPreview}" />
+                Text="{Binding QuickPreview}" />
     </Grid>
 </UserControl>

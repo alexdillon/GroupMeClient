@@ -1,8 +1,6 @@
 ﻿namespace GroupMeClient.ViewModels
 {
-    using System.Windows.Input;
     using GalaSoft.MvvmLight;
-    using GalaSoft.MvvmLight.Command;
     using MahApps.Metro.Controls;
     using MahApps.Metro.IconPacks;
 
