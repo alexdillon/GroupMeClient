@@ -33,11 +33,16 @@
             </Ellipse.Fill>
         </Ellipse>
 
-        <Label Content="{Binding Title}" Grid.Column="1" Grid.Row="0" Padding="0,0,0,0" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="16"/>
+        <TextBlock  Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                Height="Auto" FontSize="16"
+                TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                       Text="{Binding Title}" />
+        
+        
         <Label Content="{Binding LastUpdatedFriendlyTime}" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="14" Foreground="#637182"/>
 
         <TextBlock  Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="50" FontSize="14" FontWeight="Thin"
+                Height="50" FontSize="13" Foreground="#637182"
                 TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
                        Text="{Binding QuickPreview}" />
     </Grid>
