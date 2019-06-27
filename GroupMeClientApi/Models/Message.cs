@@ -120,6 +120,24 @@
         /// </summary>
         [NotMapped]
         public Group Group { get; internal set; }
+        public ImageDownloader ImageDownloader
+        {
+            get
+            {
+                if (this.Group != null)
+                {
+                    return this.Group.Client.ImageDownloader;
+                }
+                else if (this.Chat != null)
+                {
+                    return this.Chat.Client.ImageDownloader;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
 
         /// <summary>
         /// Creates a new <see cref="Message"/> that can be sent to a <see cref="Group"/>.

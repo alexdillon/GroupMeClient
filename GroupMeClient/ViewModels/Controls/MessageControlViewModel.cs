@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
+using GroupMeClientApi.Models.Attachments;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -14,6 +18,7 @@ namespace GroupMeClient.ViewModels.Controls
         public MessageControlViewModel(Message message)
         {
             this.message = message;
+            _ = LoadImageAttachment();
         }
 
         private Message message;
@@ -43,23 +48,81 @@ namespace GroupMeClient.ViewModels.Controls
 
         public string Sender => this.Message.Name;
 
-        public System.Windows.Media.Color Color
+        public Color Color
         {
             get
             {
                 if (this.Message.Group != null)
                 {
                     // TODO decide who sent the message
-                    return System.Windows.Media.Colors.White;
+                    return Colors.White;
                 }
                 else if (this.Message.Chat != null)
                 {
-                    return System.Windows.Media.Colors.White;
+                    return Colors.White;
                 }
                 else
                 {
-                    return System.Windows.Media.Colors.White;
+                    return Colors.White;
                 }
+            }
+        }
+
+        private ImageSource imageAttachment;
+
+        /// <summary>
+        /// Gets the attached image if present.
+        /// </summary>
+        public ImageSource ImageAttachment
+        {
+            get
+            {
+                return imageAttachment;
+            }
+
+            set
+            {
+                if (value == imageAttachment)
+                {
+                    return;
+                }
+
+                imageAttachment = value;
+                RaisePropertyChanged("ImageAttachment");
+            }
+        }
+
+        public async Task LoadImageAttachment()
+        {
+            System.Drawing.Image image = null;
+            foreach (var attachment in this.Message.Attachments)
+            {
+                if (attachment.GetType() == typeof(ImageAttachment))
+                {
+                    var imgAttach = attachment as ImageAttachment;
+                    var downloader = this.Message.ImageDownloader;
+
+                    image = await downloader.DownloadPostImage(imgAttach.Url);
+                }
+            }
+
+            if (image == null)
+            {
+                return;
+            }
+
+            using (var ms = new System.IO.MemoryStream())
+            {
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                ms.Seek(0, System.IO.SeekOrigin.Begin);
+
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = ms;
+                bitmapImage.EndInit();
+
+                this.ImageAttachment = bitmapImage;
             }
         }
     }
