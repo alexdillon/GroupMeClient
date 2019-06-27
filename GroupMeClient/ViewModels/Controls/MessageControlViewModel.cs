@@ -19,6 +19,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             this.message = message;
             _ = LoadImageAttachment();
+            _ = LoadAvatar();
         }
 
         private Message message;
@@ -92,6 +93,30 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        private ImageSource avatar;
+
+        /// <summary>
+        /// Gets the image that should be used for rounded avatars.
+        /// </summary>
+        public ImageSource AvatarRound
+        {
+            get
+            {
+                return avatar;
+            }
+
+            set
+            {
+                if (value == avatar)
+                {
+                    return;
+                }
+
+                avatar = value;
+                RaisePropertyChanged("AvatarRound");
+            }
+        }
+
         public async Task LoadImageAttachment()
         {
             System.Drawing.Image image = null;
@@ -123,6 +148,26 @@ namespace GroupMeClient.ViewModels.Controls
                 bitmapImage.EndInit();
 
                 this.ImageAttachment = bitmapImage;
+            }
+        }
+
+        public async Task LoadAvatar()
+        {
+            var downloader = this.Message.ImageDownloader;
+            var image = await downloader.DownloadAvatarImage(this.Message.AvatarUrl);
+
+            using (var ms = new System.IO.MemoryStream())
+            {
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                ms.Seek(0, System.IO.SeekOrigin.Begin);
+
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = ms;
+                bitmapImage.EndInit();
+
+                this.AvatarRound = bitmapImage;
             }
         }
     }

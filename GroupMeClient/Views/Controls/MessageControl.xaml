@@ -14,24 +14,27 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Width="60" Height="60"/>
-        
-        <Label Content="{Binding Sender}" Grid.Column="1" Grid.Row="0" FontSize="12" FontFamily="Segoe UI" Foreground="#637182"/>
+        <Ellipse Grid.Column="0" Grid.Row="0"  Grid.RowSpan="3" Width="45" Height="45" VerticalAlignment="Top">
+            <Ellipse.Fill>
+                <ImageBrush ImageSource="{Binding AvatarRound}" />
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <Label Content="{Binding Sender}" Grid.Column="1" Grid.Row="0" FontSize="12" FontFamily="Segoe UI" Foreground="#637182" Padding="0, 0, 0, 0" />
 
         <StackPanel Grid.Column="1" Grid.Row="1">
-            <Image Source="{Binding ImageAttachment}" MaxWidth="500" />
-            
-            <Label  FontSize="15"  FontFamily="Segoe UI">
+            <Image Source="{Binding ImageAttachment}" MaxWidth="500" HorizontalAlignment="Left"/>
+
+            <Label  FontSize="15"  FontFamily="Segoe UI" Padding="0, 0, 0, 0">
                 <TextBlock FontSize="15" TextWrapping="Wrap" Text="{Binding Text}" />
             </Label>
         </StackPanel>
 
-        
         <Image Grid.Column="2" Grid.Row="1" Width="20" Height="20"/>
     </Grid>
 </UserControl>
