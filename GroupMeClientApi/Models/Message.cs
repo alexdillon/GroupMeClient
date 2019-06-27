@@ -111,15 +111,21 @@
         /// Gets the <see cref="Chat"/> this message belongs to.
         /// If this message is a Group Message, this field will be null.
         /// </summary>
-        [NotMapped]
-        public Chat Chat { get; internal set; }
+        //[NotMapped]
+        public virtual Chat Chat { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="Group"/> this messages belongs to.
         /// If this message is a Direct message, this field will be null.
         /// </summary>
+        //[NotMapped]
+        public virtual Group Group { get; internal set; }
+
+        /// <summary>
+        /// Gets the <see cref="ImageDownloader" /> that can be used
+        /// to download attachments.
+        /// </summary>
         [NotMapped]
-        public Group Group { get; internal set; }
         public ImageDownloader ImageDownloader
         {
             get

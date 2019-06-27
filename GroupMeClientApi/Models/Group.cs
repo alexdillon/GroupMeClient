@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -112,6 +113,7 @@
         /// <summary>
         /// Gets a list of <see cref="Message"/>s in this <see cref="Group"/>.
         /// </summary>
+        [InverseProperty("Group")]
         public virtual List<Message> Messages { get; internal set; }
 
         /// <summary>

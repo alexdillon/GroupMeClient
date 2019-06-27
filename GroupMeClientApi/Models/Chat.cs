@@ -71,6 +71,7 @@
         /// <summary>
         /// Gets a list of <see cref="Message"/>s in this <see cref="Chat"/>.
         /// </summary>
+        [InverseProperty("Chat")]
         public virtual List<Message> Messages { get; internal set; }
 
         /// <summary>
