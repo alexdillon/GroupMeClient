@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
+             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
@@ -62,7 +62,8 @@
         </Grid>
       
         <ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-            VerticalScrollBarVisibility="Visible" CanContentScroll="True" PanningMode="VerticalOnly" VerticalAlignment="Stretch">
+            VerticalScrollBarVisibility="Visible" CanContentScroll="True" PanningMode="VerticalOnly" VerticalAlignment="Stretch"
+            extensions:ScrollViewerEx.AutoScrollToEnd="True">
             <ScrollViewer.Resources>
                 <CollectionViewSource Source="{Binding Path=Messages}" x:Key="MessagesViewSource">
                     <CollectionViewSource.SortDescriptions>
