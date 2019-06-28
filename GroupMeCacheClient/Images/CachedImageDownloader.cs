@@ -56,7 +56,6 @@
                     Image = bytes,
                 };
                 this.Database.AvatarImages.Add(cachedAvatar);
-                await this.Database.SaveChangesAsync();
 
                 var images = this.BytesToImage(bytes);
                 return images;
