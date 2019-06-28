@@ -36,6 +36,11 @@
         internal RestClient ApiClient { get; } = new RestClient(GroupMeAPIUrl);
 
         /// <summary>
+        /// Gets or sets the authenticated user.
+        /// </summary>
+        internal Member Me { get; set; }
+
+        /// <summary>
         /// Gets the Auth Token used to authenticate a GroupMe API Call.
         /// </summary>
         private string AuthToken { get; }
@@ -96,6 +101,36 @@
             else
             {
                 throw new System.Net.WebException($"Failure retreving /Groups. Status Code {restResponse.StatusCode}");
+            }
+        }
+
+        /// <summary>
+        /// Returns the authenticated user. A cached copy
+        /// will be returned unless an update is forced.
+        /// </summary>
+        /// <param name="forceUpdate">Force an API refresh</param>
+        /// <returns>A <see cref="Member"/>.</returns>
+        public virtual Member WhoAmI(bool forceUpdate = false)
+        {
+            if (this.Me != null && !forceUpdate)
+            {
+                return this.Me;
+            }
+
+            var request = this.CreateRestRequest($"/users/me", Method.GET);
+
+            var restResponse = this.ApiClient.Execute(request);
+
+            if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var results = JsonConvert.DeserializeObject<MemberResponse>(restResponse.Content);
+                this.Me = results.Member;
+
+                return this.Me;
+            }
+            else
+            {
+                throw new System.Net.WebException($"Failure retreving /Users/Me. Status Code {restResponse.StatusCode}");
             }
         }
 

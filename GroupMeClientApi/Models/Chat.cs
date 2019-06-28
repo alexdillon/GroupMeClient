@@ -168,5 +168,14 @@
             var result = await this.Client.ImageDownloader.DownloadAvatarImage(this.OtherUser.ImageOrAvatarUrl, false);
             return result;
         }
+
+        /// <summary>
+        /// Returns the authenticated user.
+        /// </summary>
+        /// <returns>A <see cref="Member"/>.</returns>
+        public Member WhoAmI()
+        {
+            return this.Client.WhoAmI();
+        }
     }
 }

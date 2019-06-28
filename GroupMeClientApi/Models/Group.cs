@@ -213,6 +213,15 @@
         }
 
         /// <summary>
+        /// Returns the authenticated user.
+        /// </summary>
+        /// <returns>A <see cref="Member"/>.</returns>
+        public Member WhoAmI()
+        {
+            return this.Client.WhoAmI();
+        }
+
+        /// <summary>
         /// Preview of the most recent message in a <see cref="Group"/> and information about when it was last updated.
         /// </summary>
         public class MessagesPreview
