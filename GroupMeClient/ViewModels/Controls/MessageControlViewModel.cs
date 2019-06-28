@@ -79,6 +79,57 @@ namespace GroupMeClient.ViewModels.Controls
             set { Set(() => this.AvatarRound, ref avatar, value); }
         }
 
+        public MahApps.Metro.IconPacks.PackIconMaterialKind LikeStatus
+        {
+            get
+            {
+                if (this.Message.FavoritedBy.Count > 0)
+                {
+                    return MahApps.Metro.IconPacks.PackIconMaterialKind.Heart;
+                }
+                else
+                {
+                    return MahApps.Metro.IconPacks.PackIconMaterialKind.HeartOutline;
+                }
+            }
+        }
+
+        public Brush GroupMeRedBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 112, 112));
+
+        public Brush LikeColor
+        {
+            get
+            {
+                var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
+
+                if (this.Message.FavoritedBy.Contains(me.Id))
+                {
+                    return this.GroupMeRedBrush;
+                }
+                else
+                {
+                    return Brushes.Gray;
+                }
+
+
+            }
+        }
+
+        public string LikeCount
+        {
+            get
+            {
+                if (this.message.FavoritedBy.Count == 0)
+                {
+                    return string.Empty;
+                }
+                else
+                {
+                    return this.Message.FavoritedBy.Count.ToString();
+                }
+            }
+        }
+
         public async Task LoadImageAttachment()
         {
             System.Drawing.Image image = null;

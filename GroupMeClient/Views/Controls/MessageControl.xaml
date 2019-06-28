@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400">
 
@@ -34,6 +35,14 @@
             </Label>
         </StackPanel>
 
-        <Image Grid.Column="2" Grid.Row="1" Width="20" Height="20"/>
+        <iconPacks:PackIconMaterial Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Width="17" Height="17"
+                                    Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}" VerticalAlignment="Top" HorizontalAlignment="Center" />
+        
+        <Label Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" 
+               Padding="0,17,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" 
+               Foreground="#637182" FontSize="10" FontWeight="Thin"
+               Content="{Binding LikeCount}" />
+
+        <Image/>
     </Grid>
 </UserControl>
