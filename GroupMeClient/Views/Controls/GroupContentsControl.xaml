@@ -6,31 +6,80 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
-             Background="White"
-             d:DesignHeight="150" d:DesignWidth="400">
+             Background="#F7F7F7"
+             d:DesignHeight="700" d:DesignWidth="500">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="7"/> <!--Padding-->
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
+        <Grid Grid.Column="0" Grid.Row="0" Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20" /> <!--Padding-->
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="10" /> <!--Padding-->
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
 
-    <ScrollViewer VerticalScrollBarVisibility="Visible" CanContentScroll="True" PanningMode="VerticalOnly" VerticalAlignment="Stretch">
-        <ScrollViewer.Resources>
-            <CollectionViewSource Source="{Binding Path=Messages}" x:Key="MessagesViewSource">
-                <CollectionViewSource.SortDescriptions>
-                    <scm:SortDescription PropertyName="Id" Direction="Ascending"/>
-                </CollectionViewSource.SortDescriptions>
-            </CollectionViewSource>
-        </ScrollViewer.Resources>
+            <Image Grid.Column="1" Grid.Row="0" Width="40" Height="40" Source="{Binding AvatarSquare}"/>
+            <Ellipse Grid.Column="1" Grid.Row="0" Width="40" Height="40">
+                <Ellipse.Fill>
+                    <ImageBrush ImageSource="{Binding AvatarRound}" />
+                </Ellipse.Fill>
+            </Ellipse>
 
-        <ItemsControl ItemsSource="{Binding Source={StaticResource MessagesViewSource}}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <controls:MessageControl Content="{Binding Path=.}"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </ScrollViewer>
+            <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                    Height="Auto" FontSize="17" FontWeight="SemiBold"
+                    TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                    Text="{Binding Title}" />
+
+            <Button Grid.Column="4" Grid.Row="0" Content="X"
+                    Width="35" Height="35"
+                    BorderThickness="0"
+                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                    Command="{Binding Path=CloseGroup}"
+                    CommandParameter="{Binding Path=.}"
+                    >
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+
+            <Border Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1"/>
+        </Grid>
+      
+        <ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+            VerticalScrollBarVisibility="Visible" CanContentScroll="True" PanningMode="VerticalOnly" VerticalAlignment="Stretch">
+            <ScrollViewer.Resources>
+                <CollectionViewSource Source="{Binding Path=Messages}" x:Key="MessagesViewSource">
+                    <CollectionViewSource.SortDescriptions>
+                        <scm:SortDescription PropertyName="Id" Direction="Ascending"/>
+                    </CollectionViewSource.SortDescriptions>
+                </CollectionViewSource>
+            </ScrollViewer.Resources>
+
+            <ItemsControl ItemsSource="{Binding Source={StaticResource MessagesViewSource}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:MessageControl Content="{Binding Path=.}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+
+    
 </UserControl>

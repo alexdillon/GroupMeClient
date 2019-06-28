@@ -236,8 +236,9 @@ namespace GroupMeClient.ViewModels.Controls
 
                 // set the avatar and make sure both updates fire
                 // let the UI bind to the correct one
-                this.AvatarRound = bitmapImage;
-                this.AvatarSquare = bitmapImage;
+                this.avatar = bitmapImage;
+                RaisePropertyChanged("AvatarSquare");
+                RaisePropertyChanged("AvatarRound");
             }
         }
     }

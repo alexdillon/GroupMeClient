@@ -12,13 +12,11 @@ namespace GroupMeClient.ViewModels
     {
         public ChatsViewModel()
         {
-            LoadedCommand = new RelayCommand(async () => await Loaded(), () => true);
-            
             this.AllGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
-        }
 
-        public ICommand LoadedCommand { get; private set; }
+            _ = Loaded();
+        }
 
         public ObservableCollection<Controls.GroupControlViewModel> AllGroupsChats { get; set; }
         public ObservableCollection<Controls.GroupContentsControlViewModel> ActiveGroupsChats { get; set; }
@@ -37,7 +35,7 @@ namespace GroupMeClient.ViewModels
             {
                 var groupVm = new Controls.GroupControlViewModel(group)
                 {
-                    GroupSelected = new RelayCommand<Controls.GroupControlViewModel>((g) => OpenNewGroupChat(g), (g) => true)
+                    GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(OpenNewGroupChat, (g) => true)
                 };
                 this.AllGroupsChats.Add(groupVm);
             }
@@ -46,7 +44,7 @@ namespace GroupMeClient.ViewModels
             {
                 var groupVm = new Controls.GroupControlViewModel(chat)
                 {
-                    GroupSelected = new RelayCommand<Controls.GroupControlViewModel>((g) => OpenNewGroupChat(g), (g) => true)
+                    GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(OpenNewGroupChat, (g) => true)
                 };
                 this.AllGroupsChats.Add(groupVm);
             }
@@ -64,16 +62,21 @@ namespace GroupMeClient.ViewModels
             else
             {
                 // open a new group or chat
+                Controls.GroupContentsControlViewModel groupContentsDisplay;
+
                 if (group.Group != null)
                 {
-                    var groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Group);
-                    this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
+
+                    groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Group);
                 }
                 else
                 {
-                    var groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Chat);
-                    this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
+                    groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Chat);
                 }
+
+                groupContentsDisplay.CloseGroup =
+                    new RelayCommand<Controls.GroupContentsControlViewModel>(CloseChat, (g) => true);
+                this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
             }
 
             // limit to three multi-chats at a time
@@ -81,6 +84,11 @@ namespace GroupMeClient.ViewModels
             {
                 this.ActiveGroupsChats.RemoveAt(this.ActiveGroupsChats.Count - 1);
             }
+        }
+
+        private void CloseChat(Controls.GroupContentsControlViewModel groupContentsControlViewModel)
+        {
+            this.ActiveGroupsChats.Remove(groupContentsControlViewModel);
         }
     }
 }
