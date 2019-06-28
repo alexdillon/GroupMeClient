@@ -36,44 +36,18 @@ namespace GroupMeClient.ViewModels.Controls
 
         public ICommand CloseGroup { get; set; }
 
-        public ObservableCollection<MessageControlViewModel> Messages { get; } 
+        public ObservableCollection<MessageControlViewModel> Messages { get; }
 
         public Group Group
         {
-            get
-            {
-                return this.group;
-            }
-
-            set
-            {
-                if (this.group == value)
-                {
-                    return;
-                }
-
-                this.group = value;
-                RaisePropertyChanged("Group");
-            }
+            get { return this.group; }
+            set { Set(() => this.Group, ref group, value); }
         }
 
         public Chat Chat
         {
-            get
-            {
-                return this.chat;
-            }
-
-            set
-            {
-                if (this.chat == value)
-                {
-                    return;
-                }
-
-                this.chat = value;
-                RaisePropertyChanged("Chat");
-            }
+            get { return this.chat; }
+            set { Set(() => this.Chat, ref chat, value); }
         }
 
         public string Title
@@ -81,7 +55,6 @@ namespace GroupMeClient.ViewModels.Controls
             get
             {
                 var title = this.Group?.Name ?? this.Chat?.OtherUser.Name;
-
                 return title;
             }
         }
@@ -108,15 +81,10 @@ namespace GroupMeClient.ViewModels.Controls
 
             set
             {
-                if (value == avatar)
-                {
-                    return;
-                }
-
-                avatar = value;
-                RaisePropertyChanged("AvatarRound");
+                Set(() => this.AvatarRound, ref avatar, value);
             }
         }
+
 
 
         /// <summary>
@@ -139,13 +107,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             set
             {
-                if (value == avatar)
-                {
-                    return;
-                }
-
-                avatar = value;
-                RaisePropertyChanged("AvatarSquare");
+                Set(() => this.AvatarSquare, ref avatar, value);
             }
         }
 
@@ -199,7 +161,7 @@ namespace GroupMeClient.ViewModels.Controls
                         this.Messages.Add(new MessageControlViewModel(msg));
                     }
                 }
-            } 
+            }
             else if (this.Chat != null)
             {
                 await chat.GetMessagesAsync();
@@ -222,6 +184,6 @@ namespace GroupMeClient.ViewModels.Controls
                 return this.Group?.Id ?? this.Chat?.Id;
             }
         }
-        
+
     }
 }

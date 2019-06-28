@@ -28,49 +28,24 @@ namespace GroupMeClient.ViewModels.Controls
             _ = LoadAvatar();
         }
 
-        public ICommand GroupSelected { get; set; }
 
         private Group group;
+        private Chat chat;
+
+        public ICommand GroupSelected { get; set; }
 
         public Group Group
         {
-            get
-            {
-                return this.group;
-            }
-
-            set
-            {
-                if (this.group == value)
-                {
-                    return;
-                }
-
-                this.group = value;
-                RaisePropertyChanged("Group");
-            }
+            get { return this.group; }
+            set { Set(() => this.Group, ref group, value); }
         }
-
-        private Chat chat;
 
         public Chat Chat
         {
-            get
-            {
-                return this.chat;
-            }
-
-            set
-            {
-                if (this.chat == value)
-                {
-                    return;
-                }
-
-                this.chat = value;
-                RaisePropertyChanged("Chat");
-            }
+            get { return this.chat; }
+            set { Set(() => this.Chat, ref chat, value); }
         }
+
 
         public string LastUpdatedFriendlyTime
         {
@@ -123,7 +98,6 @@ namespace GroupMeClient.ViewModels.Controls
             get
             {
                 var title = this.Group?.Name ?? this.Chat?.OtherUser.Name;
-
                 return title;
             }
         }
@@ -146,10 +120,6 @@ namespace GroupMeClient.ViewModels.Controls
 
         private ImageSource avatar;
 
-        /// <summary>
-        /// Gets the image that should be used for rounded avatars.
-        /// If the avatar shouldn't be rounded, null is returned.
-        /// </summary>
         public ImageSource AvatarRound
         {
             get
@@ -166,13 +136,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             set
             {
-                if (value == avatar)
-                {
-                    return;
-                }
-
-                avatar = value;
-                RaisePropertyChanged("AvatarRound");
+                Set(() => this.AvatarRound, ref avatar, value);
             }
         }
 
@@ -197,13 +161,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             set
             {
-                if (value == avatar)
-                {
-                    return;
-                }
-
-                avatar = value;
-                RaisePropertyChanged("AvatarSquare");
+                Set(() => this.AvatarSquare, ref avatar, value);
             }
         }
 

@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 
@@ -26,21 +25,8 @@ namespace GroupMeClient.ViewModels.Controls
 
         public Message Message
         {
-            get
-            {
-                return this.message;
-            }
-
-            set
-            {
-                if (this.message == value)
-                {
-                    return;
-                }
-
-                this.message = value;
-                RaisePropertyChanged("Message");
-            }
+            get { return this.message; }
+            set { Set(() => this.Message, ref message, value); }
         }
 
         public string Id => this.Message.Id;
@@ -76,21 +62,9 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public ImageSource ImageAttachment
         {
-            get
-            {
-                return imageAttachment;
-            }
+            get { return imageAttachment; }
 
-            set
-            {
-                if (value == imageAttachment)
-                {
-                    return;
-                }
-
-                imageAttachment = value;
-                RaisePropertyChanged("ImageAttachment");
-            }
+            set { Set(() => this.ImageAttachment, ref imageAttachment, value); }
         }
 
         private ImageSource avatar;
@@ -100,21 +74,9 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public ImageSource AvatarRound
         {
-            get
-            {
-                return avatar;
-            }
+            get { return avatar; }
 
-            set
-            {
-                if (value == avatar)
-                {
-                    return;
-                }
-
-                avatar = value;
-                RaisePropertyChanged("AvatarRound");
-            }
+            set { Set(() => this.AvatarRound, ref avatar, value); }
         }
 
         public async Task LoadImageAttachment()

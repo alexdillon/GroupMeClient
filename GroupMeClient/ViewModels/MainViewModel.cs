@@ -36,12 +36,7 @@
         public HamburgerMenuItemCollection MenuItems
         {
             get { return menuItems; }
-            set
-            {
-                if (Equals(value, menuItems)) return;
-                menuItems = value;
-                RaisePropertyChanged("MenuItems");
-            }
+            set { Set(() => this.MenuItems, ref menuItems, value); }
         }
 
         /// <summary>
@@ -50,12 +45,7 @@
         public HamburgerMenuItemCollection MenuOptionItems
         {
             get { return menuOptionItems; }
-            set
-            {
-                if (Equals(value, menuOptionItems)) return;
-                menuOptionItems = value;
-                RaisePropertyChanged("MenuOptionItems");
-            }
+            set { Set(() => this.MenuOptionItems, ref menuOptionItems, value); }
         }
 
         private void CreateMenuItems()
