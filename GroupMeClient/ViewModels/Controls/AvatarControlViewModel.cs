@@ -98,11 +98,11 @@ namespace GroupMeClient.ViewModels.Controls
 
                 if (isSquare)
                 {
-                    this.avatarSquare = bitmapImage;
+                    this.AvatarSquare = bitmapImage;
                 }
                 else
                 {
-                    this.avatarRound = bitmapImage;
+                    this.AvatarRound = bitmapImage;
                 }
             }
         }
