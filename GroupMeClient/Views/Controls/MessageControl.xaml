@@ -8,26 +8,28 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400">
 
-    <Grid>
+    <Grid 
+        Background="{Binding MessageColor}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80" />
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="10"/> <!--Padding-->
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <controls:AvatarControl 
-                Grid.Column="0" Grid.Row="0" Grid.RowSpan="4"
+                Grid.Column="0" Grid.Row="01" Grid.RowSpan="4"
                 Width="40" Height="40" VerticalAlignment="Top"
                 DataContext="{Binding Avatar}"/>
         
-        <Label Content="{Binding Sender}" Grid.Column="1" Grid.Row="0" FontSize="12" FontFamily="Segoe UI" Foreground="#637182" Padding="0, 0, 0, 0" />
+        <Label Content="{Binding Sender}" Grid.Column="1" Grid.Row="1" FontSize="12" FontFamily="Segoe UI" Foreground="#637182" Padding="0, 0, 0, 0" />
 
-        <StackPanel Grid.Column="1" Grid.Row="1">
+        <StackPanel Grid.Column="1" Grid.Row="2">
             <Image Source="{Binding ImageAttachment}" MaxWidth="500" HorizontalAlignment="Left"/>
 
             <Label  FontSize="15"  FontFamily="Segoe UI" Padding="0, 0, 0, 0">
@@ -35,14 +37,12 @@
             </Label>
         </StackPanel>
 
-        <iconPacks:PackIconMaterial Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Width="17" Height="17"
+        <iconPacks:PackIconMaterial Grid.Column="2" Grid.Row="2" Width="17" Height="17"
                                     Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}" VerticalAlignment="Top" HorizontalAlignment="Center" />
-        
-        <Label Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" 
+
+        <Label Grid.Column="2" Grid.Row="2"
                Padding="0,17,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" 
                Foreground="#637182" FontSize="10" FontWeight="Thin"
                Content="{Binding LikeCount}" />
-
-        <Image/>
     </Grid>
 </UserControl>

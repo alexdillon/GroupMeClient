@@ -38,22 +38,22 @@ namespace GroupMeClient.ViewModels.Controls
 
         public string Sender => this.Message.Name;
 
-        public Color Color
+        public Brush GroupMeRedBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 112, 112));
+        public Brush GroupMeLightBlueBrush { get; } = new SolidColorBrush(Color.FromRgb(219, 244, 253));
+
+        public Brush MessageColor
         {
             get
             {
-                if (this.Message.Group != null)
+                var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
+
+                if (this.Message.UserId == me.UserId)
                 {
-                    // TODO decide who sent the message
-                    return Colors.White;
-                }
-                else if (this.Message.Chat != null)
-                {
-                    return Colors.White;
+                    return this.GroupMeLightBlueBrush;
                 }
                 else
                 {
-                    return Colors.White;
+                    return Brushes.White;
                 }
             }
         }
@@ -84,8 +84,6 @@ namespace GroupMeClient.ViewModels.Controls
                 }
             }
         }
-
-        public Brush GroupMeRedBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 112, 112));
 
         public Brush LikeColor
         {
