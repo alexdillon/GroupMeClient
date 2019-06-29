@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400">
 
@@ -19,12 +20,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Ellipse Grid.Column="0" Grid.Row="0"  Grid.RowSpan="3" Width="40" Height="40" VerticalAlignment="Top">
-            <Ellipse.Fill>
-                <ImageBrush ImageSource="{Binding AvatarRound}" />
-            </Ellipse.Fill>
-        </Ellipse>
-
+        <controls:AvatarControl 
+                Grid.Column="0" Grid.Row="0" Grid.RowSpan="4"
+                Width="40" Height="40" VerticalAlignment="Top"
+                DataContext="{Binding Avatar}"/>
+        
         <Label Content="{Binding Sender}" Grid.Column="1" Grid.Row="0" FontSize="12" FontFamily="Segoe UI" Foreground="#637182" Padding="0, 0, 0, 0" />
 
         <StackPanel Grid.Column="1" Grid.Row="1">

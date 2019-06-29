@@ -44,6 +44,9 @@
                 <views:SettingsView />
             </DataTemplate>
 
+            <DataTemplate DataType="{x:Type ctrlvm:AvatarControlViewModel}">
+                <ctrlviews:AvatarControl />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type ctrlvm:GroupControlViewModel}">
                 <ctrlviews:GroupControl />
             </DataTemplate>

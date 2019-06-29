@@ -16,21 +16,19 @@ namespace GroupMeClient.ViewModels.Controls
 
         public GroupControlViewModel(Group group)
         {
-            this.group = group;
-
-            _ = LoadAvatar();
+            this.Group = group;
+            this.Avatar = new AvatarControlViewModel(this.Group);
         }
 
         public GroupControlViewModel(Chat chat)
         {
-            this.chat = chat;
-
-            _ = LoadAvatar();
+            this.Chat = chat;
+            this.Avatar = new AvatarControlViewModel(this.Chat);
         }
-
 
         private Group group;
         private Chat chat;
+        private AvatarControlViewModel avatar;
 
         public ICommand GroupSelected { get; set; }
 
@@ -46,6 +44,11 @@ namespace GroupMeClient.ViewModels.Controls
             set { Set(() => this.Chat, ref chat, value); }
         }
 
+        public AvatarControlViewModel Avatar
+        {
+            get { return this.avatar; }
+            set { Set(() => this.Avatar, ref avatar, value); }
+        }
 
         public string LastUpdatedFriendlyTime
         {
@@ -115,88 +118,6 @@ namespace GroupMeClient.ViewModels.Controls
             get
             {
                 return this.Group?.Id ?? this.Chat?.Id;
-            }
-        }
-
-        private ImageSource avatar;
-
-        public ImageSource AvatarRound
-        {
-            get
-            {
-                if (this.Chat != null)
-                {
-                    return avatar;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            set
-            {
-                Set(() => this.AvatarRound, ref avatar, value);
-            }
-        }
-
-
-        /// <summary>
-        /// Gets the image that should be used for square avatars.
-        /// If the avatar shouldn't be rectangular, null is returned.
-        /// </summary>
-        public ImageSource AvatarSquare
-        {
-            get
-            {
-                if (this.Group != null)
-                {
-                    return avatar;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            set
-            {
-                Set(() => this.AvatarSquare, ref avatar, value);
-            }
-        }
-
-        public async Task LoadAvatar()
-        {
-            System.Drawing.Image image;
-            if (this.Group != null)
-            {
-                image = await this.Group.DownloadAvatar();
-            }
-            else if (this.Chat != null)
-            {
-                image = await this.Chat.DownloadAvatar();
-            }
-            else
-            {
-                return;
-            }
-
-            using (var ms = new System.IO.MemoryStream())
-            {
-                image.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-                ms.Seek(0, System.IO.SeekOrigin.Begin);
-
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-
-                // set the avatar and make sure both updates fire
-                // let the UI bind to the correct one
-                this.avatar = bitmapImage;
-                RaisePropertyChanged("AvatarSquare");
-                RaisePropertyChanged("AvatarRound");
             }
         }
     }

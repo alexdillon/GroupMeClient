@@ -32,12 +32,10 @@
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
 
-            <Image Grid.Column="1" Grid.Row="0" Width="40" Height="40" Source="{Binding AvatarSquare}"/>
-            <Ellipse Grid.Column="1" Grid.Row="0" Width="40" Height="40">
-                <Ellipse.Fill>
-                    <ImageBrush ImageSource="{Binding AvatarRound}" />
-                </Ellipse.Fill>
-            </Ellipse>
+            <controls:AvatarControl 
+                Grid.Column="1" Grid.Row="0"
+                Width="40" Height="40"
+                DataContext="{Binding TopBarAvatar}"/>
 
             <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                     Height="Auto" FontSize="17" FontWeight="SemiBold"

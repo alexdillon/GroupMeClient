@@ -19,20 +19,23 @@ namespace GroupMeClient.ViewModels.Controls
 
         public GroupContentsControlViewModel(Group group) : this()
         {
-            this.group = group;
+            this.Group = group;
+            this.TopBarAvatar = new AvatarControlViewModel(this.Group);
 
             _ = Loaded();
         }
 
         public GroupContentsControlViewModel(Chat chat) : this()
         {
-            this.chat = chat;
+            this.Chat = chat;
+            this.TopBarAvatar = new AvatarControlViewModel(this.Chat);
 
             _ = Loaded();
         }
 
         private Group group;
         private Chat chat;
+        private AvatarControlViewModel topBarAvatar;
 
         public ICommand CloseGroup { get; set; }
 
@@ -50,99 +53,18 @@ namespace GroupMeClient.ViewModels.Controls
             set { Set(() => this.Chat, ref chat, value); }
         }
 
+        public AvatarControlViewModel TopBarAvatar
+        {
+            get { return this.topBarAvatar; }
+            set { Set(() => this.TopBarAvatar, ref topBarAvatar, value); }
+        }
+
         public string Title
         {
             get
             {
                 var title = this.Group?.Name ?? this.Chat?.OtherUser.Name;
                 return title;
-            }
-        }
-
-        private ImageSource avatar;
-
-        /// <summary>
-        /// Gets the image that should be used for rounded avatars.
-        /// If the avatar shouldn't be rounded, null is returned.
-        /// </summary>
-        public ImageSource AvatarRound
-        {
-            get
-            {
-                if (this.Chat != null)
-                {
-                    return avatar;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            set
-            {
-                Set(() => this.AvatarRound, ref avatar, value);
-            }
-        }
-
-
-
-        /// <summary>
-        /// Gets the image that should be used for square avatars.
-        /// If the avatar shouldn't be rectangular, null is returned.
-        /// </summary>
-        public ImageSource AvatarSquare
-        {
-            get
-            {
-                if (this.Group != null)
-                {
-                    return avatar;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            set
-            {
-                Set(() => this.AvatarSquare, ref avatar, value);
-            }
-        }
-
-        public async Task LoadAvatar()
-        {
-            System.Drawing.Image image;
-            if (this.Group != null)
-            {
-                image = await this.Group.DownloadAvatar();
-            }
-            else if (this.Chat != null)
-            {
-                image = await this.Chat.DownloadAvatar();
-            }
-            else
-            {
-                return;
-            }
-
-            using (var ms = new System.IO.MemoryStream())
-            {
-                image.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-                ms.Seek(0, System.IO.SeekOrigin.Begin);
-
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-
-                // set the avatar and make sure both updates fire
-                // let the UI bind to the correct one
-                this.avatar = bitmapImage;
-                RaisePropertyChanged("AvatarSquare");
-                RaisePropertyChanged("AvatarRound");
             }
         }
 
@@ -173,8 +95,6 @@ namespace GroupMeClient.ViewModels.Controls
                     }
                 }
             }
-
-            await LoadAvatar();
         }
 
         public string Id
@@ -184,6 +104,5 @@ namespace GroupMeClient.ViewModels.Controls
                 return this.Group?.Id ?? this.Chat?.Id;
             }
         }
-
     }
 }

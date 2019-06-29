@@ -10,23 +10,26 @@ namespace GroupMeClient.ViewModels.Controls
 {
     public class MessageControlViewModel : ViewModelBase
     {
-        public MessageControlViewModel()
-        {
-        }
-
         public MessageControlViewModel(Message message)
         {
-            this.message = message;
+            this.Message = message;
+            this.Avatar = new AvatarControlViewModel(this.Message);
             _ = LoadImageAttachment();
-            _ = LoadAvatar();
         }
 
         private Message message;
+        private AvatarControlViewModel avatar;
 
         public Message Message
         {
             get { return this.message; }
             set { Set(() => this.Message, ref message, value); }
+        }
+
+        public AvatarControlViewModel Avatar
+        {
+            get { return this.avatar; }
+            set { Set(() => this.Avatar, ref avatar, value); }
         }
 
         public string Id => this.Message.Id;
@@ -67,18 +70,6 @@ namespace GroupMeClient.ViewModels.Controls
             set { Set(() => this.ImageAttachment, ref imageAttachment, value); }
         }
 
-        private ImageSource avatar;
-
-        /// <summary>
-        /// Gets the image that should be used for rounded avatars.
-        /// </summary>
-        public ImageSource AvatarRound
-        {
-            get { return avatar; }
-
-            set { Set(() => this.AvatarRound, ref avatar, value); }
-        }
-
         public MahApps.Metro.IconPacks.PackIconMaterialKind LikeStatus
         {
             get
@@ -110,8 +101,6 @@ namespace GroupMeClient.ViewModels.Controls
                 {
                     return Brushes.Gray;
                 }
-
-
             }
         }
 
@@ -161,26 +150,6 @@ namespace GroupMeClient.ViewModels.Controls
                 bitmapImage.EndInit();
 
                 this.ImageAttachment = bitmapImage;
-            }
-        }
-
-        public async Task LoadAvatar()
-        {
-            var downloader = this.Message.ImageDownloader;
-            var image = await downloader.DownloadAvatarImage(this.Message.AvatarUrl);
-
-            using (var ms = new System.IO.MemoryStream())
-            {
-                image.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-                ms.Seek(0, System.IO.SeekOrigin.Begin);
-
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-
-                this.AvatarRound = bitmapImage;
             }
         }
     }
