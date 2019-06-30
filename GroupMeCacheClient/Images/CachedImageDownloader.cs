@@ -1,6 +1,7 @@
 ﻿namespace GroupMeClientCached.Images
 {
     using System.Drawing;
+    using System.Threading;
     using System.Threading.Tasks;
     using GroupMeClientApi;
     using GroupMeClientCached.Context;
@@ -21,6 +22,8 @@
 
         private DatabaseContext Database { get; }
 
+        private SemaphoreSlim DatabaseSem { get; } = new SemaphoreSlim(1, 1);
+
         /// <inheritdoc/>
         public override async Task<Image> DownloadAvatarImage(string url, bool isGroup = true)
         {
@@ -40,51 +43,68 @@
                 url = $"{url}.avatar";
             }
 
-            var dbResults = await this.Database.AvatarImages.FindAsync(new object[] { url });
-
-            if (dbResults != null)
+            await this.DatabaseSem.WaitAsync();
+            try
             {
-                return this.BytesToImage(dbResults.Image);
-            }
-            else
-            {
-                var bytes = await this.HttpClient.GetByteArrayAsync(url);
+                var dbResults = await this.Database.AvatarImages.FindAsync(new object[] { url });
 
-                var cachedAvatar = new CachedAvatar()
+                if (dbResults != null)
                 {
-                    Key = url,
-                    Image = bytes,
-                };
-                this.Database.AvatarImages.Add(cachedAvatar);
+                    return this.BytesToImage(dbResults.Image);
+                }
+                else
+                {
+                    var bytes = await this.HttpClient.GetByteArrayAsync(url);
 
-                var images = this.BytesToImage(bytes);
-                return images;
+                    var cachedAvatar = new CachedAvatar()
+                    {
+                        Key = url,
+                        Image = bytes,
+                    };
+
+                    this.Database.AvatarImages.Add(cachedAvatar);
+
+                    var images = this.BytesToImage(bytes);
+                    return images;
+                }
+            }
+            finally
+            {
+                this.DatabaseSem.Release();
             }
         }
 
         /// <inheritdoc/>
         public override async Task<Image> DownloadPostImage(string url)
         {
-            var dbResults = await this.Database.PostImages.FindAsync(new object[] { url });
-
-            if (dbResults != null)
+            await this.DatabaseSem.WaitAsync();
+            try
             {
-                return this.BytesToImage(dbResults.Image);
-            }
-            else
-            {
-                var bytes = await this.HttpClient.GetByteArrayAsync(url);
+                var dbResults = await this.Database.PostImages.FindAsync(new object[] { url });
 
-                var cachedImage = new CachedImage()
+                if (dbResults != null)
                 {
-                    Key = url,
-                    Image = bytes,
-                };
-                this.Database.PostImages.Add(cachedImage);
-                this.Database.SaveChanges();
+                    return this.BytesToImage(dbResults.Image);
+                }
+                else
+                {
+                    var bytes = await this.HttpClient.GetByteArrayAsync(url);
 
-                var images = this.BytesToImage(bytes);
-                return images;
+                    var cachedImage = new CachedImage()
+                    {
+                        Key = url,
+                        Image = bytes,
+                    };
+                    this.Database.PostImages.Add(cachedImage);
+                    this.Database.SaveChanges();
+
+                    var images = this.BytesToImage(bytes);
+                    return images;
+                }
+            }
+            finally
+            {
+                this.DatabaseSem.Release();
             }
         }
     }
