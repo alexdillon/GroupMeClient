@@ -25,7 +25,7 @@
         private SemaphoreSlim DatabaseSem { get; } = new SemaphoreSlim(1, 1);
 
         /// <inheritdoc/>
-        public override async Task<Image> DownloadAvatarImage(string url, bool isGroup = true)
+        public override async Task<byte[]> DownloadAvatarImage(string url, bool isGroup = true)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -50,7 +50,7 @@
 
                 if (dbResults != null)
                 {
-                    return this.BytesToImage(dbResults.Image);
+                    return dbResults.Image;
                 }
                 else
                 {
@@ -64,8 +64,7 @@
 
                     this.Database.AvatarImages.Add(cachedAvatar);
 
-                    var images = this.BytesToImage(bytes);
-                    return images;
+                    return bytes;
                 }
             }
             finally
@@ -75,7 +74,7 @@
         }
 
         /// <inheritdoc/>
-        public override async Task<Image> DownloadPostImage(string url)
+        public override async Task<byte[]> DownloadPostImage(string url)
         {
             await this.DatabaseSem.WaitAsync();
             try
@@ -84,7 +83,7 @@
 
                 if (dbResults != null)
                 {
-                    return this.BytesToImage(dbResults.Image);
+                    return dbResults.Image;
                 }
                 else
                 {
@@ -98,8 +97,7 @@
                     this.Database.PostImages.Add(cachedImage);
                     this.Database.SaveChanges();
 
-                    var images = this.BytesToImage(bytes);
-                    return images;
+                    return bytes;
                 }
             }
             finally

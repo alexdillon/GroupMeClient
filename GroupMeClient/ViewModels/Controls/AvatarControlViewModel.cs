@@ -63,7 +63,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             bool isSquare;
 
-            System.Drawing.Image image;
+            byte[] image;
             if (this.Group != null)
             {
                 image = await this.Group.DownloadAvatar();
@@ -85,11 +85,8 @@ namespace GroupMeClient.ViewModels.Controls
                 return;
             }
 
-            using (var ms = new System.IO.MemoryStream())
+            using (var ms = new System.IO.MemoryStream(image))
             {
-                image.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-                ms.Seek(0, System.IO.SeekOrigin.Begin);
-
                 var bitmapImage = new BitmapImage();
                 bitmapImage.BeginInit();
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;

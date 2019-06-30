@@ -164,7 +164,7 @@
         /// Downloads the Group Avatar using the default <see cref="ImageDownloader"/>.
         /// </summary>
         /// <returns>The avatar image.</returns>
-        public async Task<System.Drawing.Image> DownloadAvatar()
+        public async Task<byte[]> DownloadAvatar()
         {
             var result = await this.Client.ImageDownloader.DownloadAvatarImage(this.OtherUser.ImageOrAvatarUrl, false);
             return result;

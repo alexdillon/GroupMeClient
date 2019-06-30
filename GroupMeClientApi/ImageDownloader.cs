@@ -27,7 +27,7 @@
         /// <param name="url">The URL of the avatar image.</param>
         /// <param name="isGroup">Indicates if the avatar is for a group (true) or a chat (false).</param>
         /// <returns>An image.</returns>
-        public virtual async Task<Image> DownloadAvatarImage(string url, bool isGroup = true)
+        public virtual async Task<byte[]> DownloadAvatarImage(string url, bool isGroup = true)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -53,7 +53,7 @@
         /// </summary>
         /// <param name="url">The URL of the image.</param>
         /// <returns>An image.</returns>
-        public virtual async Task<Image> DownloadPostImage(string url)
+        public virtual async Task<byte[]> DownloadPostImage(string url)
         {
             return await this.DownloadRawImage(url);
         }
@@ -63,43 +63,30 @@
         /// </summary>
         /// <param name="url">The URL of the image.</param>
         /// <returns>An image.</returns>
-        protected virtual async Task<Image> DownloadRawImage(string url)
+        protected virtual async Task<byte[]> DownloadRawImage(string url)
         {
             var bytes = await this.HttpClient.GetByteArrayAsync(url);
-            return this.BytesToImage(bytes);
-        }
-
-        /// <summary>
-        /// Converts a Byte Array of image data to an <see cref="Image"/>.
-        /// </summary>
-        /// <param name="bytes">The raw image data.</param>
-        /// <returns>A image object.</returns>
-        protected virtual Image BytesToImage(byte[] bytes)
-        {
-            var ms = new System.IO.MemoryStream(bytes);
-            var image = System.Drawing.Bitmap.FromStream(ms);
-
-            return image;
+            return bytes;
         }
 
         /// <summary>
         /// Gets the default avatar for a person.
         /// </summary>
         /// <returns>A image object.</returns>
-        protected Image GetDefaultPersonAvatar()
+        protected byte[] GetDefaultPersonAvatar()
         {
             var bytes = GroupMeClientApi.Properties.Resources.DefaultPersonAvatar;
-            return this.BytesToImage(bytes);
+            return bytes;
         }
 
         /// <summary>
         /// Gets the default avatar for a group.
         /// </summary>
         /// <returns>A image object.</returns>
-        protected Image GetDefaultGroupAvatar()
+        protected byte[] GetDefaultGroupAvatar()
         {
             var bytes = GroupMeClientApi.Properties.Resources.DefaultGroupAvatar;
-            return this.BytesToImage(bytes);
+            return bytes;
         }
     }
 }
