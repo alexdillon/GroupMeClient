@@ -38,7 +38,9 @@
         <Label Content="{Binding Sender}" Grid.Column="1" Grid.Row="1" FontSize="12" Foreground="#637182" Padding="0, 0, 0, 0" />
 
         <StackPanel Grid.Column="1" Grid.Row="2">
-            <Image MaxWidth="500" HorizontalAlignment="Left"
+            <Image MaxWidth="500" 
+                   Stretch="None"
+                   HorizontalAlignment="Left"
                    gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}"/>
 
             <Label  FontSize="15" Padding="0, 0, 0, 0">
