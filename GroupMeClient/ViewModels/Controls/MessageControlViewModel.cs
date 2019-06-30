@@ -70,17 +70,19 @@ namespace GroupMeClient.ViewModels.Controls
             set { Set(() => this.ImageAttachmentStream, ref imageAttachmentStream, value); }
         }
 
-        public MahApps.Metro.IconPacks.PackIconMaterialKind LikeStatus
+        public MahApps.Metro.IconPacks.PackIconFontAwesomeKind LikeStatus
         {
             get
             {
                 if (this.Message.FavoritedBy.Count > 0)
                 {
-                    return MahApps.Metro.IconPacks.PackIconMaterialKind.Heart;
+                    return MahApps.Metro.IconPacks.PackIconFontAwesomeKind.HeartSolid;
+                    //return MahApps.Metro.IconPacks.PackIconMaterialKind.Heart;
                 }
                 else
                 {
-                    return MahApps.Metro.IconPacks.PackIconMaterialKind.HeartOutline;
+                    return MahApps.Metro.IconPacks.PackIconFontAwesomeKind.HeartRegular;
+                    //return MahApps.Metro.IconPacks.PackIconMaterialKind.HeartOutline;
                 }
             }
         }
