@@ -7,6 +7,7 @@ using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using GroupMeClientApi;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -30,11 +31,19 @@ namespace GroupMeClient.ViewModels.Controls
             _ = LoadAvatar();
         }
 
+        public AvatarControlViewModel(Member member, ImageDownloader imageDownloader)
+        {
+            this.Member = member;
+            this.ImageDownloader = imageDownloader;
+            _ = LoadAvatar();
+        }
+
         public Group Group { get; }
-
         public Chat Chat { get; }
-
         public Message Message { get; }
+        public Member Member { get; }
+
+        public ImageDownloader ImageDownloader { get; }
 
         private ImageSource avatarRound;
         private ImageSource avatarSquare;
@@ -78,6 +87,11 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 var downloader = this.Message.ImageDownloader;
                 image = await downloader.DownloadAvatarImage(this.Message.AvatarUrl);
+                isSquare = false;
+            }
+            else if (this.Member != null && this.ImageDownloader != null)
+            {
+                image = await this.ImageDownloader.DownloadAvatarImage(this.Member.ImageOrAvatarUrl);
                 isSquare = false;
             }
             else
