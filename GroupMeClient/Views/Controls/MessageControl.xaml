@@ -38,10 +38,12 @@
         </StackPanel>
 
         <iconPacks:PackIconMaterial Grid.Column="2" Grid.Row="2" Width="17" Height="17"
-                                    Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}" VerticalAlignment="Top" HorizontalAlignment="Center" />
+                                    Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}" VerticalAlignment="Top" HorizontalAlignment="Center"
+                                    Margin="0,0,10,0"/>
 
         <Label Grid.Column="2" Grid.Row="2"
                Padding="0,17,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" 
+               Margin="0,0,10,0"
                Foreground="#637182" FontSize="10" FontWeight="Thin"
                Content="{Binding LikeCount}" />
     </Grid>
