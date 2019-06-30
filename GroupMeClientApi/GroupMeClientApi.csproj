@@ -15,7 +15,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="JsonSubTypes" Version="1.5.2" />
+    <PackageReference Include="JsonSubTypes" Version="1.6.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="RestSharp" Version="106.6.9" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
