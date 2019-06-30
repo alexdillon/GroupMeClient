@@ -125,6 +125,7 @@
                 }
 
                 this.InternalStateChanged = Guid.NewGuid().ToString();
+                await this.Client.Update();
 
                 return results.Response.Messages;
             }

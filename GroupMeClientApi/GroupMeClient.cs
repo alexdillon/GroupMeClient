@@ -108,7 +108,7 @@
         /// Returns the authenticated user. A cached copy
         /// will be returned unless an update is forced.
         /// </summary>
-        /// <param name="forceUpdate">Force an API refresh</param>
+        /// <param name="forceUpdate">Force an API refresh.</param>
         /// <returns>A <see cref="Member"/>.</returns>
         public virtual Member WhoAmI(bool forceUpdate = false)
         {
@@ -132,6 +132,15 @@
             {
                 throw new System.Net.WebException($"Failure retreving /Users/Me. Status Code {restResponse.StatusCode}");
             }
+        }
+
+        /// <summary>
+        /// Updates the internal state of the GroupMe Client.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public virtual Task Update()
+        {
+            return Task.CompletedTask;
         }
 
         /// <summary>

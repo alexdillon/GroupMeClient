@@ -20,17 +20,19 @@ namespace GroupMeClient.ViewModels
         public ObservableCollection<Controls.GroupControlViewModel> AllGroupsChats { get; set; }
         public ObservableCollection<Controls.GroupContentsControlViewModel> ActiveGroupsChats { get; set; }
 
+        private GroupMeClientCached.GroupMeCachedClient GroupMeClient { get; set; }
+
         private async Task Loaded()
         {
             string token = System.IO.File.ReadAllText("../../../DevToken.txt");
-            var groupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
+            this.GroupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
 
-            var groups = await groupMeClient.GetGroupsAsync();
-            var chats = await groupMeClient.GetChatsAsync();
+            var groups = await GroupMeClient.GetGroupsAsync();
+            var chats = await GroupMeClient.GetChatsAsync();
 
             this.AllGroupsChats.Clear();
 
-            foreach (var group in groupMeClient.Groups())
+            foreach (var group in GroupMeClient.Groups())
             {
                 var groupVm = new Controls.GroupControlViewModel(group)
                 {
@@ -39,7 +41,7 @@ namespace GroupMeClient.ViewModels
                 this.AllGroupsChats.Add(groupVm);
             }
 
-            foreach (Chat chat in groupMeClient.Chats())
+            foreach (Chat chat in GroupMeClient.Chats())
             {
                 var groupVm = new Controls.GroupControlViewModel(chat)
                 {
@@ -47,6 +49,8 @@ namespace GroupMeClient.ViewModels
                 };
                 this.AllGroupsChats.Add(groupVm);
             }
+
+            await this.GroupMeClient.Update();
         }
 
         private void OpenNewGroupChat(Controls.GroupControlViewModel group)
@@ -83,6 +87,7 @@ namespace GroupMeClient.ViewModels
             {
                 this.ActiveGroupsChats.RemoveAt(this.ActiveGroupsChats.Count - 1);
             }
+
         }
 
         private void CloseChat(Controls.GroupContentsControlViewModel groupContentsControlViewModel)

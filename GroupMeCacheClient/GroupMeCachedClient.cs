@@ -1,8 +1,6 @@
 ﻿namespace GroupMeClientCached
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using GroupMeClientApi;
     using GroupMeClientApi.Models;
@@ -21,7 +19,11 @@
             : base(authToken)
         {
             this.Database = new Context.DatabaseContext(databasePath);
-            this.ImageDownloader = new Images.CachedImageDownloader(this.Database);
+
+            // Keep images on a seperate context to allow async operations for images
+            // to occur at the same time as other database operations
+            var contextForImages = new Context.DatabaseContext(databasePath);
+            this.ImageDownloader = new Images.CachedImageDownloader(contextForImages);
 
             this.Database.Database.EnsureCreated();
         }
@@ -68,20 +70,19 @@
 
             foreach (var group in groups)
             {
-               // AddOrUpdate(group);
-                if (!this.Database.Groups.Any(g => g.Id == group.Id))
+                Group oldGroup = this.Database.Groups.Find(group.Id);
+
+                if (oldGroup == null)
                 {
                    this.Database.Groups.Add(group);
                 }
                 else
                 {
-                    // Replace EF version with new data from GroupMe and begin tracking it
-                    var oldGroup = this.Database.Groups.Find(group.Id);
-                    this.Database.Entry(oldGroup).CurrentValues.SetValues(group);
+                    DataMerger.MergeGroup(oldGroup, group);
                 }
             }
 
-            this.Database.SaveChanges();
+            await this.Database.SaveChangesAsync();
 
             return groups;
         }
@@ -93,28 +94,25 @@
 
             foreach (var chat in chats)
             {
-                if (!this.Database.Chats.Any(c => c.Id == chat.Id))
+                var oldChat = this.Database.Chats.Find(chat.Id);
+
+                if (oldChat == null)
                 {
-                    // Attach new GroupMe response to EF Context
                     this.Database.Chats.Add(chat);
                 }
                 else
                 {
-                    // Replace EF version with new data from GroupMe and begin tracking it
-                    var oldChat = this.Database.Chats.Find(chat.Id);
-                    this.Database.Entry(oldChat).CurrentValues.SetValues(chat);
+                    DataMerger.MergeChat(oldChat, chat);
                 }
             }
 
-            this.Database.SaveChanges();
+            await this.Database.SaveChangesAsync();
 
             return chats;
         }
 
-        /// <summary>
-        /// Saves the state of all known GroupMe objects to the cache database.
-        /// </summary>
-        public async void SaveAll()
+        /// <inheritdoc/>
+        public override async Task Update()
         {
             await this.Database.SaveChangesAsync();
         }
