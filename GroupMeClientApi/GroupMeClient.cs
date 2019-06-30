@@ -49,7 +49,7 @@
         /// Returns a listing of all Group Chats a user is a member of.
         /// </summary>
         /// <returns>A list of <see cref="Group"/>.</returns>
-        public virtual async Task<IList<Group>> GetGroupsAsync()
+        public virtual async Task<ICollection<Group>> GetGroupsAsync()
         {
             var request = this.CreateRestRequest($"/groups", Method.GET);
 
@@ -77,7 +77,7 @@
         /// Returns a listing of all Direct Messages / Chats a user is a member of.
         /// </summary>
         /// <returns>A list of <see cref="Chat"/>.</returns>
-        public virtual async Task<IList<Chat>> GetChatsAsync()
+        public virtual async Task<ICollection<Chat>> GetChatsAsync()
         {
             var request = this.CreateRestRequest($"/chats", Method.GET);
 

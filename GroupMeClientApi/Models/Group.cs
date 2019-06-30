@@ -96,7 +96,7 @@
         /// Gets a list of <see cref="Members"/> in the group.
         /// </summary>
         [JsonProperty("members")]
-        public virtual IList<Member> Members { get; internal set; }
+        public virtual ICollection<Member> Members { get; internal set; }
 
         /// <summary>
         /// Gets the maximum number of members who can be in this group.
@@ -134,7 +134,7 @@
         /// <param name="mode">The method that should be used to determine the set of messages returned. </param>
         /// <param name="messageId">The Message Id that will be used by the sorting mode set in <paramref name="mode"/>.</param>
         /// <returns>A list of <see cref="Message"/>.</returns>
-        public async Task<IList<Message>> GetMessagesAsync(int limit = 20, MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
+        public async Task<ICollection<Message>> GetMessagesAsync(int limit = 20, MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
         {
             var request = this.Client.CreateRestRequest($"/groups/{this.Id}/messages", Method.GET);
             request.AddParameter("limit", limit);
@@ -282,7 +282,7 @@
                 /// Gets a list of <see cref="Attachments.Attachment"/> contained with the message.
                 /// </summary>
                 [JsonProperty("attachments")]
-                public virtual IList<Attachments.Attachment> Attachments { get; internal set; }
+                public virtual ICollection<Attachments.Attachment> Attachments { get; internal set; }
             }
         }
     }

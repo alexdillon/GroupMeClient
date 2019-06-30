@@ -62,7 +62,7 @@
         }
 
         /// <inheritdoc/>
-        public override async Task<IList<Group>> GetGroupsAsync()
+        public override async Task<ICollection<Group>> GetGroupsAsync()
         {
             var groups = await base.GetGroupsAsync();
 
@@ -87,7 +87,7 @@
         }
 
         /// <inheritdoc/>
-        public override async Task<IList<Chat>> GetChatsAsync()
+        public override async Task<ICollection<Chat>> GetChatsAsync()
         {
             var chats = await base.GetChatsAsync();
 

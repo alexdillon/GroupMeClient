@@ -105,7 +105,7 @@
         /// Gets a list of <see cref="Attachments"/> attached to this <see cref="Message"/>.
         /// </summary>
         [JsonProperty("attachments")]
-        public IList<Attachments.Attachment> Attachments { get; internal set; }
+        public ICollection<Attachments.Attachment> Attachments { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="Chat"/> this message belongs to.

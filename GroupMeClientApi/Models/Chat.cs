@@ -91,7 +91,7 @@
         /// <param name="mode">The method that should be used to determine the set of messages returned.</param>
         /// <param name="messageId">The Message Id that will be used by the sorting mode set in <paramref name="mode"/>.</param>
         /// <returns>A list of <see cref="Message"/>.</returns>
-        public async Task<IList<Message>> GetMessagesAsync(MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
+        public async Task<ICollection<Message>> GetMessagesAsync(MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
         {
             var request = this.Client.CreateRestRequest($"/direct_messages", Method.GET);
             request.AddParameter("other_user_id", this.OtherUser.Id);

@@ -68,7 +68,7 @@
                 v => string.Join(",", v),
                 v => v.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
 
-            // Provide mapping for the Message.IList<FavoritedBy>
+            // Provide mapping for the Message.ICollection<FavoritedBy>
             modelBuilder.Entity<Message>()
             .Property(x => x.FavoritedBy)
             .HasConversion(

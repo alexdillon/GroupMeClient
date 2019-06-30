@@ -36,7 +36,7 @@
             /// Gets the <see cref="Message"/>s in a <see cref="Chat"/>.
             /// </summary>
             [JsonProperty("direct_messages")]
-            public IList<Message> Messages { get; internal set; }
+            public ICollection<Message> Messages { get; internal set; }
 
             /// <summary>
             /// Gets the last <see cref="ReadReceipt"/> for this <see cref="Chat"/>.
