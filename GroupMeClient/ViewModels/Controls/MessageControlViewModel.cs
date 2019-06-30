@@ -58,16 +58,16 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
-        private ImageSource imageAttachment;
+        private System.IO.Stream imageAttachmentStream;
 
         /// <summary>
         /// Gets the attached image if present.
         /// </summary>
-        public ImageSource ImageAttachment
+        public System.IO.Stream ImageAttachmentStream
         {
-            get { return imageAttachment; }
+            get { return imageAttachmentStream; }
 
-            set { Set(() => this.ImageAttachment, ref imageAttachment, value); }
+            set { Set(() => this.ImageAttachmentStream, ref imageAttachmentStream, value); }
         }
 
         public MahApps.Metro.IconPacks.PackIconMaterialKind LikeStatus
@@ -136,16 +136,7 @@ namespace GroupMeClient.ViewModels.Controls
                 return;
             }
 
-            using (var ms = new System.IO.MemoryStream(image))
-            {
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-
-                this.ImageAttachment = bitmapImage;
-            }
+            this.ImageAttachmentStream = new System.IO.MemoryStream(image);
         }
     }
 }

@@ -184,6 +184,9 @@
     <PackageReference Include="SQLitePCLRaw.bundle_green">
       <Version>1.1.14</Version>
     </PackageReference>
+    <PackageReference Include="XamlAnimatedGif">
+      <Version>1.2.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
