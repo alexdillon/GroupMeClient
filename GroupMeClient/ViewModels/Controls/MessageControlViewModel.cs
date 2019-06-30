@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Linq;
 using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight;
 using GroupMeClientApi.Models;
@@ -115,6 +117,22 @@ namespace GroupMeClient.ViewModels.Controls
                 else
                 {
                     return this.Message.FavoritedBy.Count.ToString();
+                }
+            }
+        }
+
+        public IEnumerable<AvatarControlViewModel> LikedByAvatars
+        {
+            get
+            {
+                foreach (var memberId in this.Message.FavoritedBy)
+                {
+                    // member is either a Group Member, Other Chat User, or This User
+                    var member = this.Message.Group?.Members.FirstOrDefault(m => m.UserId == memberId) ??
+                        (this.Message.Chat?.OtherUser.Id == memberId ? this.Message.Chat?.OtherUser : null) ??
+                        ((this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI()).Id == memberId ? (this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI()) : null);
+
+                    yield return new AvatarControlViewModel(member, this.Message.ImageDownloader);
                 }
             }
         }

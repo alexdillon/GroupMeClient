@@ -5,11 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
+             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              mc:Ignorable="d" 
+             FontFamily="Segoe UI"
              d:DesignHeight="100" d:DesignWidth="400">
 
-    <Grid 
+    <UserControl.Resources>
+        <extensions:IsZeroConverter x:Key="isZeroConverter"/>
+    </UserControl.Resources>
+
+    <Grid
         Background="{Binding MessageColor}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="55" />
@@ -17,36 +23,92 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10"/> <!--Padding-->
+            <RowDefinition Height="10"/>
+            <!--Padding-->
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <controls:AvatarControl 
-                Grid.Column="0" Grid.Row="01" Grid.RowSpan="4"
+                Grid.Column="0" Grid.Row="1" Grid.RowSpan="4"
                 Width="40" Height="40" VerticalAlignment="Top"
                 DataContext="{Binding Avatar}"/>
-        
-        <Label Content="{Binding Sender}" Grid.Column="1" Grid.Row="1" FontSize="12" FontFamily="Segoe UI" Foreground="#637182" Padding="0, 0, 0, 0" />
+
+        <Label Content="{Binding Sender}" Grid.Column="1" Grid.Row="1" FontSize="12" Foreground="#637182" Padding="0, 0, 0, 0" />
 
         <StackPanel Grid.Column="1" Grid.Row="2">
             <Image MaxWidth="500" HorizontalAlignment="Left"
                    gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}"/>
 
-            <Label  FontSize="15"  FontFamily="Segoe UI" Padding="0, 0, 0, 0">
+            <Label  FontSize="15" Padding="0, 0, 0, 0">
                 <TextBlock FontSize="15" TextWrapping="Wrap" Text="{Binding Text}" />
             </Label>
         </StackPanel>
 
-        <iconPacks:PackIconFontAwesome Grid.Column="2" Grid.Row="2" Width="17" Height="17"
-                                    Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}" VerticalAlignment="Top" HorizontalAlignment="Center"
-                                    Margin="0,0,10,0"/>
+        <Grid 
+            Grid.Column="2" Grid.Row="2"
+            Width="35" Height="Auto"
+            Background="Transparent"
+            x:Name="likeButtonArea">
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="23" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="23"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <iconPacks:PackIconFontAwesome Width="17" Height="17"
+                                       Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+            
+            <Label Grid.Row="1" Grid.Column="0"
+                   Margin="0,-10,0,0"
+                   VerticalAlignment="Top" HorizontalAlignment="Center" 
+                   Foreground="#637182" FontSize="10" FontWeight="Thin"
+                   Content="{Binding LikeCount}" />
+        </Grid>
 
-        <Label Grid.Column="2" Grid.Row="2"
-               Padding="0,17,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" 
-               Margin="0,0,10,0"
-               Foreground="#637182" FontSize="10" FontWeight="Thin"
-               Content="{Binding LikeCount}" />
+        <Canvas x:Name="likesCanvas"
+                Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,-55,12,0">
+            <Canvas.Style>
+                <Style TargetType="{x:Type Canvas}">
+                    <Setter Property="Visibility" Value="Hidden" />
+                    <Style.Triggers>
+
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsMouseOver, ElementName=likeButtonArea}" Value="True" />
+                                <Condition Binding="{Binding Path=LikeCount, Converter={StaticResource isZeroConverter}}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+
+                            <Setter Property="Visibility" Value="Visible" />
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Canvas.Style>
+
+            <Grid Width="{Binding ActualWidth, ElementName=likesCanvas}">
+                          <Border BorderThickness="1" CornerRadius="5" 
+                        BorderBrush="#637182" Background="#F7F7F7"
+                        Width="Auto" Height="65" HorizontalAlignment="Right">
+
+                    <ItemsControl ItemsSource="{Binding Path=LikedByAvatars}" Margin="7">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="5" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <controls:AvatarControl Content="{Binding Path=.}" Width="35" Height="35" Margin="3,0,3,0"  />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+            </Grid>
+        </Canvas>
     </Grid>
 </UserControl>
