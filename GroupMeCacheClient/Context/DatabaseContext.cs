@@ -66,14 +66,14 @@
             .Property(x => x.Roles)
             .HasConversion(
                 v => string.Join(",", v),
-                v => v.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                v => new List<string>(v.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)));
 
             // Provide mapping for the Message.ICollection<FavoritedBy>
             modelBuilder.Entity<Message>()
             .Property(x => x.FavoritedBy)
             .HasConversion(
                 v => string.Join(",", v),
-                v => v.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                v => new List<string>(v.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)));
 
             // Provide JSON serialization for Attachment list
             modelBuilder.Entity<Message>()

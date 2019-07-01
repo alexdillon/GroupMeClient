@@ -7,6 +7,8 @@ using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
+using System.Windows.Input;
+using GalaSoft.MvvmLight.Command;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -16,6 +18,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             this.Message = message;
             this.Avatar = new AvatarControlViewModel(this.Message);
+            this.LikeAction = new RelayCommand(async ()=> { await LikeMessageActionAsync(); }, () => { return true; }, true);
             _ = LoadImageAttachment();
         }
 
@@ -39,6 +42,8 @@ namespace GroupMeClient.ViewModels.Controls
         public string Text => this.Message.Text;
 
         public string Sender => this.Message.Name;
+
+        public ICommand LikeAction { get; }
 
         public Brush GroupMeRedBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 112, 112));
         public Brush GroupMeLightBlueBrush { get; } = new SolidColorBrush(Color.FromRgb(219, 244, 253));
@@ -68,7 +73,6 @@ namespace GroupMeClient.ViewModels.Controls
         public System.IO.Stream ImageAttachmentStream
         {
             get { return imageAttachmentStream; }
-
             set { Set(() => this.ImageAttachmentStream, ref imageAttachmentStream, value); }
         }
 
@@ -79,12 +83,10 @@ namespace GroupMeClient.ViewModels.Controls
                 if (this.Message.FavoritedBy.Count > 0)
                 {
                     return MahApps.Metro.IconPacks.PackIconFontAwesomeKind.HeartSolid;
-                    //return MahApps.Metro.IconPacks.PackIconMaterialKind.Heart;
                 }
                 else
                 {
                     return MahApps.Metro.IconPacks.PackIconFontAwesomeKind.HeartRegular;
-                    //return MahApps.Metro.IconPacks.PackIconMaterialKind.HeartOutline;
                 }
             }
         }
@@ -157,6 +159,34 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             this.ImageAttachmentStream = new System.IO.MemoryStream(image);
+        }
+
+        private async Task LikeMessageActionAsync()
+        {
+            var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
+            var alreadyLiked = this.Message.FavoritedBy.Contains(me.Id);
+
+            if (alreadyLiked)
+            {
+                var success = await this.Message.UnlikeMessage();
+                if (success)
+                {
+                    this.Message.FavoritedBy.Remove(me.Id);
+                }
+            }
+            else
+            {
+                var success = await this.Message.LikeMessage();
+                if (success)
+                {
+                    this.Message.FavoritedBy.Add(me.Id);
+                }
+            }
+
+            RaisePropertyChanged("LikedByAvatars");
+            RaisePropertyChanged("LikeCount");
+            RaisePropertyChanged("LikeColor");
+            RaisePropertyChanged("LikeStatus");
         }
     }
 }

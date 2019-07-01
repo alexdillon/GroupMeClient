@@ -7,6 +7,7 @@
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
              d:DesignHeight="100" d:DesignWidth="400">
@@ -61,15 +62,29 @@
                 <RowDefinition Height="23"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            
+
             <iconPacks:PackIconFontAwesome Width="17" Height="17"
-                                       Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}" VerticalAlignment="Top" HorizontalAlignment="Center"/>
-            
+                                           VerticalAlignment="Top" HorizontalAlignment="Center"
+                                           Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}"
+                                           Background="Transparent">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDown" >
+                        <i:InvokeCommandAction Command="{Binding LikeAction}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </iconPacks:PackIconFontAwesome>
+
             <Label Grid.Row="1" Grid.Column="0"
                    Margin="0,-10,0,0"
                    VerticalAlignment="Top" HorizontalAlignment="Center" 
                    Foreground="#637182" FontSize="10" FontWeight="Thin"
-                   Content="{Binding LikeCount}" />
+                   Content="{Binding LikeCount}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDown" >
+                        <i:InvokeCommandAction Command="{Binding LikeAction}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Label>
         </Grid>
 
         <Canvas x:Name="likesCanvas"
@@ -78,13 +93,11 @@
                 <Style TargetType="{x:Type Canvas}">
                     <Setter Property="Visibility" Value="Hidden" />
                     <Style.Triggers>
-
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsMouseOver, ElementName=likeButtonArea}" Value="True" />
                                 <Condition Binding="{Binding Path=LikeCount, Converter={StaticResource isZeroConverter}}" Value="False" />
                             </MultiDataTrigger.Conditions>
-
                             <Setter Property="Visibility" Value="Visible" />
                         </MultiDataTrigger>
                     </Style.Triggers>
