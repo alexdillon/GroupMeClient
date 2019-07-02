@@ -56,6 +56,9 @@
             <DataTemplate DataType="{x:Type ctrlvm:MessageControlViewModel}">
                 <ctrlviews:MessageControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:TwitterAttachmentControlViewModel}">
+                <ctrlviews:TwitterAttachmentControl />
+            </DataTemplate>
 
             <!-- Adapted from https://stackoverflow.com/questions/10969292/apple-style-scrollbar-wpf-->
             <!--Scrollbar Thumbs-->

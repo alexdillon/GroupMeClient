@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Linq;
-using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
+using System.Collections.ObjectModel;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -18,8 +18,10 @@ namespace GroupMeClient.ViewModels.Controls
         {
             this.Message = message;
             this.Avatar = new AvatarControlViewModel(this.Message);
-            this.LikeAction = new RelayCommand(async ()=> { await LikeMessageActionAsync(); }, () => { return true; }, true);
+            this.LikeAction = new RelayCommand(async () => { await LikeMessageActionAsync(); }, () => { return true; }, true);
+
             _ = LoadImageAttachment();
+            //LoadTweetAttachment();
         }
 
         private Message message;
@@ -75,6 +77,11 @@ namespace GroupMeClient.ViewModels.Controls
             get { return imageAttachmentStream; }
             set { Set(() => this.ImageAttachmentStream, ref imageAttachmentStream, value); }
         }
+
+        /// <summary>
+        /// Gets the attached tweets, if present
+        /// </summary>
+        public ObservableCollection<TwitterAttachmentControlViewModel> AttachedTweets { get; set; } = new ObservableCollection<TwitterAttachmentControlViewModel>();
 
         public MahApps.Metro.IconPacks.PackIconFontAwesomeKind LikeStatus
         {
@@ -159,6 +166,19 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             this.ImageAttachmentStream = new System.IO.MemoryStream(image);
+        }
+
+        public void LoadTweetAttachment()
+        {
+            var text = this.Message.Text ?? String.Empty;
+
+            const string TwitterPrefixHttps = "https://twitter.com/";
+            const string TwitterPrefixHttp = "http://twitter.com/";
+
+            if (text.StartsWith(TwitterPrefixHttps) || text.StartsWith(TwitterPrefixHttp))
+            {
+                this.AttachedTweets.Add(new TwitterAttachmentControlViewModel(text));
+            }
         }
 
         private async Task LikeMessageActionAsync()

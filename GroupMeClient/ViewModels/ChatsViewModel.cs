@@ -14,6 +14,7 @@ namespace GroupMeClient.ViewModels
             this.AllGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
 
+       
             _ = Loaded();
         }
 
