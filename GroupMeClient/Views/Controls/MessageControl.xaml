@@ -40,7 +40,8 @@
 
         <StackPanel Grid.Column="1" Grid.Row="2">
             <Image MaxWidth="500" 
-                   Stretch="None"
+                   Stretch="Uniform"
+                   StretchDirection="DownOnly"
                    HorizontalAlignment="Left"
                    gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}"/>
 
@@ -55,7 +56,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            
+
             <Label  FontSize="15" Padding="0, 0, 0, 0">
                 <TextBlock FontSize="15" TextWrapping="Wrap" Text="{Binding Text}" />
             </Label>
@@ -66,7 +67,7 @@
             Width="35" Height="Auto"
             Background="Transparent"
             x:Name="likeButtonArea">
-            
+
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="23" />
             </Grid.ColumnDefinitions>
@@ -117,22 +118,29 @@
             </Canvas.Style>
 
             <Grid Width="{Binding ActualWidth, ElementName=likesCanvas}">
-                          <Border BorderThickness="1" CornerRadius="5" 
-                        BorderBrush="#637182" Background="#F7F7F7"
-                        Width="Auto" Height="65" HorizontalAlignment="Right">
+                <Border BorderThickness="1" CornerRadius="5" 
+                            BorderBrush="#637182" Background="#F7F7F7"
+                            Width="Auto" Height="65" HorizontalAlignment="Right">
 
-                    <ItemsControl ItemsSource="{Binding Path=LikedByAvatars}" Margin="7">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" Margin="5" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-
+                    <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                                  Margin="7"
+                                  VirtualizingStackPanel.IsVirtualizing="True"
+                                  VirtualizingStackPanel.ScrollUnit="Pixel"
+                                  ScrollViewer.CanContentScroll="True"
+                                  ItemsSource="{Binding Path=LikedByAvatars}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <controls:AvatarControl Content="{Binding Path=.}" Width="35" Height="35" Margin="3,0,3,0"  />
+                                <controls:AvatarControl Content="{Binding Path=.}" Width="35" Height="35" Margin="3,0,3,0" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
+                        
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel 
+                                    Orientation="Horizontal"
+                                    VirtualizationMode="Recycling" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
                     </ItemsControl>
                 </Border>
             </Grid>

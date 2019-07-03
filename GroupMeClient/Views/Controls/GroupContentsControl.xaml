@@ -7,24 +7,42 @@
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              Background="#F7F7F7"
              d:DesignHeight="700" d:DesignWidth="500">
+    <UserControl.Resources>
+        <Style TargetType="extensions:MultiLineSendBox" BasedOn="{StaticResource MetroTextBox}">
+            <!--Force the watermark to apply to the custom type-->
+        </Style>
+
+        <CollectionViewSource Source="{Binding Path=Messages}" x:Key="MessagesViewSource">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Id" Direction="Ascending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="7"/> <!--Padding-->
+            <RowDefinition Height="7"/>
+            <!--Padding-->
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Column="0" Grid.Row="0" Background="White">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20" /> <!--Padding-->
+                <ColumnDefinition Width="20" />
+                <!--Padding-->
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="10" /> <!--Padding-->
+                <ColumnDefinition Width="10" />
+                <!--Padding-->
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
@@ -47,8 +65,7 @@
                     BorderThickness="0"
                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                     Command="{Binding Path=CloseGroup}"
-                    CommandParameter="{Binding Path=.}"
-                    >
+                    CommandParameter="{Binding Path=.}">
                 <Button.ContentTemplate>
                     <DataTemplate>
                         <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
@@ -58,26 +75,35 @@
 
             <Border Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1"/>
         </Grid>
-      
-        <ScrollViewer Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-            VerticalScrollBarVisibility="Visible" CanContentScroll="True" PanningMode="VerticalOnly" VerticalAlignment="Stretch"
-            extensions:ScrollViewerEx.AutoScrollToEnd="True">
-            <ScrollViewer.Resources>
-                <CollectionViewSource Source="{Binding Path=Messages}" x:Key="MessagesViewSource">
-                    <CollectionViewSource.SortDescriptions>
-                        <scm:SortDescription PropertyName="Id" Direction="Ascending"/>
-                    </CollectionViewSource.SortDescriptions>
-                </CollectionViewSource>
-            </ScrollViewer.Resources>
 
-            <ItemsControl ItemsSource="{Binding Source={StaticResource MessagesViewSource}}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <controls:MessageControl Content="{Binding Path=.}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        <ItemsControl
+             Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+             VirtualizingStackPanel.IsVirtualizing="True"
+             VirtualizingStackPanel.ScrollUnit="Pixel"
+             ScrollViewer.CanContentScroll="True"
+             ItemsSource="{Binding Source={StaticResource MessagesViewSource}}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <controls:MessageControl Content="{Binding Path=.}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.Template>
+                <ControlTemplate>
+                    <ScrollViewer
+                            VerticalScrollBarVisibility="Visible" CanContentScroll="True" PanningMode="VerticalOnly" VerticalAlignment="Stretch"
+                            extensions:ScrollViewerEx.AutoScrollToEnd="True"
+                            Padding="{TemplateBinding Control.Padding}"
+                            Focusable="False">
+                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+        </ItemsControl>
     </Grid>
 
     
