@@ -30,8 +30,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="7"/>
-            <!--Padding-->
+            <RowDefinition Height="7"/> <!--Padding-->
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -121,7 +120,7 @@
             </ItemsControl.Template>
         </ItemsControl>
 
-        <Grid Grid.Column="0" Grid.Row="4"
+        <Grid Grid.Column="0" Grid.Row="3"
               Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
@@ -130,26 +129,27 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="2"/>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" MinHeight="50"/>
             </Grid.RowDefinitions>
 
             <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"
                     BorderBrush="#637182" BorderThickness="0,0,0,1"
-                    Margin="0,0,0,-2"/>
-            
-            <!--<Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"
-                    BorderBrush="#F7F7F7"
-                    BorderThickness="5"/>-->
+                    Height="4"
+                    Margin="0,0,0,0"
+                    VerticalAlignment="Bottom"/>
 
             <extensions:MultiLineSendBox
                 Grid.Row="1" Grid.Column="1"
                 BorderBrush="Transparent"
                 BorderThickness="0"
                 FontSize="15"
+                MinHeight="49"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
+                VerticalContentAlignment="Center"
                 AcceptsReturn="True"
+                TextWrapping="Wrap"
                 Controls:TextBoxHelper.Watermark="Send a Message..."
                 Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 
