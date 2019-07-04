@@ -69,6 +69,7 @@
             }
             finally
             {
+                await this.Database.SaveChangesAsync();
                 this.DatabaseSem.Release();
             }
         }
@@ -76,6 +77,8 @@
         /// <inheritdoc/>
         public override async Task<byte[]> DownloadPostImage(string url)
         {
+            return await base.DownloadPostImage(url);
+
             await this.DatabaseSem.WaitAsync();
             try
             {
