@@ -119,6 +119,11 @@
         /// </summary>
         public virtual Group Group { get; internal set; }
 
+        ///// <summary>
+        ///// Gets or sets a value indicating whether this message has been updated recently.
+        ///// </summary>
+        //public bool IsUpdated { get; set; }
+
         /// <summary>
         /// Gets the <see cref="ImageDownloader" /> that can be used
         /// to download attachments.
