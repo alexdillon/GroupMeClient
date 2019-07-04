@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GroupMeClient.Extensions
 {
@@ -10,6 +11,7 @@ namespace GroupMeClient.Extensions
     /// </summary>
     /// <remarks>
     /// Adapted from https://stackoverflow.com/a/23561679
+    /// Adapted from https://stackoverflow.com/a/29500540
     /// </remarks>
     public static class ScrollViewerEx
     {
@@ -46,6 +48,72 @@ namespace GroupMeClient.Extensions
             instance.SetValue(AutoScrollProperty, value);
             if (value)
                 instance.SetValue(AutoScrollHandlerProperty, new ScrollViewerAutoScrollToEndHandler(instance));
+        }
+
+        public static readonly DependencyProperty ScrollToTopProperty =
+            DependencyProperty.RegisterAttached("ScrollToTop", 
+                typeof(ICommand), 
+                typeof(ScrollViewerEx), 
+                new FrameworkPropertyMetadata(null, OnScrollToTopPropertyChanged));
+
+        public static ICommand GetScrollToTop(DependencyObject ob)
+        {
+            return (ICommand)ob.GetValue(ScrollToTopProperty);
+        }
+
+        public static void SetScrollToTop(DependencyObject ob, ICommand value)
+        {
+            ob.SetValue(ScrollToTopProperty, value);
+        }
+
+        private static void OnScrollToTopPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        {
+            var scrollViewer = obj as ScrollViewer;
+
+            scrollViewer.Loaded += OnScrollViewerLoaded;
+
+        }
+
+        private static void OnScrollViewerLoaded(object sender, RoutedEventArgs e)
+        {
+            (sender as ScrollViewer).Loaded -= OnScrollViewerLoaded;
+
+            (sender as ScrollViewer).Unloaded += OnScrollViewerUnloaded;
+            (sender as ScrollViewer).ScrollChanged += OnScrollViewerScrollChanged;
+        }
+
+        private static void OnScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            var scrollViewer = (ScrollViewer)sender;
+
+            // Check to see if scrolled to top
+            if (scrollViewer.VerticalOffset == 0)
+            {
+                var command = GetScrollToTop(sender as ScrollViewer);
+                if (command == null || !command.CanExecute(null))
+                    return;
+
+                command.Execute(sender);
+            }
+        }
+
+        private static void OnScrollViewerUnloaded(object sender, RoutedEventArgs e)
+        {
+            (sender as ScrollViewer).Unloaded -= OnScrollViewerUnloaded;
+            (sender as ScrollViewer).ScrollChanged -= OnScrollViewerScrollChanged;
+        }
+
+        public static readonly DependencyProperty IsInViewportProperty =
+            DependencyProperty.RegisterAttached("IsInViewport", typeof(bool), typeof(ScrollViewerEx));
+
+        public static bool GetIsInViewport(UIElement element)
+        {
+            return (bool)element.GetValue(IsInViewportProperty);
+        }
+
+        public static void SetIsInViewport(UIElement element, bool value)
+        {
+            element.SetValue(IsInViewportProperty, value);
         }
     }
 
