@@ -81,13 +81,6 @@ namespace GroupMeClientCached.Context
                 v => JsonConvert.SerializeObject(v),
                 v => JsonConvert.DeserializeObject<List<Attachment>>(v));
 
-            //// Always say that cached messages are not updated
-            //modelBuilder.Entity<Message>()
-            //.Property(x => x.IsUpdated)
-            //.HasConversion(
-            //    v => false,
-            //    v => false);
-
             // Primary key for Attachment is never used
             modelBuilder.Entity<Attachment>()
                 .HasKey(x => x.FakeId);
