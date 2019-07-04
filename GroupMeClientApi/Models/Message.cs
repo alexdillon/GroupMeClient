@@ -166,6 +166,7 @@
                 SourceGuid = Guid.NewGuid().ToString(),
                 Text = body,
                 Attachments = new List<Attachments.Attachment>(attachments),
+                FavoritedBy = new List<string>(),
             };
 
             return msg;

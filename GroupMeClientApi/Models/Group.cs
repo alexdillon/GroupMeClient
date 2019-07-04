@@ -165,9 +165,14 @@
                     // ensure every Message has a reference to the parent Group (this)
                     message.Group = this;
 
-                    if (!this.Messages.Any(m => m.Id == message.Id))
+                    var oldMessage = this.Messages.Find(m => m.Id == message.Id);
+                    if (oldMessage == null)
                     {
                         this.Messages.Add(message);
+                    }
+                    else
+                    {
+                        DataMerger.MergeMessage(oldMessage, message);
                     }
                 }
 

@@ -1,8 +1,9 @@
-﻿namespace GroupMeClientCached
+﻿namespace GroupMeClientApi
 {
     using System.Collections.Generic;
     using System.Linq;
     using GroupMeClientApi.Models;
+    using GroupMeClientApi.Models.Attachments;
 
     /// <summary>
     /// Provides methods to merge a new GroupMe object with an existing
@@ -101,6 +102,34 @@
                     dest.Roles.Add(role);
                 }
             }
+        }
+
+        /// <summary>
+        /// Merges a cached Member from the database with updated information
+        /// from GroupMe.
+        /// </summary>
+        /// <param name="dest">The Message to copy from.</param>
+        /// <param name="source">The Message to into.</param>
+        internal static void MergeMessage(Message dest, Message source)
+        {
+            dest.AvatarUrl = source.AvatarUrl;
+            dest.ConversationId = source.ConversationId;
+            dest.CreatedAtUnixTime = source.CreatedAtUnixTime;
+            dest.GroupId = source.GroupId;
+            dest.Id = source.Id;
+            dest.Name = source.Name;
+            dest.Platform = source.Platform;
+            dest.RecipientId = source.RecipientId;
+            dest.SenderType = source.SenderType;
+            dest.SourceGuid = source.SourceGuid;
+            dest.Text = source.Text;
+            dest.UserId = source.UserId;
+
+            dest.Attachments = new List<Attachment>();
+            (dest.Attachments as List<Attachment>).AddRange(source.Attachments);
+
+            dest.FavoritedBy = new List<string>();
+            (dest.FavoritedBy as List<string>).AddRange(source.FavoritedBy);
         }
     }
 }
