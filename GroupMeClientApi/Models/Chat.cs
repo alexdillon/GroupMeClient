@@ -97,13 +97,16 @@
             request.AddParameter("other_user_id", this.OtherUser.Id);
             switch (mode)
             {
-                case MessageRetreiveMode.AfterId:
-                    request.AddParameter("after_id", messageId);
+                case MessageRetreiveMode.BeforeId:
+                    request.AddParameter("before_id", messageId);
                     break;
 
                 case MessageRetreiveMode.SinceId:
                     request.AddParameter("since_id", messageId);
                     break;
+
+                case MessageRetreiveMode.AfterId:
+                    throw new NotSupportedException("GroupMe doesn't support AfterId for Direct Messages");
             }
 
             var cancellationTokenSource = new CancellationTokenSource();
