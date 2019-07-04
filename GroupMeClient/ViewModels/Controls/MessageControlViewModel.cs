@@ -29,8 +29,20 @@ namespace GroupMeClient.ViewModels.Controls
 
         public Message Message
         {
-            get { return this.message; }
-            set { Set(() => this.Message, ref message, value); }
+            get
+            {
+                return this.message;
+            }
+            set
+            {
+                if (this.message == value)
+                {
+                    return;
+                }
+
+                this.message = value;
+                RaisePropertyChanged(); // no property name to force every single property to be updated
+            }
         }
 
         public AvatarControlViewModel Avatar

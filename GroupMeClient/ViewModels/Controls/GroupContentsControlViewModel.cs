@@ -5,8 +5,8 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using System.Collections.Generic;
+using System.Windows.Controls;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -14,7 +14,9 @@ namespace GroupMeClient.ViewModels.Controls
     {
         public GroupContentsControlViewModel()
         {
-            Messages = new ObservableCollection<MessageControlViewModel>();
+            this.Messages = new ObservableCollection<MessageControlViewModel>();
+            this.SendMessage = new RelayCommand(async () => await SendMessageAsync(), true);
+            this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await LoadMoreAsync(s), true);
         }
 
         public GroupContentsControlViewModel(Group group) : this()
@@ -36,8 +38,11 @@ namespace GroupMeClient.ViewModels.Controls
         private Group group;
         private Chat chat;
         private AvatarControlViewModel topBarAvatar;
+        private string typedMessageContents;
 
         public ICommand CloseGroup { get; set; }
+        public ICommand SendMessage { get; set; }
+        public ICommand ReloadView { get; set; }
 
         public ObservableCollection<MessageControlViewModel> Messages { get; }
 
@@ -53,55 +58,141 @@ namespace GroupMeClient.ViewModels.Controls
             set { Set(() => this.Chat, ref chat, value); }
         }
 
+        public string Title => this.Group?.Name ?? this.Chat?.OtherUser.Name;
+
+        public string Id => this.Group?.Id ?? this.Chat?.Id;
+
         public AvatarControlViewModel TopBarAvatar
         {
             get { return this.topBarAvatar; }
             set { Set(() => this.TopBarAvatar, ref topBarAvatar, value); }
         }
 
-        public string Title
+        public string TypedMessageContents
         {
-            get
-            {
-                var title = this.Group?.Name ?? this.Chat?.OtherUser.Name;
-                return title;
-            }
+            get { return this.typedMessageContents; }
+            set { Set(() => this.TypedMessageContents, ref typedMessageContents, value); }
         }
+
+        private Message FirstDisplayedMessage { get; set; } = null;
 
         private async Task Loaded()
         {
-            // for the initial load, call ignore the return from the GetMessage call
-            // and bind everything from the Messages list instead. New ones will be automatically added
+            await LoadMoreAsync();
+        }
+
+        private async Task LoadMoreAsync(ScrollViewer scrollViewer = null, bool updateNewest = false)
+        {
+            if (this.Group != null)
+            {
+                await LoadMoreGroupMessagesAsync(scrollViewer, updateNewest);
+            }
+            else if (this.Chat != null)
+            {
+                await LoadMoreChatMessagesAsync(scrollViewer, updateNewest);
+            }
+        }
+
+        private async Task LoadMoreGroupMessagesAsync(ScrollViewer scrollViewer = null, bool updateNewest = false)
+        {
+            ICollection<Message> results;
+
+            if (this.FirstDisplayedMessage == null || updateNewest)
+            {
+                // load the most recent messages
+                results = await group.GetMessagesAsync();
+            }
+            else
+            {
+                // load the 20 messages preceeding the oldest (first) one displayed
+                results = await group.GetMessagesAsync(20, GroupMeClientApi.MessageRetreiveMode.BeforeId, this.FirstDisplayedMessage.Id);
+            }
+
+            UpdateDisplay(scrollViewer, results);
+        }
+
+        private async Task LoadMoreChatMessagesAsync(ScrollViewer scrollViewer = null, bool updateNewest = false)
+        {
+            ICollection<Message> results;
+
+            if (this.FirstDisplayedMessage == null || updateNewest)
+            {
+                // load the most recent messages
+                results = await this.Chat.GetMessagesAsync();
+            }
+            else
+            {
+                // load the 20 messages preceeding the oldest (first) one displayed
+                results = await this.Chat.GetMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, this.FirstDisplayedMessage.Id);
+            }
+
+            UpdateDisplay(scrollViewer, results);
+        }
+
+        private void UpdateDisplay(ScrollViewer scrollViewer, ICollection<Message> messages)
+        {
+            double originalHeight = scrollViewer?.ExtentHeight ?? 0.0;
+            if (originalHeight != 0)
+            {
+                // prevent the At Top event from firing while we are adding new messages
+                scrollViewer.ScrollToVerticalOffset(1);
+            }
+
+            foreach (var msg in messages)
+            {
+                var oldMsg = this.Messages.FirstOrDefault(m => m.Id == msg.Id);
+
+                if (oldMsg == null)
+                {
+                    // add new message
+                    this.Messages.Add(new MessageControlViewModel(msg));
+                }
+                else
+                {
+                    // update and existing one if needed
+                    oldMsg.Message = msg;
+                }
+            }
+
+            if (originalHeight != 0)
+            {
+                // Calculate the offset where the last message the user was looking at is
+                // Scroll back to there so new messages appear on top, above screen
+                scrollViewer.UpdateLayout();
+                double newHeight = scrollViewer?.ExtentHeight ?? 0.0;
+                double difference = newHeight - originalHeight;
+
+                scrollViewer.ScrollToVerticalOffset(difference);
+            }
+
+            this.FirstDisplayedMessage = messages.Last();
+        }
+
+        private async Task SendMessageAsync()
+        {
+            var newMessage = Message.CreateMessage(this.TypedMessageContents);
+
+            this.TypedMessageContents = string.Empty;
+
+            bool success;
 
             if (this.Group != null)
             {
-                await group.GetMessagesAsync();
-                foreach (var msg in group.Messages)
+                success = await this.Group.SendMessage(newMessage);
+                if (success)
                 {
-                    if (!this.Messages.Any(m => m.Id == msg.Id))
-                    {
-                        this.Messages.Add(new MessageControlViewModel(msg));
-                    }
+                    this.Group.Messages.Add(newMessage);
+                    await this.LoadMoreAsync(null, true);
                 }
             }
             else if (this.Chat != null)
             {
-                await chat.GetMessagesAsync();
-                foreach (var msg in chat.Messages)
+                success = await this.Chat.SendMessage(newMessage);
+                if (success)
                 {
-                    if (!this.Messages.Any(m => m.Id == msg.Id))
-                    {
-                        this.Messages.Add(new MessageControlViewModel(msg));
-                    }
+                    this.Chat.Messages.Add(newMessage);
+                    await this.LoadMoreAsync(null, true);
                 }
-            }
-        }
-
-        public string Id
-        {
-            get
-            {
-                return this.Group?.Id ?? this.Chat?.Id;
             }
         }
     }

@@ -76,6 +76,22 @@
             <Border Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1"/>
         </Grid>
 
+        <!--<ListBox ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
+                 Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                 BorderThickness="0"
+                 ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 VirtualizingStackPanel.IsVirtualizing="True"
+                 VirtualizingStackPanel.VirtualizationMode="Standard"
+                 VirtualizingStackPanel.ScrollUnit="Pixel"
+                 extensions:ListBoxEx.AutoScrollToEnd="True"
+                 extensions:ListBoxEx.ScrollToTop="{Binding ReloadView}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <controls:MessageControl Content="{Binding Path=.}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>-->
+        
         <ItemsControl
              Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
              VirtualizingStackPanel.IsVirtualizing="True"
@@ -95,16 +111,82 @@
             <ItemsControl.Template>
                 <ControlTemplate>
                     <ScrollViewer
-                            VerticalScrollBarVisibility="Visible" CanContentScroll="True" PanningMode="VerticalOnly" VerticalAlignment="Stretch"
-                            extensions:ScrollViewerEx.AutoScrollToEnd="True"
-                            Padding="{TemplateBinding Control.Padding}"
-                            Focusable="False">
+                        VerticalScrollBarVisibility="Visible" CanContentScroll="True" PanningMode="VerticalOnly" VerticalAlignment="Stretch"
+                        extensions:ScrollViewerEx.AutoScrollToEnd="True"
+                        extensions:ScrollViewerEx.ScrollToTop="{Binding ReloadView}"
+                        Padding="{TemplateBinding Control.Padding}">
                         <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                     </ScrollViewer>
                 </ControlTemplate>
             </ItemsControl.Template>
         </ItemsControl>
+
+        <Grid Grid.Column="0" Grid.Row="4"
+              Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"
+                    BorderBrush="#637182" BorderThickness="0,0,0,1"
+                    Margin="0,0,0,-2"/>
+            
+            <!--<Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"
+                    BorderBrush="#F7F7F7"
+                    BorderThickness="5"/>-->
+
+            <extensions:MultiLineSendBox
+                Grid.Row="1" Grid.Column="1"
+                BorderBrush="Transparent"
+                BorderThickness="0"
+                FontSize="15"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                AcceptsReturn="True"
+                Controls:TextBoxHelper.Watermark="Send a Message..."
+                Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Send">
+                        <i:InvokeCommandAction Command="{Binding Path=SendMessage}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+            </extensions:MultiLineSendBox>
+
+            <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="2"
+                                        VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"
+                                        Width="15" Height="15" Foreground="#637182" 
+                                        Kind="Plus"
+                                        Margin="0,0,20,0">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDown" >
+                        <i:InvokeCommandAction Command="{Binding SendMessage}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </iconPacks:PackIconMaterial>
+
+            <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="3"
+                                        VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"
+                                        Width="15" Height="15" Foreground="#637182" 
+                                        Kind="Send"
+                                        Margin="0,0,30,0">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDown" >
+                        <i:InvokeCommandAction Command="{Binding SendMessage}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </iconPacks:PackIconMaterial>
+        </Grid>
     </Grid>
 
-    
 </UserControl>
