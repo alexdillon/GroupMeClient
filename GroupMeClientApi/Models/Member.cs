@@ -1,8 +1,8 @@
-﻿namespace GroupMeClientApi.Models
-{
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
+namespace GroupMeClientApi.Models
+{
     /// <summary>
     /// Represents a GroupMe User.
     /// </summary>

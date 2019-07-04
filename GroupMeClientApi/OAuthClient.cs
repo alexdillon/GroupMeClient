@@ -1,12 +1,10 @@
-﻿namespace GroupMeClientApi
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace GroupMeClientApi
+{
     /// <summary>
     /// <see cref="OAuthClient"/> provides methods to authenticate a user and retreive an auth token.
     /// </summary>

@@ -1,11 +1,10 @@
-﻿namespace GroupMeClientCached.Images
-{
-    using System.Drawing;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using GroupMeClientApi;
-    using GroupMeClientCached.Context;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using GroupMeClientApi;
+using GroupMeClientCached.Context;
 
+namespace GroupMeClientCached.Images
+{
     /// <summary>
     /// Allows for downloading images from GroupMe using a cache database.
     /// </summary>

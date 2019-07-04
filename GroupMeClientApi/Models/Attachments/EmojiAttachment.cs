@@ -1,9 +1,8 @@
-﻿namespace GroupMeClientApi.Models.Attachments
-{
-    using System;
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
+namespace GroupMeClientApi.Models.Attachments
+{
     /// <summary>
     /// Represents an attachment to a GroupMe <see cref="Message"/> containing an Emoji.
     /// </summary>

@@ -1,8 +1,8 @@
-﻿namespace GroupMeClientApi.Models.Attachments
-{
-    using JsonSubTypes;
-    using Newtonsoft.Json;
+﻿using JsonSubTypes;
+using Newtonsoft.Json;
 
+namespace GroupMeClientApi.Models.Attachments
+{
     /// <summary>
     /// Generic type to represent an attachment to a GroupMe <see cref="Message"/>.
     /// </summary>

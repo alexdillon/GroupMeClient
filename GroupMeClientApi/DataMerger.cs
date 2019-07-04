@@ -1,10 +1,10 @@
-﻿namespace GroupMeClientApi
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using GroupMeClientApi.Models;
-    using GroupMeClientApi.Models.Attachments;
+﻿using System.Collections.Generic;
+using System.Linq;
+using GroupMeClientApi.Models;
+using GroupMeClientApi.Models.Attachments;
 
+namespace GroupMeClientApi
+{
     /// <summary>
     /// Provides methods to merge a new GroupMe object with an existing
     /// cached database entry.

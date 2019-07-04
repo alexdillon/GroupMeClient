@@ -1,10 +1,10 @@
-﻿namespace GroupMeClientCached
-{
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using GroupMeClientApi;
-    using GroupMeClientApi.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using GroupMeClientApi;
+using GroupMeClientApi.Models;
 
+namespace GroupMeClientCached
+{
     /// <summary>
     /// <see cref="GroupMeCachedClient"/> provides access to the GroupMe API backed with a local cache database.
     /// </summary>

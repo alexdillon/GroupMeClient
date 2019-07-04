@@ -1,8 +1,8 @@
-﻿namespace GroupMeClientApi.Models
-{
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
+namespace GroupMeClientApi.Models
+{
     /// <summary>
     /// <see cref="ChatsList"/> provides a list of Chats, along with additional status information.
     /// </summary>

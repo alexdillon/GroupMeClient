@@ -1,7 +1,7 @@
-﻿namespace GroupMeClientApi.Models.Attachments
-{
-    using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
+namespace GroupMeClientApi.Models.Attachments
+{
     /// <summary>
     /// Represents an attachment to a GroupMe <see cref="Message"/> containing a bill-split.
     /// </summary>

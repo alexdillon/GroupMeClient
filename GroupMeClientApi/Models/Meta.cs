@@ -1,7 +1,7 @@
-﻿namespace GroupMeClientApi.Models
-{
-    using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
+namespace GroupMeClientApi.Models
+{
     /// <summary>
     /// <see cref="Meta"/> represents additional status information provided by the GroupMe API.
     /// </summary>

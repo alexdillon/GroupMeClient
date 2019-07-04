@@ -1,15 +1,14 @@
-﻿namespace GroupMeClientApi.Models
-{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Newtonsoft.Json;
-    using RestSharp;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using RestSharp;
 
+namespace GroupMeClientApi.Models
+{
     /// <summary>
     /// <see cref="Chat"/> represents a GroupMe Direct Message (or Chat) with another user.
     /// </summary>

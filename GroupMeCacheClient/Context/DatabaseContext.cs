@@ -1,13 +1,12 @@
-﻿namespace GroupMeClientCached.Context
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using GroupMeClientApi.Models;
-    using GroupMeClientApi.Models.Attachments;
-    using Microsoft.EntityFrameworkCore;
-    using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
+using GroupMeClientApi.Models;
+using GroupMeClientApi.Models.Attachments;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
+namespace GroupMeClientCached.Context
+{
     /// <summary>
     /// <see cref="DatabaseContext"/> provides an interface to the SQLite Database.
     /// </summary>

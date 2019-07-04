@@ -1,8 +1,7 @@
-﻿namespace GroupMeClientApi
-{
-    using System.Drawing;
-    using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
+namespace GroupMeClientApi
+{
     /// <summary>
     /// Allows for downloading images from GroupMe.
     /// </summary>

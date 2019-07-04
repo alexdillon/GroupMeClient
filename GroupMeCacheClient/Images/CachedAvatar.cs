@@ -1,7 +1,7 @@
-﻿namespace GroupMeClientCached.Images
-{
-    using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
+namespace GroupMeClientCached.Images
+{
     /// <summary>
     /// Represents a cached avatar in the database.
     /// </summary>

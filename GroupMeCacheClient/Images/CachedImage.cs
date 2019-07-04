@@ -1,11 +1,10 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 
 namespace GroupMeClientCached.Images
 {
-    using System.ComponentModel.DataAnnotations;
-
     /// <summary>
     /// Represents a cached image in the database.
     /// </summary>

@@ -1,14 +1,13 @@
-﻿namespace GroupMeClientApi
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using GroupMeClientApi.Models;
-    using Newtonsoft.Json;
-    using RestSharp;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using GroupMeClientApi.Models;
+using Newtonsoft.Json;
+using RestSharp;
 
+namespace GroupMeClientApi
+{
     /// <summary>
     /// <see cref="GroupMeClient"/> allows for interaction with the GroupMe API for messaging functionality.
     /// </summary>

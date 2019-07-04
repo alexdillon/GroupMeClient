@@ -1,7 +1,7 @@
-﻿namespace GroupMeClientApi.Models
-{
-    using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
+namespace GroupMeClientApi.Models
+{
     /// <summary>
     /// Represents a Response wrapping a GroupMe User.
     /// </summary>
