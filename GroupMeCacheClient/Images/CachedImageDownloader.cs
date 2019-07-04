@@ -72,40 +72,5 @@ namespace GroupMeClientCached.Images
                 this.DatabaseSem.Release();
             }
         }
-
-        /// <inheritdoc/>
-        public override async Task<byte[]> DownloadPostImage(string url)
-        {
-            return await base.DownloadPostImage(url);
-
-            await this.DatabaseSem.WaitAsync();
-            try
-            {
-                var dbResults = await this.Database.PostImages.FindAsync(new object[] { url });
-
-                if (dbResults != null)
-                {
-                    return dbResults.Image;
-                }
-                else
-                {
-                    var bytes = await this.HttpClient.GetByteArrayAsync(url);
-
-                    var cachedImage = new CachedImage()
-                    {
-                        Key = url,
-                        Image = bytes,
-                    };
-                    this.Database.PostImages.Add(cachedImage);
-                    this.Database.SaveChanges();
-
-                    return bytes;
-                }
-            }
-            finally
-            {
-                this.DatabaseSem.Release();
-            }
-        }
     }
 }
