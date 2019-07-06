@@ -42,7 +42,12 @@ namespace GroupMeClientApi
         /// <summary>
         /// Gets the Auth Token used to authenticate a GroupMe API Call.
         /// </summary>
-        private string AuthToken { get; }
+        internal string AuthToken { get; }
+
+        /// <summary>
+        /// Gets or sets the client used to subscribe to push notifications, if enabled.
+        /// </summary>
+        private Push.PushClient PushClient { get; set; }
 
         /// <summary>
         /// Returns a listing of all Group Chats a user is a member of.
@@ -57,12 +62,12 @@ namespace GroupMeClientApi
             if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var results = JsonConvert.DeserializeObject<GroupsList>(restResponse.Content);
-                results.Groups.All(g =>
+
+                foreach (var group in results.Groups)
                 {
                     // ensure every Group has a reference to the parent client (this)
-                    g.Client = this;
-                    return true;
-                });
+                    group.Client = this;
+                }
 
                 return results.Groups;
             }
@@ -86,15 +91,16 @@ namespace GroupMeClientApi
             if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var results = JsonConvert.DeserializeObject<ChatsList>(restResponse.Content);
-                results.Chats.All(c =>
+
+                foreach (var chat in results.Chats)
                 {
                     // ensure every Chat has a reference to the parent client (this)
-                    c.Client = this;
+                    chat.Client = this;
 
                     // required to establish a constant, non-foreign-key Primary Key for Chat
-                    c.Id = c.OtherUser.Id;
-                    return true;
-                });
+                    chat.Id = chat.OtherUser.Id;
+                }
+
                 return results.Chats;
             }
             else
@@ -140,6 +146,20 @@ namespace GroupMeClientApi
         public virtual Task Update()
         {
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Enables subscribing to push notifications for all <see cref="Groups"/>
+        /// and <see cref="Chat"/> controlled by this client.
+        /// This must be enabled before calling <see cref="GetChatsAsync"/> or <see cref="GetGroupsAsync"/>.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public virtual async Task EnablePushNotifications()
+        {
+            this.PushClient = new Push.PushClient(this);
+
+            await this.PushClient.Connect();
+            await this.PushClient.SubscribeMe();
         }
 
         /// <summary>

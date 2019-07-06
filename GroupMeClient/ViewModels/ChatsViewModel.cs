@@ -28,6 +28,8 @@ namespace GroupMeClient.ViewModels
             string token = System.IO.File.ReadAllText("../../../DevToken.txt");
             this.GroupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
 
+            await this.GroupMeClient.EnablePushNotifications();
+
             var groups = await GroupMeClient.GetGroupsAsync();
             var chats = await GroupMeClient.GetChatsAsync();
 
@@ -70,7 +72,6 @@ namespace GroupMeClient.ViewModels
 
                 if (group.Group != null)
                 {
-
                     groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Group);
                 }
                 else
