@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GroupMeClientApi.Models;
@@ -22,6 +21,9 @@ namespace GroupMeClientApi
         public GroupMeClient(string authToken)
         {
             this.AuthToken = authToken;
+
+            this.GroupsList = new List<Group>();
+            this.ChatsList = new List<Chat>();
         }
 
         /// <summary>
@@ -49,6 +51,38 @@ namespace GroupMeClientApi
         /// </summary>
         private Push.PushClient PushClient { get; set; }
 
+        private List<Group> GroupsList { get; set; }
+
+        private List<Chat> ChatsList { get; set; }
+
+        /// <summary>
+        /// Gets a enumeration of <see cref="Group"/>s controlled by the API Client.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="IEnumerable{T}"/> for the <see cref="Group"/>.
+        /// </returns>
+        public virtual IEnumerable<Group> Groups()
+        {
+            foreach (var group in this.GroupsList)
+            {
+                yield return group;
+            }
+        }
+
+        /// <summary>
+        /// Gets a enumeration of <see cref="Chat"/>s controlled by the API Client.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="IEnumerable{T}"/> for the <see cref="Chat"/>.
+        /// </returns>
+        public virtual IEnumerable<Chat> Chats()
+        {
+            foreach (var chat in this.ChatsList)
+            {
+                yield return chat;
+            }
+        }
+
         /// <summary>
         /// Returns a listing of all Group Chats a user is a member of.
         /// </summary>
@@ -67,6 +101,17 @@ namespace GroupMeClientApi
                 {
                     // ensure every Group has a reference to the parent client (this)
                     group.Client = this;
+
+                    var oldGroup = this.GroupsList.Find(g => g.Id == group.Id);
+
+                    if (oldGroup == null)
+                    {
+                        this.GroupsList.Add(group);
+                    }
+                    else
+                    {
+                        DataMerger.MergeGroup(oldGroup, group);
+                    }
                 }
 
                 return results.Groups;
@@ -99,6 +144,17 @@ namespace GroupMeClientApi
 
                     // required to establish a constant, non-foreign-key Primary Key for Chat
                     chat.Id = chat.OtherUser.Id;
+
+                    var oldChat = this.ChatsList.Find(g => g.Id == chat.Id);
+
+                    if (oldChat == null)
+                    {
+                        this.ChatsList.Add(chat);
+                    }
+                    else
+                    {
+                        DataMerger.MergeChat(oldChat, chat);
+                    }
                 }
 
                 return results.Chats;

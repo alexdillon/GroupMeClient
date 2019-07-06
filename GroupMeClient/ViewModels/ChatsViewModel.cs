@@ -30,8 +30,8 @@ namespace GroupMeClient.ViewModels
 
             await this.GroupMeClient.EnablePushNotifications();
 
-            var groups = await GroupMeClient.GetGroupsAsync();
-            var chats = await GroupMeClient.GetChatsAsync();
+            await GroupMeClient.GetGroupsAsync();
+            await GroupMeClient.GetChatsAsync();
 
             this.AllGroupsChats.Clear();
 

@@ -33,13 +33,8 @@ namespace GroupMeClientCached
 
         private Context.DatabaseContext Database { get; set; }
 
-        /// <summary>
-        /// Gets a enumeration of <see cref="Group"/>s controlled by the cache system.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="IEnumerable{T}"/> for the cached <see cref="Group"/>.
-        /// </returns>
-        public IEnumerable<Group> Groups()
+        /// <inheritdoc />
+        public override IEnumerable<Group> Groups()
         {
             foreach (var group in this.Database.Groups)
             {
@@ -48,13 +43,8 @@ namespace GroupMeClientCached
             }
         }
 
-        /// <summary>
-        /// Gets a enumeration of <see cref="Chat"/>s controlled by the cache system.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="IEnumerable{T}"/> for the cached <see cref="Chat"/>.
-        /// </returns>
-        public IEnumerable<Chat> Chats()
+        /// <inheritdoc />
+        public override IEnumerable<Chat> Chats()
         {
             foreach (var chat in this.Database.Chats)
             {
