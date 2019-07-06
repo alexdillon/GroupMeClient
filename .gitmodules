@@ -1,0 +1,3 @@
+[submodule "externals/bayeux"]
+	path = externals/bayeux
+	url = https://github.com/alexdillon/bayeux.git
