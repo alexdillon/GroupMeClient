@@ -151,6 +151,11 @@ namespace GroupMeClientApi.Push
                         await Task.Delay(TimeSpan.FromMilliseconds(500));
                     }
                 }
+                else
+                {
+                    // connected fine, wait a while before checking again
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                }
 
                 this.CancellationTokenSource.Token.ThrowIfCancellationRequested();
             }
