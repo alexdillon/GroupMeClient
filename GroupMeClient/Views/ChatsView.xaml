@@ -5,6 +5,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:ic="http://schemas.microsoft.com/expression/2010/interactions"
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
@@ -19,7 +21,8 @@
         </Grid.RowDefinitions>
 
         <Grid.Resources>
-            <CollectionViewSource Source="{Binding Path=AllGroupsChats}" x:Key="GroupsChatsViewSource">
+            <CollectionViewSource Source="{Binding Path=AllGroupsChats}" x:Key="GroupsChatsViewSource"
+                                  IsLiveSortingRequested="True">
                 <CollectionViewSource.SortDescriptions>
                     <scm:SortDescription PropertyName="LastUpdated" Direction="Descending"/>
                 </CollectionViewSource.SortDescriptions>
@@ -28,6 +31,23 @@
 
         <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Visible" PanningMode="VerticalOnly" CanContentScroll="True" VerticalAlignment="Stretch">
             <ItemsControl ItemsSource="{Binding Source={StaticResource GroupsChatsViewSource}}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel>
+                            <i:Interaction.Behaviors>
+                                <ic:FluidMoveBehavior AppliesTo="Children" Duration="0:0:00.5" Tag="DataContext">
+                                    <ic:FluidMoveBehavior.EaseX>
+                                        <BackEase EasingMode="EaseInOut" Amplitude="0.5"/>
+                                    </ic:FluidMoveBehavior.EaseX>
+                                    <ic:FluidMoveBehavior.EaseY>
+                                        <BackEase EasingMode="EaseInOut" Amplitude="0.5"/>
+                                    </ic:FluidMoveBehavior.EaseY>
+                                </ic:FluidMoveBehavior>
+                            </i:Interaction.Behaviors>
+                        </StackPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <controls:GroupControl Content="{Binding Path=.}"/>
@@ -39,7 +59,9 @@
         <ItemsControl ItemsSource="{Binding Path=ActiveGroupsChats}" Grid.Column="1" Grid.Row="0">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Rows="1"/>
+                    <UniformGrid Rows="1">
+                      
+                    </UniformGrid>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
