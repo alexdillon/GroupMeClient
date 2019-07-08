@@ -66,6 +66,15 @@ namespace GroupMeClientApi.Models
         public string ConversationId { get; internal set; }
 
         /// <summary>
+        /// Gets the conversation identifier for a <see cref="Chat"/> where this message was sent.
+        /// This property is ONLY used with with <see cref="Push.Notifications.DirectMessageCreateNotification"/>.
+        /// If this <see cref="Message"/> represents a Group Message, this field will be null.
+        /// This property should be the same as <see cref="ConversationId"/>.
+        /// </summary>
+        [JsonProperty("chat_id")]
+        public string ChatId { get; internal set; }
+
+        /// <summary>
         /// Gets the name of the <see cref="Member"/> who sent the message.
         /// </summary>
         [JsonProperty("name")]

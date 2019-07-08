@@ -7,6 +7,9 @@ using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using System.Threading;
+using System.Windows.Data;
+using System.Windows;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -46,6 +49,8 @@ namespace GroupMeClient.ViewModels.Controls
 
         public ObservableCollection<MessageControlViewModel> Messages { get; }
 
+        private SemaphoreSlim ReloadSem { get; } = new SemaphoreSlim(1, 1);
+
         public Group Group
         {
             get { return this.group; }
@@ -76,6 +81,15 @@ namespace GroupMeClient.ViewModels.Controls
 
         private Message FirstDisplayedMessage { get; set; } = null;
 
+        public async Task LoadNewMessages()
+        {
+            await Application.Current.Dispatcher.Invoke(async () =>
+            {
+                // the code that's accessing UI properties
+                await LoadMoreAsync(null, true);
+            });
+        }
+
         private async Task Loaded()
         {
             await LoadMoreAsync();
@@ -83,13 +97,22 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task LoadMoreAsync(ScrollViewer scrollViewer = null, bool updateNewest = false)
         {
-            if (this.Group != null)
+            await this.ReloadSem.WaitAsync();
+
+            try
             {
-                await LoadMoreGroupMessagesAsync(scrollViewer, updateNewest);
+                if (this.Group != null)
+                {
+                    await LoadMoreGroupMessagesAsync(scrollViewer, updateNewest);
+                }
+                else if (this.Chat != null)
+                {
+                    await LoadMoreChatMessagesAsync(scrollViewer, updateNewest);
+                }
             }
-            else if (this.Chat != null)
+            finally
             {
-                await LoadMoreChatMessagesAsync(scrollViewer, updateNewest);
+                this.ReloadSem.Release();
             }
         }
 
@@ -165,7 +188,10 @@ namespace GroupMeClient.ViewModels.Controls
                 scrollViewer.ScrollToVerticalOffset(difference);
             }
 
-            this.FirstDisplayedMessage = messages.Last();
+            if (messages.Count > 0)
+            {
+                this.FirstDisplayedMessage = messages.Last();
+            }
         }
 
         private async Task SendMessageAsync()

@@ -35,13 +35,21 @@ namespace GroupMeClient.ViewModels.Controls
         public Group Group
         {
             get { return this.group; }
-            set { Set(() => this.Group, ref group, value); }
+            set
+            {
+                Set(() => this.Group, ref group, value);
+                RaisePropertyChangeForAll();
+            }
         }
 
         public Chat Chat
         {
             get { return this.chat; }
-            set { Set(() => this.Chat, ref chat, value); }
+            set
+            {
+                Set(() => this.Chat, ref chat, value);
+                RaisePropertyChangeForAll();
+            }
         }
 
         public AvatarControlViewModel Avatar
@@ -119,6 +127,16 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 return this.Group?.Id ?? this.Chat?.Id;
             }
+        }
+
+        private void RaisePropertyChangeForAll()
+        {
+            // since RaisePropertyChanged(string.empty) doesn't seem to work correctly...
+            RaisePropertyChanged(nameof(this.Avatar));
+            RaisePropertyChanged(nameof(this.LastUpdatedFriendlyTime));
+            RaisePropertyChanged(nameof(this.QuickPreview));
+            RaisePropertyChanged(nameof(this.Title));
+            RaisePropertyChanged(nameof(this.LastUpdated));
         }
     }
 }

@@ -4,6 +4,8 @@ using System.Linq;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
+using GroupMeClientApi.Push.Notifications;
+using System.Threading;
 
 namespace GroupMeClient.ViewModels
 {
@@ -13,7 +15,6 @@ namespace GroupMeClient.ViewModels
         {
             this.AllGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
-
        
             _ = Loaded();
         }
@@ -21,41 +22,85 @@ namespace GroupMeClient.ViewModels
         public ObservableCollection<Controls.GroupControlViewModel> AllGroupsChats { get; set; }
         public ObservableCollection<Controls.GroupContentsControlViewModel> ActiveGroupsChats { get; set; }
 
+        private GroupMeClientApi.Push.PushClient pushClient;
+
         private GroupMeClientCached.GroupMeCachedClient GroupMeClient { get; set; }
+
+        private SemaphoreSlim ReloadGroupsSem { get; } = new SemaphoreSlim(1, 1);
 
         private async Task Loaded()
         {
             string token = System.IO.File.ReadAllText("../../../DevToken.txt");
             this.GroupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
 
-            await this.GroupMeClient.EnablePushNotifications();
-
-            await GroupMeClient.GetGroupsAsync();
-            await GroupMeClient.GetChatsAsync();
+            pushClient = this.GroupMeClient.EnablePushNotifications();
+            pushClient.NotificationReceived += PushNotificationReceived;
 
             this.AllGroupsChats.Clear();
 
-            foreach (var group in GroupMeClient.Groups())
-            {
-                var groupVm = new Controls.GroupControlViewModel(group)
-                {
-                    GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(OpenNewGroupChat, (g) => true)
-                };
-                this.AllGroupsChats.Add(groupVm);
-            }
-
-            foreach (Chat chat in GroupMeClient.Chats())
-            {
-                var groupVm = new Controls.GroupControlViewModel(chat)
-                {
-                    GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(OpenNewGroupChat, (g) => true)
-                };
-                this.AllGroupsChats.Add(groupVm);
-            }
-
-            await this.GroupMeClient.Update();
+            await LoadGroupsAndChats();
         }
 
+        private async Task LoadGroupsAndChats()
+        {
+            await this.ReloadGroupsSem.WaitAsync();
+
+            try
+            {
+                await GroupMeClient.GetGroupsAsync();
+                await GroupMeClient.GetChatsAsync();
+
+                foreach (var group in GroupMeClient.Groups())
+                {
+                    var existingVm = this.AllGroupsChats.FirstOrDefault(g => g.Id == group.Id);
+
+                    if (existingVm == null)
+                    {
+                        // create a new GroupControl ViewModel for this Group
+                        var groupVm = new Controls.GroupControlViewModel(group)
+                        {
+                            GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(OpenNewGroupChat, (g) => true)
+                        };
+                        this.AllGroupsChats.Add(groupVm);
+                    }
+                    else
+                    {
+                        // Update the existing Group
+                        existingVm.Group = group;
+                    }
+                }
+
+                foreach (Chat chat in GroupMeClient.Chats())
+                {
+                    var existingVm = this.AllGroupsChats.FirstOrDefault(g => g.Id == chat.Id);
+
+                    if (existingVm == null)
+                    {
+                        // create a new GroupControl ViewModel for this Chat
+                        var chatVm = new Controls.GroupControlViewModel(chat)
+                        {
+                            GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(OpenNewGroupChat, (g) => true)
+                        };
+                        this.AllGroupsChats.Add(chatVm);
+                    }
+                    else
+                    {
+                        // Update the existing Chat
+                        existingVm.Chat = chat;
+                    }
+                }
+
+                RaisePropertyChanged("AllGroupsChats");
+
+                await this.GroupMeClient.Update();
+            }
+            finally
+            {
+                this.ReloadGroupsSem.Release();
+            }
+        }
+
+     
         private void OpenNewGroupChat(Controls.GroupControlViewModel group)
         {
             if (this.ActiveGroupsChats.Any(g => g.Id == group.Id))
@@ -73,6 +118,7 @@ namespace GroupMeClient.ViewModels
                 if (group.Group != null)
                 {
                     groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Group);
+                    //pushClient.SubscribeGroup(group.Group);
                 }
                 else
                 {
@@ -95,6 +141,52 @@ namespace GroupMeClient.ViewModels
         private void CloseChat(Controls.GroupContentsControlViewModel groupContentsControlViewModel)
         {
             this.ActiveGroupsChats.Remove(groupContentsControlViewModel);
+        }
+
+        private void PushNotificationReceived(object sender, Notification notification)
+        {
+            switch (notification)
+            {
+                case LikeCreateNotification likeCreate:
+                    break;
+
+                case LineMessageCreateNotification lineCreate:
+                    _ = LoadGroupsAndChats();
+                    _ = RouteUpdateSignalGroup(lineCreate);
+                    break;
+
+                case DirectMessageCreateNotification directCreate:
+                    _ = LoadGroupsAndChats();
+                    _ = RouteUpdateSignalChat(directCreate);
+                    break;
+
+                case PingNotification _:
+                default:
+                    break;
+
+            }
+        }
+
+        private async Task RouteUpdateSignalGroup(LineMessageCreateNotification notification)
+        {
+            var groupId = notification.Message.GroupId;
+            var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == groupId);
+
+            await groupVm?.LoadNewMessages();
+        }
+
+        private async Task RouteUpdateSignalChat(DirectMessageCreateNotification notification)
+        {
+            var me = GroupMeClient.WhoAmI();
+
+            // Chat IDs are formatted as UserID+UserID. Find the other user's ID
+            var chatId = notification.Message.ChatId;
+            var users = chatId.Split('+');
+            var otherUser = users.First(u => u != me.Id);
+
+            var chatVm = this.ActiveGroupsChats.FirstOrDefault(c => c.Id == otherUser);
+
+            await chatVm?.LoadNewMessages();
         }
     }
 }

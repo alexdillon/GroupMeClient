@@ -9,6 +9,7 @@ using GroupMeClientApi.Models.Attachments;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using System.Collections.ObjectModel;
+using System.Threading;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -41,7 +42,7 @@ namespace GroupMeClient.ViewModels.Controls
                 }
 
                 this.message = value;
-                RaisePropertyChanged(); // no property name to force every single property to be updated
+                RaisePropertyChanged(""); // no property name to force every single property to be updated
             }
         }
 
