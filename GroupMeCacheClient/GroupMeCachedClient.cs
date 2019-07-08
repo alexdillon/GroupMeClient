@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using GroupMeClientApi;
 using GroupMeClientApi.Models;
@@ -32,6 +33,8 @@ namespace GroupMeClientCached
         public override ImageDownloader ImageDownloader { get; }
 
         private Context.DatabaseContext Database { get; set; }
+
+        private SemaphoreSlim DatabaseSem { get; } = new SemaphoreSlim(1, 1);
 
         /// <inheritdoc />
         public override IEnumerable<Group> Groups()
@@ -72,7 +75,7 @@ namespace GroupMeClientCached
                 }
             }
 
-            await this.Database.SaveChangesAsync();
+            await this.Update();
 
             return groups;
         }
@@ -96,7 +99,7 @@ namespace GroupMeClientCached
                 }
             }
 
-            await this.Database.SaveChangesAsync();
+            await this.Update();
 
             return chats;
         }
@@ -104,7 +107,16 @@ namespace GroupMeClientCached
         /// <inheritdoc/>
         public override async Task Update()
         {
-            await this.Database.SaveChangesAsync();
+            await this.DatabaseSem.WaitAsync();
+
+            try
+            {
+                await this.Database.SaveChangesAsync();
+            }
+            finally
+            {
+                this.DatabaseSem.Release();
+            }
         }
     }
 }
