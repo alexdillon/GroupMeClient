@@ -209,13 +209,14 @@ namespace GroupMeClientApi
         /// and <see cref="Chat"/> controlled by this client.
         /// This must be enabled before calling <see cref="GetChatsAsync"/> or <see cref="GetGroupsAsync"/>.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public virtual async Task EnablePushNotifications()
+        /// <returns>The <see cref="PushClient"/> that used for push operations.</returns>
+        public virtual Push.PushClient EnablePushNotifications()
         {
             this.PushClient = new Push.PushClient(this);
 
-            await this.PushClient.Connect();
-            await this.PushClient.SubscribeMe();
+            this.PushClient.Connect();
+
+            return this.PushClient;
         }
 
         /// <summary>
