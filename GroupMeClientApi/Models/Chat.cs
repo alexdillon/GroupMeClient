@@ -136,6 +136,10 @@ namespace GroupMeClientApi.Models
 
                 return results.Response.Messages;
             }
+            else if (restResponse.StatusCode == System.Net.HttpStatusCode.NotModified)
+            {
+                return new List<Message>();
+            }
             else
             {
                 throw new System.Net.WebException($"Failure retreving Messages from Chat. Status Code {restResponse.StatusCode}");
