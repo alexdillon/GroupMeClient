@@ -22,7 +22,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.LikeAction = new RelayCommand(async () => { await LikeMessageActionAsync(); }, () => { return true; }, true);
 
             _ = LoadImageAttachment();
-            //LoadTweetAttachment();
+            LoadLinkPreview();
         }
 
         private Message message;
@@ -95,6 +95,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets the attached tweets, if present
         /// </summary>
         public ObservableCollection<TwitterAttachmentControlViewModel> AttachedTweets { get; set; } = new ObservableCollection<TwitterAttachmentControlViewModel>();
+
+        /// <summary>
+        /// Gets the attached web links, if present
+        /// </summary>
+        public ObservableCollection<GenericLinkAttachmentControlViewModel> AttachedWebLinks { get; set; } = new ObservableCollection<GenericLinkAttachmentControlViewModel>();
 
         public MahApps.Metro.IconPacks.PackIconFontAwesomeKind LikeStatus
         {
@@ -181,7 +186,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.ImageAttachmentStream = new System.IO.MemoryStream(image);
         }
 
-        public void LoadTweetAttachment()
+        public void LoadLinkPreview()
         {
             var text = this.Message.Text ?? String.Empty;
 
@@ -191,6 +196,10 @@ namespace GroupMeClient.ViewModels.Controls
             if (text.StartsWith(TwitterPrefixHttps) || text.StartsWith(TwitterPrefixHttp))
             {
                 this.AttachedTweets.Add(new TwitterAttachmentControlViewModel(text));
+            }
+            else
+            {
+                this.AttachedWebLinks.Add(new GenericLinkAttachmentControlViewModel(text));
             }
         }
 

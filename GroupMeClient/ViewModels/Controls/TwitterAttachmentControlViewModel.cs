@@ -8,73 +8,23 @@ using System.Windows.Input;
 
 namespace GroupMeClient.ViewModels.Controls
 {
-    public class TwitterAttachmentControlViewModel : ViewModelBase
+    public class TwitterAttachmentControlViewModel : LinkAttachmentBaseViewModel
     {
-        public TwitterAttachmentControlViewModel(string tweetUrl)
+        public TwitterAttachmentControlViewModel(string tweetUrl) :
+            base(tweetUrl)
         {
-            this.TweetUrl = tweetUrl;
-
-            _ = LoadTweet();
         }
 
-        private string TweetUrl { get; set; }
+        public string Sender => this.LinkInfo?.Name;
 
-        public ICommand ClickAction { get; }
+        public string Text => this.LinkInfo?.Text;
 
+        public string Handle => this.LinkInfo?.ScreenName;
 
-        private Stream renderedImage;
-
-        /// <summary>
-        /// Gets the rendered image.
-        /// </summary>
-        public Stream RenderedImage
+        protected override void MetadataDownloadCompleted()
         {
-            get { return renderedImage; }
-            set { Set(() => this.RenderedImage, ref renderedImage, value); }
-        }
-
-        public async Task LoadTweet()
-        {
-            if (Uri.TryCreate(this.TweetUrl, UriKind.Absolute, out var uri))
-            {
-                var tweetId = uri.Segments.Last();
-                var tweetIdLong = ulong.Parse(tweetId);
-
-                var auth = new SingleUserAuthorizer
-                {
-                    CredentialStore = new SingleUserInMemoryCredentialStore
-                    {
-                        // the OEmbedded API is open, so no auth needed for now
-                        ConsumerKey = "consumerKey",
-                        ConsumerSecret = "consumerSecret",
-                        AccessToken = "accessToken",
-                        AccessTokenSecret = "accessTokenSecret"
-                    }
-                };
-
-                var twitterContext = new TwitterContext(auth);
-
-                try
-                {
-                    var embeddedStatus =
-                        await
-                        (from tweet in twitterContext.Status
-                         where tweet.Type == StatusType.Oembed &&
-                                 tweet.ID == tweetIdLong
-                         select tweet.EmbeddedStatus)
-                        .SingleOrDefaultAsync();
-
-
-                    if (embeddedStatus != null)
-                    {
-                        //this.RenderedImage = await htmlRenderer.RenderHtmlAsync(embeddedStatus.Html);
-                    }
-                }
-                catch (Exception)
-                {
-                    //this.RenderedImage = await htmlRenderer.RenderHtmlAsync(ex.Message);
-                }
-            }
+            _ = this.DownloadImage(this.LinkInfo.ProfileImageUrl);
+            RaisePropertyChanged("");
         }
     }
 }

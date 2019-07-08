@@ -69,7 +69,9 @@
     <Compile Include="ViewModels\ChatsViewModel.cs" />
     <Compile Include="ViewModels\Controls\AvatarControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupContentsControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\GenericLinkAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\TwitterAttachmentControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\LinkAttachmentBaseViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupControlViewModel.cs" />
     <Compile Include="Views\Controls\GroupContentsControl.xaml.cs">
@@ -77,6 +79,9 @@
     </Compile>
     <Compile Include="Views\Controls\AvatarControl.xaml.cs">
       <DependentUpon>AvatarControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\GenericLinkAttachmentControl.xaml.cs">
+      <DependentUpon>GenericLinkAttachmentControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\TwitterAttachmentControl.xaml.cs">
       <DependentUpon>TwitterAttachmentControl.xaml</DependentUpon>
@@ -116,6 +121,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\AvatarControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\GenericLinkAttachmentControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

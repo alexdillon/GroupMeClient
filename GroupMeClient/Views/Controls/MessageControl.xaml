@@ -49,10 +49,9 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <controls:TwitterAttachmentControl
-                            Width="100"
-                            Height="50"
-                        HorizontalAlignment="Left"
-                        Content="{Binding Path=.}"/>
+                            MaxWidth="800"
+                            HorizontalAlignment="Left"
+                            Content="{Binding Path=.}"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

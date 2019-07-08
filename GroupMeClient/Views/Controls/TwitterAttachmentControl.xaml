@@ -3,26 +3,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
-             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
-             xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
-             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
              d:DesignHeight="100" d:DesignWidth="400"
-             Background="Red">
+             Background="LightGray">
 
-    <Grid>
-        <Image MaxWidth="500" 
-                   Stretch="UniformToFill"
-                   HorizontalAlignment="Left"
-                   gif:AnimationBehavior.SourceStream="{Binding RenderedImage}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDown" >
-                    <i:InvokeCommandAction Command="{Binding ClickAction}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Image>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Image 
+            Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+            Width="30" Height="30" VerticalAlignment="Top"
+            Source="{Binding RenderedImage}"
+            />
+
+        <DockPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
+            <Label Content="{Binding Sender}" FontSize="14" FontWeight="SemiBold" Padding="0" />
+
+            <TextBlock Margin="4,0,0,0">@</TextBlock>
+            <Label Content="{Binding Handle}" FontSize="12" FontWeight="Light" Padding="0"/>
+        </DockPanel>
+        
+        <Label Grid.Column="1" Grid.Row="1" Padding="0">
+            <TextBlock FontSize="14" TextWrapping="Wrap" Text="{Binding Text}" />
+        </Label>
     </Grid>
 </UserControl>
