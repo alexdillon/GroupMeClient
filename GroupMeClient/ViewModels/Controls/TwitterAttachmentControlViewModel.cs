@@ -70,7 +70,7 @@ namespace GroupMeClient.ViewModels.Controls
                         //this.RenderedImage = await htmlRenderer.RenderHtmlAsync(embeddedStatus.Html);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     //this.RenderedImage = await htmlRenderer.RenderHtmlAsync(ex.Message);
                 }

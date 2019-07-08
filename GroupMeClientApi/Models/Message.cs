@@ -160,16 +160,11 @@ namespace GroupMeClientApi.Models
         /// <returns>True if successful, false otherwise.</returns>
         public static Message CreateMessage(string body, IEnumerable<Attachments.Attachment> attachments = null)
         {
-            if (attachments == null)
-            {
-                attachments = Enumerable.Empty<Attachments.Attachment>();
-            }
-
             var msg = new Message()
             {
                 SourceGuid = Guid.NewGuid().ToString(),
                 Text = body,
-                Attachments = new List<Attachments.Attachment>(attachments),
+                Attachments = new List<Attachments.Attachment>(attachments ?? Enumerable.Empty<Attachments.Attachment>()),
                 FavoritedBy = new List<string>(),
             };
 
