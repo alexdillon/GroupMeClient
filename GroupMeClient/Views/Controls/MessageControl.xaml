@@ -45,6 +45,17 @@
                    HorizontalAlignment="Left"
                    gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}"/>
 
+            <ItemsControl ItemsSource="{Binding AttachedWebLinks}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:GenericLinkAttachmentControl
+                            MaxWidth="600"
+                            HorizontalAlignment="Left"
+                            Content="{Binding Path=.}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
             <ItemsControl ItemsSource="{Binding AttachedTweets}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

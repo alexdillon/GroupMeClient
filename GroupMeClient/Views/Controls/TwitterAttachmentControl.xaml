@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
              d:DesignHeight="100" d:DesignWidth="400"
-             Background="LightGray">
+             Background="#999999">
 
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
@@ -24,12 +24,12 @@
             Source="{Binding RenderedImage}"
             />
 
-        <DockPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
             <Label Content="{Binding Sender}" FontSize="14" FontWeight="SemiBold" Padding="0" />
 
-            <TextBlock Margin="4,0,0,0">@</TextBlock>
-            <Label Content="{Binding Handle}" FontSize="12" FontWeight="Light" Padding="0"/>
-        </DockPanel>
+            <TextBlock Margin="4,1,0,0">@</TextBlock>
+            <Label Content="{Binding Handle}" FontSize="12" FontWeight="Light" Padding="0,1,0,0"/>
+        </StackPanel>
         
         <Label Grid.Column="1" Grid.Row="1" Padding="0">
             <TextBlock FontSize="14" TextWrapping="Wrap" Text="{Binding Text}" />

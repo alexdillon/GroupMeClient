@@ -27,6 +27,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private Message message;
         private AvatarControlViewModel avatar;
+        private string hiddenText = string.Empty;
 
         public Message Message
         {
@@ -54,11 +55,24 @@ namespace GroupMeClient.ViewModels.Controls
 
         public string Id => this.Message.Id;
 
-        public string Text => this.Message.Text;
-
         public string Sender => this.Message.Name;
 
         public ICommand LikeAction { get; }
+
+        public string Text
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.hiddenText))
+                {
+                    return this.Message.Text;
+                }
+                else
+                {
+                    return this.Message.Text.Replace(this.hiddenText, string.Empty);
+                }
+            }
+        }
 
         public Brush GroupMeRedBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 112, 112));
         public Brush GroupMeLightBlueBrush { get; } = new SolidColorBrush(Color.FromRgb(219, 244, 253));
@@ -193,13 +207,30 @@ namespace GroupMeClient.ViewModels.Controls
             const string TwitterPrefixHttps = "https://twitter.com/";
             const string TwitterPrefixHttp = "http://twitter.com/";
 
+            const string WebPrefixHttps = "https://";
+            const string WebPrefixHttp = "http://";
+
+            LinkAttachmentBaseViewModel vm;
+
             if (text.StartsWith(TwitterPrefixHttps) || text.StartsWith(TwitterPrefixHttp))
             {
-                this.AttachedTweets.Add(new TwitterAttachmentControlViewModel(text));
+                vm = new TwitterAttachmentControlViewModel(text);
+                this.AttachedTweets.Add(vm as TwitterAttachmentControlViewModel);
+            }
+            else if (text.StartsWith(WebPrefixHttps) || text.StartsWith(WebPrefixHttp))
+            {
+                vm = new GenericLinkAttachmentControlViewModel(text);
+                this.AttachedWebLinks.Add(vm as GenericLinkAttachmentControlViewModel);
             }
             else
             {
-                this.AttachedWebLinks.Add(new GenericLinkAttachmentControlViewModel(text));
+                return;
+            }
+
+            if (vm.Uri != null)
+            {
+                this.hiddenText = vm.Url;
+                RaisePropertyChanged("Text");
             }
         }
 

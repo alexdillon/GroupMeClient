@@ -3,26 +3,65 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
-             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
-             xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
              d:DesignHeight="100" d:DesignWidth="400"
-             Background="Red">
+             Background="White">
 
     <Grid>
-        <Image MaxWidth="500" 
-                   Stretch="UniformToFill"
-                   HorizontalAlignment="Left"
-                   gif:AnimationBehavior.SourceStream="{Binding RenderedImage}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDown" >
-                    <i:InvokeCommandAction Command="{Binding ClickAction}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Image>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Image Grid.Row="0"
+               Grid.RowSpan="2"
+               MaxWidth="300"
+               MaxHeight="250"
+               VerticalAlignment="Stretch"
+               HorizontalAlignment="Stretch"
+               Source="{Binding RenderedImage}" />
+
+        <StackPanel Grid.Row="1">
+            <StackPanel.Background>
+                <SolidColorBrush Color="Black" Opacity="0.4"/>
+            </StackPanel.Background>
+            
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center"
+                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                       Text="{Binding Title}"
+                       Foreground="White" FontWeight="SemiBold"
+                       Padding="5" 
+                       Margin="10,0,0,0"/>
+            <Grid Margin="10,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Image Grid.Row="0" Grid.Column="0"
+                       Width="15"
+                       HorizontalAlignment="Left"
+                       Source="{Binding FaviconImage}" />
+
+                <Label Grid.Row="0" Grid.Column="1" 
+                       Content="{Binding Site}"
+                       Foreground="White"/>
+
+            </Grid>
+        </StackPanel>
+
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="MouseDown" >
+                <i:InvokeCommandAction Command="{Binding ClickAction}" />
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
     </Grid>
 </UserControl>

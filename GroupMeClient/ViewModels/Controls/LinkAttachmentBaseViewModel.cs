@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
-using System.Windows;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -17,10 +16,21 @@ namespace GroupMeClient.ViewModels.Controls
         {
             this.Url = url;
 
-            LoadGroupMeInfo().ContinueWith(a => this.MetadataDownloadCompleted());
+            if (this.Url.Contains(" "))
+            {
+                this.Url = this.Url.Substring(0, this.Url.IndexOf(" "));
+            }
+
+            if (Uri.TryCreate(this.Url, UriKind.Absolute, out var uri))
+            {
+                this.Uri = uri;
+                LoadGroupMeInfo().ContinueWith(a => this.MetadataDownloadCompleted());
+            }
         }
 
-        protected string Url { get; set; }
+        public string Url { get; private set; }
+
+        public Uri Uri { get; private set; }
 
         protected GroupMeInlineDownloaderInfo LinkInfo { get; set; }
 
@@ -53,16 +63,13 @@ namespace GroupMeClient.ViewModels.Controls
 
         protected async Task LoadGroupMeInfo()
         {
-            if (Uri.TryCreate(this.Url, UriKind.Absolute, out _))
-            {
-                const string GROUPME_INLINE_URL = "https://inline-downloader.groupme.com/info?url=";
+            const string GROUPME_INLINE_URL = "https://inline-downloader.groupme.com/info?url=";
 
-                var downloader = new HttpClient();
-                var data = await downloader.GetStringAsync($"{GROUPME_INLINE_URL}{this.Url}");
+            var downloader = new HttpClient();
+            var data = await downloader.GetStringAsync($"{GROUPME_INLINE_URL}{this.Url}");
 
-                var results = JsonConvert.DeserializeObject<GroupMeInlineDownloaderInfo>(data);
-                this.LinkInfo = results;
-            }
+            var results = JsonConvert.DeserializeObject<GroupMeInlineDownloaderInfo>(data);
+            this.LinkInfo = results;
         }
 
         protected abstract void MetadataDownloadCompleted();
@@ -92,6 +99,28 @@ namespace GroupMeClient.ViewModels.Controls
 
             [JsonProperty("profile_image_url")]
             public string ProfileImageUrl { get; set; }
+
+            [JsonProperty("thumbnail_url")]
+            public string ThumbnailUrl { get; set; }
+
+            public string AnyPreviewPictureUrl
+            {
+                get
+                {
+                    if (!string.IsNullOrEmpty(this.ImageUrl))
+                    {
+                        return this.ImageUrl;
+                    }
+                    else if (!string.IsNullOrEmpty(this.ThumbnailUrl))
+                    {
+                        return this.ThumbnailUrl;
+                    }
+                    else
+                    {
+                        return string.Empty;
+                    }
+                }
+            }
         }
     }
 }
