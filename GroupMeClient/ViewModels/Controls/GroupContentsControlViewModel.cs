@@ -10,10 +10,11 @@ using System.Windows.Controls;
 using System.Threading;
 using System.Windows.Data;
 using System.Windows;
+using System;
 
 namespace GroupMeClient.ViewModels.Controls
 {
-    public class GroupContentsControlViewModel : ViewModelBase
+    public class GroupContentsControlViewModel : ViewModelBase, IDisposable
     {
         public GroupContentsControlViewModel()
         {
@@ -219,6 +220,14 @@ namespace GroupMeClient.ViewModels.Controls
                     this.Chat.Messages.Add(newMessage);
                     await this.LoadMoreAsync(null, true);
                 }
+            }
+        }
+
+        void IDisposable.Dispose()
+        {
+            foreach (var msg in this.Messages)
+            {
+                msg.Dispose();
             }
         }
     }

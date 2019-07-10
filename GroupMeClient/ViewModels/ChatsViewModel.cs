@@ -6,6 +6,7 @@ using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Push.Notifications;
 using System.Threading;
+using System;
 
 namespace GroupMeClient.ViewModels
 {
@@ -141,6 +142,8 @@ namespace GroupMeClient.ViewModels
         private void CloseChat(Controls.GroupContentsControlViewModel groupContentsControlViewModel)
         {
             this.ActiveGroupsChats.Remove(groupContentsControlViewModel);
+            ((IDisposable)groupContentsControlViewModel).Dispose();
+            
         }
 
         private void PushNotificationReceived(object sender, Notification notification)

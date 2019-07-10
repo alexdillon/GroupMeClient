@@ -14,9 +14,9 @@ using System.Threading;
 
 namespace GroupMeClient.ViewModels.Controls
 {
-    public class MessageControlViewModel : ViewModelBase
+    public class MessageControlViewModel : ViewModelBase, IDisposable
     {
-        public MessageControlViewModel(Message message)
+        public MessageControlViewModel(Message message) 
         {
             this.Message = message;
             this.Avatar = new AvatarControlViewModel(this.Message);
@@ -278,6 +278,11 @@ namespace GroupMeClient.ViewModels.Controls
             RaisePropertyChanged("LikeCount");
             RaisePropertyChanged("LikeColor");
             RaisePropertyChanged("LikeStatus");
+        }
+
+        public void Dispose()
+        {
+            ((IDisposable)imageAttachmentStream)?.Dispose();
         }
     }
 }
