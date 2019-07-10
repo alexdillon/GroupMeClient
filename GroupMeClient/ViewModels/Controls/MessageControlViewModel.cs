@@ -6,6 +6,7 @@ using System.Linq;
 using GalaSoft.MvvmLight;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
+using GroupMeClient.ViewModels.Controls.Attachments;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using System.Collections.ObjectModel;
@@ -76,7 +77,8 @@ namespace GroupMeClient.ViewModels.Controls
 
         public Brush GroupMeRedBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 112, 112));
         public Brush GroupMeLightBlueBrush { get; } = new SolidColorBrush(Color.FromRgb(219, 244, 253));
-
+        public Brush GroupMeLightGrayBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 247, 247));
+        
         public Brush MessageColor
         {
             get
@@ -89,7 +91,7 @@ namespace GroupMeClient.ViewModels.Controls
                 }
                 else
                 {
-                    return Brushes.White;
+                    return this.GroupMeLightGrayBrush;
                 }
             }
         }
@@ -108,12 +110,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Gets the attached tweets, if present
         /// </summary>
-        public ObservableCollection<TwitterAttachmentControlViewModel> AttachedTweets { get; set; } = new ObservableCollection<TwitterAttachmentControlViewModel>();
-
-        /// <summary>
-        /// Gets the attached web links, if present
-        /// </summary>
-        public ObservableCollection<GenericLinkAttachmentControlViewModel> AttachedWebLinks { get; set; } = new ObservableCollection<GenericLinkAttachmentControlViewModel>();
+        public ObservableCollection<LinkAttachmentBaseViewModel> AttachedItems { get; set; } = new ObservableCollection<LinkAttachmentBaseViewModel>();
 
         public MahApps.Metro.IconPacks.PackIconFontAwesomeKind LikeStatus
         {
@@ -207,6 +204,8 @@ namespace GroupMeClient.ViewModels.Controls
             const string TwitterPrefixHttps = "https://twitter.com/";
             const string TwitterPrefixHttp = "http://twitter.com/";
 
+            const string GroupMeVideoPrefixHttps = "https://v.groupme.com";
+
             const string WebPrefixHttps = "https://";
             const string WebPrefixHttp = "http://";
 
@@ -215,12 +214,17 @@ namespace GroupMeClient.ViewModels.Controls
             if (text.StartsWith(TwitterPrefixHttps) || text.StartsWith(TwitterPrefixHttp))
             {
                 vm = new TwitterAttachmentControlViewModel(text);
-                this.AttachedTweets.Add(vm as TwitterAttachmentControlViewModel);
+                this.AttachedItems.Add(vm);
+            }
+            else if (text.StartsWith(GroupMeVideoPrefixHttps))
+            {
+                vm = new VideoAttachmentControlViewModel(text);
+                this.AttachedItems.Add(vm);
             }
             else if (text.StartsWith(WebPrefixHttps) || text.StartsWith(WebPrefixHttp))
             {
                 vm = new GenericLinkAttachmentControlViewModel(text);
-                this.AttachedWebLinks.Add(vm as GenericLinkAttachmentControlViewModel);
+                this.AttachedItems.Add(vm);
             }
             else
             {

@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
+             xmlns:ctrlsattach="clr-namespace:GroupMeClient.Views.Controls.Attachments"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
@@ -45,22 +46,11 @@
                    HorizontalAlignment="Left"
                    gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}"/>
 
-            <ItemsControl ItemsSource="{Binding AttachedWebLinks}">
+            <ItemsControl ItemsSource="{Binding AttachedItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <controls:GenericLinkAttachmentControl
-                            MaxWidth="600"
-                            HorizontalAlignment="Left"
-                            Content="{Binding Path=.}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-            <ItemsControl ItemsSource="{Binding AttachedTweets}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <controls:TwitterAttachmentControl
-                            MaxWidth="800"
+                        <UserControl
+                            MaxWidth="700"
                             HorizontalAlignment="Left"
                             Content="{Binding Path=.}"/>
                     </DataTemplate>

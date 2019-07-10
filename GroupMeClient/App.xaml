@@ -8,6 +8,8 @@
              xmlns:vm="clr-namespace:GroupMeClient.ViewModels"
              xmlns:ctrlviews="clr-namespace:GroupMeClient.Views.Controls"
              xmlns:ctrlvm="clr-namespace:GroupMeClient.ViewModels.Controls"
+             xmlns:attachviews="clr-namespace:GroupMeClient.Views.Controls.Attachments"
+             xmlns:attachvm="clr-namespace:GroupMeClient.ViewModels.Controls.Attachments"
              StartupUri="MainWindow.xaml"
              mc:Ignorable="d">
     <Application.Resources>
@@ -56,9 +58,17 @@
             <DataTemplate DataType="{x:Type ctrlvm:MessageControlViewModel}">
                 <ctrlviews:MessageControl />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type ctrlvm:TwitterAttachmentControlViewModel}">
-                <ctrlviews:TwitterAttachmentControl />
+
+            <DataTemplate DataType="{x:Type attachvm:GenericLinkAttachmentControlViewModel}">
+                <attachviews:GenericLinkAttachmentControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:TwitterAttachmentControlViewModel}">
+                <attachviews:TwitterAttachmentControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:VideoAttachmentControlViewModel}">
+                <attachviews:VideoAttachmentControl />
+            </DataTemplate>
+
 
             <!-- Adapted from https://stackoverflow.com/questions/10969292/apple-style-scrollbar-wpf-->
             <!--Scrollbar Thumbs-->
