@@ -68,6 +68,9 @@
             <DataTemplate DataType="{x:Type attachvm:VideoAttachmentControlViewModel}">
                 <attachviews:VideoAttachmentControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:ImageLinkAttachmentControlViewModel}">
+                <attachviews:ImageLinkAttachmentControl />
+            </DataTemplate>
 
 
             <!-- Adapted from https://stackoverflow.com/questions/10969292/apple-style-scrollbar-wpf-->

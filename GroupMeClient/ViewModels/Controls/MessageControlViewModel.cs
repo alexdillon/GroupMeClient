@@ -199,17 +199,26 @@ namespace GroupMeClient.ViewModels.Controls
 
         public void LoadLinkPreview()
         {
-            var text = this.Message.Text ?? String.Empty;
+            var text = this.Message.Text ?? string.Empty;
+            if (text.Contains(" "))
+            {
+                // only look to see if the first chunk is a URL
+                text = text.Substring(0, text.IndexOf(" "));
+            }
 
             const string TwitterPrefixHttps = "https://twitter.com/";
             const string TwitterPrefixHttp = "http://twitter.com/";
 
             const string GroupMeVideoPrefixHttps = "https://v.groupme.com";
 
+            string[] ImageExtensions = { "png", "jpg", "jpeg", "gif", "bmp" };
+
             const string WebPrefixHttps = "https://";
             const string WebPrefixHttp = "http://";
 
             LinkAttachmentBaseViewModel vm;
+
+            var linkExtension = text.Split('.').LastOrDefault();
 
             if (text.StartsWith(TwitterPrefixHttps) || text.StartsWith(TwitterPrefixHttp))
             {
@@ -219,6 +228,11 @@ namespace GroupMeClient.ViewModels.Controls
             else if (text.StartsWith(GroupMeVideoPrefixHttps))
             {
                 vm = new VideoAttachmentControlViewModel(text);
+                this.AttachedItems.Add(vm);
+            }
+            else if (ImageExtensions.Contains(linkExtension))
+            {
+                vm = new ImageLinkAttachmentControlViewModel(text);
                 this.AttachedItems.Add(vm);
             }
             else if (text.StartsWith(WebPrefixHttps) || text.StartsWith(WebPrefixHttp))
