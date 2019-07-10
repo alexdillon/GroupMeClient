@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace GroupMeClient.Views.Controls
+namespace GroupMeClient.Views.Controls.Attachments
 {
     /// <summary>
     /// Interaction logic for GroupControl.xaml
     /// </summary>
-    public partial class TwitterAttachmentControl : UserControl
+    public partial class GenericLinkAttachmentControl : UserControl
     {
-        public TwitterAttachmentControl()
+        public GenericLinkAttachmentControl()
         {
             InitializeComponent();
         }

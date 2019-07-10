@@ -1,18 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Linq;
-using GalaSoft.MvvmLight;
-using LinqToTwitter;
-using System.IO;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using GalaSoft.MvvmLight.Command;
 
-namespace GroupMeClient.ViewModels.Controls
+namespace GroupMeClient.ViewModels.Controls.Attachments
 {
     public class TwitterAttachmentControlViewModel : LinkAttachmentBaseViewModel
     {
         public TwitterAttachmentControlViewModel(string tweetUrl) :
             base(tweetUrl)
         {
+            this.Clicked = new RelayCommand(ClickedAction);
         }
 
         public string Sender => this.LinkInfo?.Name;
@@ -21,10 +17,17 @@ namespace GroupMeClient.ViewModels.Controls
 
         public string Handle => this.LinkInfo?.ScreenName;
 
+        public ICommand Clicked { get; }
+
         protected override void MetadataDownloadCompleted()
         {
             _ = this.DownloadImage(this.LinkInfo.ProfileImageUrl);
             RaisePropertyChanged("");
+        }
+
+        private void ClickedAction()
+        {
+            Extensions.WebBrowserHelper.OpenUrl(this.Url);
         }
     }
 }

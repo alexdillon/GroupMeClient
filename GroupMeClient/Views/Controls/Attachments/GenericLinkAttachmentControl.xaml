@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="GroupMeClient.Views.Controls.GenericLinkAttachmentControl"
+﻿<UserControl x:Class="GroupMeClient.Views.Controls.Attachments.GenericLinkAttachmentControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,7 +9,13 @@
              d:DesignHeight="100" d:DesignWidth="400"
              Background="White">
 
-    <Grid>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="MouseDown" >
+            <i:InvokeCommandAction Command="{Binding Clicked}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid ForceCursor="true" Cursor="Hand">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>

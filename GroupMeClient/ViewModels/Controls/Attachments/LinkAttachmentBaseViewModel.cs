@@ -7,30 +7,52 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using System.Net;
 
-namespace GroupMeClient.ViewModels.Controls
+namespace GroupMeClient.ViewModels.Controls.Attachments
 {
     public abstract class LinkAttachmentBaseViewModel : ViewModelBase
     {
+        public LinkAttachmentBaseViewModel()
+        {
+            // in case the inline-downloader is not needed
+        }
+
         public LinkAttachmentBaseViewModel(string url)
         {
             this.Url = url;
 
-            if (this.Url.Contains(" "))
+            if (this.Uri != null)
             {
-                this.Url = this.Url.Substring(0, this.Url.IndexOf(" "));
-            }
-
-            if (Uri.TryCreate(this.Url, UriKind.Absolute, out var uri))
-            {
-                this.Uri = uri;
-                LoadGroupMeInfo().ContinueWith(a => this.MetadataDownloadCompleted());
+                _ = LoadGroupMeInfo();
             }
         }
 
-        public string Url { get; private set; }
+        private string url;
 
-        public Uri Uri { get; private set; }
+        public string Url
+        {
+            get
+            {
+                return url;
+            }
+            set
+            {
+                url = value;
+
+                if (url.Contains(" "))
+                {
+                    url = url.Substring(0, url.IndexOf(" "));
+                }
+
+                if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                {
+                    this.Uri = uri;
+                }
+            }
+        }
+
+        public Uri Uri { get; protected set; }
 
         protected GroupMeInlineDownloaderInfo LinkInfo { get; set; }
 
@@ -49,27 +71,39 @@ namespace GroupMeClient.ViewModels.Controls
 
         protected async Task DownloadImage(string url)
         {
-            var httpClient = new HttpClient();
-            var result = await httpClient.GetByteArrayAsync(url);
-
-            using (MemoryStream stream = new MemoryStream(result))
+            if (!string.IsNullOrEmpty(url))
             {
-                this.RenderedImage = BitmapFrame.Create(
-                    stream,
-                    BitmapCreateOptions.None,
-                    BitmapCacheOption.OnLoad);
+                var httpClient = new HttpClient();
+                var result = await httpClient.GetByteArrayAsync(url);
+
+                using (MemoryStream stream = new MemoryStream(result))
+                {
+                    this.RenderedImage = BitmapFrame.Create(
+                        stream,
+                        BitmapCreateOptions.None,
+                        BitmapCacheOption.OnLoad);
+                }
             }
         }
 
         protected async Task LoadGroupMeInfo()
         {
-            const string GROUPME_INLINE_URL = "https://inline-downloader.groupme.com/info?url=";
+            try
+            {
+                const string GROUPME_INLINE_URL = "https://inline-downloader.groupme.com/info?url=";
 
-            var downloader = new HttpClient();
-            var data = await downloader.GetStringAsync($"{GROUPME_INLINE_URL}{this.Url}");
+                var downloader = new HttpClient();
+                var data = await downloader.GetStringAsync($"{GROUPME_INLINE_URL}{WebUtility.UrlEncode(this.Url)}");
 
-            var results = JsonConvert.DeserializeObject<GroupMeInlineDownloaderInfo>(data);
-            this.LinkInfo = results;
+                var results = JsonConvert.DeserializeObject<GroupMeInlineDownloaderInfo>(data);
+                this.LinkInfo = results;
+
+                this.MetadataDownloadCompleted();
+            }
+            catch (Exception)
+            {
+                RaisePropertyChanged("");
+            }
         }
 
         protected abstract void MetadataDownloadCompleted();

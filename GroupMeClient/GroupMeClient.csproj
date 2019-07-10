@@ -65,13 +65,14 @@
     <Compile Include="Extensions\IsZeroConverter.cs" />
     <Compile Include="Extensions\MultiLineTextbox.cs" />
     <Compile Include="Extensions\ScrollViewerExtensions.cs" />
+    <Compile Include="Extensions\WebBrowserHelper.cs" />
     <Compile Include="SelectedItemToContentConverter.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
     <Compile Include="ViewModels\Controls\AvatarControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupContentsControlViewModel.cs" />
-    <Compile Include="ViewModels\Controls\GenericLinkAttachmentControlViewModel.cs" />
-    <Compile Include="ViewModels\Controls\TwitterAttachmentControlViewModel.cs" />
-    <Compile Include="ViewModels\Controls\LinkAttachmentBaseViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Attachments\GenericLinkAttachmentControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Attachments\TwitterAttachmentControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Attachments\LinkAttachmentBaseViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupControlViewModel.cs" />
     <Compile Include="Views\Controls\GroupContentsControl.xaml.cs">
@@ -80,10 +81,10 @@
     <Compile Include="Views\Controls\AvatarControl.xaml.cs">
       <DependentUpon>AvatarControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\GenericLinkAttachmentControl.xaml.cs">
+    <Compile Include="Views\Controls\Attachments\GenericLinkAttachmentControl.xaml.cs">
       <DependentUpon>GenericLinkAttachmentControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\TwitterAttachmentControl.xaml.cs">
+    <Compile Include="Views\Controls\Attachments\TwitterAttachmentControl.xaml.cs">
       <DependentUpon>TwitterAttachmentControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\MessageControl.xaml.cs">

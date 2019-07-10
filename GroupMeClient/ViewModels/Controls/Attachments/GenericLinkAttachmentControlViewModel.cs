@@ -8,14 +8,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Net.Http;
 using System.Windows.Media.Imaging;
+using GalaSoft.MvvmLight.Command;
 
-namespace GroupMeClient.ViewModels.Controls
+namespace GroupMeClient.ViewModels.Controls.Attachments
 {
     public class GenericLinkAttachmentControlViewModel : LinkAttachmentBaseViewModel
     {
         public GenericLinkAttachmentControlViewModel(string url) :
             base(url)
         {
+            this.Clicked = new RelayCommand(ClickedAction);
         }
 
         private ImageSource faviconImage;
@@ -34,6 +36,8 @@ namespace GroupMeClient.ViewModels.Controls
         public string Site => this.Uri?.Host;
 
         public string Handle => this.LinkInfo?.ScreenName;
+
+        public ICommand Clicked { get; }
 
         protected async Task DownloadFaviconImage(string url)
         {
@@ -54,6 +58,11 @@ namespace GroupMeClient.ViewModels.Controls
             _ = this.DownloadImage(this.LinkInfo.AnyPreviewPictureUrl);
             _ = this.DownloadFaviconImage(this.LinkInfo.Favicon);
             RaisePropertyChanged("");
+        }
+
+        private void ClickedAction()
+        {
+            Extensions.WebBrowserHelper.OpenUrl(this.Url);
         }
     }
 }
