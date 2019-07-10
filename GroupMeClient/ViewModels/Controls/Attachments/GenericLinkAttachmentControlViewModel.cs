@@ -41,15 +41,18 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
         protected async Task DownloadFaviconImage(string url)
         {
-            var httpClient = new HttpClient();
-            var result = await httpClient.GetByteArrayAsync(url);
-
-            using (MemoryStream stream = new MemoryStream(result))
+            if (!string.IsNullOrEmpty(url))
             {
-                this.FaviconImage = BitmapFrame.Create(
-                    stream,
-                    BitmapCreateOptions.None,
-                    BitmapCacheOption.OnLoad);
+                var httpClient = new HttpClient();
+                var result = await httpClient.GetByteArrayAsync(url);
+
+                using (MemoryStream stream = new MemoryStream(result))
+                {
+                    this.FaviconImage = BitmapFrame.Create(
+                        stream,
+                        BitmapCreateOptions.None,
+                        BitmapCacheOption.OnLoad);
+                }
             }
         }
 
