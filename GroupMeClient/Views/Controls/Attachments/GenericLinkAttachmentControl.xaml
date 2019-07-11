@@ -28,6 +28,8 @@
                Grid.RowSpan="2"
                MaxWidth="300"
                MaxHeight="250"
+               MinWidth="200"
+               MinHeight="200"
                VerticalAlignment="Stretch"
                HorizontalAlignment="Stretch"
                Source="{Binding RenderedImage}" />
