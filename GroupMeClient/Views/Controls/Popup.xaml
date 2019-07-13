@@ -1,0 +1,57 @@
+﻿<ContentControl
+    x:Class="GroupMeClient.Views.Controls.Popup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:GroupMeClient.Views.Controls"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="300"
+    x:Name="popup">
+
+    <ContentControl.Template>
+        <ControlTemplate TargetType="local:Popup">
+            <Grid Background="#7f000000">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Button Content="X"
+                                Width="35" Height="35"
+                                HorizontalAlignment="Right"
+                                BorderThickness="0"
+                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                Command="{Binding Path=ClosePopup}"
+                                CommandParameter="{Binding Path=.}">
+                            <Button.ContentTemplate>
+                                <DataTemplate>
+                                    <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="DarkGray" Kind="X"/>
+                                </DataTemplate>
+                            </Button.ContentTemplate>
+                        </Button>
+                    </Grid>
+
+                    <StackPanel Grid.Row="1"
+                                Background="White">
+                        <ContentPresenter/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </ControlTemplate>
+    </ContentControl.Template>
+    
+</ContentControl>
+    
