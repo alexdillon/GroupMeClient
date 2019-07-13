@@ -13,15 +13,9 @@ namespace GroupMeClient.ViewModels.Controls
 {
     public class AvatarControlViewModel : ViewModelBase
     {
-        public AvatarControlViewModel(Group group)
+        public AvatarControlViewModel(IMessageContainer messageContainer)
         {
-            this.Group = group;
-            _ = LoadAvatar();
-        }
-
-        public AvatarControlViewModel(Chat chat)
-        {
-            this.Chat = chat;
+            this.MessageContainer = messageContainer;
             _ = LoadAvatar();
         }
 
@@ -38,8 +32,7 @@ namespace GroupMeClient.ViewModels.Controls
             _ = LoadAvatar();
         }
 
-        public Group Group { get; }
-        public Chat Chat { get; }
+        public IMessageContainer MessageContainer { get; }
         public Message Message { get; }
         public Member Member { get; }
 
@@ -70,18 +63,21 @@ namespace GroupMeClient.ViewModels.Controls
 
         public async Task LoadAvatar()
         {
-            bool isSquare;
+            bool isSquare = false;
 
             byte[] image;
-            if (this.Group != null)
+            if (this.MessageContainer != null)
             {
-                image = await this.Group.DownloadAvatar();
-                isSquare = true;
-            }
-            else if (this.Chat != null)
-            {
-                image = await this.Chat.DownloadAvatar();
-                isSquare = false;
+                image = await this.MessageContainer.DownloadAvatar();
+
+                if (this.MessageContainer is Group)
+                {
+                    isSquare = true;
+                }
+                else if (this.MessageContainer is Chat)
+                {
+                    isSquare = false;
+                }
             }
             else if (this.Message != null)
             {
