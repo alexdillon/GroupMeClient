@@ -12,7 +12,7 @@ namespace GroupMeClientApi.Models
     /// <summary>
     /// <see cref="Message"/> represents a message in a GroupMe <see cref="Group"/> or <see cref="Chat"/>.
     /// </summary>
-    public class Message
+    public class Message : IAvatarSource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Message"/> class.
@@ -151,6 +151,12 @@ namespace GroupMeClientApi.Models
                 }
             }
         }
+
+        /// <inheritdoc />
+        string IAvatarSource.ImageOrAvatarUrl => this.AvatarUrl;
+
+        /// <inheritdoc />
+        bool IAvatarSource.IsRoundedAvatar => true;
 
         /// <summary>
         /// Creates a new <see cref="Message"/> that can be sent to a <see cref="Group"/>.

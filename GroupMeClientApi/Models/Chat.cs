@@ -12,7 +12,7 @@ namespace GroupMeClientApi.Models
     /// <summary>
     /// <see cref="Chat"/> represents a GroupMe Direct Message (or Chat) with another user.
     /// </summary>
-    public class Chat : IMessageContainer
+    public class Chat : IMessageContainer, IAvatarSource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Chat"/> class.
@@ -90,6 +90,12 @@ namespace GroupMeClientApi.Models
         /// </summary>
         [NotMapped]
         public GroupMeClient Client { get; internal set; }
+
+        /// <inheritdoc />
+        public string ImageOrAvatarUrl => ((IAvatarSource)this.OtherUser).ImageOrAvatarUrl;
+
+        /// <inheritdoc />
+        public bool IsRoundedAvatar => ((IAvatarSource)this.OtherUser).IsRoundedAvatar;
 
         /// <summary>
         /// Returns a set of messages from a this Direct Message / Chat.
@@ -176,16 +182,6 @@ namespace GroupMeClientApi.Models
             var restResponse = await this.Client.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
 
             return restResponse.StatusCode == System.Net.HttpStatusCode.Created;
-        }
-
-        /// <summary>
-        /// Downloads the Group Avatar using the default <see cref="ImageDownloader"/>.
-        /// </summary>
-        /// <returns>The avatar image.</returns>
-        public async Task<byte[]> DownloadAvatar()
-        {
-            var result = await this.Client.ImageDownloader.DownloadAvatarImage(this.OtherUser.ImageOrAvatarUrl, false);
-            return result;
         }
 
         /// <summary>

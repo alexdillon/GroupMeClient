@@ -9,7 +9,7 @@ namespace GroupMeClientApi.Models
     /// along with common client functionality and features. <see cref="Group"/> and <see cref="Chat"/> are
     /// two possible implementations of this interface.
     /// </summary>
-    public interface IMessageContainer
+    public interface IMessageContainer : IAvatarSource
     {
         /// <summary>
         /// Gets a unique identfier for this <see cref="IMessageContainer"/>.
@@ -62,12 +62,6 @@ namespace GroupMeClientApi.Models
         /// <param name="messageId">The Message Id that will be used by the sorting mode set in <paramref name="mode"/>.</param>
         /// <returns>A list of <see cref="Message"/>.</returns>
         Task<ICollection<Message>> GetMessagesAsync(MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "");
-
-        /// <summary>
-        /// Downloads the Avatar using the default <see cref="ImageDownloader"/>.
-        /// </summary>
-        /// <returns>The avatar image.</returns>
-        Task<byte[]> DownloadAvatar();
 
         /// <summary>
         /// Returns the authenticated user who is accessing this collection.

@@ -6,7 +6,7 @@ namespace GroupMeClientApi.Models
     /// <summary>
     /// Represents a GroupMe User.
     /// </summary>
-    public class Member
+    public class Member : IAvatarSource
     {
         /// <summary>
         /// Gets the Member's Global Id for GroupMe. Not used in <see cref="Chat"/>.
@@ -49,6 +49,9 @@ namespace GroupMeClientApi.Models
                 }
             }
         }
+
+        /// <inheritdoc />
+        bool IAvatarSource.IsRoundedAvatar => true;
 
         /// <summary>
         /// Gets the Member's unique identifier within a <see cref="Group"/>, or global identifier within a <see cref="Chat"/>.
