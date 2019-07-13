@@ -128,6 +128,27 @@ namespace GroupMeClientApi.Models
         public GroupMeClient Client { get; internal set; }
 
         /// <summary>
+        /// Gets a copy of the latest message for preview purposes.
+        /// Note that API Operations, like <see cref="Message.LikeMessage"/> cannot be performed.
+        /// See <see cref="Messages"/> list instead for full message objects.
+        /// This is the same data as <see cref="MsgPreview"/>, packaged in a <see cref="Message"/> object.
+        /// </summary>
+        public Message LatestMessage
+        {
+            get
+            {
+                var msg = new Message()
+                {
+                    Attachments = this.MsgPreview.Preview.Attachments,
+                    Text = this.MsgPreview.Preview.Text,
+                    Name = this.MsgPreview.Preview.Nickname,
+                };
+
+                return msg;
+            }
+        }
+
+        /// <summary>
         /// Returns a set of messages from a this Group Chat.
         /// </summary>
         /// <param name="mode">The method that should be used to determine the set of messages returned. </param>

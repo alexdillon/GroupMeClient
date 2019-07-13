@@ -37,6 +37,13 @@ namespace GroupMeClientApi.Models
         List<Message> Messages { get; }
 
         /// <summary>
+        /// Gets a copy of the latest message for preview purposes.
+        /// Note that API Operations, like <see cref="Message.LikeMessage"/> cannot be performed.
+        /// See <see cref="Messages"/> list instead for full message objects.
+        /// </summary>
+        Message LatestMessage { get; }
+
+        /// <summary>
         /// Gets the <see cref="GroupMeClient"/> that manages this collection.
         /// </summary>
         GroupMeClient Client { get; }
