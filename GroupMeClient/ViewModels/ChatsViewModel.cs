@@ -67,7 +67,7 @@ namespace GroupMeClient.ViewModels
                     else
                     {
                         // Update the existing Group
-                        existingVm.Group = group;
+                        existingVm.MessageContainer = group;
                     }
                 }
 
@@ -87,7 +87,7 @@ namespace GroupMeClient.ViewModels
                     else
                     {
                         // Update the existing Chat
-                        existingVm.Chat = chat;
+                        existingVm.MessageContainer = chat;
                     }
                 }
 
@@ -114,20 +114,11 @@ namespace GroupMeClient.ViewModels
             else
             {
                 // open a new group or chat
-                Controls.GroupContentsControlViewModel groupContentsDisplay;
-
-                if (group.Group != null)
+                var groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.MessageContainer)
                 {
-                    groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Group);
-                    //pushClient.SubscribeGroup(group.Group);
-                }
-                else
-                {
-                    groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.Chat);
-                }
+                    CloseGroup = new RelayCommand<Controls.GroupContentsControlViewModel>(CloseChat, (g) => true)
+                };
 
-                groupContentsDisplay.CloseGroup =
-                    new RelayCommand<Controls.GroupContentsControlViewModel>(CloseChat, (g) => true);
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
             }
 

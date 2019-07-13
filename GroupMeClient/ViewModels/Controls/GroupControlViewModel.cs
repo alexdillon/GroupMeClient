@@ -11,40 +11,23 @@ namespace GroupMeClient.ViewModels.Controls
         {
         }
 
-        public GroupControlViewModel(Group group)
+        public GroupControlViewModel(IMessageContainer messageContainer)
         {
-            this.Group = group;
-            this.Avatar = new AvatarControlViewModel(this.Group);
+            this.MessageContainer = messageContainer;
+            this.Avatar = new AvatarControlViewModel(this.MessageContainer);
         }
 
-        public GroupControlViewModel(Chat chat)
-        {
-            this.Chat = chat;
-            this.Avatar = new AvatarControlViewModel(this.Chat);
-        }
-
-        private Group group;
-        private Chat chat;
+        private IMessageContainer messageContainer;
         private AvatarControlViewModel avatar;
 
         public ICommand GroupSelected { get; set; }
 
-        public Group Group
+        public IMessageContainer MessageContainer
         {
-            get { return this.group; }
+            get { return this.messageContainer; }
             set
             {
-                Set(() => this.Group, ref group, value);
-                RaisePropertyChangeForAll();
-            }
-        }
-
-        public Chat Chat
-        {
-            get { return this.chat; }
-            set
-            {
-                Set(() => this.Chat, ref chat, value);
+                Set(() => this.MessageContainer, ref messageContainer, value);
                 RaisePropertyChangeForAll();
             }
         }
@@ -77,8 +60,11 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get
             {
-                var sender = this.Group?.MsgPreview.Preview.Nickname ?? this.Chat?.LatestMessage.Name;
-                var attachments = this.Group?.MsgPreview.Preview.Attachments ?? this.Chat?.LatestMessage.Attachments;
+                var latestPreviewMessage = this.MessageContainer.LatestMessage;
+
+                var sender = latestPreviewMessage.Name;
+                var attachments = latestPreviewMessage.Attachments;
+                var message = latestPreviewMessage.Text;
 
                 bool wasImageSent = false;
                 foreach (var attachment in attachments)
@@ -95,36 +81,16 @@ namespace GroupMeClient.ViewModels.Controls
                 }
                 else
                 {
-                    var message = this.Group?.MsgPreview.Preview.Text ?? this.Chat?.LatestMessage.Text;
                     return $"{sender}: {message}";
                 }
             }
         }
 
-        public string Title
-        {
-            get
-            {
-                var title = this.Group?.Name ?? this.Chat?.OtherUser.Name;
-                return title;
-            }
-        }
+        public string Title => this.MessageContainer.Name;
 
-        public DateTime LastUpdated
-        {
-            get
-            {
-                return this.Group?.UpdatedAtTime ?? this.Chat?.UpdatedAtTime ?? DateTime.Now;
-            }
-        }
+        public DateTime LastUpdated => this.MessageContainer.UpdatedAtTime;
 
-        public string Id
-        {
-            get
-            {
-                return this.Group?.Id ?? this.Chat?.Id;
-            }
-        }
+        public string Id => this.MessageContainer.Id;
 
         private void RaisePropertyChangeForAll()
         {
