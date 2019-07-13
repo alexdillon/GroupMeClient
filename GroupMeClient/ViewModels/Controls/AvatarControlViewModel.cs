@@ -1,9 +1,5 @@
-﻿using System.Linq;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;

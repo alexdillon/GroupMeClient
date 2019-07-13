@@ -14,8 +14,6 @@ namespace GroupMeClient.ViewModels.Controls
 
         private string typedMessageContents;
 
-        private Message composedMessage;
-
         private bool isSending;
 
         public ICommand SendMessage { get; set; }
