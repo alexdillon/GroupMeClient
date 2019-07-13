@@ -8,7 +8,6 @@ using GroupMeClientApi.Models;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Threading;
-using System.Windows.Data;
 using System.Windows;
 using System;
 using GroupMeClient.Extensions;
@@ -21,29 +20,21 @@ namespace GroupMeClient.ViewModels.Controls
         public GroupContentsControlViewModel()
         {
             this.Messages = new ObservableCollection<MessageControlViewModel>();
+            this.ReloadSem = new SemaphoreSlim(1, 1);
             this.SendMessage = new RelayCommand(async () => await SendMessageAsync(), true);
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await LoadMoreAsync(s), true);
             this.ClosePopup = new RelayCommand(ClosePopupHandler);
         }
 
-        public GroupContentsControlViewModel(Group group) : this()
+        public GroupContentsControlViewModel(IMessageContainer messageContainer) : this()
         {
-            this.Group = group;
-            this.TopBarAvatar = new AvatarControlViewModel(this.Group);
+            this.MessageContainer = messageContainer;
+            this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer);
 
             _ = Loaded();
         }
 
-        public GroupContentsControlViewModel(Chat chat) : this()
-        {
-            this.Chat = chat;
-            this.TopBarAvatar = new AvatarControlViewModel(this.Chat);
-
-            _ = Loaded();
-        }
-
-        private Group group;
-        private Chat chat;
+        private IMessageContainer messageContainer;
         private AvatarControlViewModel topBarAvatar;
         private string typedMessageContents;
         private SendImageControlViewModel imageSendDialog;
@@ -55,23 +46,17 @@ namespace GroupMeClient.ViewModels.Controls
 
         public ObservableCollection<MessageControlViewModel> Messages { get; }
 
-        private SemaphoreSlim ReloadSem { get; } = new SemaphoreSlim(1, 1);
+        private SemaphoreSlim ReloadSem { get; }
 
-        public Group Group
+        public IMessageContainer MessageContainer
         {
-            get { return this.group; }
-            set { Set(() => this.Group, ref group, value); }
+            get { return this.messageContainer; }
+            set { Set(() => this.MessageContainer, ref messageContainer, value); }
         }
 
-        public Chat Chat
-        {
-            get { return this.chat; }
-            set { Set(() => this.Chat, ref chat, value); }
-        }
+        public string Title => this.MessageContainer.Name;
 
-        public string Title => this.Group?.Name ?? this.Chat?.OtherUser.Name;
-
-        public string Id => this.Group?.Id ?? this.Chat?.Id;
+        public string Id => this.MessageContainer.Id;
 
         public AvatarControlViewModel TopBarAvatar
         {
@@ -113,55 +98,25 @@ namespace GroupMeClient.ViewModels.Controls
 
             try
             {
-                if (this.Group != null)
+                ICollection<Message> results;
+
+                if (this.FirstDisplayedMessage == null || updateNewest)
                 {
-                    await LoadMoreGroupMessagesAsync(scrollViewer, updateNewest);
+                    // load the most recent messages
+                    results = await this.MessageContainer.GetMessagesAsync();
                 }
-                else if (this.Chat != null)
+                else
                 {
-                    await LoadMoreChatMessagesAsync(scrollViewer, updateNewest);
+                    // load the 20 (GroupMe default) messages preceeding the oldest (first) one displayed
+                    results = await this.MessageContainer.GetMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, this.FirstDisplayedMessage.Id);
                 }
+
+                UpdateDisplay(scrollViewer, results);
             }
             finally
             {
                 this.ReloadSem.Release();
             }
-        }
-
-        private async Task LoadMoreGroupMessagesAsync(ScrollViewer scrollViewer = null, bool updateNewest = false)
-        {
-            ICollection<Message> results;
-
-            if (this.FirstDisplayedMessage == null || updateNewest)
-            {
-                // load the most recent messages
-                results = await group.GetMessagesAsync();
-            }
-            else
-            {
-                // load the 20 messages preceeding the oldest (first) one displayed
-                results = await group.GetMessagesAsync(20, GroupMeClientApi.MessageRetreiveMode.BeforeId, this.FirstDisplayedMessage.Id);
-            }
-
-            UpdateDisplay(scrollViewer, results);
-        }
-
-        private async Task LoadMoreChatMessagesAsync(ScrollViewer scrollViewer = null, bool updateNewest = false)
-        {
-            ICollection<Message> results;
-
-            if (this.FirstDisplayedMessage == null || updateNewest)
-            {
-                // load the most recent messages
-                results = await this.Chat.GetMessagesAsync();
-            }
-            else
-            {
-                // load the 20 messages preceeding the oldest (first) one displayed
-                results = await this.Chat.GetMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, this.FirstDisplayedMessage.Id);
-            }
-
-            UpdateDisplay(scrollViewer, results);
         }
 
         private void UpdateDisplay(ScrollViewer scrollViewer, ICollection<Message> messages)
@@ -227,15 +182,7 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             GroupMeClientApi.Models.Attachments.ImageAttachment attachment;
-
-            if (this.Group != null)
-            {
-                attachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(image, this.Group);
-            }
-            else
-            {
-                attachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(image, this.Chat);
-            }
+            attachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(image, this.MessageContainer);
 
             var attachmentsList = new List<GroupMeClientApi.Models.Attachments.Attachment> { attachment };
 
@@ -249,27 +196,15 @@ namespace GroupMeClient.ViewModels.Controls
         {
             this.TypedMessageContents = string.Empty;
 
-            bool success = false;
+            bool success;
 
-            if (this.Group != null)
+            success = await this.MessageContainer.SendMessage(newMessage);
+            if (success)
             {
-                success = await this.Group.SendMessage(newMessage);
-                if (success)
-                {
-                    this.Group.Messages.Add(newMessage);
-                    await this.LoadMoreAsync(null, true);
-                }
+                this.MessageContainer.Messages.Add(newMessage);
+                await this.LoadMoreAsync(null, true);
             }
-            else if (this.Chat != null)
-            {
-                success = await this.Chat.SendMessage(newMessage);
-                if (success)
-                {
-                    this.Chat.Messages.Add(newMessage);
-                    await this.LoadMoreAsync(null, true);
-                }
-            }
-
+            
             return success;
         }
 
@@ -311,9 +246,9 @@ namespace GroupMeClient.ViewModels.Controls
 
             foreach (var file in filepaths)
             {
-                if (supportedExtensions.Contains(System.IO.Path.GetExtension(file).ToLower()))
+                if (supportedExtensions.Contains(Path.GetExtension(file).ToLower()))
                 {
-                    this.ShowImageSendDialog(System.IO.File.OpenRead(file));
+                    this.ShowImageSendDialog(File.OpenRead(file));
                     break;
                 }
             }
