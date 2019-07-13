@@ -11,16 +11,19 @@ using System.Threading;
 using System.Windows.Data;
 using System.Windows;
 using System;
+using GroupMeClient.Extensions;
+using System.IO;
 
 namespace GroupMeClient.ViewModels.Controls
 {
-    public class GroupContentsControlViewModel : ViewModelBase, IDisposable
+    public class GroupContentsControlViewModel : ViewModelBase, IFileDragDropTarget, IDisposable
     {
         public GroupContentsControlViewModel()
         {
             this.Messages = new ObservableCollection<MessageControlViewModel>();
             this.SendMessage = new RelayCommand(async () => await SendMessageAsync(), true);
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await LoadMoreAsync(s), true);
+            this.ClosePopup = new RelayCommand(ClosePopupHandler);
         }
 
         public GroupContentsControlViewModel(Group group) : this()
@@ -43,10 +46,12 @@ namespace GroupMeClient.ViewModels.Controls
         private Chat chat;
         private AvatarControlViewModel topBarAvatar;
         private string typedMessageContents;
+        private SendImageControlViewModel imageSendDialog;
 
         public ICommand CloseGroup { get; set; }
         public ICommand SendMessage { get; set; }
         public ICommand ReloadView { get; set; }
+        public ICommand ClosePopup { get; set; }
 
         public ObservableCollection<MessageControlViewModel> Messages { get; }
 
@@ -78,6 +83,12 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get { return this.typedMessageContents; }
             set { Set(() => this.TypedMessageContents, ref typedMessageContents, value); }
+        }
+
+        public SendImageControlViewModel ImageSendDialog
+        {
+            get { return this.imageSendDialog; }
+            set { Set(() => this.ImageSendDialog, ref imageSendDialog, value); }
         }
 
         private Message FirstDisplayedMessage { get; set; } = null;
@@ -198,10 +209,47 @@ namespace GroupMeClient.ViewModels.Controls
         private async Task SendMessageAsync()
         {
             var newMessage = Message.CreateMessage(this.TypedMessageContents);
+            await this.SendMessageAsync(newMessage);
+        }
 
+        private async Task SendImageMessageAsync()
+        {
+            this.ImageSendDialog.IsSending = true;
+
+            var contents = this.ImageSendDialog.TypedMessageContents;
+            byte[] image;
+
+            using (var ms = new MemoryStream())
+            {
+                this.ImageSendDialog.ImageStream.Seek(0, SeekOrigin.Begin);
+                await this.ImageSendDialog.ImageStream.CopyToAsync(ms);
+                image = ms.ToArray();
+            }
+
+            GroupMeClientApi.Models.Attachments.ImageAttachment attachment;
+
+            if (this.Group != null)
+            {
+                attachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(image, this.Group);
+            }
+            else
+            {
+                attachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(image, this.Chat);
+            }
+
+            var attachmentsList = new List<GroupMeClientApi.Models.Attachments.Attachment> { attachment };
+
+            var message = Message.CreateMessage(contents, attachmentsList);
+            await this.SendMessageAsync(message);
+
+            this.ClosePopupHandler();
+        }
+
+        private async Task<bool> SendMessageAsync(Message newMessage)
+        {
             this.TypedMessageContents = string.Empty;
 
-            bool success;
+            bool success = false;
 
             if (this.Group != null)
             {
@@ -221,6 +269,32 @@ namespace GroupMeClient.ViewModels.Controls
                     await this.LoadMoreAsync(null, true);
                 }
             }
+
+            return success;
+        }
+
+        private void ShowImageSendDialog(byte[] image)
+        {
+            var ms = new MemoryStream(image);
+            this.ShowImageSendDialog(ms);
+        }
+
+        private void ShowImageSendDialog(Stream image)
+        {
+            var dialog = new SendImageControlViewModel()
+            {
+                ImageStream = image,
+                TypedMessageContents = this.TypedMessageContents,
+                SendMessage = new RelayCommand(async () => await SendImageMessageAsync(), true),
+            };
+
+            this.ImageSendDialog = dialog;
+        }
+
+        private void ClosePopupHandler()
+        {
+            (this.ImageSendDialog as IDisposable)?.Dispose();
+            this.ImageSendDialog = null;
         }
 
         void IDisposable.Dispose()
@@ -228,6 +302,20 @@ namespace GroupMeClient.ViewModels.Controls
             foreach (var msg in this.Messages)
             {
                 msg.Dispose();
+            }
+        }
+
+        void IFileDragDropTarget.OnFileDrop(string[] filepaths)
+        {
+            string[] supportedExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".bmp"};
+
+            foreach (var file in filepaths)
+            {
+                if (supportedExtensions.Contains(System.IO.Path.GetExtension(file).ToLower()))
+                {
+                    this.ShowImageSendDialog(System.IO.File.OpenRead(file));
+                    break;
+                }
             }
         }
     }
