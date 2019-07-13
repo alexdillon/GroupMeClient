@@ -11,7 +11,7 @@ namespace GroupMeClientApi.Models
     /// <summary>
     /// Represents a GroupMe Group Chat.
     /// </summary>
-    public class Group
+    public class Group : IMessageContainer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Group"/> class.
@@ -122,9 +122,21 @@ namespace GroupMeClientApi.Models
         public string InternalStateChanged { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="GroupMeClient"/> that manages this <see cref="Group"/>.
+        /// Gets the <see cref="GroupMeClient"/> that manages this <see cref="Group"/>.
         /// </summary>
-        internal GroupMeClient Client { get; set; }
+        [NotMapped]
+        public GroupMeClient Client { get; internal set; }
+
+        /// <summary>
+        /// Returns a set of messages from a this Group Chat.
+        /// </summary>
+        /// <param name="mode">The method that should be used to determine the set of messages returned. </param>
+        /// <param name="messageId">The Message Id that will be used by the sorting mode set in <paramref name="mode"/>.</param>
+        /// <returns>A list of <see cref="Message"/>.</returns>
+        public async Task<ICollection<Message>> GetMessagesAsync(MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
+        {
+            return await this.GetMessagesAsync(20, mode, messageId);
+        }
 
         /// <summary>
         /// Returns a set of messages from a this Group Chat.
@@ -133,7 +145,7 @@ namespace GroupMeClientApi.Models
         /// <param name="mode">The method that should be used to determine the set of messages returned. </param>
         /// <param name="messageId">The Message Id that will be used by the sorting mode set in <paramref name="mode"/>.</param>
         /// <returns>A list of <see cref="Message"/>.</returns>
-        public async Task<ICollection<Message>> GetMessagesAsync(int limit = 20, MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
+        public async Task<ICollection<Message>> GetMessagesAsync(int limit, MessageRetreiveMode mode, string messageId)
         {
             var request = this.Client.CreateRestRequest($"/groups/{this.Id}/messages", Method.GET);
             request.AddParameter("limit", limit);

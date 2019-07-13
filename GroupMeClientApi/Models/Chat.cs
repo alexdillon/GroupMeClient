@@ -12,7 +12,7 @@ namespace GroupMeClientApi.Models
     /// <summary>
     /// <see cref="Chat"/> represents a GroupMe Direct Message (or Chat) with another user.
     /// </summary>
-    public class Chat
+    public class Chat : IMessageContainer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Chat"/> class.
@@ -27,6 +27,12 @@ namespace GroupMeClientApi.Models
         /// </summary>
         [JsonProperty("other_user")]
         public virtual Member OtherUser { get; internal set; }
+
+        /// <summary>
+        /// Gets the name of the <see cref="Member"/> that this <see cref="Chat"/> is with.
+        /// <seealso cref="OtherUser"/>
+        /// </summary>
+        public string Name => this.OtherUser?.Name ?? string.Empty;
 
         /// <summary>
         /// Gets the Unix Timestamp for when this chat was created.
@@ -80,9 +86,10 @@ namespace GroupMeClientApi.Models
         public string InternalStateChanged { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="GroupMeClient"/> that manages this <see cref="Chat"/>.
+        /// Gets the <see cref="GroupMeClient"/> that manages this <see cref="Chat"/>.
         /// </summary>
-        internal GroupMeClient Client { get; set; }
+        [NotMapped]
+        public GroupMeClient Client { get; internal set; }
 
         /// <summary>
         /// Returns a set of messages from a this Direct Message / Chat.
