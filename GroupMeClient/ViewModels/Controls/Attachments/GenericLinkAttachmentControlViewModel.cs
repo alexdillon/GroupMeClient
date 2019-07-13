@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Linq;
-using GalaSoft.MvvmLight;
+﻿using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Input;
 using System.Windows.Media;

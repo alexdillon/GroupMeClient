@@ -10,7 +10,6 @@ using GroupMeClient.ViewModels.Controls.Attachments;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using System.Collections.ObjectModel;
-using System.Threading;
 
 namespace GroupMeClient.ViewModels.Controls
 {

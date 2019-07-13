@@ -9,8 +9,7 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:ic="http://schemas.microsoft.com/expression/2010/interactions"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              Background="#F7F7F7"
              d:DesignHeight="700" d:DesignWidth="500">
     <UserControl.Resources>
@@ -78,22 +77,6 @@
             <Border Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1"/>
         </Grid>
 
-        <!--<ListBox ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
-                 Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-                 BorderThickness="0"
-                 ScrollViewer.VerticalScrollBarVisibility="Visible"
-                 VirtualizingStackPanel.IsVirtualizing="True"
-                 VirtualizingStackPanel.VirtualizationMode="Standard"
-                 VirtualizingStackPanel.ScrollUnit="Pixel"
-                 extensions:ListBoxEx.AutoScrollToEnd="True"
-                 extensions:ListBoxEx.ScrollToTop="{Binding ReloadView}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <controls:MessageControl Content="{Binding Path=.}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>-->
-        
         <ItemsControl
              Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
              VirtualizingStackPanel.IsVirtualizing="True"
@@ -159,7 +142,7 @@
                 TextWrapping="Wrap"
                 Controls:TextBoxHelper.Watermark="Send a Message..."
                 Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                
+
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Send">
                         <i:InvokeCommandAction Command="{Binding Path=SendMessage}"/>
