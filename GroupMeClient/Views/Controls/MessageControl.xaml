@@ -102,6 +102,8 @@
 
         <Canvas x:Name="likesCanvas"
                 Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,-55,12,0">
+            
+           <!--Use a trigger to change the visibility of the liker's popup area-->
             <Canvas.Style>
                 <Style TargetType="{x:Type Canvas}">
                     <Setter Property="Visibility" Value="Hidden" />
@@ -126,8 +128,24 @@
                                   Margin="7"
                                   VirtualizingStackPanel.IsVirtualizing="True"
                                   VirtualizingStackPanel.ScrollUnit="Pixel"
-                                  ScrollViewer.CanContentScroll="True"
-                                  ItemsSource="{Binding Path=LikedByAvatars}">
+                                  ScrollViewer.CanContentScroll="True">
+
+                        <!--Use the same trigger to change the binding to load the Liker's Avatars-->
+                        <ItemsControl.Style>
+                            <Style TargetType="{x:Type ItemsControl}">
+                                
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding IsMouseOver, ElementName=likeButtonArea}" Value="True" />
+                                            <Condition Binding="{Binding Path=LikeCount, Converter={StaticResource isZeroConverter}}" Value="False" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="ItemsSource" Value="{Binding Path=LikedByAvatars}" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.Style>
+                        
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <controls:AvatarControl Content="{Binding Path=.}" Width="35" Height="35" Margin="3,0,3,0" />

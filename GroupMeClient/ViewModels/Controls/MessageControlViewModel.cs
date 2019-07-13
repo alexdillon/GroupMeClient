@@ -18,6 +18,7 @@ namespace GroupMeClient.ViewModels.Controls
         public MessageControlViewModel(Message message) 
         {
             this.Message = message;
+
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.LikeAction = new RelayCommand(async () => { await LikeMessageActionAsync(); }, () => { return true; }, true);
 
@@ -169,12 +170,13 @@ namespace GroupMeClient.ViewModels.Controls
                         (this.Message.Chat?.OtherUser.Id == memberId ? this.Message.Chat?.OtherUser : null) ??
                         ((this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI()).Id == memberId ? (this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI()) : null);
 
-                    yield return new AvatarControlViewModel(member, this.Message.ImageDownloader);
+                    var liker = new AvatarControlViewModel(member, this.Message.ImageDownloader);
+                    yield return liker;
                 }
             }
         }
 
-        public async Task LoadImageAttachment()
+        private async Task LoadImageAttachment()
         {
             byte[] image = null;
             foreach (var attachment in this.Message.Attachments)
@@ -196,7 +198,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.ImageAttachmentStream = new System.IO.MemoryStream(image);
         }
 
-        public void LoadLinkPreview()
+        private void LoadLinkPreview()
         {
             var text = this.Message.Text ?? string.Empty;
             if (text.Contains(" "))
@@ -279,7 +281,7 @@ namespace GroupMeClient.ViewModels.Controls
             RaisePropertyChanged("LikeStatus");
         }
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             ((IDisposable)imageAttachmentStream)?.Dispose();
         }

@@ -77,10 +77,43 @@
             <Border Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1"/>
         </Grid>
 
-        <ItemsControl
+        <ListBox ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
+                 Grid.Row="2" Grid.Column="0"
+                 BorderThickness="0"
+                 ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.CanContentScroll="True" 
+                 ScrollViewer.PanningMode="VerticalOnly" 
+                 VirtualizingStackPanel.IsVirtualizing="True"
+                 VirtualizingStackPanel.VirtualizationMode="Recycling"
+                 VirtualizingStackPanel.ScrollUnit="Pixel"
+                 extensions:ListBoxEx.AutoScrollToEnd="True"
+                 extensions:ListBoxEx.ScrollToTop="{Binding ReloadView}"
+                 Background="#F7F7F7">
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <ContentPresenter/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <controls:MessageControl 
+                        Content="{Binding Path=.}" 
+                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
+        <!--<ItemsControl
              Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-             VirtualizingStackPanel.IsVirtualizing="True"
-             VirtualizingStackPanel.ScrollUnit="Pixel"
              ScrollViewer.CanContentScroll="True"
              ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
              AllowDrop="True"
@@ -93,7 +126,10 @@
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel>
+                    <VirtualizingStackPanel
+                        VirtualizingPanel.IsVirtualizing="True"
+                        VirtualizingPanel.VirtualizationMode="Recycling"
+                        VirtualizingPanel.ScrollUnit="Item">
                     </VirtualizingStackPanel>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
@@ -108,7 +144,7 @@
                     </ScrollViewer>
                 </ControlTemplate>
             </ItemsControl.Template>
-        </ItemsControl>
+        </ItemsControl>-->
 
         <Grid Grid.Column="0" Grid.Row="3"
               Background="White">
