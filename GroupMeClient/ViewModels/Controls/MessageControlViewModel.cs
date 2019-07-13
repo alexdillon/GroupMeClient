@@ -18,7 +18,7 @@ namespace GroupMeClient.ViewModels.Controls
         public MessageControlViewModel(Message message) 
         {
             this.Message = message;
-            this.Avatar = new AvatarControlViewModel(this.Message);
+            this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.LikeAction = new RelayCommand(async () => { await LikeMessageActionAsync(); }, () => { return true; }, true);
 
             _ = LoadImageAttachment();

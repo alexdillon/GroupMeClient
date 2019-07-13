@@ -29,7 +29,7 @@ namespace GroupMeClient.ViewModels.Controls
         public GroupContentsControlViewModel(IMessageContainer messageContainer) : this()
         {
             this.MessageContainer = messageContainer;
-            this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer);
+            this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
 
             _ = Loaded();
         }

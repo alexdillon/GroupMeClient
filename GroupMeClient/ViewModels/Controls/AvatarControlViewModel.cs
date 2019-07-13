@@ -9,29 +9,14 @@ namespace GroupMeClient.ViewModels.Controls
 {
     public class AvatarControlViewModel : ViewModelBase
     {
-        public AvatarControlViewModel(IMessageContainer messageContainer)
+        public AvatarControlViewModel(IAvatarSource avatarSource, ImageDownloader imageDownloader)
         {
-            this.MessageContainer = messageContainer;
-            _ = LoadAvatar();
-        }
-
-        public AvatarControlViewModel(Message message)
-        {
-            this.Message = message;
-            _ = LoadAvatar();
-        }
-
-        public AvatarControlViewModel(Member member, ImageDownloader imageDownloader)
-        {
-            this.Member = member;
+            this.AvatarSource = avatarSource;
             this.ImageDownloader = imageDownloader;
             _ = LoadAvatar();
         }
 
-        public IMessageContainer MessageContainer { get; }
-        public Message Message { get; }
-        public Member Member { get; }
-
+        public IAvatarSource AvatarSource { get; }
         public ImageDownloader ImageDownloader { get; }
 
         private ImageSource avatarRound;
@@ -59,37 +44,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         public async Task LoadAvatar()
         {
-            bool isSquare = false;
-
-            byte[] image;
-            if (this.MessageContainer != null)
-            {
-                image = await this.MessageContainer.DownloadAvatar();
-
-                if (this.MessageContainer is Group)
-                {
-                    isSquare = true;
-                }
-                else if (this.MessageContainer is Chat)
-                {
-                    isSquare = false;
-                }
-            }
-            else if (this.Message != null)
-            {
-                var downloader = this.Message.ImageDownloader;
-                image = await downloader.DownloadAvatarImage(this.Message.AvatarUrl);
-                isSquare = false;
-            }
-            else if (this.Member != null && this.ImageDownloader != null)
-            {
-                image = await this.ImageDownloader.DownloadAvatarImage(this.Member.ImageOrAvatarUrl);
-                isSquare = false;
-            }
-            else
-            {
-                return;
-            }
+            byte[] image = await this.ImageDownloader.DownloadAvatarImage(this.AvatarSource.ImageOrAvatarUrl);
 
             using (var ms = new System.IO.MemoryStream(image))
             {
@@ -99,13 +54,13 @@ namespace GroupMeClient.ViewModels.Controls
                 bitmapImage.StreamSource = ms;
                 bitmapImage.EndInit();
 
-                if (isSquare)
+                if (this.AvatarSource.IsRoundedAvatar)
                 {
-                    this.AvatarSquare = bitmapImage;
+                    this.AvatarRound = bitmapImage;
                 }
                 else
                 {
-                    this.AvatarRound = bitmapImage;
+                    this.AvatarSquare = bitmapImage;
                 }
             }
         }

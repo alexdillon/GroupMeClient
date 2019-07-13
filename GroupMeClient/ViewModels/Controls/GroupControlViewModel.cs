@@ -14,7 +14,7 @@ namespace GroupMeClient.ViewModels.Controls
         public GroupControlViewModel(IMessageContainer messageContainer)
         {
             this.MessageContainer = messageContainer;
-            this.Avatar = new AvatarControlViewModel(this.MessageContainer);
+            this.Avatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
         }
 
         private IMessageContainer messageContainer;
