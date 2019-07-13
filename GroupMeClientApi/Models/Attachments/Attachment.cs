@@ -18,6 +18,10 @@ namespace GroupMeClientApi.Models.Attachments
         /// </summary>
         public virtual string Type { get; }
 
+        /// <summary>
+        /// Gets or sets the dummy ID used for serialization. This property is ignored.
+        /// </summary>
+        [JsonIgnore]
         public int FakeId { get; set; }
     }
 }
