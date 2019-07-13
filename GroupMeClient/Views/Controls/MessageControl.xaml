@@ -40,6 +40,7 @@
 
         <StackPanel Grid.Column="1" Grid.Row="2">
             <Image MaxWidth="500" 
+                   MaxHeight="600"
                    Stretch="Uniform"
                    StretchDirection="DownOnly"
                    HorizontalAlignment="Left"
