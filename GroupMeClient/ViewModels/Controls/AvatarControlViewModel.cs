@@ -4,6 +4,7 @@ using GroupMeClientApi.Models;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using GroupMeClientApi;
+using System;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -46,22 +47,15 @@ namespace GroupMeClient.ViewModels.Controls
         {
             byte[] image = await this.ImageDownloader.DownloadAvatarImage(this.AvatarSource.ImageOrAvatarUrl);
 
-            using (var ms = new System.IO.MemoryStream(image))
-            {
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
+            var bitmapImage = Extensions.ImageUtils.BytesToImageSource(image);
 
-                if (this.AvatarSource.IsRoundedAvatar)
-                {
-                    this.AvatarRound = bitmapImage;
-                }
-                else
-                {
-                    this.AvatarSquare = bitmapImage;
-                }
+            if (this.AvatarSource.IsRoundedAvatar)
+            {
+                this.AvatarRound = bitmapImage;
+            }
+            else
+            {
+                this.AvatarSquare = bitmapImage;
             }
         }
     }

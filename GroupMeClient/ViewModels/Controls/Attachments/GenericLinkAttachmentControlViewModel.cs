@@ -42,13 +42,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
                 var httpClient = new HttpClient();
                 var result = await httpClient.GetByteArrayAsync(url);
 
-                using (MemoryStream stream = new MemoryStream(result))
-                {
-                    this.FaviconImage = BitmapFrame.Create(
-                        stream,
-                        BitmapCreateOptions.None,
-                        BitmapCacheOption.OnLoad);
-                }
+                this.FaviconImage = Extensions.ImageUtils.BytesToImageSource(result);
             }
         }
 
