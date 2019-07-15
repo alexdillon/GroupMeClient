@@ -51,23 +51,21 @@ namespace GroupMeClient.Extensions
         private static void OnFileDragDropEnabled(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue == e.OldValue) return;
-            var control = d as Control;
-            if (control != null)
+            if (d is Control control)
             {
                 control.Drop += OnDrop;
 
-                CommandManager.AddPreviewExecutedHandler(control, onPreviewExecuted);
-                CommandManager.AddPreviewCanExecuteHandler(control, onPreviewCanExecute);
+                CommandManager.AddPreviewExecutedHandler(control, OnPreviewExecuted);
+                CommandManager.AddPreviewCanExecuteHandler(control, OnPreviewCanExecute);
             }
         }
 
         private static void OnDrop(object _sender, DragEventArgs _dragEventArgs)
         {
-            DependencyObject d = _sender as DependencyObject;
-            if (d == null) return;
-            Object target = d.GetValue(FileDragDropTargetProperty);
-            IDragDropTarget fileTarget = target as IDragDropTarget;
-            if (fileTarget != null)
+            if (!(_sender is DependencyObject d)) return;
+
+            var target = d.GetValue(FileDragDropTargetProperty);
+            if (target is IDragDropTarget fileTarget)
             {
                 if (_dragEventArgs.Data.GetDataPresent(DataFormats.FileDrop))
                 {
@@ -80,7 +78,7 @@ namespace GroupMeClient.Extensions
             }
         }
 
-        private static void onPreviewCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private static void OnPreviewCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (e.Command == ApplicationCommands.Paste)
             {
@@ -89,18 +87,17 @@ namespace GroupMeClient.Extensions
             }
         }
 
-        private static void onPreviewExecuted(object sender, ExecutedRoutedEventArgs e)
+        private static void OnPreviewExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             if (e.Command == ApplicationCommands.Paste)
             {
                 if (Clipboard.ContainsImage())
                 {
-                    DependencyObject d = sender as DependencyObject;
-                    if (d == null) return;
-                    Object target = d.GetValue(FileDragDropTargetProperty);
-                    IDragDropTarget fileTarget = target as IDragDropTarget;
+                    if (!(sender is DependencyObject d)) return;
 
-                    if (fileTarget != null)
+                    var target = d.GetValue(FileDragDropTargetProperty);
+
+                    if (target is IDragDropTarget fileTarget)
                     {
                         var image = Clipboard.GetImage();
                         var imageBytes = ImageUtils.BitmapSourceToBytes(image);
