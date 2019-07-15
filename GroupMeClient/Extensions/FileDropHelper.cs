@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GroupMeClient.Extensions
 {
@@ -10,9 +11,10 @@ namespace GroupMeClient.Extensions
     /// <remarks>
     /// Adapted from https://stackoverflow.com/a/37608994
     /// </remarks>
-    public interface IFileDragDropTarget
+    public interface IDragDropTarget
     {
         void OnFileDrop(string[] filepaths);
+        void OnImageDrop(byte[] image);
     }
 
     /// <summary>
@@ -50,7 +52,13 @@ namespace GroupMeClient.Extensions
         {
             if (e.NewValue == e.OldValue) return;
             var control = d as Control;
-            if (control != null) control.Drop += OnDrop;
+            if (control != null)
+            {
+                control.Drop += OnDrop;
+
+                CommandManager.AddPreviewExecutedHandler(control, onPreviewExecuted);
+                CommandManager.AddPreviewCanExecuteHandler(control, onPreviewCanExecute);
+            }
         }
 
         private static void OnDrop(object _sender, DragEventArgs _dragEventArgs)
@@ -58,7 +66,7 @@ namespace GroupMeClient.Extensions
             DependencyObject d = _sender as DependencyObject;
             if (d == null) return;
             Object target = d.GetValue(FileDragDropTargetProperty);
-            IFileDragDropTarget fileTarget = target as IFileDragDropTarget;
+            IDragDropTarget fileTarget = target as IDragDropTarget;
             if (fileTarget != null)
             {
                 if (_dragEventArgs.Data.GetDataPresent(DataFormats.FileDrop))
@@ -69,6 +77,43 @@ namespace GroupMeClient.Extensions
             else
             {
                 throw new Exception("FileDragDropTarget object must be of type IFileDragDropTarget");
+            }
+        }
+
+        private static void onPreviewCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (e.Command == ApplicationCommands.Paste)
+            {
+                e.CanExecute = true;
+                e.Handled = true;
+            }
+        }
+
+        private static void onPreviewExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Command == ApplicationCommands.Paste)
+            {
+                if (Clipboard.ContainsImage())
+                {
+                    DependencyObject d = sender as DependencyObject;
+                    if (d == null) return;
+                    Object target = d.GetValue(FileDragDropTargetProperty);
+                    IDragDropTarget fileTarget = target as IDragDropTarget;
+
+                    if (fileTarget != null)
+                    {
+                        var image = Clipboard.GetImage();
+                        var imageBytes = ImageUtils.BitmapSourceToBytes(image);
+
+                        fileTarget.OnImageDrop(imageBytes);
+                    }
+                    else
+                    {
+                        throw new Exception("FileDragDropTarget object must be of type IFileDragDropTarget");
+                    }
+
+                    e.Handled = true;
+                }
             }
         }
     }

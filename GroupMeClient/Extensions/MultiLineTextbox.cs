@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -50,10 +49,9 @@ namespace GroupMeClient.Extensions
             remove { RemoveHandler(SendEvent, value); }
         }
 
-        // This method raises the Tap event
         void RaiseSendEvent()
         {
-            RoutedEventArgs newEventArgs = new RoutedEventArgs(MultiLineSendBox.SendEvent);
+            RoutedEventArgs newEventArgs = new RoutedEventArgs(SendEvent);
             RaiseEvent(newEventArgs);
         }
     }

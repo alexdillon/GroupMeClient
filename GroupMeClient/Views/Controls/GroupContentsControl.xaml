@@ -89,10 +89,16 @@
                  VirtualizingStackPanel.ScrollUnit="Pixel"
                  extensions:ListBoxEx.AutoScrollToEnd="True"
                  extensions:ListBoxEx.ScrollToTop="{Binding ReloadView}"
+                 AllowDrop="True"
+                 extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
+                 extensions:FileDragDropHelper.FileDragDropTarget="{Binding}"
                  Background="#F7F7F7">
-
+            
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                    <Setter Property="VerticalContentAlignment" Value="Top"/>
+                    
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -167,17 +173,19 @@
 
             <extensions:MultiLineSendBox
                 Grid.Row="1" Grid.Column="1"
-                BorderBrush="Transparent"
-                BorderThickness="0"
-                FontSize="15"
                 MinHeight="49"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 VerticalContentAlignment="Center"
+                BorderBrush="Transparent"
+                BorderThickness="0"
+                FontSize="15"
                 AcceptsReturn="True"
                 TextWrapping="Wrap"
                 Controls:TextBoxHelper.Watermark="Send a Message..."
-                Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
+                extensions:FileDragDropHelper.FileDragDropTarget="{Binding}">
 
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Send">

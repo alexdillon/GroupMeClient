@@ -15,7 +15,7 @@ using System.IO;
 
 namespace GroupMeClient.ViewModels.Controls
 {
-    public class GroupContentsControlViewModel : ViewModelBase, IFileDragDropTarget, IDisposable
+    public class GroupContentsControlViewModel : ViewModelBase, IDragDropTarget, IDisposable
     {
         public GroupContentsControlViewModel()
         {
@@ -234,13 +234,14 @@ namespace GroupMeClient.ViewModels.Controls
 
         void IDisposable.Dispose()
         {
-            foreach (var msg in this.Messages)
-            {
-                msg.Dispose();
-            }
+            this.Messages.Clear();
+            //foreach (var msg in this.Messages)
+            //{
+            //    (msg as IDisposable)?.Dispose();
+            //}
         }
 
-        void IFileDragDropTarget.OnFileDrop(string[] filepaths)
+        void IDragDropTarget.OnFileDrop(string[] filepaths)
         {
             string[] supportedExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".bmp"};
 
@@ -252,6 +253,12 @@ namespace GroupMeClient.ViewModels.Controls
                     break;
                 }
             }
+        }
+
+        void IDragDropTarget.OnImageDrop(byte[] image)
+        {
+            var memoryStream = new MemoryStream(image);
+            this.ShowImageSendDialog(memoryStream);
         }
     }
 }
