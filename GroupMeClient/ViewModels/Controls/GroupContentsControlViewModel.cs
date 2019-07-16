@@ -87,6 +87,21 @@ namespace GroupMeClient.ViewModels.Controls
             });
         }
 
+        public void UpdateMessageLikes(Message message)
+        {
+            var msgVm = this.Messages.FirstOrDefault(m => m.Id == message.Id);
+
+            // Only update the display copy and leave the cached copy alone
+            // Cached copy is never used for displaying 'Like' status
+            msgVm.Message.FavoritedBy.Clear();
+            foreach (var liker in message.FavoritedBy)
+            {
+                msgVm.Message.FavoritedBy.Add(liker);
+            }
+
+            msgVm.UpdateDisplay();
+        }
+
         private async Task Loaded()
         {
             await LoadMoreAsync();

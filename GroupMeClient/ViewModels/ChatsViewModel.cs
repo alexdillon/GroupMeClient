@@ -91,8 +91,6 @@ namespace GroupMeClient.ViewModels
                     }
                 }
 
-                RaisePropertyChanged("AllGroupsChats");
-
                 await this.GroupMeClient.Update();
             }
             finally
@@ -120,21 +118,26 @@ namespace GroupMeClient.ViewModels
                 };
 
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
+
+                _ = this.pushClient.SubscribeAsync(group.MessageContainer);
             }
 
             // limit to three multi-chats at a time
             while (this.ActiveGroupsChats.Count > 3)
             {
-                this.ActiveGroupsChats.RemoveAt(this.ActiveGroupsChats.Count - 1);
-            }
+                var removeGroup = this.ActiveGroupsChats.Last();
+                this.pushClient.Unsubscribe(group.MessageContainer);
 
+                this.ActiveGroupsChats.Remove(removeGroup);
+            }
         }
 
         private void CloseChat(Controls.GroupContentsControlViewModel groupContentsControlViewModel)
         {
             this.ActiveGroupsChats.Remove(groupContentsControlViewModel);
+            this.pushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
+
             ((IDisposable)groupContentsControlViewModel).Dispose();
-            
         }
 
         private void PushNotificationReceived(object sender, Notification notification)
@@ -142,16 +145,21 @@ namespace GroupMeClient.ViewModels
             switch (notification)
             {
                 case LikeCreateNotification likeCreate:
+                    this.RouteMessageUpdatedSignal(likeCreate.FavoriteSubject.Message);
+                    break;
+
+                case FavoriteUpdate likeUpdate:
+                    this.RouteMessageUpdatedSignal(likeUpdate.FavoriteSubject.Message);
                     break;
 
                 case LineMessageCreateNotification lineCreate:
-                    _ = LoadGroupsAndChats();
-                    _ = RouteUpdateSignalGroup(lineCreate);
+                    _ = this.LoadGroupsAndChats();
+                    _ = this.RouteUpdateSignalGroup(lineCreate);
                     break;
 
                 case DirectMessageCreateNotification directCreate:
-                    _ = LoadGroupsAndChats();
-                    _ = RouteUpdateSignalChat(directCreate);
+                    _ = this.LoadGroupsAndChats();
+                    _ = this.RouteUpdateSignalChat(directCreate);
                     break;
 
                 case PingNotification _:
@@ -181,6 +189,35 @@ namespace GroupMeClient.ViewModels
             var chatVm = this.ActiveGroupsChats.FirstOrDefault(c => c.Id == otherUser);
 
             await chatVm?.LoadNewMessages();
+        }
+
+        private void RouteMessageUpdatedSignal(Message message)
+        {
+            string id = "";
+            if (!string.IsNullOrEmpty(message.GroupId))
+            {
+                id = message.GroupId;
+            }
+            else if (!string.IsNullOrEmpty(message.ChatId))
+            {
+                var me = GroupMeClient.WhoAmI();
+
+                // Chat IDs are formatted as UserID+UserID. Find the other user's ID
+                var chatId = message.ChatId;
+                var users = chatId.Split('+');
+                var otherUser = users.First(u => u != me.Id);
+
+                id = otherUser;
+            }
+            else
+            {
+                // must be malformed, silently ignore and continue
+                return;
+            }
+
+            var groupChatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == id);
+
+            groupChatVm?.UpdateMessageLikes(message);
         }
     }
 }

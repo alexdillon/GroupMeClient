@@ -48,6 +48,11 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        public void UpdateDisplay()
+        {
+            RaisePropertyChanged(""); // no property name to force every single property to be updated
+        }
+
         public AvatarControlViewModel Avatar
         {
             get { return this.avatar; }
