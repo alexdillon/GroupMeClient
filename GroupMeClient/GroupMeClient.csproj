@@ -66,8 +66,8 @@
     <Compile Include="Extensions\FileDropHelper.cs" />
     <Compile Include="Extensions\ImageUtils.cs" />
     <Compile Include="Extensions\IsZeroConverter.cs" />
-    <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\MultiLineTextbox.cs" />
+    <Compile Include="Extensions\ListBoxExtensions.cs" />
     <Compile Include="Extensions\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\ScrollViewerExtensions.cs" />
     <Compile Include="Extensions\WebBrowserHelper.cs" />
