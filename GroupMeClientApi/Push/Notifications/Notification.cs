@@ -11,6 +11,7 @@ namespace GroupMeClientApi.Push.Notifications
     [JsonSubtypes.KnownSubType(typeof(DirectMessageCreateNotification), "direct_message.create")]
     [JsonSubtypes.KnownSubType(typeof(LineMessageCreateNotification), "line.create")]
     [JsonSubtypes.KnownSubType(typeof(LikeCreateNotification), "like.create")]
+    [JsonSubtypes.KnownSubType(typeof(FavoriteUpdate), "favorite")]
     public class Notification
     {
         /// <summary>

@@ -1,14 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using GroupMeClientApi.Models;
+using Newtonsoft.Json;
 
 namespace GroupMeClientApi.Push.Notifications
 {
     /// <summary>
-    /// Represents a notification indicating that a message has been liked.
+    /// Represents a notification indicating that the likers for a <see cref="Message"/> have changed.
     /// </summary>
-    public class LikeCreateNotification : Notification
+    public class FavoriteUpdate : Notification
     {
         /// <inheritdoc/>
-        public override string Type { get; } = "like.create";
+        public override string Type { get; } = "favorite";
 
         /// <summary>
         /// Gets the alert text.

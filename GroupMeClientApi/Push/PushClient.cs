@@ -54,6 +54,8 @@ namespace GroupMeClientApi.Push
 
         private TimeSpan MaxConnectionInterval => TimeSpan.FromMinutes(50);
 
+        private List<Group> SubscribedGroups { get; } = new List<Group>();
+
         /// <summary>
         /// Connects to the GroupMe Server to prepare for receiving notifications.
         /// </summary>
@@ -65,51 +67,71 @@ namespace GroupMeClientApi.Push
             }
         }
 
-        ///// <summary>
-        ///// Subscribes to push notifications for a specific <see cref="Group"/>.
-        ///// </summary>
-        ///// <param name="group">The Group to receive notifications for.</param>
-        ///// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        //public async Task SubscribeGroup(Group group)
-        //{
-        //    var extensions = new Dictionary<string, object>
-        //    {
-        //        { "access_token", this.Client.AuthToken },
-        //        { "timestamp", DateTime.Now.ToUniversalTime().ToBinary().ToString() },
-        //    };
+        /// <summary>
+        /// Subscribes to push notifications for a specific <see cref="IMessageContainer"/>.
+        /// </summary>
+        /// <param name="container">The container to receive notifications for.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        public async Task SubscribeAsync(IMessageContainer container)
+        {
+            if (container is Group g)
+            {
+                await this.SubscribeGroupAsync(g);
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"Subscribe not supported for name={container.Name}");
+            }
+        }
 
-        //    // Subscribe to channel.
-        //    await this.BayeuxClient.Subscribe(
-        //        $"/group/{group.Id}",
-        //        (m) => this.GroupCallback(group, m),
-        //        extensions);
-        //}
+        /// <summary>
+        /// Subscribes to push notifications for a specific <see cref="Group"/>.
+        /// </summary>
+        /// <param name="group">The Group to receive notifications for.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        public async Task SubscribeGroupAsync(Group group)
+        {
+            if (!this.SubscribedGroups.Contains(group))
+            {
+                this.SubscribedGroups.Add(group);
+            }
 
-        ///// <summary>
-        ///// Subscribes to push notifications for a specific <see cref="Chat"/>.
-        ///// </summary>
-        ///// <param name="chat">The Chat to receive notifications for.</param>
-        ///// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        //public async Task SubscribeChat(Chat chat)
-        //{
-        //    var extensions = new Dictionary<string, object>
-        //    {
-        //        { "access_token", this.Client.AuthToken },
-        //        { "timestamp", DateTime.Now.ToUniversalTime().ToBinary().ToString() },
-        //    };
+            await this.SendGroupSubscriptionRequestAsync(group);
+        }
 
-        //    // Subscribe to channel.
-        //    await this.BayeuxClient.Subscribe(
-        //        $"/user/{chat.Id}",
-        //        (m) => this.ChatCallback(chat, m),
-        //        extensions);
-        //}
+        /// <summary>
+        /// Unsubscribes from push notifications for a specific <see cref="IMessageContainer"/>.
+        /// </summary>
+        /// <param name="container">The container to unsubscribe from receive notifications for.</param>
+        public void Unsubscribe(IMessageContainer container)
+        {
+            if (container is Group g)
+            {
+                this.UnsubscribeGroup(g);
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"Unsubscribe not supported for name={container.Name}");
+            }
+        }
+
+        /// <summary>
+        /// Unsubscribes from push notifications for a specific <see cref="Group"/>.
+        /// </summary>
+        /// <param name="group">The Group to unsubscribe from receiving notifications for.</param>
+        public void UnsubscribeGroup(Group group)
+        {
+            if (this.SubscribedGroups.Contains(group))
+            {
+                this.SubscribedGroups.Remove(group);
+            }
+        }
 
         /// <summary>
         /// Subscribes to all push notifications for the current user.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        private async Task SubscribeMe()
+        private async Task SubscribeMeAsync()
         {
             var extensions = new Dictionary<string, object>
             {
@@ -126,6 +148,26 @@ namespace GroupMeClientApi.Push
                 extensions);
         }
 
+        /// <summary>
+        /// Sends a Bayeux command requesting push notifications for a specific <see cref="Group"/>.
+        /// </summary>
+        /// <param name="group">The Group to receive notifications for.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        private async Task SendGroupSubscriptionRequestAsync(Group group)
+        {
+            var extensions = new Dictionary<string, object>
+            {
+                { "access_token", this.Client.AuthToken },
+                { "timestamp", DateTime.Now.ToUniversalTime().ToBinary().ToString() },
+            };
+
+            // Subscribe to channel.
+            await this.BayeuxClient.Subscribe(
+                $"/group/{group.Id}",
+                (m) => this.GroupCallback(group, m),
+                extensions);
+        }
+
         private async Task MonitorConnection()
         {
             while (!this.CancellationTokenSource.IsCancellationRequested)
@@ -136,8 +178,14 @@ namespace GroupMeClientApi.Push
                     {
                         this.RenewalTimer?.Dispose();
 
+                        this.BayeuxClient?.Disconnect();
                         await this.BayeuxClient.Connect();
-                        await this.SubscribeMe();
+                        await this.SubscribeMeAsync();
+
+                        foreach (var group in this.SubscribedGroups)
+                        {
+                            await this.SendGroupSubscriptionRequestAsync(group);
+                        }
 
                         this.RenewalTimer = new Timer(
                             new TimerCallback((a) => this.BayeuxClient.Disconnect()),
@@ -167,11 +215,16 @@ namespace GroupMeClientApi.Push
             var notification = JsonConvert.DeserializeObject<Notifications.Notification>(jsonString);
 
             Console.WriteLine($"Received {message.Data.ToString()} for {group.Name}");
-        }
 
-        private void ChatCallback(Chat chat, IBayeuxMessage message)
-        {
-            Console.WriteLine($"Received {message.Data.ToString()} for {chat.OtherUser.Name}");
+            try
+            {
+                var handler = this.NotificationReceived;
+                handler?.Invoke(this, notification);
+            }
+            catch (Exception)
+            {
+                System.Diagnostics.Debug.WriteLine("Error handling callback for 'Group' notification");
+            }
         }
 
         private void MeCallback(IBayeuxMessage message)
@@ -181,8 +234,15 @@ namespace GroupMeClientApi.Push
 
             Console.WriteLine($"Received {message.Data.ToString()} for ME! at {System.DateTime.Now.ToShortTimeString()}");
 
-            var handler = this.NotificationReceived;
-            handler?.Invoke(this, notification);
+            try
+            {
+                var handler = this.NotificationReceived;
+                handler?.Invoke(this, notification);
+            }
+            catch (Exception)
+            {
+                System.Diagnostics.Debug.WriteLine("Error handling callback for 'Me' notification");
+            }
         }
     }
 }
