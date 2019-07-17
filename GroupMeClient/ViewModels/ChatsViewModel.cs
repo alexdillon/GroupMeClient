@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
 using GalaSoft.MvvmLight;
@@ -6,14 +7,17 @@ using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Push.Notifications;
 using System.Threading;
-using System;
+using GroupMeClient.Notifications;
+using GroupMeClientApi.Push;
 
 namespace GroupMeClient.ViewModels
 {
-    public class ChatsViewModel : ViewModelBase
+    public class ChatsViewModel : ViewModelBase, INotificationSink
     {
-        public ChatsViewModel()
+        public ChatsViewModel(GroupMeClientApi.GroupMeClient groupMeClient)
         {
+            this.GroupMeClient = groupMeClient;
+
             this.AllGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
        
@@ -23,22 +27,14 @@ namespace GroupMeClient.ViewModels
         public ObservableCollection<Controls.GroupControlViewModel> AllGroupsChats { get; set; }
         public ObservableCollection<Controls.GroupContentsControlViewModel> ActiveGroupsChats { get; set; }
 
-        private GroupMeClientApi.Push.PushClient pushClient;
-
-        private GroupMeClientCached.GroupMeCachedClient GroupMeClient { get; set; }
+        private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
+        private PushClient PushClient { get; set; }
 
         private SemaphoreSlim ReloadGroupsSem { get; } = new SemaphoreSlim(1, 1);
 
         private async Task Loaded()
         {
-            string token = System.IO.File.ReadAllText("../../../DevToken.txt");
-            this.GroupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
-
-            pushClient = this.GroupMeClient.EnablePushNotifications();
-            pushClient.NotificationReceived += PushNotificationReceived;
-
             this.AllGroupsChats.Clear();
-
             await LoadGroupsAndChats();
         }
 
@@ -119,14 +115,14 @@ namespace GroupMeClient.ViewModels
 
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
 
-                _ = this.pushClient.SubscribeAsync(group.MessageContainer);
+                _ = this.PushClient.SubscribeAsync(group.MessageContainer);
             }
 
             // limit to three multi-chats at a time
             while (this.ActiveGroupsChats.Count > 3)
             {
                 var removeGroup = this.ActiveGroupsChats.Last();
-                this.pushClient.Unsubscribe(group.MessageContainer);
+                this.PushClient.Unsubscribe(group.MessageContainer);
 
                 this.ActiveGroupsChats.Remove(removeGroup);
             }
@@ -135,50 +131,25 @@ namespace GroupMeClient.ViewModels
         private void CloseChat(Controls.GroupContentsControlViewModel groupContentsControlViewModel)
         {
             this.ActiveGroupsChats.Remove(groupContentsControlViewModel);
-            this.pushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
+            this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
 
             ((IDisposable)groupContentsControlViewModel).Dispose();
         }
 
-        private void PushNotificationReceived(object sender, Notification notification)
+        async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification)
         {
-            switch (notification)
-            {
-                case LikeCreateNotification likeCreate:
-                    this.RouteMessageUpdatedSignal(likeCreate.FavoriteSubject.Message);
-                    break;
+            _ = this.LoadGroupsAndChats();
 
-                case FavoriteUpdate likeUpdate:
-                    this.RouteMessageUpdatedSignal(likeUpdate.FavoriteSubject.Message);
-                    break;
-
-                case LineMessageCreateNotification lineCreate:
-                    _ = this.LoadGroupsAndChats();
-                    _ = this.RouteUpdateSignalGroup(lineCreate);
-                    break;
-
-                case DirectMessageCreateNotification directCreate:
-                    _ = this.LoadGroupsAndChats();
-                    _ = this.RouteUpdateSignalChat(directCreate);
-                    break;
-
-                case PingNotification _:
-                default:
-                    break;
-
-            }
-        }
-
-        private async Task RouteUpdateSignalGroup(LineMessageCreateNotification notification)
-        {
             var groupId = notification.Message.GroupId;
             var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == groupId);
 
             await groupVm?.LoadNewMessages();
         }
 
-        private async Task RouteUpdateSignalChat(DirectMessageCreateNotification notification)
+        async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification)
         {
+            _ = this.LoadGroupsAndChats();
+
             var me = GroupMeClient.WhoAmI();
 
             // Chat IDs are formatted as UserID+UserID. Find the other user's ID
@@ -191,7 +162,7 @@ namespace GroupMeClient.ViewModels
             await chatVm?.LoadNewMessages();
         }
 
-        private void RouteMessageUpdatedSignal(Message message)
+        void INotificationSink.MessageUpdated(Message message)
         {
             string id = "";
             if (!string.IsNullOrEmpty(message.GroupId))
@@ -218,6 +189,16 @@ namespace GroupMeClient.ViewModels
             var groupChatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == id);
 
             groupChatVm?.UpdateMessageLikes(message);
+        }
+
+        void INotificationSink.HeartbeatReceived()
+        {
+        }
+
+        void INotificationSink.RegisterPushSubscriptions(PushClient pushClient)
+        {
+            // Save the PushClient for Subscribing/Unsubscribing from sources later
+            this.PushClient = pushClient;
         }
     }
 }

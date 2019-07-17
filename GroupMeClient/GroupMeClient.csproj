@@ -71,6 +71,8 @@
     <Compile Include="Extensions\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\ScrollViewerExtensions.cs" />
     <Compile Include="Extensions\WebBrowserHelper.cs" />
+    <Compile Include="Notifications\INotificationSink.cs" />
+    <Compile Include="Notifications\NotificationRouter.cs" />
     <Compile Include="SelectedItemToContentConverter.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\ImageLinkAttachmentControlViewModel.cs" />

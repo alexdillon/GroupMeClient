@@ -12,23 +12,34 @@
 
         public MainViewModel()
         {
+            InitializeGroupMeClient();
+
+            MainViewModel.ChatsViewModel = new ChatsViewModel(MainViewModel.GroupMeClient);
+            MainViewModel.SecondViewModel = new SecondViewModel();
+            MainViewModel.SettingsViewModel = new SettingsViewModel();
+
+            RegisterNotifications();
+
             CreateMenuItems();
         }
+
+        static GroupMeClientCached.GroupMeCachedClient GroupMeClient { get; set; }
+        static NotificationRouter NotificationRouter { get; set; }
 
         /// <summary>
         /// Gets a static instance of one of the Chat's ViewModel
         /// </summary>
-        static ChatsViewModel ChatsViewModel { get; } = new ChatsViewModel();
+        static ChatsViewModel ChatsViewModel { get; set; }
 
         /// <summary>
         /// Gets a static instance of one of the **** TODO***** ViewModel
         /// </summary>
-        static SecondViewModel SecondViewModel { get; } = new SecondViewModel();
+        static SecondViewModel SecondViewModel { get; set; }
 
         /// <summary>
         /// Gets a static instance of one of the Settings ViewModel
         /// </summary>
-        static SettingsViewModel SettingsViewModel { get; } = new SettingsViewModel();
+        static SettingsViewModel SettingsViewModel { get; set; }
 
         /// <summary>
         /// Gets or sets the list of main items shown in the hamburger menu.
@@ -78,6 +89,20 @@
                     Tag = MainViewModel.SettingsViewModel
                 }
             };
+        }
+        
+        private static void InitializeGroupMeClient()
+        {
+            string token = System.IO.File.ReadAllText("../../../DevToken.txt");
+            MainViewModel.GroupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
+            MainViewModel.NotificationRouter = new NotificationRouter(MainViewModel.GroupMeClient);
+        }
+
+        private static void RegisterNotifications()
+        {
+            MainViewModel.NotificationRouter.RegisterNewSubscriber(MainViewModel.ChatsViewModel);
+
+            // TODO register windows notifications
         }
     }
 }
