@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
-using GroupMeClientApi.Models;
 
 namespace GroupMeClient.ViewModels.Controls
 {
