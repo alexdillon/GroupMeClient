@@ -29,7 +29,7 @@ namespace GroupMeClient.Notifications.Display
             return new PopupNotificationProvider(new WpfToast.WpfToastNotificationProvider());
         }
 
-    async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
+        async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
         {
             if (!string.IsNullOrEmpty(notification.Alert) && !this.DidISendIt(notification.Message))
             {

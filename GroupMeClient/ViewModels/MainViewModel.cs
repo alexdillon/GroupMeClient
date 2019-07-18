@@ -103,6 +103,7 @@
         {
             MainViewModel.NotificationRouter.RegisterNewSubscriber(MainViewModel.ChatsViewModel);
             MainViewModel.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
+            MainViewModel.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider());
             // TODO register windows notifications
         }
     }

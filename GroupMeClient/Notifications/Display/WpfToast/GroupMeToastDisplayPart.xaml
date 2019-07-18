@@ -1,0 +1,30 @@
+﻿<core:NotificationDisplayPart xmlns:Controls="clr-namespace:GroupMeClient.Views.Controls"  x:Class="GroupMeClient.Notifications.Display.WpfToast.GroupMeToastDisplayPart"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:core="clr-namespace:ToastNotifications.Core;assembly=ToastNotifications"
+            mc:Ignorable="d" d:DesignWidth="250"  >
+
+    <Border x:Name="ContentWrapper" Style="{DynamicResource NotificationBorder}" Background="White">
+        <Grid x:Name="ContentContainer">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto"  />
+            </Grid.ColumnDefinitions>
+            <Controls:AvatarControl Width="25" Height="25"
+                                        Content="{Binding Avatar}"/>
+            
+            <TextBlock x:Name="Text" Text="{Binding Message}" Style="{StaticResource NotificationText}" 
+                       Foreground="Black" FontWeight="SemiBold"  Grid.Column="1"  />
+            <Button x:Name="CloseButton" Style="{StaticResource NotificationCloseButton}"  Padding="1" Grid.Column="2"  Click="OnClose" Visibility="Hidden" Foreground="DarkGray">
+                <Rectangle Style="{StaticResource CloseButtonIcon}" Margin="2">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill" Visual="{StaticResource CloseIcon}"/>
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+        </Grid>
+    </Border>
+</core:NotificationDisplayPart>

@@ -74,6 +74,12 @@
     <Compile Include="Extensions\WebBrowserHelper.cs" />
     <Compile Include="Notifications\Display\Win10\DesktopNotificationManagerCompat.cs" />
     <Compile Include="Notifications\Display\Win10\NotificationActivator.cs" />
+    <Compile Include="Notifications\Display\WpfToast\GroupMeToastExtensions.cs" />
+    <Compile Include="Notifications\Display\WpfToast\GroupMeToastDisplayPart.xaml.cs">
+      <DependentUpon>GroupMeToastDisplayPart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Notifications\Display\WpfToast\GroupMeToastNotification.cs" />
+    <Compile Include="Notifications\Display\WpfToast\WpfToastNotificationProvider.cs" />
     <Compile Include="Notifications\INotificationSink.cs" />
     <Compile Include="Notifications\NotificationRouter.cs" />
     <Compile Include="Notifications\Display\IPopupNotificationSink.cs" />
@@ -145,6 +151,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Notifications\Display\WpfToast\GroupMeToastDisplayPart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Controls\Attachments\ImageLinkAttachmentControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -256,6 +266,12 @@
     </PackageReference>
     <PackageReference Include="SQLitePCLRaw.bundle_green">
       <Version>1.1.14</Version>
+    </PackageReference>
+    <PackageReference Include="ToastNotifications">
+      <Version>2.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="ToastNotifications.Messages">
+      <Version>2.5.1</Version>
     </PackageReference>
     <PackageReference Include="XamlAnimatedGif">
       <Version>1.2.1</Version>
