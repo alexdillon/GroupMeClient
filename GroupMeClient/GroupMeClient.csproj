@@ -9,6 +9,7 @@
     <RootNamespace>GroupMeClient</RootNamespace>
     <AssemblyName>GroupMeClient</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -71,8 +72,13 @@
     <Compile Include="Extensions\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\ScrollViewerExtensions.cs" />
     <Compile Include="Extensions\WebBrowserHelper.cs" />
+    <Compile Include="Notifications\Display\Win10\DesktopNotificationManagerCompat.cs" />
+    <Compile Include="Notifications\Display\Win10\NotificationActivator.cs" />
     <Compile Include="Notifications\INotificationSink.cs" />
     <Compile Include="Notifications\NotificationRouter.cs" />
+    <Compile Include="Notifications\Display\IPopupNotificationSink.cs" />
+    <Compile Include="Notifications\Display\PopupNotificationProvider.cs" />
+    <Compile Include="Notifications\Display\Win10\Win10ToastNotificationsProvider.cs" />
     <Compile Include="SelectedItemToContentConverter.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\ImageLinkAttachmentControlViewModel.cs" />
@@ -238,6 +244,12 @@
     </PackageReference>
     <PackageReference Include="MahApps.Metro.IconPacks">
       <Version>2.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
+      <Version>5.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts">
+      <Version>10.0.18362.2002-preview</Version>
     </PackageReference>
     <PackageReference Include="MvvmLight">
       <Version>5.4.1.1</Version>

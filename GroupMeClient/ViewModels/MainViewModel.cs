@@ -1,6 +1,7 @@
 ﻿namespace GroupMeClient.ViewModels
 {
     using GalaSoft.MvvmLight;
+    using GroupMeClient.Notifications.Display;
     using MahApps.Metro.Controls;
     using MahApps.Metro.IconPacks;
 
@@ -101,7 +102,7 @@
         private static void RegisterNotifications()
         {
             MainViewModel.NotificationRouter.RegisterNewSubscriber(MainViewModel.ChatsViewModel);
-
+            MainViewModel.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
             // TODO register windows notifications
         }
     }

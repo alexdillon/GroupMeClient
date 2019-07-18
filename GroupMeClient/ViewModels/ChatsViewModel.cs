@@ -9,6 +9,7 @@ using GroupMeClientApi.Push.Notifications;
 using System.Threading;
 using GroupMeClient.Notifications;
 using GroupMeClientApi.Push;
+using GroupMeClientApi;
 
 namespace GroupMeClient.ViewModels
 {
@@ -136,66 +137,36 @@ namespace GroupMeClient.ViewModels
             ((IDisposable)groupContentsControlViewModel).Dispose();
         }
 
-        async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification)
+        async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification, IMessageContainer container)
         {
             _ = this.LoadGroupsAndChats();
 
             var groupId = notification.Message.GroupId;
             var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == groupId);
-
             await groupVm?.LoadNewMessages();
         }
 
-        async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification)
+        async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
         {
             _ = this.LoadGroupsAndChats();
 
-            var me = GroupMeClient.WhoAmI();
-
-            // Chat IDs are formatted as UserID+UserID. Find the other user's ID
-            var chatId = notification.Message.ChatId;
-            var users = chatId.Split('+');
-            var otherUser = users.First(u => u != me.Id);
-
-            var chatVm = this.ActiveGroupsChats.FirstOrDefault(c => c.Id == otherUser);
-
+            var chatVm = this.ActiveGroupsChats.FirstOrDefault(c => c.Id == container.Id);
             await chatVm?.LoadNewMessages();
         }
 
-        void INotificationSink.MessageUpdated(Message message)
+        Task INotificationSink.MessageUpdated(Message message, string alert, IMessageContainer container)
         {
-            string id = "";
-            if (!string.IsNullOrEmpty(message.GroupId))
-            {
-                id = message.GroupId;
-            }
-            else if (!string.IsNullOrEmpty(message.ChatId))
-            {
-                var me = GroupMeClient.WhoAmI();
-
-                // Chat IDs are formatted as UserID+UserID. Find the other user's ID
-                var chatId = message.ChatId;
-                var users = chatId.Split('+');
-                var otherUser = users.First(u => u != me.Id);
-
-                id = otherUser;
-            }
-            else
-            {
-                // must be malformed, silently ignore and continue
-                return;
-            }
-
-            var groupChatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == id);
-
+            var groupChatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
             groupChatVm?.UpdateMessageLikes(message);
+
+            return Task.CompletedTask;
         }
 
         void INotificationSink.HeartbeatReceived()
         {
         }
 
-        void INotificationSink.RegisterPushSubscriptions(PushClient pushClient)
+        void INotificationSink.RegisterPushSubscriptions(PushClient pushClient, GroupMeClientApi.GroupMeClient client)
         {
             // Save the PushClient for Subscribing/Unsubscribing from sources later
             this.PushClient = pushClient;
