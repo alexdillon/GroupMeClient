@@ -39,20 +39,38 @@ namespace GroupMeClientCached
         /// <inheritdoc />
         public override IEnumerable<Group> Groups()
         {
-            foreach (var group in this.Database.Groups)
+            this.DatabaseSem.Wait();
+
+            try
             {
-                group.Client = this;
-                yield return group;
+                foreach (var group in this.Database.Groups)
+                {
+                    group.Client = this;
+                    yield return group;
+                }
+            }
+            finally
+            {
+                this.DatabaseSem.Release();
             }
         }
 
         /// <inheritdoc />
         public override IEnumerable<Chat> Chats()
         {
-            foreach (var chat in this.Database.Chats)
+            this.DatabaseSem.Wait();
+
+            try
             {
-                chat.Client = this;
-                yield return chat;
+                foreach (var chat in this.Database.Chats)
+                {
+                    chat.Client = this;
+                    yield return chat;
+                }
+            }
+            finally
+            {
+                this.DatabaseSem.Release();
             }
         }
 
