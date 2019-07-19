@@ -15,6 +15,9 @@ namespace GroupMeClient.Extensions
     /// </remarks>
     public static class ScrollViewerEx
     {
+        /// <summary>
+        /// Gets a property indicating if Auto Scroll is enabled.
+        /// </summary>
         public static readonly DependencyProperty AutoScrollProperty =
             DependencyProperty.RegisterAttached(
                 "AutoScrollToEnd",
@@ -22,12 +25,18 @@ namespace GroupMeClient.Extensions
                 typeof(ScrollViewerEx),
                 new PropertyMetadata(false, HookupAutoScrollToEnd));
 
+        /// <summary>
+        /// Gets a property containing the Auto Scroll handler.
+        /// </summary>
         public static readonly DependencyProperty AutoScrollHandlerProperty =
             DependencyProperty.RegisterAttached(
                 "AutoScrollToEndHandler",
                 typeof(ScrollViewerAutoScrollToEndHandler),
                 typeof(ScrollViewerEx));
 
+        /// <summary>
+        /// Gets a property indicating if Scroll To Top notifications are enabled.
+        /// </summary>
         public static readonly DependencyProperty ScrollToTopProperty =
             DependencyProperty.RegisterAttached(
                 "ScrollToTop",
@@ -35,21 +44,14 @@ namespace GroupMeClient.Extensions
                 typeof(ScrollViewerEx),
                 new FrameworkPropertyMetadata(null, OnScrollToTopPropertyChanged));
 
+        /// <summary>
+        /// Gets a property indicating if IsInViewPort is enabled.
+        /// </summary>
         public static readonly DependencyProperty IsInViewportProperty =
           DependencyProperty.RegisterAttached(
               "IsInViewport",
               typeof(bool),
               typeof(ScrollViewerEx));
-
-        private static void HookupAutoScrollToEnd(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (!(d is ScrollViewer scrollViewer))
-            {
-                return;
-            }
-
-            SetAutoScrollToEnd(scrollViewer, (bool)e.NewValue);
-        }
 
         public static bool GetAutoScrollToEnd(ScrollViewer instance)
         {
@@ -90,6 +92,16 @@ namespace GroupMeClient.Extensions
         public static void SetIsInViewport(UIElement element, bool value)
         {
             element.SetValue(IsInViewportProperty, value);
+        }
+
+        private static void HookupAutoScrollToEnd(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(d is ScrollViewer scrollViewer))
+            {
+                return;
+            }
+
+            SetAutoScrollToEnd(scrollViewer, (bool)e.NewValue);
         }
 
         private static void OnScrollToTopPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
@@ -161,6 +173,13 @@ namespace GroupMeClient.Extensions
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            this.Dispose(true);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposedValue)
@@ -172,13 +191,6 @@ namespace GroupMeClient.Extensions
 
                 this.disposedValue = true;
             }
-        }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            this.Dispose(true);
         }
         #endregion
     }

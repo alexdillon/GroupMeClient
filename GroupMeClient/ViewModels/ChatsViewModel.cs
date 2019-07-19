@@ -47,6 +47,46 @@ namespace GroupMeClient.ViewModels
 
         private SemaphoreSlim ReloadGroupsSem { get; } = new SemaphoreSlim(1, 1);
 
+        /// <inheritdoc/>
+        async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification, IMessageContainer container)
+        {
+            _ = this.LoadGroupsAndChats();
+
+            var groupId = notification.Message.GroupId;
+            var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == groupId);
+            await groupVm?.LoadNewMessages();
+        }
+
+        /// <inheritdoc/>
+        async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
+        {
+            _ = this.LoadGroupsAndChats();
+
+            var chatVm = this.ActiveGroupsChats.FirstOrDefault(c => c.Id == container.Id);
+            await chatVm?.LoadNewMessages();
+        }
+
+        /// <inheritdoc/>
+        Task INotificationSink.MessageUpdated(Message message, string alert, IMessageContainer container)
+        {
+            var groupChatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
+            groupChatVm?.UpdateMessageLikes(message);
+
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
+        void INotificationSink.HeartbeatReceived()
+        {
+        }
+
+        /// <inheritdoc/>
+        void INotificationSink.RegisterPushSubscriptions(PushClient pushClient, GroupMeClientApi.GroupMeClient client)
+        {
+            // Save the PushClient for Subscribing/Unsubscribing from sources later
+            this.PushClient = pushClient;
+        }
+
         private async Task Loaded()
         {
             this.AllGroupsChats.Clear();
@@ -148,46 +188,6 @@ namespace GroupMeClient.ViewModels
             this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
 
             ((IDisposable)groupContentsControlViewModel).Dispose();
-        }
-
-        /// <inheritdoc/>
-        async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification, IMessageContainer container)
-        {
-            _ = this.LoadGroupsAndChats();
-
-            var groupId = notification.Message.GroupId;
-            var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == groupId);
-            await groupVm?.LoadNewMessages();
-        }
-
-        /// <inheritdoc/>
-        async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
-        {
-            _ = this.LoadGroupsAndChats();
-
-            var chatVm = this.ActiveGroupsChats.FirstOrDefault(c => c.Id == container.Id);
-            await chatVm?.LoadNewMessages();
-        }
-
-        /// <inheritdoc/>
-        Task INotificationSink.MessageUpdated(Message message, string alert, IMessageContainer container)
-        {
-            var groupChatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
-            groupChatVm?.UpdateMessageLikes(message);
-
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc/>
-        void INotificationSink.HeartbeatReceived()
-        {
-        }
-
-        /// <inheritdoc/>
-        void INotificationSink.RegisterPushSubscriptions(PushClient pushClient, GroupMeClientApi.GroupMeClient client)
-        {
-            // Save the PushClient for Subscribing/Unsubscribing from sources later
-            this.PushClient = pushClient;
         }
     }
 }

@@ -160,6 +160,38 @@ namespace GroupMeClient.ViewModels.Controls
             msgVm.UpdateDisplay();
         }
 
+        /// <inheritdoc />
+        void IDisposable.Dispose()
+        {
+            this.Messages.Clear();
+            //foreach (var msg in this.Messages)
+            //{
+            //    (msg as IDisposable)?.Dispose();
+            //}
+        }
+
+        /// <inheritdoc />
+        void IDragDropTarget.OnFileDrop(string[] filepaths)
+        {
+            string[] supportedExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".bmp" };
+
+            foreach (var file in filepaths)
+            {
+                if (supportedExtensions.Contains(Path.GetExtension(file).ToLower()))
+                {
+                    this.ShowImageSendDialog(File.OpenRead(file));
+                    break;
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        void IDragDropTarget.OnImageDrop(byte[] image)
+        {
+            var memoryStream = new MemoryStream(image);
+            this.ShowImageSendDialog(memoryStream);
+        }
+
         private async Task Loaded()
         {
             await this.LoadMoreAsync();
@@ -303,38 +335,6 @@ namespace GroupMeClient.ViewModels.Controls
         {
             (this.ImageSendDialog as IDisposable)?.Dispose();
             this.ImageSendDialog = null;
-        }
-
-        /// <inheritdoc />
-        void IDisposable.Dispose()
-        {
-            this.Messages.Clear();
-            //foreach (var msg in this.Messages)
-            //{
-            //    (msg as IDisposable)?.Dispose();
-            //}
-        }
-
-        /// <inheritdoc />
-        void IDragDropTarget.OnFileDrop(string[] filepaths)
-        {
-            string[] supportedExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".bmp" };
-
-            foreach (var file in filepaths)
-            {
-                if (supportedExtensions.Contains(Path.GetExtension(file).ToLower()))
-                {
-                    this.ShowImageSendDialog(File.OpenRead(file));
-                    break;
-                }
-            }
-        }
-
-        /// <inheritdoc />
-        void IDragDropTarget.OnImageDrop(byte[] image)
-        {
-            var memoryStream = new MemoryStream(image);
-            this.ShowImageSendDialog(memoryStream);
         }
     }
 }

@@ -10,6 +10,9 @@ namespace GroupMeClient.Extensions
     /// </summary>
     public class MultiLineSendBox : TextBox
     {
+        /// <summary>
+        /// Gets a RoutedEvent for when Send is invoked on this <see cref="MultiLineSendBox"/>.
+        /// </summary>
         public static readonly RoutedEvent SendEvent = EventManager.RegisterRoutedEvent(
             "Send", RoutingStrategy.Direct, typeof(RoutedEventHandler), typeof(MultiLineSendBox));
 
@@ -22,6 +25,9 @@ namespace GroupMeClient.Extensions
             this.PreviewKeyDown += this.TextBoxPreviewKeyDown;
         }
 
+        /// <summary>
+        /// Adds or removes an event handler for when Send is triggered.
+        /// </summary>
         public event RoutedEventHandler Send
         {
             add { this.AddHandler(SendEvent, value); }

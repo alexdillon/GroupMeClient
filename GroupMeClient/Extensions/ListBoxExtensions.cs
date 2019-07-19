@@ -16,6 +16,9 @@ namespace GroupMeClient.Extensions
     /// </remarks>
     public static class ListBoxExtensions
     {
+        /// <summary>
+        /// Gets a property indicating if Auto Scroll is enabled.
+        /// </summary>
         public static readonly DependencyProperty AutoScrollProperty =
             DependencyProperty.RegisterAttached(
                 "AutoScrollToEnd",
@@ -23,12 +26,18 @@ namespace GroupMeClient.Extensions
                 typeof(ListBoxExtensions),
                 new PropertyMetadata(false, HookupAutoScrollToEnd));
 
+        /// <summary>
+        /// Gets a property containing the Auto Scroll handler.
+        /// </summary>
         public static readonly DependencyProperty AutoScrollHandlerProperty =
             DependencyProperty.RegisterAttached(
                 "AutoScrollToEndHandler",
                 typeof(ListBoxAutoScrollToEndHandler),
                 typeof(ListBoxExtensions));
 
+        /// <summary>
+        /// Gets a property indicating if Scroll To Top notifications are enabled.
+        /// </summary>
         public static readonly DependencyProperty ScrollToTopProperty =
             DependencyProperty.RegisterAttached(
                 "ScrollToTop",
@@ -36,7 +45,72 @@ namespace GroupMeClient.Extensions
                 typeof(ListBoxExtensions),
                 new FrameworkPropertyMetadata(null, OnScrollToTopPropertyChanged));
 
-        public static void Loaded(object sender, EventArgs e)
+        /// <summary>
+        /// Gets a value indicating whether Auto Scrolling in enabled.
+        /// </summary>
+        /// <param name="instance">The dependency object to retreive the property from.</param>
+        /// <returns>A boolean indicating whether enabled.</returns>
+        public static bool GetAutoScrollToEnd(ListBox instance)
+        {
+            return (bool)instance.GetValue(AutoScrollProperty);
+        }
+
+        /// <summary>
+        /// Sets a value indicating whether Auto Scrolling is enabled.
+        /// </summary>
+        /// <param name="instance">The dependency object to retreive the property from.</param>
+        /// <param name="value">Whether scroll to end is enabled. </param>
+        public static void SetAutoScrollToEnd(ListBox instance, bool value)
+        {
+            if (value)
+            {
+                instance.Loaded += Loaded;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether notifications when the control is scrolled to the top are enabled.
+        /// </summary>
+        /// <param name="ob">The dependency object to retreive the property from.</param>
+        /// <returns>A boolean indicating whether enabled.</returns>
+        public static ICommand GetScrollToTop(DependencyObject ob)
+        {
+            return (ICommand)ob.GetValue(ScrollToTopProperty);
+        }
+
+        /// <summary>
+        /// Sets a value indicating whether Scroll to Top notications are enabled.
+        /// </summary>
+        /// <param name="ob">The dependency object to retreive the property from.</param>
+        /// <param name="value">Whether scroll to top notifications are enabled. </param>
+        public static void SetScrollToTop(DependencyObject ob, ICommand value)
+        {
+            ob.SetValue(ScrollToTopProperty, value);
+        }
+
+        /// <summary>
+        /// Retreives a child element of a control.
+        /// </summary>
+        /// <typeparam name="T">The type to search for.</typeparam>
+        /// <param name="element">The control to search in.</param>
+        /// <returns>The child control if found.</returns>
+        public static T FindSimpleVisualChild<T>(DependencyObject element)
+          where T : class
+        {
+            while (element != null)
+            {
+                if (element is T)
+                {
+                    return element as T;
+                }
+
+                element = VisualTreeHelper.GetChild(element, 0);
+            }
+
+            return null;
+        }
+
+        private static void Loaded(object sender, EventArgs e)
         {
             var instance = sender as ListBox;
 
@@ -59,26 +133,6 @@ namespace GroupMeClient.Extensions
             }
 
             SetAutoScrollToEnd(listBox, (bool)e.NewValue);
-        }
-
-        public static bool GetAutoScrollToEnd(ListBox instance)
-        {
-            return (bool)instance.GetValue(AutoScrollProperty);
-        }
-
-        public static void SetAutoScrollToEnd(ListBox instance, bool value)
-        {
-            instance.Loaded += Loaded;
-        }
-
-        public static ICommand GetScrollToTop(DependencyObject ob)
-        {
-            return (ICommand)ob.GetValue(ScrollToTopProperty);
-        }
-
-        public static void SetScrollToTop(DependencyObject ob, ICommand value)
-        {
-            ob.SetValue(ScrollToTopProperty, value);
         }
 
         private static void OnScrollToTopPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
@@ -114,22 +168,6 @@ namespace GroupMeClient.Extensions
                 command.Execute(scrollViewer);
             }
         }
-
-        public static T FindSimpleVisualChild<T>(DependencyObject element)
-            where T : class
-        {
-            while (element != null)
-            {
-                if (element is T)
-                {
-                    return element as T;
-                }
-
-                element = VisualTreeHelper.GetChild(element, 0);
-            }
-
-            return null;
-        }
     }
 
     public class ListBoxAutoScrollToEndHandler : DependencyObject, IDisposable
@@ -162,6 +200,14 @@ namespace GroupMeClient.Extensions
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            // This code added to correctly implement the disposable pattern.
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            this.Dispose(true);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposedValue)
@@ -173,13 +219,6 @@ namespace GroupMeClient.Extensions
 
                 this.disposedValue = true;
             }
-        }
-
-        public void Dispose()
-        {
-            // This code added to correctly implement the disposable pattern.
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            this.Dispose(true);
         }
         #endregion
     }
