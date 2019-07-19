@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -168,58 +167,62 @@ namespace GroupMeClient.Extensions
                 command.Execute(scrollViewer);
             }
         }
-    }
 
-    public class ListBoxAutoScrollToEndHandler : DependencyObject, IDisposable
-    {
-        private readonly ScrollViewer scrollViewer;
-        private bool doScroll = true;
-
-        public ListBoxAutoScrollToEndHandler(ListBox listBox)
+        /// <summary>
+        /// Handler class to maintain user scroll information for a scrollable <see cref="ListBox"/>.
+        /// </summary>
+        public class ListBoxAutoScrollToEndHandler : DependencyObject, IDisposable
         {
-            this.scrollViewer = ListBoxExtensions.FindSimpleVisualChild<ScrollViewer>(listBox);
-            this.scrollViewer.ScrollToEnd();
-            this.scrollViewer.ScrollChanged += this.ScrollChanged;
-        }
+            private readonly ScrollViewer scrollViewer;
+            private bool doScroll = true;
+            private bool disposedValue = false; // To detect redundant calls, for IDisposable
 
-        private void ScrollChanged(object sender, ScrollChangedEventArgs e)
-        {
-            // User scroll event : set or unset autoscroll mode
-            if (e.ExtentHeightChange == 0)
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ListBoxAutoScrollToEndHandler"/> class.
+            /// </summary>
+            /// <param name="listBox">The ListBox to bind to.</param>
+            public ListBoxAutoScrollToEndHandler(ListBox listBox)
             {
-                this.doScroll = this.scrollViewer.VerticalOffset == this.scrollViewer.ScrollableHeight;
+                this.scrollViewer = ListBoxExtensions.FindSimpleVisualChild<ScrollViewer>(listBox);
+                this.scrollViewer.ScrollToEnd();
+                this.scrollViewer.ScrollChanged += this.ScrollChanged;
             }
 
-            // Content scroll event : autoscroll eventually
-            if (this.doScroll && e.ExtentHeightChange != 0)
+            /// <inheritdoc/>
+            public void Dispose()
             {
-                this.scrollViewer.ScrollToVerticalOffset(this.scrollViewer.ExtentHeight);
+                // This code added to correctly implement the disposable pattern.
+                // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+                this.Dispose(true);
             }
-        }
 
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            // This code added to correctly implement the disposable pattern.
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            this.Dispose(true);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposedValue)
+            private void ScrollChanged(object sender, ScrollChangedEventArgs e)
             {
-                if (disposing)
+                // User scroll event : set or unset autoscroll mode
+                if (e.ExtentHeightChange == 0)
                 {
-                    this.scrollViewer.ScrollChanged -= this.ScrollChanged;
+                    this.doScroll = this.scrollViewer.VerticalOffset == this.scrollViewer.ScrollableHeight;
                 }
 
-                this.disposedValue = true;
+                // Content scroll event : autoscroll eventually
+                if (this.doScroll && e.ExtentHeightChange != 0)
+                {
+                    this.scrollViewer.ScrollToVerticalOffset(this.scrollViewer.ExtentHeight);
+                }
+            }
+
+            private void Dispose(bool disposing)
+            {
+                if (!this.disposedValue)
+                {
+                    if (disposing)
+                    {
+                        this.scrollViewer.ScrollChanged -= this.ScrollChanged;
+                    }
+
+                    this.disposedValue = true;
+                }
             }
         }
-        #endregion
     }
 }
