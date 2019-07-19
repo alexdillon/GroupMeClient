@@ -117,40 +117,6 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        
-        <!--<ItemsControl
-             Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-             ScrollViewer.CanContentScroll="True"
-             ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
-             AllowDrop="True"
-             extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
-             extensions:FileDragDropHelper.FileDragDropTarget="{Binding}" >
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <controls:MessageControl Content="{Binding Path=.}"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel
-                        VirtualizingPanel.IsVirtualizing="True"
-                        VirtualizingPanel.VirtualizationMode="Recycling"
-                        VirtualizingPanel.ScrollUnit="Item">
-                    </VirtualizingStackPanel>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.Template>
-                <ControlTemplate>
-                    <ScrollViewer
-                        VerticalScrollBarVisibility="Visible" CanContentScroll="True" PanningMode="VerticalOnly" VerticalAlignment="Stretch"
-                        extensions:ScrollViewerEx.AutoScrollToEnd="True"
-                        extensions:ScrollViewerEx.ScrollToTop="{Binding ReloadView}"
-                        Padding="{TemplateBinding Control.Padding}">
-                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                    </ScrollViewer>
-                </ControlTemplate>
-            </ItemsControl.Template>
-        </ItemsControl>-->
 
         <Grid Grid.Column="0" Grid.Row="3"
               Background="White">
@@ -226,7 +192,7 @@
                         Grid.ColumnSpan="1"
                         DataContext="{Binding Path=.}"
                         Visibility="{Binding ImageSendDialog, Converter={StaticResource nullToVisibilityConverter}}">
-            <controls:SendImageControl Content="{Binding ImageSendDialog}" />
+            <UserControl Content="{Binding ImageSendDialog}" />
         </controls:Popup>
     </Grid>
 </UserControl>
