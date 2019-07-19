@@ -9,7 +9,7 @@ namespace GroupMeClient.Views.Controls.Attachments
     {
         public VideoAttachmentControl()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

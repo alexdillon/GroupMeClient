@@ -12,23 +12,28 @@ namespace GroupMeClient.Extensions
     /// a user to lock the current scroll position.
     /// </summary>
     /// <remarks>
-    /// Adapted from https://stackoverflow.com/a/23561679
+    /// Adapted from https://stackoverflow.com/a/23561679.
     /// </remarks>
     public static class ListBoxEx
     {
         public static readonly DependencyProperty AutoScrollProperty =
-            DependencyProperty.RegisterAttached("AutoScrollToEnd",
+            DependencyProperty.RegisterAttached(
+                "AutoScrollToEnd",
                 typeof(bool), typeof(ListBoxEx),
                 new PropertyMetadata(false, HookupAutoScrollToEnd));
 
         public static readonly DependencyProperty AutoScrollHandlerProperty =
-            DependencyProperty.RegisterAttached("AutoScrollToEndHandler",
-                typeof(ListBoxAutoScrollToEndHandler), typeof(ListBoxEx));
+            DependencyProperty.RegisterAttached(
+                "AutoScrollToEndHandler",
+                typeof(ListBoxAutoScrollToEndHandler),
+                typeof(ListBoxEx));
 
-        private static void HookupAutoScrollToEnd(DependencyObject d,
-                DependencyPropertyChangedEventArgs e)
+        private static void HookupAutoScrollToEnd(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (!(d is ListBox listBox)) return;
+            if (!(d is ListBox listBox))
+            {
+                return;
+            }
 
             SetAutoScrollToEnd(listBox, (bool)e.NewValue);
         }
@@ -53,12 +58,14 @@ namespace GroupMeClient.Extensions
                 oldHandler.Dispose();
                 instance.SetValue(AutoScrollHandlerProperty, null);
             }
+
             instance.SetValue(AutoScrollProperty, true);
             instance.SetValue(AutoScrollHandlerProperty, new ListBoxAutoScrollToEndHandler(instance));
         }
 
         public static readonly DependencyProperty ScrollToTopProperty =
-           DependencyProperty.RegisterAttached("ScrollToTop",
+           DependencyProperty.RegisterAttached(
+               "ScrollToTop",
                typeof(ICommand),
                typeof(ListBoxEx),
                new FrameworkPropertyMetadata(null, OnScrollToTopPropertyChanged));
@@ -78,30 +85,30 @@ namespace GroupMeClient.Extensions
             var listBox = obj as ListBox;
 
             listBox.Loaded += OnListBoxLoaded;
-
         }
 
         private static void OnListBoxLoaded(object sender, RoutedEventArgs e)
         {
             (sender as ListBox).Loaded -= OnListBoxLoaded;
 
-            var scrollViewer = ListBoxEx.FindSimpleVisualChild<ScrollViewer>(sender as ListBox);
+            var scrollViewer = FindSimpleVisualChild<ScrollViewer>(sender as ListBox);
 
-            //(sender as ListBox).Unloaded += OnScrollViewerUnloaded;
             scrollViewer.ScrollChanged += OnListBoxScrollChanged;
         }
 
         private static void OnListBoxScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             var scrollViewer = (ScrollViewer)sender;
-            var listBox = scrollViewer.TemplatedParent as ListBox;   
+            var listBox = scrollViewer.TemplatedParent as ListBox;
 
             // Check to see if scrolled to top
             if (scrollViewer.VerticalOffset == 0)
             {
                 var command = GetScrollToTop(listBox);
                 if (command == null || !command.CanExecute(null))
+                {
                     return;
+                }
 
                 command.Execute(scrollViewer);
             }
@@ -116,23 +123,31 @@ namespace GroupMeClient.Extensions
         private static VisualStateGroup FindVisualState(FrameworkElement element, string name)
         {
             if (element == null)
+            {
                 return null;
+            }
 
             IList groups = VisualStateManager.GetVisualStateGroups(element);
             foreach (VisualStateGroup group in groups)
+            {
                 if (group.Name == name)
+                {
                     return group;
+                }
+            }
 
             return null;
         }
 
-        public static T FindSimpleVisualChild<T>(DependencyObject element) where T : class
+        public static T FindSimpleVisualChild<T>(DependencyObject element)
+            where T : class
         {
             while (element != null)
             {
-
                 if (element is T)
+                {
                     return element as T;
+                }
 
                 element = VisualTreeHelper.GetChild(element, 0);
             }
@@ -143,28 +158,32 @@ namespace GroupMeClient.Extensions
 
     public class ListBoxAutoScrollToEndHandler : DependencyObject, IDisposable
     {
-        readonly ListBox m_listBox;
-        readonly public ScrollViewer m_scrollViewer;
-        bool m_doScroll = true;
+        readonly ListBox listBox;
+        public readonly ScrollViewer scrollViewer;
+        bool doScroll = true;
 
         public ListBoxAutoScrollToEndHandler(ListBox listBox)
         {
-            m_listBox = listBox ?? throw new ArgumentNullException("listBox");
+            this.listBox = listBox ?? throw new ArgumentNullException("listBox");
 
-            m_scrollViewer = ListBoxEx.FindSimpleVisualChild<ScrollViewer>(listBox);
-            m_scrollViewer.ScrollToEnd();
-            m_scrollViewer.ScrollChanged += ScrollChanged;
+            this.scrollViewer = ListBoxEx.FindSimpleVisualChild<ScrollViewer>(listBox);
+            this.scrollViewer.ScrollToEnd();
+            this.scrollViewer.ScrollChanged += this.ScrollChanged;
         }
 
         private void ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             // User scroll event : set or unset autoscroll mode
             if (e.ExtentHeightChange == 0)
-            { m_doScroll = m_scrollViewer.VerticalOffset == m_scrollViewer.ScrollableHeight; }
+            {
+                this.doScroll = this.scrollViewer.VerticalOffset == this.scrollViewer.ScrollableHeight;
+            }
 
             // Content scroll event : autoscroll eventually
-            if (m_doScroll && e.ExtentHeightChange != 0)
-            { m_scrollViewer.ScrollToVerticalOffset(m_scrollViewer.ExtentHeight); }
+            if (this.doScroll && e.ExtentHeightChange != 0)
+            {
+                this.scrollViewer.ScrollToVerticalOffset(this.scrollViewer.ExtentHeight);
+            }
         }
 
         #region IDisposable Support
@@ -172,18 +191,18 @@ namespace GroupMeClient.Extensions
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!this.disposedValue)
             {
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    m_scrollViewer.ScrollChanged -= ScrollChanged;
+                    this.scrollViewer.ScrollChanged -= this.ScrollChanged;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
 
-                disposedValue = true;
+                this.disposedValue = true;
             }
         }
 
@@ -191,7 +210,7 @@ namespace GroupMeClient.Extensions
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
+            this.Dispose(true);
         }
         #endregion
     }

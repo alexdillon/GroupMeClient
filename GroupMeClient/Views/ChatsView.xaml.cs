@@ -9,7 +9,7 @@ namespace GroupMeClient.Views
     {
         public ChatsView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

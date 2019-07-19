@@ -1,8 +1,5 @@
-﻿using GalaSoft.MvvmLight.Command;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using GalaSoft.MvvmLight.Command;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
 {
@@ -12,7 +9,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         {
             this.Url = url;
 
-            this.Clicked = new RelayCommand(ClickedAction);
+            this.Clicked = new RelayCommand(this.ClickedAction);
         }
 
         public ICommand Clicked { get; }

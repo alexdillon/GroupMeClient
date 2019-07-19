@@ -15,7 +15,6 @@ namespace GroupMeClient.Extensions
             {
                 encoder.Save(stream);
                 return stream.ToArray();
-
             }
         }
 

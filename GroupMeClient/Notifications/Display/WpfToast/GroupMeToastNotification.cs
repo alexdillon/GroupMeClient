@@ -1,24 +1,19 @@
 ﻿using System.Windows;
-using ToastNotifications.Core;
-using ToastNotifications.Messages.Core;
 using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi;
 using GroupMeClientApi.Models;
+using ToastNotifications.Core;
+using ToastNotifications.Messages.Core;
 
 namespace GroupMeClient.Notifications.Display.WpfToast
 {
     public class GroupMeToastNotification : MessageBase<GroupMeToastDisplayPart>
     {
-        public GroupMeToastNotification(string message, IAvatarSource avatar, ImageDownloader imageDownloader) : 
-            base(message, new MessageOptions())
+        public GroupMeToastNotification(string message, IAvatarSource avatar, ImageDownloader imageDownloader)
+            : base(message, new MessageOptions())
         {
             this.Avatar = new AvatarControlViewModel(avatar, imageDownloader);
         }
-
-        //public GroupMeToastNotification(string message, MessageOptions options) :
-        //  base(message, options)
-        //{
-        //}
 
         public AvatarControlViewModel Avatar { get; }
 

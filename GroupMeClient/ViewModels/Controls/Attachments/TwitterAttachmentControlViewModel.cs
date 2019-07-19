@@ -5,10 +5,10 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 {
     public class TwitterAttachmentControlViewModel : LinkAttachmentBaseViewModel
     {
-        public TwitterAttachmentControlViewModel(string tweetUrl) :
-            base(tweetUrl)
+        public TwitterAttachmentControlViewModel(string tweetUrl)
+            : base(tweetUrl)
         {
-            this.Clicked = new RelayCommand(ClickedAction);
+            this.Clicked = new RelayCommand(this.ClickedAction);
         }
 
         public string Sender => this.LinkInfo?.Name;
@@ -22,7 +22,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         protected override void MetadataDownloadCompleted()
         {
             _ = this.DownloadImage(this.LinkInfo.ProfileImageUrl);
-            RaisePropertyChanged("");
+            this.RaisePropertyChanged(string.Empty);
         }
 
         private void ClickedAction()

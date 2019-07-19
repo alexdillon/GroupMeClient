@@ -6,7 +6,7 @@ namespace GroupMeClient.Views
     {
         public SettingsView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

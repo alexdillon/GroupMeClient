@@ -52,7 +52,6 @@ namespace GroupMeClient.Notifications.Display
                        notification.Message.AvatarUrl,
                        (notification.Message as IAvatarSource).IsRoundedAvatar);
                 }
-               
             }
         }
 

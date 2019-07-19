@@ -1,29 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Media;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Media;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using GroupMeClient.ViewModels.Controls.Attachments;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
-using GroupMeClient.ViewModels.Controls.Attachments;
-using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
-using System.Collections.ObjectModel;
 
 namespace GroupMeClient.ViewModels.Controls
 {
     public class MessageControlViewModel : ViewModelBase, IDisposable
     {
-        public MessageControlViewModel(Message message) 
+        public MessageControlViewModel(Message message)
         {
             this.Message = message;
 
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
-            this.LikeAction = new RelayCommand(async () => { await LikeMessageActionAsync(); }, () => { return true; }, true);
+            this.LikeAction = new RelayCommand(async () => { await this.LikeMessageActionAsync(); }, () => { return true; }, true);
 
-            _ = LoadImageAttachment();
-            LoadLinkPreview();
+            _ = this.LoadImageAttachment();
+            this.LoadLinkPreview();
         }
 
         private Message message;
@@ -44,19 +44,19 @@ namespace GroupMeClient.ViewModels.Controls
                 }
 
                 this.message = value;
-                RaisePropertyChanged(""); // no property name to force every single property to be updated
+                this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
             }
         }
 
         public void UpdateDisplay()
         {
-            RaisePropertyChanged(""); // no property name to force every single property to be updated
+            this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
         }
 
         public AvatarControlViewModel Avatar
         {
             get { return this.avatar; }
-            set { Set(() => this.Avatar, ref avatar, value); }
+            set { this.Set(() => this.Avatar, ref this.avatar, value); }
         }
 
         public string Id => this.Message.Id;
@@ -83,7 +83,7 @@ namespace GroupMeClient.ViewModels.Controls
         public Brush GroupMeRedBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 112, 112));
         public Brush GroupMeLightBlueBrush { get; } = new SolidColorBrush(Color.FromRgb(219, 244, 253));
         public Brush GroupMeLightGrayBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 247, 247));
-        
+
         public Brush MessageColor
         {
             get
@@ -104,16 +104,16 @@ namespace GroupMeClient.ViewModels.Controls
         private System.IO.Stream imageAttachmentStream;
 
         /// <summary>
-        /// Gets the attached image if present.
+        /// Gets or sets the attached image if present.
         /// </summary>
         public System.IO.Stream ImageAttachmentStream
         {
-            get { return imageAttachmentStream; }
-            set { Set(() => this.ImageAttachmentStream, ref imageAttachmentStream, value); }
+            get { return this.imageAttachmentStream; }
+            set { this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value); }
         }
 
         /// <summary>
-        /// Gets the attached tweets, if present
+        /// Gets or sets the attached items (Tweets, Web Links, Videos, etc.), if present.
         /// </summary>
         public ObservableCollection<LinkAttachmentBaseViewModel> AttachedItems { get; set; } = new ObservableCollection<LinkAttachmentBaseViewModel>();
 
@@ -217,7 +217,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             const string GroupMeVideoPrefixHttps = "https://v.groupme.com";
 
-            string[] ImageExtensions = { "png", "jpg", "jpeg", "gif", "bmp" };
+            string[] imageExtensions = { "png", "jpg", "jpeg", "gif", "bmp" };
 
             const string WebPrefixHttps = "https://";
             const string WebPrefixHttp = "http://";
@@ -236,7 +236,7 @@ namespace GroupMeClient.ViewModels.Controls
                 vm = new VideoAttachmentControlViewModel(text);
                 this.AttachedItems.Add(vm);
             }
-            else if (ImageExtensions.Contains(linkExtension))
+            else if (imageExtensions.Contains(linkExtension))
             {
                 vm = new ImageLinkAttachmentControlViewModel(text);
                 this.AttachedItems.Add(vm);
@@ -254,7 +254,7 @@ namespace GroupMeClient.ViewModels.Controls
             if (vm.Uri != null)
             {
                 this.hiddenText = vm.Url;
-                RaisePropertyChanged("Text");
+                this.RaisePropertyChanged("Text");
             }
         }
 
@@ -280,15 +280,15 @@ namespace GroupMeClient.ViewModels.Controls
                 }
             }
 
-            RaisePropertyChanged("LikedByAvatars");
-            RaisePropertyChanged("LikeCount");
-            RaisePropertyChanged("LikeColor");
-            RaisePropertyChanged("LikeStatus");
+            this.RaisePropertyChanged("LikedByAvatars");
+            this.RaisePropertyChanged("LikeCount");
+            this.RaisePropertyChanged("LikeColor");
+            this.RaisePropertyChanged("LikeStatus");
         }
 
         void IDisposable.Dispose()
         {
-            ((IDisposable)imageAttachmentStream)?.Dispose();
+            ((IDisposable)this.imageAttachmentStream)?.Dispose();
         }
     }
 }

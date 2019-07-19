@@ -1,11 +1,11 @@
-﻿using DesktopNotifications;
-using Microsoft.Toolkit.Uwp.Notifications;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using DesktopNotifications;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 
@@ -16,8 +16,8 @@ namespace GroupMeClient.Notifications.Display.Win10
         public Win10ToastNotificationsProvider()
         {
             // Register AUMID and COM server (for Desktop Bridge apps, this no-ops)
-            DesktopNotificationManagerCompat.RegisterAumidAndComServer<MyNotificationActivator>(ApplicationId);
-            DesktopNotificationManagerCompat.RegisterActivator<MyNotificationActivator>();
+            DesktopNotificationManagerCompat.RegisterAumidAndComServer<GroupMeNotificationActivator>(this.ApplicationId);
+            DesktopNotificationManagerCompat.RegisterActivator<GroupMeNotificationActivator>();
         }
 
         private string ApplicationId => "MicroCube.GroupMeDesktopClient";
@@ -42,23 +42,23 @@ namespace GroupMeClient.Notifications.Display.Win10
                         {
                             new AdaptiveText()
                             {
-                                Text = title
+                                Text = title,
                             },
                             new AdaptiveText()
                             {
-                                Text = body
-                            }
+                                Text = body,
+                            },
                         },
                         AppLogoOverride = new ToastGenericAppLogo()
                         {
-                            Source = await DownloadImageToDiskCached(
+                            Source = await this.DownloadImageToDiskCached(
                                 image: avatarUrl,
                                 isAvatar: true,
                                 isRounded: roundedAvatar),
-                            HintCrop = roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default
-                        }
-                    }
-                }
+                            HintCrop = roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default,
+                        },
+                    },
+                },
             };
 
             this.ShowToast(toastContent);
@@ -78,31 +78,27 @@ namespace GroupMeClient.Notifications.Display.Win10
                         {
                             new AdaptiveText()
                             {
-                                Text = title
+                                Text = title,
                             },
                             new AdaptiveText()
                             {
-                                Text = body
+                                Text = body,
                             },
                             new AdaptiveImage()
                             {
-                                 Source = await DownloadImageToDiskCached(imageUrl)
-                            }
+                                 Source = await this.DownloadImageToDiskCached(imageUrl),
+                            },
                         },
                         AppLogoOverride = new ToastGenericAppLogo()
                         {
-                            Source = await DownloadImageToDiskCached(
+                            Source = await this.DownloadImageToDiskCached(
                                 image: avatarUrl,
                                 isAvatar: true,
                                 isRounded: roundedAvatar),
-                            HintCrop = roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default
+                            HintCrop = roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default,
                         },
-                        //HeroImage = new ToastGenericHeroImage()
-                        //{
-                           
-                        //}
-                    }
-                }
+                    },
+                },
             };
 
             this.ShowToast(toastContent);
@@ -122,23 +118,23 @@ namespace GroupMeClient.Notifications.Display.Win10
                         {
                             new AdaptiveText()
                             {
-                                Text = title
+                                Text = title,
                             },
                             new AdaptiveText()
                             {
-                                Text = body
-                            }
+                                Text = body,
+                            },
                         },
                         AppLogoOverride = new ToastGenericAppLogo()
                         {
-                            Source = await DownloadImageToDiskCached(
+                            Source = await this.DownloadImageToDiskCached(
                                 image: avatarUrl,
                                 isAvatar: true,
                                 isRounded: roundedAvatar),
-                            HintCrop = roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default
-                        }
-                    }
-                }
+                            HintCrop = roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default,
+                        },
+                    },
+                },
             };
 
             this.ShowToast(toastContent);
@@ -190,7 +186,7 @@ namespace GroupMeClient.Notifications.Display.Win10
                     }
                 }
 
-                string hashName = Win10ToastNotificationsProvider.Hash(image) + ".png";
+                string hashName = Hash(image) + ".png";
                 string imagePath = Path.Combine(directory.FullName, hashName);
 
                 if (File.Exists(imagePath))
@@ -218,11 +214,11 @@ namespace GroupMeClient.Notifications.Display.Win10
             }
             catch (Exception)
             {
-                return "";
+                return string.Empty;
             }
         }
 
-        static string Hash(string input)
+        private static string Hash(string input)
         {
             var hash = new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(input));
             return string.Concat(hash.Select(b => b.ToString("x2")));

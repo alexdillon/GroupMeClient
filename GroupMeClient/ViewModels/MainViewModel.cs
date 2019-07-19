@@ -1,10 +1,10 @@
-﻿namespace GroupMeClient.ViewModels
-{
-    using GalaSoft.MvvmLight;
-    using GroupMeClient.Notifications.Display;
-    using MahApps.Metro.Controls;
-    using MahApps.Metro.IconPacks;
+﻿using GalaSoft.MvvmLight;
+using GroupMeClient.Notifications.Display;
+using MahApps.Metro.Controls;
+using MahApps.Metro.IconPacks;
 
+namespace GroupMeClient.ViewModels
+{
     public class MainViewModel : ViewModelBase
     {
         private HamburgerMenuItemCollection menuItems;
@@ -15,40 +15,41 @@
         {
             InitializeGroupMeClient();
 
-            MainViewModel.ChatsViewModel = new ChatsViewModel(MainViewModel.GroupMeClient);
-            MainViewModel.SecondViewModel = new SecondViewModel();
-            MainViewModel.SettingsViewModel = new SettingsViewModel();
+            ChatsViewModel = new ChatsViewModel(GroupMeClient);
+            SecondViewModel = new SecondViewModel();
+            SettingsViewModel = new SettingsViewModel();
 
             RegisterNotifications();
 
-            CreateMenuItems();
+            this.CreateMenuItems();
         }
 
-        static GroupMeClientCached.GroupMeCachedClient GroupMeClient { get; set; }
-        static NotificationRouter NotificationRouter { get; set; }
+        private static GroupMeClientCached.GroupMeCachedClient GroupMeClient { get; set; }
+
+        private static NotificationRouter NotificationRouter { get; set; }
 
         /// <summary>
-        /// Gets a static instance of one of the Chat's ViewModel
+        /// Gets or sets a static instance of one of the Chat's ViewModel.
         /// </summary>
-        static ChatsViewModel ChatsViewModel { get; set; }
+        private static ChatsViewModel ChatsViewModel { get; set; }
 
         /// <summary>
-        /// Gets a static instance of one of the **** TODO***** ViewModel
+        /// Gets or sets a static instance of one of the **** TODO***** ViewModel.
         /// </summary>
-        static SecondViewModel SecondViewModel { get; set; }
+        private static SecondViewModel SecondViewModel { get; set; }
 
         /// <summary>
-        /// Gets a static instance of one of the Settings ViewModel
+        /// Gets or sets a static instance of one of the Settings ViewModel.
         /// </summary>
-        static SettingsViewModel SettingsViewModel { get; set; }
+        private static SettingsViewModel SettingsViewModel { get; set; }
 
         /// <summary>
         /// Gets or sets the list of main items shown in the hamburger menu.
         /// </summary>
         public HamburgerMenuItemCollection MenuItems
         {
-            get { return menuItems; }
-            set { Set(() => this.MenuItems, ref menuItems, value); }
+            get { return this.menuItems; }
+            set { this.Set(() => this.MenuItems, ref this.menuItems, value); }
         }
 
         /// <summary>
@@ -56,54 +57,54 @@
         /// </summary>
         public HamburgerMenuItemCollection MenuOptionItems
         {
-            get { return menuOptionItems; }
-            set { Set(() => this.MenuOptionItems, ref menuOptionItems, value); }
+            get { return this.menuOptionItems; }
+            set { this.Set(() => this.MenuOptionItems, ref this.menuOptionItems, value); }
         }
 
         private void CreateMenuItems()
         {
-            MenuItems = new HamburgerMenuItemCollection
+            this.MenuItems = new HamburgerMenuItemCollection
             {
                 new HamburgerMenuIconItem()
                 {
-                    Icon = new PackIconMaterial() {Kind = PackIconMaterialKind.MessageText},
+                    Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.MessageText },
                     Label = "Chats",
                     ToolTip = "View Groups and Chats.",
-                    Tag = MainViewModel.ChatsViewModel
+                    Tag = ChatsViewModel,
                 },
                 new HamburgerMenuIconItem()
                 {
-                    Icon = new PackIconMaterial() {Kind = PackIconMaterialKind.Settings},
+                    Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.Settings },
                     Label = "Second Menu",
                     ToolTip = "The Application settings.",
-                    Tag = MainViewModel.SecondViewModel
-                }
+                    Tag = SecondViewModel,
+                },
             };
 
-            MenuOptionItems = new HamburgerMenuItemCollection
+            this.MenuOptionItems = new HamburgerMenuItemCollection
             {
                 new HamburgerMenuIconItem()
                 {
-                    Icon = new PackIconMaterial() {Kind = PackIconMaterialKind.SettingsOutline},
+                    Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.SettingsOutline },
                     Label = "Settings",
                     ToolTip = "GroupMe Settings",
-                    Tag = MainViewModel.SettingsViewModel
-                }
+                    Tag = SettingsViewModel,
+                },
             };
         }
-        
+
         private static void InitializeGroupMeClient()
         {
             string token = System.IO.File.ReadAllText("../../../DevToken.txt");
-            MainViewModel.GroupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
-            MainViewModel.NotificationRouter = new NotificationRouter(MainViewModel.GroupMeClient);
+            GroupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
+            NotificationRouter = new NotificationRouter(GroupMeClient);
         }
 
         private static void RegisterNotifications()
         {
-            MainViewModel.NotificationRouter.RegisterNewSubscriber(MainViewModel.ChatsViewModel);
-            MainViewModel.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
-            MainViewModel.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider());
+            NotificationRouter.RegisterNewSubscriber(ChatsViewModel);
+            NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
+            NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider());
             // TODO register windows notifications
         }
     }

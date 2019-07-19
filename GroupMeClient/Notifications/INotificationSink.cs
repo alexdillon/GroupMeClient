@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
-using GroupMeClientApi;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Push;
 using GroupMeClientApi.Push.Notifications;
 
 namespace GroupMeClient.Notifications
 {
-    interface INotificationSink
+    public interface INotificationSink
     {
         Task GroupUpdated(LineMessageCreateNotification notification, IMessageContainer container);
         Task ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container);

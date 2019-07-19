@@ -12,7 +12,7 @@ namespace GroupMeClient.Notifications.Display.WpfToast
     {
         public WpfToastNotificationProvider()
         {
-            Notifier = new Notifier(cfg =>
+            this.Notifier = new Notifier(cfg =>
             {
                 Application.Current.Dispatcher.Invoke((Action)(() =>
                 {
@@ -22,11 +22,11 @@ namespace GroupMeClient.Notifications.Display.WpfToast
                     offsetX: 10,
                     offsetY: 100);
 
-                cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-                    notificationLifetime: TimeSpan.FromSeconds(3),
-                    maximumNotificationCount: MaximumNotificationCount.FromCount(5));
+                    cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                        notificationLifetime: TimeSpan.FromSeconds(3),
+                        maximumNotificationCount: MaximumNotificationCount.FromCount(5));
 
-                cfg.Dispatcher = Application.Current.Dispatcher;
+                    cfg.Dispatcher = Application.Current.Dispatcher;
                 }));
             });
         }
@@ -40,7 +40,7 @@ namespace GroupMeClient.Notifications.Display.WpfToast
             // Don't show like notifications and similar
 
             //Notifier.ShowGroupMeToastMessage(
-            //    body, 
+            //    body,
             //    new DummyAvatarSource(avatarUrl, roundedAvatar),
             //    this.GroupMeClient.ImageDownloader);
 
@@ -49,7 +49,7 @@ namespace GroupMeClient.Notifications.Display.WpfToast
 
         Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl)
         {
-            Notifier.ShowGroupMeToastMessage(
+            this.Notifier.ShowGroupMeToastMessage(
                 body,
                 new DummyAvatarSource(avatarUrl, roundedAvatar),
                 this.GroupMeClient.ImageDownloader);
@@ -59,7 +59,7 @@ namespace GroupMeClient.Notifications.Display.WpfToast
 
         Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar)
         {
-            Notifier.ShowGroupMeToastMessage(
+            this.Notifier.ShowGroupMeToastMessage(
                 body,
                 new DummyAvatarSource(avatarUrl, roundedAvatar),
                 this.GroupMeClient.ImageDownloader);

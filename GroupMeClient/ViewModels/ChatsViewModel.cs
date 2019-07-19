@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GroupMeClientApi.Models;
-using GroupMeClientApi.Push.Notifications;
-using System.Threading;
 using GroupMeClient.Notifications;
+using GroupMeClientApi.Models;
 using GroupMeClientApi.Push;
-using GroupMeClientApi;
+using GroupMeClientApi.Push.Notifications;
 
 namespace GroupMeClient.ViewModels
 {
@@ -21,8 +20,8 @@ namespace GroupMeClient.ViewModels
 
             this.AllGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
-       
-            _ = Loaded();
+
+            _ = this.Loaded();
         }
 
         public ObservableCollection<Controls.GroupControlViewModel> AllGroupsChats { get; set; }
@@ -36,7 +35,7 @@ namespace GroupMeClient.ViewModels
         private async Task Loaded()
         {
             this.AllGroupsChats.Clear();
-            await LoadGroupsAndChats();
+            await this.LoadGroupsAndChats();
         }
 
         private async Task LoadGroupsAndChats()
@@ -45,10 +44,10 @@ namespace GroupMeClient.ViewModels
 
             try
             {
-                await GroupMeClient.GetGroupsAsync();
-                await GroupMeClient.GetChatsAsync();
+                await this.GroupMeClient.GetGroupsAsync();
+                await this.GroupMeClient.GetChatsAsync();
 
-                foreach (var group in GroupMeClient.Groups())
+                foreach (var group in this.GroupMeClient.Groups())
                 {
                     var existingVm = this.AllGroupsChats.FirstOrDefault(g => g.Id == group.Id);
 
@@ -57,7 +56,7 @@ namespace GroupMeClient.ViewModels
                         // create a new GroupControl ViewModel for this Group
                         var groupVm = new Controls.GroupControlViewModel(group)
                         {
-                            GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(OpenNewGroupChat, (g) => true)
+                            GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
                         };
                         this.AllGroupsChats.Add(groupVm);
                     }
@@ -68,7 +67,7 @@ namespace GroupMeClient.ViewModels
                     }
                 }
 
-                foreach (Chat chat in GroupMeClient.Chats())
+                foreach (Chat chat in this.GroupMeClient.Chats())
                 {
                     var existingVm = this.AllGroupsChats.FirstOrDefault(g => g.Id == chat.Id);
 
@@ -77,7 +76,7 @@ namespace GroupMeClient.ViewModels
                         // create a new GroupControl ViewModel for this Chat
                         var chatVm = new Controls.GroupControlViewModel(chat)
                         {
-                            GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(OpenNewGroupChat, (g) => true)
+                            GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
                         };
                         this.AllGroupsChats.Add(chatVm);
                     }
@@ -96,7 +95,6 @@ namespace GroupMeClient.ViewModels
             }
         }
 
-     
         private void OpenNewGroupChat(Controls.GroupControlViewModel group)
         {
             if (this.ActiveGroupsChats.Any(g => g.Id == group.Id))
@@ -111,7 +109,7 @@ namespace GroupMeClient.ViewModels
                 // open a new group or chat
                 var groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.MessageContainer)
                 {
-                    CloseGroup = new RelayCommand<Controls.GroupContentsControlViewModel>(CloseChat, (g) => true)
+                    CloseGroup = new RelayCommand<Controls.GroupContentsControlViewModel>(this.CloseChat, (g) => true),
                 };
 
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);

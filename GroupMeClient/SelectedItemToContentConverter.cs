@@ -14,6 +14,7 @@ namespace GroupMeClient
             {
                 return values[0] ?? values[1];
             }
+
             return null;
         }
 

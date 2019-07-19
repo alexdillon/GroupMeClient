@@ -8,8 +8,8 @@ namespace GroupMeClient.Extensions
     {
         public MultiLineSendBox()
         {
-            this.KeyDown += TextBoxKeyDown;
-            this.PreviewKeyDown += TextBoxPreviewKeyDown;
+            this.KeyDown += this.TextBoxKeyDown;
+            this.PreviewKeyDown += this.TextBoxPreviewKeyDown;
         }
 
         private void TextBoxKeyDown(object sender, KeyEventArgs e)
@@ -21,13 +21,13 @@ namespace GroupMeClient.Extensions
                 !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) &&
                 !(Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.LeftShift)))
             {
-                RaiseSendEvent();
+                this.RaiseSendEvent();
             }
         }
 
         private void TextBoxPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            // Enter key is routed and the PreviewKeyDown is also fired with the 
+            // Enter key is routed and the PreviewKeyDown is also fired with the
             // Enter key
             // You don't want to clear the box when CTRL and/or SHIFT is down
             if (e.Key == Key.Enter &&
@@ -35,7 +35,7 @@ namespace GroupMeClient.Extensions
                 !(Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)))
             {
                 e.Handled = true;
-                RaiseSendEvent();
+                this.RaiseSendEvent();
             }
         }
 
@@ -45,14 +45,14 @@ namespace GroupMeClient.Extensions
         // Provide CLR accessors for the event
         public event RoutedEventHandler Send
         {
-            add { AddHandler(SendEvent, value); }
-            remove { RemoveHandler(SendEvent, value); }
+            add { this.AddHandler(SendEvent, value); }
+            remove { this.RemoveHandler(SendEvent, value); }
         }
 
         void RaiseSendEvent()
         {
             RoutedEventArgs newEventArgs = new RoutedEventArgs(SendEvent);
-            RaiseEvent(newEventArgs);
+            this.RaiseEvent(newEventArgs);
         }
     }
 }

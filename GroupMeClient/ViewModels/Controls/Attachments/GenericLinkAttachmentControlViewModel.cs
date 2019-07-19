@@ -1,30 +1,28 @@
-﻿using System.Threading.Tasks;
-using System.IO;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Net.Http;
-using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight.Command;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
 {
     public class GenericLinkAttachmentControlViewModel : LinkAttachmentBaseViewModel
     {
-        public GenericLinkAttachmentControlViewModel(string url) :
-            base(url)
+        public GenericLinkAttachmentControlViewModel(string url)
+            : base(url)
         {
-            this.Clicked = new RelayCommand(ClickedAction);
+            this.Clicked = new RelayCommand(this.ClickedAction);
         }
 
         private ImageSource faviconImage;
 
         /// <summary>
-        /// Gets the favicon image.
+        /// Gets or sets the favicon image.
         /// </summary>
         public ImageSource FaviconImage
         {
-            get { return faviconImage; }
-            set { Set(() => this.FaviconImage, ref faviconImage, value); }
+            get { return this.faviconImage; }
+            set { this.Set(() => this.FaviconImage, ref this.faviconImage, value); }
         }
 
         public string Title => this.LinkInfo?.Title;
@@ -50,7 +48,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         {
             _ = this.DownloadImage(this.LinkInfo.AnyPreviewPictureUrl);
             _ = this.DownloadFaviconImage(this.LinkInfo.Favicon);
-            RaisePropertyChanged("");
+            this.RaisePropertyChanged(string.Empty);
         }
 
         private void ClickedAction()

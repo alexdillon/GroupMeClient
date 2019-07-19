@@ -1,10 +1,8 @@
 ﻿using System.Threading.Tasks;
-using GalaSoft.MvvmLight;
-using GroupMeClientApi.Models;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using GalaSoft.MvvmLight;
 using GroupMeClientApi;
-using System;
+using GroupMeClientApi.Models;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -14,7 +12,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             this.AvatarSource = avatarSource;
             this.ImageDownloader = imageDownloader;
-            _ = LoadAvatar();
+            _ = this.LoadAvatar();
         }
 
         public IAvatarSource AvatarSource { get; }
@@ -30,7 +28,7 @@ namespace GroupMeClient.ViewModels.Controls
         public ImageSource AvatarRound
         {
             get { return this.avatarRound; }
-            set { Set(() => this.AvatarRound, ref avatarRound, value); }
+            set { this.Set(() => this.AvatarRound, ref this.avatarRound, value); }
         }
 
         /// <summary>
@@ -40,7 +38,7 @@ namespace GroupMeClient.ViewModels.Controls
         public ImageSource AvatarSquare
         {
             get { return this.avatarSquare; }
-            set { Set(() => this.AvatarSquare, ref avatarSquare, value); }
+            set { this.Set(() => this.AvatarSquare, ref this.avatarSquare, value); }
         }
 
         public async Task LoadAvatar()

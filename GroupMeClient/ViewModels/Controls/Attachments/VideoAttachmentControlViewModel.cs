@@ -1,5 +1,5 @@
-﻿using GalaSoft.MvvmLight.Command;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using GalaSoft.MvvmLight.Command;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
 {
@@ -14,10 +14,10 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
                 var newUri = this.Uri.AbsoluteUri;
                 newUri = newUri.Replace(".mp4", ".jpg");
 
-                _ = DownloadImage(newUri);
+                _ = this.DownloadImage(newUri);
             }
 
-            this.Clicked = new RelayCommand(ClickedAction);
+            this.Clicked = new RelayCommand(this.ClickedAction);
         }
 
         public ICommand Clicked { get; }

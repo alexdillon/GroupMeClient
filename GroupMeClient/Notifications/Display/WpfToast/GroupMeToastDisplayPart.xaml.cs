@@ -4,24 +4,24 @@ using ToastNotifications.Core;
 namespace GroupMeClient.Notifications.Display.WpfToast
 {
     /// <summary>
-    /// Interaction logic for WpfToastDisplayPart.xaml
+    /// Interaction logic for WpfToastDisplayPart.xaml.
     /// </summary>
     public partial class GroupMeToastDisplayPart : NotificationDisplayPart
     {
         public GroupMeToastDisplayPart(GroupMeToastNotification groupMeToast)
         {
-            InitializeComponent();
-            Bind(groupMeToast);
+            this.InitializeComponent();
+            this.Bind(groupMeToast);
         }
 
         public GroupMeToastDisplayPart()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         private void OnClose(object sender, RoutedEventArgs e)
         {
-            Notification.Close();
+            this.Notification.Close();
         }
     }
 }

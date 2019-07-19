@@ -27,15 +27,15 @@ namespace GroupMeClient.ViewModels.Controls
             get { return this.messageContainer; }
             set
             {
-                Set(() => this.MessageContainer, ref messageContainer, value);
-                RaisePropertyChangeForAll();
+                this.Set(() => this.MessageContainer, ref this.messageContainer, value);
+                this.RaisePropertyChangeForAll();
             }
         }
 
         public AvatarControlViewModel Avatar
         {
             get { return this.avatar; }
-            set { Set(() => this.Avatar, ref avatar, value); }
+            set { this.Set(() => this.Avatar, ref this.avatar, value); }
         }
 
         public string LastUpdatedFriendlyTime
@@ -95,11 +95,11 @@ namespace GroupMeClient.ViewModels.Controls
         private void RaisePropertyChangeForAll()
         {
             // since RaisePropertyChanged(string.empty) doesn't seem to work correctly...
-            RaisePropertyChanged(nameof(this.Avatar));
-            RaisePropertyChanged(nameof(this.LastUpdatedFriendlyTime));
-            RaisePropertyChanged(nameof(this.QuickPreview));
-            RaisePropertyChanged(nameof(this.Title));
-            RaisePropertyChanged(nameof(this.LastUpdated));
+            this.RaisePropertyChanged(nameof(this.Avatar));
+            this.RaisePropertyChanged(nameof(this.LastUpdatedFriendlyTime));
+            this.RaisePropertyChanged(nameof(this.QuickPreview));
+            this.RaisePropertyChanged(nameof(this.Title));
+            this.RaisePropertyChanged(nameof(this.LastUpdated));
         }
     }
 }

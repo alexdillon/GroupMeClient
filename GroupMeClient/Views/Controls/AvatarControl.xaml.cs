@@ -9,7 +9,7 @@ namespace GroupMeClient.Views.Controls
     {
         public AvatarControl()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

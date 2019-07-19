@@ -6,19 +6,20 @@ using System.Windows.Input;
 namespace GroupMeClient.Extensions
 {
     /// <summary>
-    /// IFileDragDropTarget Interface
+    /// IFileDragDropTarget Interface.
     /// </summary>
     /// <remarks>
-    /// Adapted from https://stackoverflow.com/a/37608994
+    /// Adapted from https://stackoverflow.com/a/37608994.
     /// </remarks>
     public interface IDragDropTarget
     {
         void OnFileDrop(string[] filepaths);
+
         void OnImageDrop(byte[] image);
     }
 
     /// <summary>
-    /// FileDragDropHelper
+    /// FileDragDropHelper.
     /// </summary>
     public class FileDragDropHelper
     {
@@ -50,7 +51,11 @@ namespace GroupMeClient.Extensions
 
         private static void OnFileDragDropEnabled(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (e.NewValue == e.OldValue) return;
+            if (e.NewValue == e.OldValue)
+            {
+                return;
+            }
+
             if (d is Control control)
             {
                 control.Drop += OnDrop;
@@ -60,16 +65,19 @@ namespace GroupMeClient.Extensions
             }
         }
 
-        private static void OnDrop(object _sender, DragEventArgs _dragEventArgs)
+        private static void OnDrop(object sender, DragEventArgs dragEventArgs)
         {
-            if (!(_sender is DependencyObject d)) return;
+            if (!(sender is DependencyObject d))
+            {
+                return;
+            }
 
             var target = d.GetValue(FileDragDropTargetProperty);
             if (target is IDragDropTarget fileTarget)
             {
-                if (_dragEventArgs.Data.GetDataPresent(DataFormats.FileDrop))
+                if (dragEventArgs.Data.GetDataPresent(DataFormats.FileDrop))
                 {
-                    fileTarget.OnFileDrop((string[])_dragEventArgs.Data.GetData(DataFormats.FileDrop));
+                    fileTarget.OnFileDrop((string[])dragEventArgs.Data.GetData(DataFormats.FileDrop));
                 }
             }
             else
@@ -93,7 +101,10 @@ namespace GroupMeClient.Extensions
             {
                 if (Clipboard.ContainsImage())
                 {
-                    if (!(sender is DependencyObject d)) return;
+                    if (!(sender is DependencyObject d))
+                    {
+                        return;
+                    }
 
                     var target = d.GetValue(FileDragDropTargetProperty);
 

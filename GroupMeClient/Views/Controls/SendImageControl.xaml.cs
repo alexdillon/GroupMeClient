@@ -9,7 +9,7 @@ namespace GroupMeClient.Views.Controls
     {
         public SendImageControl()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

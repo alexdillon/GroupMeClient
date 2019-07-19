@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
-using GalaSoft.MvvmLight;
-using System.IO;
-using System.Windows.Input;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Media;
+using GalaSoft.MvvmLight;
+using Newtonsoft.Json;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
 {
@@ -24,7 +22,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
             if (this.Uri != null)
             {
-                _ = LoadGroupMeInfo();
+                _ = this.LoadGroupMeInfo();
             }
         }
 
@@ -34,18 +32,18 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         {
             get
             {
-                return url;
+                return this.url;
             }
             set
             {
-                url = value;
+                this.url = value;
 
-                if (url.Contains(" "))
+                if (this.url.Contains(" "))
                 {
-                    url = url.Substring(0, url.IndexOf(" "));
+                    this.url = this.url.Substring(0, this.url.IndexOf(" "));
                 }
 
-                if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                if (Uri.TryCreate(this.url, UriKind.Absolute, out var uri))
                 {
                     this.Uri = uri;
                 }
@@ -61,12 +59,12 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         private ImageSource renderedImage;
 
         /// <summary>
-        /// Gets the rendered image.
+        /// Gets or sets the rendered image.
         /// </summary>
         public ImageSource RenderedImage
         {
-            get { return renderedImage; }
-            set { Set(() => this.RenderedImage, ref renderedImage, value); }
+            get { return this.renderedImage; }
+            set { this.Set(() => this.RenderedImage, ref this.renderedImage, value); }
         }
 
         protected async Task DownloadImage(string url)
@@ -96,7 +94,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             }
             catch (Exception)
             {
-                RaisePropertyChanged("");
+                this.RaisePropertyChanged(string.Empty);
             }
         }
 

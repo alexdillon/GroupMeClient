@@ -1,17 +1,17 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GroupMeClientApi.Models;
-using System.Collections.Generic;
-using System.Windows.Controls;
-using System.Threading;
-using System.Windows;
-using System;
 using GroupMeClient.Extensions;
-using System.IO;
+using GroupMeClientApi.Models;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -21,17 +21,18 @@ namespace GroupMeClient.ViewModels.Controls
         {
             this.Messages = new ObservableCollection<MessageControlViewModel>();
             this.ReloadSem = new SemaphoreSlim(1, 1);
-            this.SendMessage = new RelayCommand(async () => await SendMessageAsync(), true);
-            this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await LoadMoreAsync(s), true);
-            this.ClosePopup = new RelayCommand(ClosePopupHandler);
+            this.SendMessage = new RelayCommand(async () => await this.SendMessageAsync(), true);
+            this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await this.LoadMoreAsync(s), true);
+            this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
         }
 
-        public GroupContentsControlViewModel(IMessageContainer messageContainer) : this()
+        public GroupContentsControlViewModel(IMessageContainer messageContainer)
+            : this()
         {
             this.MessageContainer = messageContainer;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
 
-            _ = Loaded();
+            _ = this.Loaded();
         }
 
         private IMessageContainer messageContainer;
@@ -51,7 +52,7 @@ namespace GroupMeClient.ViewModels.Controls
         public IMessageContainer MessageContainer
         {
             get { return this.messageContainer; }
-            set { Set(() => this.MessageContainer, ref messageContainer, value); }
+            set { this.Set(() => this.MessageContainer, ref this.messageContainer, value); }
         }
 
         public string Title => this.MessageContainer.Name;
@@ -61,19 +62,19 @@ namespace GroupMeClient.ViewModels.Controls
         public AvatarControlViewModel TopBarAvatar
         {
             get { return this.topBarAvatar; }
-            set { Set(() => this.TopBarAvatar, ref topBarAvatar, value); }
+            set { this.Set(() => this.TopBarAvatar, ref this.topBarAvatar, value); }
         }
 
         public string TypedMessageContents
         {
             get { return this.typedMessageContents; }
-            set { Set(() => this.TypedMessageContents, ref typedMessageContents, value); }
+            set { this.Set(() => this.TypedMessageContents, ref this.typedMessageContents, value); }
         }
 
         public SendImageControlViewModel ImageSendDialog
         {
             get { return this.imageSendDialog; }
-            set { Set(() => this.ImageSendDialog, ref imageSendDialog, value); }
+            set { this.Set(() => this.ImageSendDialog, ref this.imageSendDialog, value); }
         }
 
         private Message FirstDisplayedMessage { get; set; } = null;
@@ -83,7 +84,7 @@ namespace GroupMeClient.ViewModels.Controls
             await Application.Current.Dispatcher.Invoke(async () =>
             {
                 // the code that's accessing UI properties
-                await LoadMoreAsync(null, true);
+                await this.LoadMoreAsync(null, true);
             });
         }
 
@@ -104,7 +105,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task Loaded()
         {
-            await LoadMoreAsync();
+            await this.LoadMoreAsync();
         }
 
         private async Task LoadMoreAsync(ScrollViewer scrollViewer = null, bool updateNewest = false)
@@ -126,7 +127,7 @@ namespace GroupMeClient.ViewModels.Controls
                     results = await this.MessageContainer.GetMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, this.FirstDisplayedMessage.Id);
                 }
 
-                UpdateDisplay(scrollViewer, results);
+                this.UpdateDisplay(scrollViewer, results);
             }
             finally
             {
@@ -219,7 +220,7 @@ namespace GroupMeClient.ViewModels.Controls
                 this.MessageContainer.Messages.Add(newMessage);
                 await this.LoadMoreAsync(null, true);
             }
-            
+
             return success;
         }
 
@@ -235,7 +236,7 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 ImageStream = image,
                 TypedMessageContents = this.TypedMessageContents,
-                SendMessage = new RelayCommand(async () => await SendImageMessageAsync(), true),
+                SendMessage = new RelayCommand(async () => await this.SendImageMessageAsync(), true),
             };
 
             this.ImageSendDialog = dialog;
@@ -258,7 +259,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         void IDragDropTarget.OnFileDrop(string[] filepaths)
         {
-            string[] supportedExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".bmp"};
+            string[] supportedExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".bmp" };
 
             foreach (var file in filepaths)
             {

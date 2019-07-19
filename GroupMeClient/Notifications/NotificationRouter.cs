@@ -6,15 +6,15 @@ using GroupMeClientApi.Push.Notifications;
 
 namespace GroupMeClient
 {
-    class NotificationRouter
+    public class NotificationRouter
     {
         public NotificationRouter(GroupMeClientApi.GroupMeClient client)
         {
             this.GroupMeClient = client;
-            Subscribers = new List<INotificationSink>();
+            this.Subscribers = new List<INotificationSink>();
 
-            PushClient = this.GroupMeClient.EnablePushNotifications();
-            PushClient.NotificationReceived += PushNotificationReceived;
+            this.PushClient = this.GroupMeClient.EnablePushNotifications();
+            this.PushClient.NotificationReceived += this.PushNotificationReceived;
         }
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
@@ -32,20 +32,20 @@ namespace GroupMeClient
 
         private void PushNotificationReceived(object sender, Notification notification)
         {
-            foreach (var observer in Subscribers)
+            foreach (var observer in this.Subscribers)
             {
                 switch (notification)
                 {
                     case LikeCreateNotification likeCreate:
                         observer.MessageUpdated(
-                            likeCreate.FavoriteSubject.Message, 
+                            likeCreate.FavoriteSubject.Message,
                             likeCreate.Alert,
                             this.FindMessageContainer(likeCreate.FavoriteSubject.Message));
                         break;
 
                     case FavoriteUpdate likeUpdate:
                         observer.MessageUpdated(
-                            likeUpdate.FavoriteSubject.Message, 
+                            likeUpdate.FavoriteSubject.Message,
                             likeUpdate.Alert,
                             this.FindMessageContainer(likeUpdate.FavoriteSubject.Message));
                         break;
@@ -68,7 +68,6 @@ namespace GroupMeClient
 
                     default:
                         break;
-
                 }
             }
         }
@@ -82,7 +81,7 @@ namespace GroupMeClient
             }
             else if (!string.IsNullOrEmpty(message.ChatId))
             {
-                var me = GroupMeClient.WhoAmI();
+                var me = this.GroupMeClient.WhoAmI();
 
                 // Chat IDs are formatted as UserID+UserID. Find the other user's ID
                 var chatId = message.ChatId;

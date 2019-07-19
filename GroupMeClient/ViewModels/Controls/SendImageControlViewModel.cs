@@ -21,13 +21,13 @@ namespace GroupMeClient.ViewModels.Controls
         public string TypedMessageContents
         {
             get { return this.typedMessageContents; }
-            set { Set(() => this.TypedMessageContents, ref typedMessageContents, value); }
+            set { this.Set(() => this.TypedMessageContents, ref this.typedMessageContents, value); }
         }
 
         public bool IsSending
         {
             get { return this.isSending; }
-            set { Set(() => this.IsSending, ref isSending, value); }
+            set { this.Set(() => this.IsSending, ref this.isSending, value); }
         }
 
         void IDisposable.Dispose()

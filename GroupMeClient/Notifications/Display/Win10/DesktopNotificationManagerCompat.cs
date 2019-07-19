@@ -56,17 +56,17 @@ namespace DesktopNotifications
 
             _aumid = aumid;
 
-            String exePath = Process.GetCurrentProcess().MainModule.FileName;
+            string exePath = Process.GetCurrentProcess().MainModule.FileName;
             RegisterComServer<T>(exePath);
 
             _registeredAumidAndComServer = true;
         }
 
-        private static void RegisterComServer<T>(String exePath)
+        private static void RegisterComServer<T>(string exePath)
             where T : NotificationActivator
         {
             // We register the EXE to start up when the notification is activated
-            string regString = String.Format("SOFTWARE\\Classes\\CLSID\\{{{0}}}\\LocalServer32", typeof(T).GUID);
+            string regString = string.Format("SOFTWARE\\Classes\\CLSID\\{{{0}}}\\LocalServer32", typeof(T).GUID);
             var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(regString);
 
             // Include a flag so we know this was a toast activation and should wait for COM to process
@@ -136,7 +136,6 @@ namespace DesktopNotifications
                     // Implicitly registered, all good!
                     _registeredAumidAndComServer = true;
                 }
-
                 else
                 {
                     // Otherwise, incorrect usage
@@ -158,7 +157,7 @@ namespace DesktopNotifications
         public static bool CanUseHttpImages { get { return DesktopBridgeHelpers.IsRunningAsUwp(); } }
 
         /// <summary>
-        /// Code from https://github.com/qmatteoq/DesktopBridgeHelpers/edit/master/DesktopBridge.Helpers/Helpers.cs
+        /// Code from https://github.com/qmatteoq/DesktopBridgeHelpers/edit/master/DesktopBridge.Helpers/Helpers.cs.
         /// </summary>
         private class DesktopBridgeHelpers
         {
@@ -198,7 +197,7 @@ namespace DesktopNotifications
                 {
                     int versionMajor = Environment.OSVersion.Version.Major;
                     int versionMinor = Environment.OSVersion.Version.Minor;
-                    double version = versionMajor + (double)versionMinor / 10;
+                    double version = versionMajor + ((double)versionMinor / 10);
                     return version <= 6.1;
                 }
             }
@@ -219,8 +218,8 @@ namespace DesktopNotifications
         /// <param name="aumid"></param>
         internal DesktopNotificationHistoryCompat(string aumid)
         {
-            _aumid = aumid;
-            _history = ToastNotificationManager.History;
+            this._aumid = aumid;
+            this._history = ToastNotificationManager.History;
         }
 
         /// <summary>
@@ -228,13 +227,13 @@ namespace DesktopNotifications
         /// </summary>
         public void Clear()
         {
-            if (_aumid != null)
+            if (this._aumid != null)
             {
-                _history.Clear(_aumid);
+                this._history.Clear(this._aumid);
             }
             else
             {
-                _history.Clear();
+                this._history.Clear();
             }
         }
 
@@ -244,7 +243,7 @@ namespace DesktopNotifications
         /// <returns>A collection of toasts.</returns>
         public IReadOnlyList<ToastNotification> GetHistory()
         {
-            return _aumid != null ? _history.GetHistory(_aumid) : _history.GetHistory();
+            return this._aumid != null ? this._history.GetHistory(this._aumid) : this._history.GetHistory();
         }
 
         /// <summary>
@@ -253,13 +252,13 @@ namespace DesktopNotifications
         /// <param name="tag">The tag label of the toast notification to be removed.</param>
         public void Remove(string tag)
         {
-            if (_aumid != null)
+            if (this._aumid != null)
             {
-                _history.Remove(tag, string.Empty, _aumid);
+                this._history.Remove(tag, string.Empty, this._aumid);
             }
             else
             {
-                _history.Remove(tag);
+                this._history.Remove(tag);
             }
         }
 
@@ -270,13 +269,13 @@ namespace DesktopNotifications
         /// <param name="group">The group label of the toast notification to be removed.</param>
         public void Remove(string tag, string group)
         {
-            if (_aumid != null)
+            if (this._aumid != null)
             {
-                _history.Remove(tag, group, _aumid);
+                this._history.Remove(tag, group, this._aumid);
             }
             else
             {
-                _history.Remove(tag, group);
+                this._history.Remove(tag, group);
             }
         }
 
@@ -286,13 +285,13 @@ namespace DesktopNotifications
         /// <param name="group">The group label of the toast notifications to be removed.</param>
         public void RemoveGroup(string group)
         {
-            if (_aumid != null)
+            if (this._aumid != null)
             {
-                _history.RemoveGroup(group, _aumid);
+                this._history.RemoveGroup(group, this._aumid);
             }
             else
             {
-                _history.RemoveGroup(group);
+                this._history.RemoveGroup(group);
             }
         }
     }
@@ -304,7 +303,7 @@ namespace DesktopNotifications
     {
         public void Activate(string appUserModelId, string invokedArgs, NOTIFICATION_USER_INPUT_DATA[] data, uint dataCount)
         {
-            OnActivated(invokedArgs, new NotificationUserInput(data), appUserModelId);
+            this.OnActivated(invokedArgs, new NotificationUserInput(data), appUserModelId);
         }
 
         /// <summary>
@@ -354,30 +353,30 @@ namespace DesktopNotifications
 
         internal NotificationUserInput(NotificationActivator.NOTIFICATION_USER_INPUT_DATA[] data)
         {
-            _data = data;
+            this._data = data;
         }
 
-        public string this[string key] => _data.First(i => i.Key == key).Value;
+        public string this[string key] => this._data.First(i => i.Key == key).Value;
 
-        public IEnumerable<string> Keys => _data.Select(i => i.Key);
+        public IEnumerable<string> Keys => this._data.Select(i => i.Key);
 
-        public IEnumerable<string> Values => _data.Select(i => i.Value);
+        public IEnumerable<string> Values => this._data.Select(i => i.Value);
 
-        public int Count => _data.Length;
+        public int Count => this._data.Length;
 
         public bool ContainsKey(string key)
         {
-            return _data.Any(i => i.Key == key);
+            return this._data.Any(i => i.Key == key);
         }
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            return _data.Select(i => new KeyValuePair<string, string>(i.Key, i.Value)).GetEnumerator();
+            return this._data.Select(i => new KeyValuePair<string, string>(i.Key, i.Value)).GetEnumerator();
         }
 
         public bool TryGetValue(string key, out string value)
         {
-            foreach (var item in _data)
+            foreach (var item in this._data)
             {
                 if (item.Key == key)
                 {
@@ -392,7 +391,7 @@ namespace DesktopNotifications
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return this.GetEnumerator();
         }
     }
 }
