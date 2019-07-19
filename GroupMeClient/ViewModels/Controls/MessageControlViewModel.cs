@@ -251,7 +251,7 @@ namespace GroupMeClient.ViewModels.Controls
                     var imgAttach = attachment as ImageAttachment;
                     var downloader = this.Message.ImageDownloader;
 
-                    image = await downloader.DownloadPostImage(imgAttach.Url);
+                    image = await downloader.DownloadPostImage($"{imgAttach.Url}.large");
                 }
             }
 
