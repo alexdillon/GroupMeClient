@@ -15,9 +15,12 @@
             </Grid.ColumnDefinitions>
             <Controls:AvatarControl Width="25" Height="25"
                                         Content="{Binding Avatar}"/>
-            
-            <TextBlock x:Name="Text" Text="{Binding Message}" Style="{StaticResource NotificationText}" 
-                       Foreground="Black" FontWeight="SemiBold"  Grid.Column="1"  />
+
+            <TextBlock x:Name="Text" Grid.Column="1"  Style="{StaticResource NotificationText}"  Foreground="Black"
+                       Text="{Binding Message}" FontWeight="Regular"
+                       TextWrapping="Wrap"
+                       TextTrimming="CharacterEllipsis"
+                       MaxHeight="50"/>
             <Button x:Name="CloseButton" Style="{StaticResource NotificationCloseButton}"  Padding="1" Grid.Column="2"  Click="OnClose" Visibility="Hidden" Foreground="DarkGray">
                 <Rectangle Style="{StaticResource CloseButtonIcon}" Margin="2">
                     <Rectangle.OpacityMask>
