@@ -5,12 +5,18 @@ using MahApps.Metro.IconPacks;
 
 namespace GroupMeClient.ViewModels
 {
+    /// <summary>
+    /// <see cref="MainViewModel"/> is the top-level ViewModel for the GroupMe Desktop Client.
+    /// </summary>
     public class MainViewModel : ViewModelBase
     {
         private HamburgerMenuItemCollection menuItems;
 
         private HamburgerMenuItemCollection menuOptionItems;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainViewModel"/> class.
+        /// </summary>
         public MainViewModel()
         {
             InitializeGroupMeClient();
@@ -23,25 +29,6 @@ namespace GroupMeClient.ViewModels
 
             this.CreateMenuItems();
         }
-
-        private static GroupMeClientCached.GroupMeCachedClient GroupMeClient { get; set; }
-
-        private static NotificationRouter NotificationRouter { get; set; }
-
-        /// <summary>
-        /// Gets or sets a static instance of one of the Chat's ViewModel.
-        /// </summary>
-        private static ChatsViewModel ChatsViewModel { get; set; }
-
-        /// <summary>
-        /// Gets or sets a static instance of one of the **** TODO***** ViewModel.
-        /// </summary>
-        private static SecondViewModel SecondViewModel { get; set; }
-
-        /// <summary>
-        /// Gets or sets a static instance of one of the Settings ViewModel.
-        /// </summary>
-        private static SettingsViewModel SettingsViewModel { get; set; }
 
         /// <summary>
         /// Gets or sets the list of main items shown in the hamburger menu.
@@ -59,6 +46,30 @@ namespace GroupMeClient.ViewModels
         {
             get { return this.menuOptionItems; }
             set { this.Set(() => this.MenuOptionItems, ref this.menuOptionItems, value); }
+        }
+
+        private static GroupMeClientCached.GroupMeCachedClient GroupMeClient { get; set; }
+
+        private static NotificationRouter NotificationRouter { get; set; }
+
+        private static ChatsViewModel ChatsViewModel { get; set; }
+
+        private static SecondViewModel SecondViewModel { get; set; }
+
+        private static SettingsViewModel SettingsViewModel { get; set; }
+
+        private static void InitializeGroupMeClient()
+        {
+            string token = System.IO.File.ReadAllText("../../../DevToken.txt");
+            GroupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
+            NotificationRouter = new NotificationRouter(GroupMeClient);
+        }
+
+        private static void RegisterNotifications()
+        {
+            NotificationRouter.RegisterNewSubscriber(ChatsViewModel);
+            NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
+            NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider());
         }
 
         private void CreateMenuItems()
@@ -91,21 +102,6 @@ namespace GroupMeClient.ViewModels
                     Tag = SettingsViewModel,
                 },
             };
-        }
-
-        private static void InitializeGroupMeClient()
-        {
-            string token = System.IO.File.ReadAllText("../../../DevToken.txt");
-            GroupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
-            NotificationRouter = new NotificationRouter(GroupMeClient);
-        }
-
-        private static void RegisterNotifications()
-        {
-            NotificationRouter.RegisterNewSubscriber(ChatsViewModel);
-            NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
-            NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider());
-            // TODO register windows notifications
         }
     }
 }

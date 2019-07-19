@@ -6,15 +6,23 @@ using System.Windows.Input;
 namespace GroupMeClient.Extensions
 {
     /// <summary>
-    /// IFileDragDropTarget Interface.
+    /// <see cref="IDragDropTarget"/> enables receiving updates when data is dropped onto a control.
     /// </summary>
     /// <remarks>
     /// Adapted from https://stackoverflow.com/a/37608994.
     /// </remarks>
     public interface IDragDropTarget
     {
+        /// <summary>
+        /// Executed when a file has been dragged onto the target.
+        /// </summary>
+        /// <param name="filepaths">The file name(s) dropped.</param>
         void OnFileDrop(string[] filepaths);
 
+        /// <summary>
+        /// Executed when an image has been dragged onto the target.
+        /// </summary>
+        /// <param name="image">The raw image data that was dropped.</param>
         void OnImageDrop(byte[] image);
     }
 
@@ -23,6 +31,12 @@ namespace GroupMeClient.Extensions
     /// </summary>
     public class FileDragDropHelper
     {
+        public static readonly DependencyProperty IsFileDragDropEnabledProperty =
+              DependencyProperty.RegisterAttached("IsFileDragDropEnabled", typeof(bool), typeof(FileDragDropHelper), new PropertyMetadata(OnFileDragDropEnabled));
+
+        public static readonly DependencyProperty FileDragDropTargetProperty =
+                DependencyProperty.RegisterAttached("FileDragDropTarget", typeof(object), typeof(FileDragDropHelper), null);
+
         public static bool GetIsFileDragDropEnabled(DependencyObject obj)
         {
             return (bool)obj.GetValue(IsFileDragDropEnabledProperty);
@@ -42,12 +56,6 @@ namespace GroupMeClient.Extensions
         {
             obj.SetValue(FileDragDropTargetProperty, value);
         }
-
-        public static readonly DependencyProperty IsFileDragDropEnabledProperty =
-                DependencyProperty.RegisterAttached("IsFileDragDropEnabled", typeof(bool), typeof(FileDragDropHelper), new PropertyMetadata(OnFileDragDropEnabled));
-
-        public static readonly DependencyProperty FileDragDropTargetProperty =
-                DependencyProperty.RegisterAttached("FileDragDropTarget", typeof(object), typeof(FileDragDropHelper), null);
 
         private static void OnFileDragDropEnabled(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

@@ -15,8 +15,20 @@ using GroupMeClientApi.Models;
 
 namespace GroupMeClient.ViewModels.Controls
 {
+    /// <summary>
+    /// <see cref="GroupContentsControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.GroupContentsControl"/> control that displays the contents (messages) of a Group or Chat.
+    /// Controls for sending messages are also included.
+    /// </summary>
     public class GroupContentsControlViewModel : ViewModelBase, IDragDropTarget, IDisposable
     {
+        private IMessageContainer messageContainer;
+        private AvatarControlViewModel topBarAvatar;
+        private string typedMessageContents;
+        private SendImageControlViewModel imageSendDialog;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
+        /// </summary>
         public GroupContentsControlViewModel()
         {
             this.Messages = new ObservableCollection<MessageControlViewModel>();
@@ -26,6 +38,10 @@ namespace GroupMeClient.ViewModels.Controls
             this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
+        /// </summary>
+        /// <param name="messageContainer">The Group or Chat to bind to.</param>
         public GroupContentsControlViewModel(IMessageContainer messageContainer)
             : this()
         {
@@ -35,50 +51,87 @@ namespace GroupMeClient.ViewModels.Controls
             _ = this.Loaded();
         }
 
-        private IMessageContainer messageContainer;
-        private AvatarControlViewModel topBarAvatar;
-        private string typedMessageContents;
-        private SendImageControlViewModel imageSendDialog;
-
+        /// <summary>
+        /// Gets or sets the action to be performed when the close button is pressed.
+        /// </summary>
         public ICommand CloseGroup { get; set; }
+
+        /// <summary>
+        /// Gets or sets the action to be performd when a message is ready to send.
+        /// </summary>
         public ICommand SendMessage { get; set; }
-        public ICommand ReloadView { get; set; }
+
+        /// <summary>
+        /// Gets the action to be performed when more messages need to be loaded.
+        /// </summary>
+        public ICommand ReloadView { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the action to be be performed when a popup has been closed.
+        /// </summary>
         public ICommand ClosePopup { get; set; }
 
+        /// <summary>
+        /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
+        /// </summary>
         public ObservableCollection<MessageControlViewModel> Messages { get; }
 
-        private SemaphoreSlim ReloadSem { get; }
+        /// <summary>
+        /// Gets the title of the <see cref="Group"/> or <see cref="Chat"/>.
+        /// </summary>
+        public string Title => this.MessageContainer.Name;
 
+        /// <summary>
+        /// Gets the unique identifier for the <see cref="Group"/> or <see cref="Chat"/>.
+        /// </summary>
+        public string Id => this.MessageContainer.Id;
+
+        /// <summary>
+        /// Gets or sets the <see cref="IMessageContainer"/> being displayed.
+        /// </summary>
         public IMessageContainer MessageContainer
         {
             get { return this.messageContainer; }
             set { this.Set(() => this.MessageContainer, ref this.messageContainer, value); }
         }
 
-        public string Title => this.MessageContainer.Name;
-
-        public string Id => this.MessageContainer.Id;
-
+        /// <summary>
+        /// Gets the avatar to be displayed in the top bar.
+        /// </summary>
         public AvatarControlViewModel TopBarAvatar
         {
             get { return this.topBarAvatar; }
-            set { this.Set(() => this.TopBarAvatar, ref this.topBarAvatar, value); }
+            private set { this.Set(() => this.TopBarAvatar, ref this.topBarAvatar, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the contents the user has typed for a new message.
+        /// </summary>
         public string TypedMessageContents
         {
             get { return this.typedMessageContents; }
             set { this.Set(() => this.TypedMessageContents, ref this.typedMessageContents, value); }
         }
 
+        /// <summary>
+        /// Gets the Image Send Dialog that should be displayed as a popup.
+        /// Gets null if no Image Send Dialog should be displayed.
+        /// </summary>
         public SendImageControlViewModel ImageSendDialog
         {
             get { return this.imageSendDialog; }
-            set { this.Set(() => this.ImageSendDialog, ref this.imageSendDialog, value); }
+            private set { this.Set(() => this.ImageSendDialog, ref this.imageSendDialog, value); }
         }
+
+        private SemaphoreSlim ReloadSem { get; }
 
         private Message FirstDisplayedMessage { get; set; } = null;
 
+        /// <summary>
+        /// Reloads and redisplay the newest messages.
+        /// This will capture any messages send since the last reload.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LoadNewMessages()
         {
             await Application.Current.Dispatcher.Invoke(async () =>
@@ -88,6 +141,10 @@ namespace GroupMeClient.ViewModels.Controls
             });
         }
 
+        /// <summary>
+        /// Updates the 'Likes' for a currently displayed <see cref="Message"/>.
+        /// </summary>
+        /// <param name="message">The message containing the updated list of likers.</param>
         public void UpdateMessageLikes(Message message)
         {
             var msgVm = this.Messages.FirstOrDefault(m => m.Id == message.Id);
@@ -248,6 +305,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.ImageSendDialog = null;
         }
 
+        /// <inheritdoc />
         void IDisposable.Dispose()
         {
             this.Messages.Clear();
@@ -257,6 +315,7 @@ namespace GroupMeClient.ViewModels.Controls
             //}
         }
 
+        /// <inheritdoc />
         void IDragDropTarget.OnFileDrop(string[] filepaths)
         {
             string[] supportedExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".bmp" };
@@ -271,6 +330,7 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        /// <inheritdoc />
         void IDragDropTarget.OnImageDrop(byte[] image)
         {
             var memoryStream = new MemoryStream(image);

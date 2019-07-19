@@ -7,7 +7,10 @@ using GroupMeClientApi.Push.Notifications;
 
 namespace GroupMeClient.Notifications.Display
 {
-    class PopupNotificationProvider : INotificationSink
+    /// <summary>
+    /// <see cref="PopupNotificationProvider"/> provides an observer to display notifications from the <see cref="NotificationRouter"/> visually.
+    /// </summary>
+    public class PopupNotificationProvider : INotificationSink
     {
         private PopupNotificationProvider(IPopupNotificationSink sink)
         {
@@ -18,17 +21,26 @@ namespace GroupMeClient.Notifications.Display
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
+        /// <summary>
+        /// Creates a <see cref="PopupNotificationProvider"/> to display operating system level notifications.
+        /// </summary>
+        /// <returns>A PopupNotificationProvider.</returns>
         public static PopupNotificationProvider CreatePlatformNotificationProvider()
         {
             // TODO: actually test to see if platform is Windows 10
             return new PopupNotificationProvider(new Win10.Win10ToastNotificationsProvider());
         }
 
+        /// <summary>
+        /// Creates a <see cref="PopupNotificationProvider"/> to display internal (popup) toast notifications.
+        /// </summary>
+        /// <returns>A PopupNotificationProvider.</returns>
         public static PopupNotificationProvider CreateInternalNotificationProvider()
         {
             return new PopupNotificationProvider(new WpfToast.WpfToastNotificationProvider());
         }
 
+        /// <inheritdoc/>
         async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
         {
             if (!string.IsNullOrEmpty(notification.Alert) && !this.DidISendIt(notification.Message))
@@ -55,6 +67,7 @@ namespace GroupMeClient.Notifications.Display
             }
         }
 
+        /// <inheritdoc/>
         async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification, IMessageContainer container)
         {
             if (!string.IsNullOrEmpty(notification.Alert) && !this.DidISendIt(notification.Message))
@@ -81,6 +94,7 @@ namespace GroupMeClient.Notifications.Display
             }
         }
 
+        /// <inheritdoc/>
         async Task INotificationSink.MessageUpdated(Message message, string alert, IMessageContainer container)
         {
             if (!string.IsNullOrEmpty(alert))
@@ -93,10 +107,12 @@ namespace GroupMeClient.Notifications.Display
             }
         }
 
+        /// <inheritdoc/>
         void INotificationSink.HeartbeatReceived()
         {
         }
 
+        /// <inheritdoc/>
         void INotificationSink.RegisterPushSubscriptions(PushClient pushClient, GroupMeClientApi.GroupMeClient client)
         {
             this.GroupMeClient = client;
@@ -106,7 +122,7 @@ namespace GroupMeClient.Notifications.Display
         private bool DidISendIt(Message message)
         {
             var me = this.GroupMeClient.WhoAmI();
-            return (message.UserId == me.Id);
+            return message.UserId == me.Id;
         }
     }
 }

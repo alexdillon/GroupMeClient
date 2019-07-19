@@ -14,19 +14,42 @@ namespace GroupMeClient.Extensions
     /// <remarks>
     /// Adapted from https://stackoverflow.com/a/23561679.
     /// </remarks>
-    public static class ListBoxEx
+    public static class ListBoxExtensions
     {
         public static readonly DependencyProperty AutoScrollProperty =
             DependencyProperty.RegisterAttached(
                 "AutoScrollToEnd",
-                typeof(bool), typeof(ListBoxEx),
+                typeof(bool),
+                typeof(ListBoxExtensions),
                 new PropertyMetadata(false, HookupAutoScrollToEnd));
 
         public static readonly DependencyProperty AutoScrollHandlerProperty =
             DependencyProperty.RegisterAttached(
                 "AutoScrollToEndHandler",
                 typeof(ListBoxAutoScrollToEndHandler),
-                typeof(ListBoxEx));
+                typeof(ListBoxExtensions));
+
+        public static readonly DependencyProperty ScrollToTopProperty =
+            DependencyProperty.RegisterAttached(
+                "ScrollToTop",
+                typeof(ICommand),
+                typeof(ListBoxExtensions),
+                new FrameworkPropertyMetadata(null, OnScrollToTopPropertyChanged));
+
+        public static void Loaded(object sender, EventArgs e)
+        {
+            var instance = sender as ListBox;
+
+            var oldHandler = (ListBoxAutoScrollToEndHandler)instance.GetValue(AutoScrollHandlerProperty);
+            if (oldHandler != null)
+            {
+                oldHandler.Dispose();
+                instance.SetValue(AutoScrollHandlerProperty, null);
+            }
+
+            instance.SetValue(AutoScrollProperty, true);
+            instance.SetValue(AutoScrollHandlerProperty, new ListBoxAutoScrollToEndHandler(instance));
+        }
 
         private static void HookupAutoScrollToEnd(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -47,28 +70,6 @@ namespace GroupMeClient.Extensions
         {
             instance.Loaded += Loaded;
         }
-
-        public static void Loaded(object sender, EventArgs e)
-        {
-            var instance = sender as ListBox;
-
-            var oldHandler = (ListBoxAutoScrollToEndHandler)instance.GetValue(AutoScrollHandlerProperty);
-            if (oldHandler != null)
-            {
-                oldHandler.Dispose();
-                instance.SetValue(AutoScrollHandlerProperty, null);
-            }
-
-            instance.SetValue(AutoScrollProperty, true);
-            instance.SetValue(AutoScrollHandlerProperty, new ListBoxAutoScrollToEndHandler(instance));
-        }
-
-        public static readonly DependencyProperty ScrollToTopProperty =
-           DependencyProperty.RegisterAttached(
-               "ScrollToTop",
-               typeof(ICommand),
-               typeof(ListBoxEx),
-               new FrameworkPropertyMetadata(null, OnScrollToTopPropertyChanged));
 
         public static ICommand GetScrollToTop(DependencyObject ob)
         {
@@ -114,31 +115,6 @@ namespace GroupMeClient.Extensions
             }
         }
 
-        //private static void OnScrollViewerUnloaded(object sender, RoutedEventArgs e)
-        //{
-        //    (sender as ScrollViewer).Unloaded -= OnScrollViewerUnloaded;
-        //    (sender as ScrollViewer).ScrollChanged -= OnListBoxScrollChanged;
-        //}
-
-        private static VisualStateGroup FindVisualState(FrameworkElement element, string name)
-        {
-            if (element == null)
-            {
-                return null;
-            }
-
-            IList groups = VisualStateManager.GetVisualStateGroups(element);
-            foreach (VisualStateGroup group in groups)
-            {
-                if (group.Name == name)
-                {
-                    return group;
-                }
-            }
-
-            return null;
-        }
-
         public static T FindSimpleVisualChild<T>(DependencyObject element)
             where T : class
         {
@@ -158,15 +134,12 @@ namespace GroupMeClient.Extensions
 
     public class ListBoxAutoScrollToEndHandler : DependencyObject, IDisposable
     {
-        readonly ListBox listBox;
-        public readonly ScrollViewer scrollViewer;
-        bool doScroll = true;
+        private readonly ScrollViewer scrollViewer;
+        private bool doScroll = true;
 
         public ListBoxAutoScrollToEndHandler(ListBox listBox)
         {
-            this.listBox = listBox ?? throw new ArgumentNullException("listBox");
-
-            this.scrollViewer = ListBoxEx.FindSimpleVisualChild<ScrollViewer>(listBox);
+            this.scrollViewer = ListBoxExtensions.FindSimpleVisualChild<ScrollViewer>(listBox);
             this.scrollViewer.ScrollToEnd();
             this.scrollViewer.ScrollChanged += this.ScrollChanged;
         }
@@ -195,20 +168,16 @@ namespace GroupMeClient.Extensions
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
                     this.scrollViewer.ScrollChanged -= this.ScrollChanged;
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
 
                 this.disposedValue = true;
             }
         }
 
-        // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
+            // This code added to correctly implement the disposable pattern.
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             this.Dispose(true);
         }

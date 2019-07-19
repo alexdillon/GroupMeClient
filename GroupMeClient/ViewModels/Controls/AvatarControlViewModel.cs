@@ -6,20 +6,35 @@ using GroupMeClientApi.Models;
 
 namespace GroupMeClient.ViewModels.Controls
 {
+    /// <summary>
+    /// <see cref="AvatarControlViewModel"/> provides the ViewModel for a control to display a GroupMe Avatar.
+    /// </summary>
     public class AvatarControlViewModel : ViewModelBase
     {
+        private ImageSource avatarRound;
+        private ImageSource avatarSquare;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AvatarControlViewModel"/> class.
+        /// </summary>
+        /// <param name="avatarSource">The avatar that should be displayed.</param>
+        /// <param name="imageDownloader">The downloader used to retreive the avatar.</param>
         public AvatarControlViewModel(IAvatarSource avatarSource, ImageDownloader imageDownloader)
         {
             this.AvatarSource = avatarSource;
             this.ImageDownloader = imageDownloader;
-            _ = this.LoadAvatar();
+            _ = this.LoadAvatarAsync();
         }
 
+        /// <summary>
+        /// Gets the <see cref="IAvatarSource"/> this control is displaying.
+        /// </summary>
         public IAvatarSource AvatarSource { get; }
-        public ImageDownloader ImageDownloader { get; }
 
-        private ImageSource avatarRound;
-        private ImageSource avatarSquare;
+        /// <summary>
+        /// Gets the <see cref="ImageDownloader"/> that should be used to retreive avatars.
+        /// </summary>
+        public ImageDownloader ImageDownloader { get; }
 
         /// <summary>
         /// Gets the image that should be used for rounded avatars.
@@ -28,7 +43,7 @@ namespace GroupMeClient.ViewModels.Controls
         public ImageSource AvatarRound
         {
             get { return this.avatarRound; }
-            set { this.Set(() => this.AvatarRound, ref this.avatarRound, value); }
+            private set { this.Set(() => this.AvatarRound, ref this.avatarRound, value); }
         }
 
         /// <summary>
@@ -38,10 +53,14 @@ namespace GroupMeClient.ViewModels.Controls
         public ImageSource AvatarSquare
         {
             get { return this.avatarSquare; }
-            set { this.Set(() => this.AvatarSquare, ref this.avatarSquare, value); }
+            private set { this.Set(() => this.AvatarSquare, ref this.avatarSquare, value); }
         }
 
-        public async Task LoadAvatar()
+        /// <summary>
+        /// Asychronously downloads the avatar image from GroupMe.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> with the download status.</returns>
+        public async Task LoadAvatarAsync()
         {
             byte[] image = await this.ImageDownloader.DownloadAvatarImage(this.AvatarSource.ImageOrAvatarUrl);
 

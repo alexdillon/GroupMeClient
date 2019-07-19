@@ -5,26 +5,61 @@ using GroupMeClientApi.Models;
 
 namespace GroupMeClient.ViewModels.Controls
 {
+    /// <summary>
+    /// <see cref="GroupControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.GroupControl"/> control.
+    /// </summary>
     public class GroupControlViewModel : ViewModelBase
     {
+        private IMessageContainer messageContainer;
+        private AvatarControlViewModel avatar;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GroupControlViewModel"/> class.
+        /// </summary>
         public GroupControlViewModel()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GroupControlViewModel"/> class.
+        /// </summary>
+        /// <param name="messageContainer">The Group or Chat to show in this control.</param>
         public GroupControlViewModel(IMessageContainer messageContainer)
         {
             this.MessageContainer = messageContainer;
             this.Avatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
         }
 
-        private IMessageContainer messageContainer;
-        private AvatarControlViewModel avatar;
-
+        /// <summary>
+        /// Gets or sets the command to be performed when this Group or Chat is clicked.
+        /// </summary>
         public ICommand GroupSelected { get; set; }
 
+        /// <summary>
+        /// Gets the title of this Group or Chat.
+        /// </summary>
+        public string Title => this.MessageContainer.Name;
+
+        /// <summary>
+        /// Gets the last updated time for this Group or Chat.
+        /// </summary>
+        public DateTime LastUpdated => this.MessageContainer.UpdatedAtTime;
+
+        /// <summary>
+        /// Gets the unique identifier for this Group or Chat.
+        /// </summary>
+        public string Id => this.MessageContainer.Id;
+
+        /// <summary>
+        /// Gets or sets the Container (Group or Chat) this control is displaying.
+        /// </summary>
         public IMessageContainer MessageContainer
         {
-            get { return this.messageContainer; }
+            get
+            {
+                return this.messageContainer;
+            }
+
             set
             {
                 this.Set(() => this.MessageContainer, ref this.messageContainer, value);
@@ -32,12 +67,18 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        /// <summary>
+        /// Gets the avatar for this Group or Chat.
+        /// </summary>
         public AvatarControlViewModel Avatar
         {
             get { return this.avatar; }
-            set { this.Set(() => this.Avatar, ref this.avatar, value); }
+            private set { this.Set(() => this.Avatar, ref this.avatar, value); }
         }
 
+        /// <summary>
+        /// Gets a string showing an easily readable timestamp for the last update to this Group or Chat.
+        /// </summary>
         public string LastUpdatedFriendlyTime
         {
             get
@@ -56,6 +97,9 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        /// <summary>
+        /// Gets a string showing the most recent post in this Group or Chat.
+        /// </summary>
         public string QuickPreview
         {
             get
@@ -85,12 +129,6 @@ namespace GroupMeClient.ViewModels.Controls
                 }
             }
         }
-
-        public string Title => this.MessageContainer.Name;
-
-        public DateTime LastUpdated => this.MessageContainer.UpdatedAtTime;
-
-        public string Id => this.MessageContainer.Id;
 
         private void RaisePropertyChangeForAll()
         {

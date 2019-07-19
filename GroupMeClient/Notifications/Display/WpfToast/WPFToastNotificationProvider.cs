@@ -8,8 +8,14 @@ using ToastNotifications.Position;
 
 namespace GroupMeClient.Notifications.Display.WpfToast
 {
-    class WpfToastNotificationProvider : IPopupNotificationSink
+    /// <summary>
+    /// Provides an adapter for <see cref="PopupNotificationProvider"/> to use Windows 10 Toast Notifications.
+    /// </summary>
+    public class WpfToastNotificationProvider : IPopupNotificationSink
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WpfToastNotificationProvider"/> class.
+        /// </summary>
         public WpfToastNotificationProvider()
         {
             this.Notifier = new Notifier(cfg =>
@@ -35,18 +41,14 @@ namespace GroupMeClient.Notifications.Display.WpfToast
 
         private Notifier Notifier { get; set; }
 
+        /// <inheritdoc />
         Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar)
         {
-            // Don't show like notifications and similar
-
-            //Notifier.ShowGroupMeToastMessage(
-            //    body,
-            //    new DummyAvatarSource(avatarUrl, roundedAvatar),
-            //    this.GroupMeClient.ImageDownloader);
-
+            // Don't show 'like' notifications and similar
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl)
         {
             this.Notifier.ShowGroupMeToastMessage(
@@ -57,6 +59,7 @@ namespace GroupMeClient.Notifications.Display.WpfToast
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar)
         {
             this.Notifier.ShowGroupMeToastMessage(
@@ -67,6 +70,7 @@ namespace GroupMeClient.Notifications.Display.WpfToast
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         void IPopupNotificationSink.RegisterClient(GroupMeClientApi.GroupMeClient client)
         {
             this.GroupMeClient = client;

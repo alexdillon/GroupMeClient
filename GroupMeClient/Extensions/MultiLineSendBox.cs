@@ -4,19 +4,34 @@ using System.Windows.Input;
 
 namespace GroupMeClient.Extensions
 {
+    /// <summary>
+    /// <see cref="MultiLineSendBox"/> provides support for typing MultiLine messages.
+    /// Keyboard send triggers are supported.
+    /// </summary>
     public class MultiLineSendBox : TextBox
     {
+        public static readonly RoutedEvent SendEvent = EventManager.RegisterRoutedEvent(
+            "Send", RoutingStrategy.Direct, typeof(RoutedEventHandler), typeof(MultiLineSendBox));
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MultiLineSendBox"/> class.
+        /// </summary>
         public MultiLineSendBox()
         {
             this.KeyDown += this.TextBoxKeyDown;
             this.PreviewKeyDown += this.TextBoxPreviewKeyDown;
         }
 
+        public event RoutedEventHandler Send
+        {
+            add { this.AddHandler(SendEvent, value); }
+            remove { this.RemoveHandler(SendEvent, value); }
+        }
+
         private void TextBoxKeyDown(object sender, KeyEventArgs e)
         {
-            // This will never happen because the Enter Key is handeled before
+            // This will never happen because the Enter Key is handled before
             // That means TextBoxKeyDown is not triggered for the Enter key
-
             if (e.Key == Key.Enter &&
                 !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) &&
                 !(Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.LeftShift)))
@@ -39,17 +54,7 @@ namespace GroupMeClient.Extensions
             }
         }
 
-        public static readonly RoutedEvent SendEvent = EventManager.RegisterRoutedEvent(
-         "Send", RoutingStrategy.Direct, typeof(RoutedEventHandler), typeof(MultiLineSendBox));
-
-        // Provide CLR accessors for the event
-        public event RoutedEventHandler Send
-        {
-            add { this.AddHandler(SendEvent, value); }
-            remove { this.RemoveHandler(SendEvent, value); }
-        }
-
-        void RaiseSendEvent()
+        private void RaiseSendEvent()
         {
             RoutedEventArgs newEventArgs = new RoutedEventArgs(SendEvent);
             this.RaiseEvent(newEventArgs);

@@ -12,8 +12,15 @@ using GroupMeClientApi.Push.Notifications;
 
 namespace GroupMeClient.ViewModels
 {
+    /// <summary>
+    /// <see cref="ChatsViewModel"/> provides a ViewModel for the Chats page in the GroupMe Desktop Client.
+    /// </summary>
     public class ChatsViewModel : ViewModelBase, INotificationSink
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatsViewModel"/> class.
+        /// </summary>
+        /// <param name="groupMeClient">The API client that should be used.</param>
         public ChatsViewModel(GroupMeClientApi.GroupMeClient groupMeClient)
         {
             this.GroupMeClient = groupMeClient;
@@ -24,10 +31,18 @@ namespace GroupMeClient.ViewModels
             _ = this.Loaded();
         }
 
-        public ObservableCollection<Controls.GroupControlViewModel> AllGroupsChats { get; set; }
-        public ObservableCollection<Controls.GroupContentsControlViewModel> ActiveGroupsChats { get; set; }
+        /// <summary>
+        /// Gets a collection of all the Groups and Chats displayed in the left sidebar.
+        /// </summary>
+        public ObservableCollection<Controls.GroupControlViewModel> AllGroupsChats { get; private set; }
+
+        /// <summary>
+        /// Gets a collection of all the Groups and Chats currently opened.
+        /// </summary>
+        public ObservableCollection<Controls.GroupContentsControlViewModel> ActiveGroupsChats { get; private set; }
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
+
         private PushClient PushClient { get; set; }
 
         private SemaphoreSlim ReloadGroupsSem { get; } = new SemaphoreSlim(1, 1);
@@ -135,6 +150,7 @@ namespace GroupMeClient.ViewModels
             ((IDisposable)groupContentsControlViewModel).Dispose();
         }
 
+        /// <inheritdoc/>
         async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification, IMessageContainer container)
         {
             _ = this.LoadGroupsAndChats();
@@ -144,6 +160,7 @@ namespace GroupMeClient.ViewModels
             await groupVm?.LoadNewMessages();
         }
 
+        /// <inheritdoc/>
         async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
         {
             _ = this.LoadGroupsAndChats();
@@ -152,6 +169,7 @@ namespace GroupMeClient.ViewModels
             await chatVm?.LoadNewMessages();
         }
 
+        /// <inheritdoc/>
         Task INotificationSink.MessageUpdated(Message message, string alert, IMessageContainer container)
         {
             var groupChatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
@@ -160,10 +178,12 @@ namespace GroupMeClient.ViewModels
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc/>
         void INotificationSink.HeartbeatReceived()
         {
         }
 
+        /// <inheritdoc/>
         void INotificationSink.RegisterPushSubscriptions(PushClient pushClient, GroupMeClientApi.GroupMeClient client)
         {
             // Save the PushClient for Subscribing/Unsubscribing from sources later

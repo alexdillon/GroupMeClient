@@ -6,8 +6,15 @@ using GroupMeClientApi.Push.Notifications;
 
 namespace GroupMeClient
 {
+    /// <summary>
+    /// <see cref="NotificationRouter"/> handles distributing GroupMe Push Events to <see cref="INotificationSink"/> objects.
+    /// </summary>
     public class NotificationRouter
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotificationRouter"/> class.
+        /// </summary>
+        /// <param name="client">The GroupMe API client that should be used for notifications.</param>
         public NotificationRouter(GroupMeClientApi.GroupMeClient client)
         {
             this.GroupMeClient = client;
@@ -18,9 +25,15 @@ namespace GroupMeClient
         }
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
+
         private GroupMeClientApi.Push.PushClient PushClient { get; }
+
         private List<INotificationSink> Subscribers { get; }
 
+        /// <summary>
+        /// Adds a new subscriber to receive push notifications.
+        /// </summary>
+        /// <param name="subscriber">The observer that should receive updates.</param>
         public void RegisterNewSubscriber(INotificationSink subscriber)
         {
             if (!this.Subscribers.Contains(subscriber))

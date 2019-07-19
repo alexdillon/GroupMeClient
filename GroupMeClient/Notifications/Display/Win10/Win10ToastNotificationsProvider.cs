@@ -11,8 +11,14 @@ using Windows.UI.Notifications;
 
 namespace GroupMeClient.Notifications.Display.Win10
 {
-    class Win10ToastNotificationsProvider : IPopupNotificationSink
+    /// <summary>
+    /// Provides an adapter for <see cref="PopupNotificationProvider"/> to use Toast Notifications within the Client Window.
+    /// </summary>
+    public class Win10ToastNotificationsProvider : IPopupNotificationSink
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Win10ToastNotificationsProvider"/> class.
+        /// </summary>
         public Win10ToastNotificationsProvider()
         {
             // Register AUMID and COM server (for Desktop Bridge apps, this no-ops)
@@ -28,6 +34,7 @@ namespace GroupMeClient.Notifications.Display.Win10
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
+        /// <inheritdoc/>
         async Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar)
         {
             ToastContent toastContent = new ToastContent()
@@ -64,6 +71,7 @@ namespace GroupMeClient.Notifications.Display.Win10
             this.ShowToast(toastContent);
         }
 
+        /// <inheritdoc/>
         async Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl)
         {
             ToastContent toastContent = new ToastContent()
@@ -104,6 +112,7 @@ namespace GroupMeClient.Notifications.Display.Win10
             this.ShowToast(toastContent);
         }
 
+        /// <inheritdoc/>
         async Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar)
         {
             ToastContent toastContent = new ToastContent()
@@ -140,6 +149,7 @@ namespace GroupMeClient.Notifications.Display.Win10
             this.ShowToast(toastContent);
         }
 
+        /// <inheritdoc/>
         void IPopupNotificationSink.RegisterClient(GroupMeClientApi.GroupMeClient client)
         {
             this.GroupMeClient = client;
@@ -162,7 +172,6 @@ namespace GroupMeClient.Notifications.Display.Win10
             // Toasts can live for up to 3 days, so we cache images for up to 3 days.
             // Note that this is a very simple cache that doesn't account for space usage, so
             // this could easily consume a lot of space within the span of 3 days.
-
             if (image == null)
             {
                 image = string.Empty;
@@ -186,7 +195,7 @@ namespace GroupMeClient.Notifications.Display.Win10
                     }
                 }
 
-                string hashName = Hash(image) + ".png";
+                string hashName = this.Hash(image) + ".png";
                 string imagePath = Path.Combine(directory.FullName, hashName);
 
                 if (File.Exists(imagePath))
@@ -218,7 +227,7 @@ namespace GroupMeClient.Notifications.Display.Win10
             }
         }
 
-        private static string Hash(string input)
+        private string Hash(string input)
         {
             var hash = new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(input));
             return string.Concat(hash.Select(b => b.ToString("x2")));
