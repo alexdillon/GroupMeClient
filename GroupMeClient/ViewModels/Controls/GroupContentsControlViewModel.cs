@@ -31,7 +31,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public GroupContentsControlViewModel()
         {
-            this.Messages = new ObservableCollection<MessageControlViewModel>();
+            this.Messages = new ObservableCollection<MessageControlViewModelBase>();
             this.ReloadSem = new SemaphoreSlim(1, 1);
             this.SendMessage = new RelayCommand(async () => await this.SendMessageAsync(), true);
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await this.LoadMoreAsync(s), true);
@@ -74,7 +74,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
         /// </summary>
-        public ObservableCollection<MessageControlViewModel> Messages { get; }
+        public ObservableCollection<MessageControlViewModelBase> Messages { get; }
 
         /// <summary>
         /// Gets the title of the <see cref="Group"/> or <see cref="Chat"/>.
@@ -233,14 +233,33 @@ namespace GroupMeClient.ViewModels.Controls
                 scrollViewer.ScrollToVerticalOffset(1);
             }
 
-            foreach (var msg in messages)
+            var maxTimeDifference = TimeSpan.FromMinutes(15);
+
+            var lastMarkerTime = DateTime.MinValue;
+
+            // Messages retrieved with the before_id parameter are returned in descending order
+            // Reverse iterate through the messages collection to go newest->oldest
+            for (int i = messages.Count - 1; i >= 0; i--)
             {
+                var msg = messages.ElementAt(i);
+
                 var oldMsg = this.Messages.FirstOrDefault(m => m.Id == msg.Id);
 
                 if (oldMsg == null)
                 {
                     // add new message
-                    this.Messages.Add(new MessageControlViewModel(msg));
+                    var msgVm = new MessageControlViewModel(msg);
+                    this.Messages.Add(msgVm);
+
+                    // add an inline timestamp if needed
+                    if (msg.CreatedAtTime.Subtract(lastMarkerTime) > maxTimeDifference)
+                    {
+                        var messageId = long.Parse(msg.Id);
+                        var timeStampId = (messageId - 1).ToString();
+
+                        this.Messages.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, timeStampId, msgVm.MessageColor));
+                        lastMarkerTime = msg.CreatedAtTime;
+                    }
                 }
                 else
                 {

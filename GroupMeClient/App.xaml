@@ -58,6 +58,9 @@
             <DataTemplate DataType="{x:Type ctrlvm:MessageControlViewModel}">
                 <ctrlviews:MessageControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:InlineTimestampControlViewModel}">
+                <ctrlviews:InlineTimestampControl />
+            </DataTemplate>
 
             <DataTemplate DataType="{x:Type attachvm:GenericLinkAttachmentControlViewModel}">
                 <attachviews:GenericLinkAttachmentControl />

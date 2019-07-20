@@ -16,7 +16,7 @@ namespace GroupMeClient.ViewModels.Controls
     /// <summary>
     /// <see cref="MessageControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.MessageControl"/> control.
     /// </summary>
-    public class MessageControlViewModel : ViewModelBase, IDisposable
+    public class MessageControlViewModel : MessageControlViewModelBase, IDisposable
     {
         private Message message;
         private AvatarControlViewModel avatar;
@@ -66,7 +66,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Gets the unique identifier for this <see cref="Message"/>.
         /// </summary>
-        public string Id => this.Message.Id;
+        public override string Id => this.Message.Id;
 
         /// <summary>
         /// Gets the sender of this <see cref="Message"/>.
@@ -76,7 +76,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Gets or sets the displayed <see cref="Message"/>.
         /// </summary>
-        public Message Message
+        public override Message Message
         {
             get
             {
@@ -230,7 +230,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Redraw the message immediately.
         /// </summary>
-        public void UpdateDisplay()
+        public override void UpdateDisplay()
         {
             this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
         }

@@ -94,6 +94,8 @@
     <Compile Include="ViewModels\Controls\Attachments\GenericLinkAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\TwitterAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\LinkAttachmentBaseViewModel.cs" />
+    <Compile Include="ViewModels\Controls\InlineTimestampControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\MessageControlViewModelBase.cs" />
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupControlViewModel.cs" />
@@ -114,6 +116,9 @@
     </Compile>
     <Compile Include="Views\Controls\Attachments\TwitterAttachmentControl.xaml.cs">
       <DependentUpon>TwitterAttachmentControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\InlineTimestampControl.xaml.cs">
+      <DependentUpon>InlineTimestampControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Popup.xaml.cs">
       <DependentUpon>Popup.xaml</DependentUpon>
@@ -176,6 +181,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Attachments\TwitterAttachmentControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\InlineTimestampControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

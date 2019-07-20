@@ -46,6 +46,11 @@ namespace GroupMeClientApi.Models
         public int CreatedAtUnixTime { get; internal set; }
 
         /// <summary>
+        /// Gets the time when the message was created.
+        /// </summary>
+        public DateTime CreatedAtTime => DateTimeOffset.FromUnixTimeSeconds(this.CreatedAtUnixTime).ToLocalTime().DateTime;
+
+        /// <summary>
         /// Gets the identifier for a <see cref="Member"/> who sent a Group Message.
         /// </summary>
         [JsonProperty("user_id")]
