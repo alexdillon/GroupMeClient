@@ -48,6 +48,12 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         }
 
         /// <inheritdoc/>
+        public override void Dispose()
+        {
+            // Not needed - no unmanaged resources
+        }
+
+        /// <inheritdoc/>
         protected override void MetadataDownloadCompleted()
         {
             _ = this.DownloadImageAsync(this.LinkInfo.AnyPreviewPictureUrl);

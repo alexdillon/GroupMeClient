@@ -21,7 +21,6 @@ namespace GroupMeClient.ViewModels.Controls
         private Message message;
         private AvatarControlViewModel avatar;
         private string hiddenText = string.Empty;
-        private System.IO.Stream imageAttachmentStream;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageControlViewModel"/> class.
@@ -34,8 +33,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.LikeAction = new RelayCommand(async () => { await this.LikeMessageActionAsync(); }, () => { return true; }, true);
 
-            _ = this.LoadImageAttachment();
-            this.LoadLinkPreview();
+            this.LoadAttachments();
         }
 
         /// <summary>
@@ -143,15 +141,6 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// Gets or sets the attached image if present.
-        /// </summary>
-        public System.IO.Stream ImageAttachmentStream
-        {
-            get { return this.imageAttachmentStream; }
-            set { this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value); }
-        }
-
-        /// <summary>
         /// Gets the icon to display for the like status of this <see cref="Message"/>.
         /// </summary>
         public MahApps.Metro.IconPacks.PackIconFontAwesomeKind LikeStatus
@@ -238,33 +227,25 @@ namespace GroupMeClient.ViewModels.Controls
         /// <inheritdoc />
         void IDisposable.Dispose()
         {
-            ((IDisposable)this.imageAttachmentStream)?.Dispose();
+            foreach (var attachment in this.AttachedItems)
+            {
+                (attachment as IDisposable).Dispose();
+            }
         }
 
-        private async Task LoadImageAttachment()
+        private void LoadAttachments()
         {
-            byte[] image = null;
+            // Load GroupMe Image Attachments
             foreach (var attachment in this.Message.Attachments)
             {
-                if (attachment.GetType() == typeof(ImageAttachment))
+                if (attachment is ImageAttachment imageAttach)
                 {
-                    var imgAttach = attachment as ImageAttachment;
-                    var downloader = this.Message.ImageDownloader;
-
-                    image = await downloader.DownloadPostImage($"{imgAttach.Url}.large");
+                    this.AttachedItems.Add(new GroupMeImageAttachmentControlViewModel(imageAttach, this.Message.ImageDownloader));
+                    break;
                 }
             }
 
-            if (image == null)
-            {
-                return;
-            }
-
-            this.ImageAttachmentStream = new System.IO.MemoryStream(image);
-        }
-
-        private void LoadLinkPreview()
-        {
+            // Load Link-Based Attachments (Tweets, Web Images, GroupMe Hosted Video, Websites, etc.)
             var text = this.Message.Text ?? string.Empty;
             if (text.Contains(" "))
             {

@@ -87,6 +87,7 @@
     <Compile Include="Notifications\Display\Win10\Win10ToastNotificationsProvider.cs" />
     <Compile Include="SelectedItemToContentConverter.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Attachments\GroupMeImageAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\ImageLinkAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\VideoAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\AvatarControlViewModel.cs" />
@@ -99,6 +100,9 @@
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupControlViewModel.cs" />
+    <Compile Include="Views\Controls\Attachments\GroupMeImageAttachmentControl.xaml.cs">
+      <DependentUpon>GroupMeImageAttachmentControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\Attachments\ImageLinkAttachmentControl.xaml.cs">
       <DependentUpon>ImageLinkAttachmentControl.xaml</DependentUpon>
     </Compile>
@@ -159,6 +163,10 @@
     <Page Include="Notifications\Display\WpfToast\GroupMeToastDisplayPart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\Attachments\GroupMeImageAttachmentControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Attachments\ImageLinkAttachmentControl.xaml">
       <Generator>MSBuild:Compile</Generator>

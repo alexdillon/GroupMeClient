@@ -6,7 +6,6 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
-             xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
@@ -27,46 +26,38 @@
             <RowDefinition Height="10"/>
             <!--Padding-->
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <controls:AvatarControl 
-                Grid.Column="0" Grid.Row="1" Grid.RowSpan="4"
+                Grid.Column="0" Grid.Row="1" Grid.RowSpan="5"
                 Width="40" Height="40" VerticalAlignment="Top"
                 DataContext="{Binding Avatar}"/>
 
-        <Label Content="{Binding Sender}" Grid.Column="1" Grid.Row="1" FontSize="12" Foreground="#637182" Padding="0, 0, 0, 0" />
+        <Label Content="{Binding Sender}" Grid.Column="1" Grid.Row="1" FontSize="12" Foreground="#637182" Padding="0" />
 
-        <StackPanel Grid.Column="1" Grid.Row="2">
-            <Image MaxWidth="500" 
-                   MaxHeight="600"
-                   Stretch="Uniform"
-                   StretchDirection="DownOnly"
-                   HorizontalAlignment="Left"
-                   gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}"/>
+        <ItemsControl Grid.Row="2" Grid.Column="1"
+                      ItemsSource="{Binding AttachedItems}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <UserControl
+                        MaxWidth="700"
+                        HorizontalAlignment="Left"
+                        Content="{Binding Path=.}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
-            <ItemsControl ItemsSource="{Binding AttachedItems}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <UserControl
-                            MaxWidth="700"
-                            HorizontalAlignment="Left"
-                            Content="{Binding Path=.}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+        <Label Grid.Column="1" Grid.Row="3" Padding="0">
+            <TextBlock FontSize="15" TextWrapping="Wrap" Text="{Binding Text}" />
+        </Label>
 
-            <Label  FontSize="15" Padding="0, 0, 0, 0">
-                <TextBlock FontSize="15" TextWrapping="Wrap" Text="{Binding Text}" />
-            </Label>
-        </StackPanel>
-
-        <Grid 
-            Grid.Column="2" Grid.Row="2"
-            Width="35" Height="Auto"
-            Background="Transparent"
-            x:Name="likeButtonArea">
+        <Grid Grid.Column="2" Grid.Row="3" 
+              Width="35" Height="Auto"
+              Background="Transparent"
+              x:Name="likeButtonArea">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="23" />
@@ -101,7 +92,7 @@
         </Grid>
 
         <Canvas x:Name="likesCanvas"
-                Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,-55,12,0">
+                Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="0,-55,12,0">
             
            <!--Use a trigger to change the visibility of the liker's popup area-->
             <Canvas.Style>

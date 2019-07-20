@@ -25,6 +25,12 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         public ICommand Clicked { get; }
 
         /// <inheritdoc/>
+        public override void Dispose()
+        {
+            // Not needed - no unmanaged resources
+        }
+
+        /// <inheritdoc/>
         protected override void MetadataDownloadCompleted()
         {
         }

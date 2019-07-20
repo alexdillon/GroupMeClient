@@ -74,6 +74,9 @@
             <DataTemplate DataType="{x:Type attachvm:ImageLinkAttachmentControlViewModel}">
                 <attachviews:ImageLinkAttachmentControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:GroupMeImageAttachmentControlViewModel}">
+                <attachviews:GroupMeImageAttachmentControl />
+            </DataTemplate>
 
             <DataTemplate DataType="{x:Type ctrlvm:SendImageControlViewModel}">
                 <ctrlviews:SendImageControl />

@@ -164,7 +164,7 @@ namespace GroupMeClient.ViewModels
                 // open a new group or chat
                 var groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.MessageContainer)
                 {
-                    CloseGroup = new RelayCommand<Controls.GroupContentsControlViewModel>(this.CloseChat, (g) => true),
+                    CloseGroup = new RelayCommand<Controls.GroupContentsControlViewModel>(this.CloseChat),
                 };
 
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);

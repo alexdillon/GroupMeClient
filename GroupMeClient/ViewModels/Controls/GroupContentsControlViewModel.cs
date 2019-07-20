@@ -48,7 +48,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.MessageContainer = messageContainer;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
 
-            _ = this.Loaded();
+            _ = this.LoadMoreAsync();
         }
 
         /// <summary>
@@ -190,11 +190,6 @@ namespace GroupMeClient.ViewModels.Controls
         {
             var memoryStream = new MemoryStream(image);
             this.ShowImageSendDialog(memoryStream);
-        }
-
-        private async Task Loaded()
-        {
-            await this.LoadMoreAsync();
         }
 
         private async Task LoadMoreAsync(ScrollViewer scrollViewer = null, bool updateNewest = false)
