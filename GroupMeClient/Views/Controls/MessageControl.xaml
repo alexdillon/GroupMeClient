@@ -56,6 +56,8 @@
 
         <Grid Grid.Column="2" Grid.Row="2" Grid.RowSpan="3"
               Width="35" Height="Auto"
+              MaxHeight="50"
+              VerticalAlignment="Top"
               Background="Transparent"
               x:Name="likeButtonArea">
 
