@@ -127,6 +127,8 @@ namespace GroupMeClient.ViewModels.Controls
 
         private Message FirstDisplayedMessage { get; set; } = null;
 
+        private DateTime LastMarkerTime { get; set; } = DateTime.MinValue;
+
         /// <summary>
         /// Reloads and redisplay the newest messages.
         /// This will capture any messages send since the last reload.
@@ -230,8 +232,6 @@ namespace GroupMeClient.ViewModels.Controls
 
             var maxTimeDifference = TimeSpan.FromMinutes(15);
 
-            var lastMarkerTime = DateTime.MinValue;
-
             // Messages retrieved with the before_id parameter are returned in descending order
             // Reverse iterate through the messages collection to go newest->oldest
             for (int i = messages.Count - 1; i >= 0; i--)
@@ -247,13 +247,13 @@ namespace GroupMeClient.ViewModels.Controls
                     this.Messages.Add(msgVm);
 
                     // add an inline timestamp if needed
-                    if (msg.CreatedAtTime.Subtract(lastMarkerTime) > maxTimeDifference)
+                    if (msg.CreatedAtTime.Subtract(this.LastMarkerTime) > maxTimeDifference)
                     {
                         var messageId = long.Parse(msg.Id);
                         var timeStampId = (messageId - 1).ToString();
 
                         this.Messages.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, timeStampId, msgVm.MessageColor));
-                        lastMarkerTime = msg.CreatedAtTime;
+                        this.LastMarkerTime = msg.CreatedAtTime;
                     }
                 }
                 else
