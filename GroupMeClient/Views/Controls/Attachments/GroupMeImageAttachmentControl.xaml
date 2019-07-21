@@ -9,11 +9,15 @@
              d:DesignHeight="200" d:DesignWidth="200"
              Background="White">
 
-    <Image MaxWidth="500" 
-               MaxHeight="600"
-               Stretch="Uniform"
-               StretchDirection="DownOnly"
-               HorizontalAlignment="Left"
-               gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}" />
-    
+    <Border BorderThickness="8" BorderBrush="White">
+        <Image MaxWidth="500" 
+           MaxHeight="600"
+           Stretch="Uniform"
+           StretchDirection="DownOnly"
+           HorizontalAlignment="Left"
+           UseLayoutRounding="True" 
+           SnapsToDevicePixels="True"
+           gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}" />
+    </Border>
+
 </UserControl>
