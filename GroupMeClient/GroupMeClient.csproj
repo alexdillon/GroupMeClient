@@ -71,6 +71,7 @@
     <Compile Include="Extensions\MultiLineSendBox.cs" />
     <Compile Include="Extensions\ListBoxExtensions.cs" />
     <Compile Include="Extensions\NullToVisibilityConverter.cs" />
+    <Compile Include="Extensions\WebBrowserExtensions.cs" />
     <Compile Include="Extensions\WebBrowserHelper.cs" />
     <Compile Include="Notifications\Display\Win10\DesktopNotificationManagerCompat.cs" />
     <Compile Include="Notifications\Display\Win10\GroupMeNotificationActivator.cs" />
@@ -86,6 +87,8 @@
     <Compile Include="Notifications\Display\PopupNotificationProvider.cs" />
     <Compile Include="Notifications\Display\Win10\Win10ToastNotificationsProvider.cs" />
     <Compile Include="SelectedItemToContentConverter.cs" />
+    <Compile Include="Settings\CoreSettings.cs" />
+    <Compile Include="Settings\SettingsManager.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\GroupMeImageAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\ImageLinkAttachmentControlViewModel.cs" />
@@ -100,6 +103,7 @@
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupControlViewModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="Views\Controls\Attachments\GroupMeImageAttachmentControl.xaml.cs">
       <DependentUpon>GroupMeImageAttachmentControl.xaml</DependentUpon>
     </Compile>
@@ -141,6 +145,9 @@
     <Compile Include="ViewModels\SecondViewModel.cs" />
     <Compile Include="Views\ChatsView.xaml.cs">
       <DependentUpon>ChatsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LoginView.xaml.cs">
+      <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
@@ -215,6 +222,10 @@
     <Page Include="Views\ChatsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LoginView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SettingsView.xaml">
       <Generator>MSBuild:Compile</Generator>

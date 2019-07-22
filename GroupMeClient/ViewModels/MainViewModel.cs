@@ -1,5 +1,9 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System;
+using System.IO;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Notifications.Display;
+using GroupMeClientCached;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 
@@ -10,24 +14,16 @@ namespace GroupMeClient.ViewModels
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private HamburgerMenuItemCollection menuItems;
-
-        private HamburgerMenuItemCollection menuOptionItems;
+        private HamburgerMenuItemCollection menuItems = new HamburgerMenuItemCollection();
+        private HamburgerMenuItemCollection menuOptionItems = new HamburgerMenuItemCollection();
+        private HamburgerMenuItem selectedItem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainViewModel"/> class.
         /// </summary>
         public MainViewModel()
         {
-            InitializeGroupMeClient();
-
-            ChatsViewModel = new ChatsViewModel(GroupMeClient);
-            SecondViewModel = new SecondViewModel();
-            SettingsViewModel = new SettingsViewModel();
-
-            RegisterNotifications();
-
-            this.CreateMenuItems();
+            this.InitializeClient();
         }
 
         /// <summary>
@@ -48,60 +44,142 @@ namespace GroupMeClient.ViewModels
             set { this.Set(() => this.MenuOptionItems, ref this.menuOptionItems, value); }
         }
 
-        private static GroupMeClientCached.GroupMeCachedClient GroupMeClient { get; set; }
-
-        private static NotificationRouter NotificationRouter { get; set; }
-
-        private static ChatsViewModel ChatsViewModel { get; set; }
-
-        private static SecondViewModel SecondViewModel { get; set; }
-
-        private static SettingsViewModel SettingsViewModel { get; set; }
-
-        private static void InitializeGroupMeClient()
+        /// <summary>
+        /// Gets the currently selected Hamburger Menu Tab.
+        /// </summary>
+        public HamburgerMenuItem SelectedItem
         {
-            string token = System.IO.File.ReadAllText("../../../DevToken.txt");
-            GroupMeClient = new GroupMeClientCached.GroupMeCachedClient(token, "cache.db");
-            NotificationRouter = new NotificationRouter(GroupMeClient);
+            get { return this.selectedItem; }
+            private set { this.Set(() => this.SelectedItem, ref this.selectedItem, value); }
         }
 
-        private static void RegisterNotifications()
+        private string DataRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicroCube", "GroupMe Desktop Client");
+
+        private string SettingsPath => Path.Combine(this.DataRoot, "settings.json");
+
+        private string CachePath => Path.Combine(this.DataRoot, "cache.db");
+
+        private GroupMeCachedClient GroupMeClient { get; set; }
+
+        private Settings.SettingsManager SettingsManager { get; set; }
+
+        private NotificationRouter NotificationRouter { get; set; }
+
+        private ChatsViewModel ChatsViewModel { get; set; }
+
+        private SecondViewModel SecondViewModel { get; set; }
+
+        private SettingsViewModel SettingsViewModel { get; set; }
+
+        private LoginViewModel LoginViewModel { get; set; }
+
+        private void InitializeClient()
         {
-            NotificationRouter.RegisterNewSubscriber(ChatsViewModel);
-            NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
-            NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider());
+            Directory.CreateDirectory(this.DataRoot);
+
+            this.SettingsManager = new Settings.SettingsManager(this.SettingsPath);
+            this.SettingsManager.LoadSettings();
+
+            if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
+            {
+                // Startup in Login Mode
+                this.LoginViewModel = new LoginViewModel(this.SettingsManager)
+                {
+                    LoginCompleted = new RelayCommand(this.InitializeClient),
+                };
+
+                this.CreateMenuItemsLoginOnly();
+            }
+            else
+            {
+                // Startup Regularly
+                this.GroupMeClient = new GroupMeCachedClient(this.SettingsManager.CoreSettings.AuthToken, this.CachePath);
+                this.NotificationRouter = new NotificationRouter(this.GroupMeClient);
+
+                this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient);
+                this.SecondViewModel = new SecondViewModel();
+                this.SettingsViewModel = new SettingsViewModel();
+
+                this.RegisterNotifications();
+
+                this.CreateMenuItemsRegular();
+            }
         }
 
-        private void CreateMenuItems()
+        private void RegisterNotifications()
+        {
+            this.NotificationRouter.RegisterNewSubscriber(this.ChatsViewModel);
+            this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
+            this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider());
+        }
+
+        private void CreateMenuItemsRegular()
+        {
+            var chatsTab = new HamburgerMenuIconItem() 
+            {
+                Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.MessageText },
+                Label = "Chats",
+                ToolTip = "View Groups and Chats.",
+                Tag = this.ChatsViewModel,
+            };
+
+            var secondTab = new HamburgerMenuIconItem()
+            {
+                Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.Settings },
+                Label = "Second Menu",
+                ToolTip = "The Application settings.",
+                Tag = this.SecondViewModel,
+            };
+
+            var settingsTab = new HamburgerMenuIconItem()
+            {
+                Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.SettingsOutline },
+                Label = "Settings",
+                ToolTip = "GroupMe Settings",
+                Tag = this.SettingsViewModel,
+            };
+
+            // Add new Tabs
+            this.MenuItems.Add(chatsTab);
+            this.MenuItems.Add(secondTab);
+
+            // Add new Options
+            this.MenuOptionItems.Add(settingsTab);
+
+            // Set the section to the Chats tab
+            this.SelectedItem = chatsTab;
+
+            // Remove the old Tabs and Options AFTER the new one has been bound
+            // There should be a better way to do this...
+            var newTopOptionIndex = this.MenuOptionItems.IndexOf(settingsTab);
+            for (int i = 0; i < newTopOptionIndex; i++)
+            {
+                this.MenuOptionItems.RemoveAt(0);
+            }
+
+            var newTopIndex = this.MenuItems.IndexOf(chatsTab);
+            for (int i = 0; i < newTopIndex; i++)
+            {
+                this.MenuItems.RemoveAt(0);
+            }
+        }
+
+        private void CreateMenuItemsLoginOnly()
         {
             this.MenuItems = new HamburgerMenuItemCollection
             {
                 new HamburgerMenuIconItem()
                 {
-                    Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.MessageText },
-                    Label = "Chats",
-                    ToolTip = "View Groups and Chats.",
-                    Tag = ChatsViewModel,
-                },
-                new HamburgerMenuIconItem()
-                {
-                    Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.Settings },
-                    Label = "Second Menu",
-                    ToolTip = "The Application settings.",
-                    Tag = SecondViewModel,
+                    Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.Login },
+                    Label = "Login",
+                    ToolTip = "Login To GroupMe",
+                    Tag = this.LoginViewModel,
                 },
             };
 
-            this.MenuOptionItems = new HamburgerMenuItemCollection
-            {
-                new HamburgerMenuIconItem()
-                {
-                    Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.SettingsOutline },
-                    Label = "Settings",
-                    ToolTip = "GroupMe Settings",
-                    Tag = SettingsViewModel,
-                },
-            };
+            this.MenuOptionItems = new HamburgerMenuItemCollection();
+
+            this.SelectedItem = this.MenuItems[0];
         }
     }
 }

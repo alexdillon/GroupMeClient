@@ -56,8 +56,8 @@ namespace GroupMeClientApi
         /// </summary>
         public void Stop()
         {
-            this.CancellationTokenSource.Cancel();
             this.OAuthServer.Stop();
+            this.CancellationTokenSource.Cancel();
         }
 
         private async Task ConnectionLoop()
@@ -78,10 +78,12 @@ namespace GroupMeClientApi
                         sw.WriteLine(successPage);
                     }
 
+                    var key = context.Request.QueryString["access_token"];
+
                     context.Response.StatusCode = (int)HttpStatusCode.OK;
                     context.Response.Close();
 
-                    this.TokenReady.SetResult(context.Request.QueryString["access_token"]);
+                    this.TokenReady.SetResult(key);
                 }
                 else
                 {

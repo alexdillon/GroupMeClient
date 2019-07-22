@@ -7,11 +7,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("GroupMeClient")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("GroupMe Desktop Client")]
+[assembly: AssemblyDescription("A Windows Desktop Client for GroupMe.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("GroupMeClient")]
+[assembly: AssemblyCompany("MicroCube")]
+[assembly: AssemblyProduct("GroupMe Desktop Client")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

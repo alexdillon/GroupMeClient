@@ -57,7 +57,7 @@
                            ItemsSource="{Binding MenuItems}"
                            OptionsItemTemplate="{StaticResource MenuItemTemplate}"
                            OptionsItemsSource="{Binding MenuOptionItems}"
-                           SelectedIndex="0"
+                           SelectedItem="{Binding SelectedItem, Mode=OneWay}"
                            PaneBackground="#1873BA">
 
             <!--  select the tag (ViewModel) of the selected item (options item)  -->
