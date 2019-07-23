@@ -12,6 +12,7 @@ namespace GroupMeClient.ViewModels.Controls
     {
         private IMessageContainer messageContainer;
         private AvatarControlViewModel avatar;
+        private int unreadMessagesCounter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupControlViewModel"/> class.
@@ -74,6 +75,15 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get { return this.avatar; }
             private set { this.Set(() => this.Avatar, ref this.avatar, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the number of unread messages shown for this Group or Chat.
+        /// </summary>
+        public int TotalUnreadCount
+        {
+            get { return this.unreadMessagesCounter; }
+            set { this.Set(() => this.TotalUnreadCount, ref this.unreadMessagesCounter, value); }
         }
 
         /// <summary>

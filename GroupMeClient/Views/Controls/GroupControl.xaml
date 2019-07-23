@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
+             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              mc:Ignorable="d" 
              Background="White"
              FontFamily="Segoe UI"
@@ -16,6 +17,10 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
+    <UserControl.Resources>
+        <extensions:IsZeroConverter x:Key="isZeroConverter"/>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80" />
@@ -24,7 +29,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <controls:AvatarControl 
@@ -35,13 +40,58 @@
         <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                 Height="Auto" FontSize="16"
                 TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
-                Text="{Binding Title}" />
-        
+                Text="{Binding Title}">
+            
+            <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="FontWeight" Value="Regular" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=TotalUnreadCount, Converter={StaticResource isZeroConverter}}" Value="False">
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
         <Label Content="{Binding LastUpdatedFriendlyTime}" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="14" Foreground="#637182"/>
 
         <TextBlock  Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
                 Height="50" FontSize="13" Foreground="#637182"
                 TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
                 Text="{Binding QuickPreview}" />
+
+        <TextBlock Grid.Column="2" Grid.Row="2"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top"
+                   TextAlignment="Center"
+                   Height="30"
+                   Width="30"
+                   Padding="0,7,0,0"
+                   Text="{Binding TotalUnreadCount}"
+                   Foreground="White"
+                   FontWeight="Bold" >
+
+            <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Visibility" Value="Hidden" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=TotalUnreadCount, Converter={StaticResource isZeroConverter}}" Value="False">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+            
+            <TextBlock.Background>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Ellipse Height="30"
+                                 Width="30"
+                                 Fill="#1873BA" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBlock.Background>
+        </TextBlock>
     </Grid>
 </UserControl>
