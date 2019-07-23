@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,8 +47,16 @@ namespace GroupMeClient.Settings
         /// </summary>
         public void SaveSettings()
         {
-            var json = JsonConvert.SerializeObject(this);
-            System.IO.File.WriteAllText(this.SettingsFile, json);
+            // serialize JSON directly to a file
+            using (StreamWriter file = File.CreateText(this.SettingsFile))
+            {
+                JsonSerializer serializer = new JsonSerializer()
+                {
+                    Formatting = Formatting.Indented,
+                };
+
+                serializer.Serialize(file, this);
+            }
         }
     }
 }
