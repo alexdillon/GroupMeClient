@@ -29,8 +29,10 @@ namespace GroupMeClient.Notifications.Display.WpfToast
                     offsetY: 100);
 
                     cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-                        notificationLifetime: TimeSpan.FromSeconds(3),
+                        notificationLifetime: TimeSpan.FromSeconds(7),
                         maximumNotificationCount: MaximumNotificationCount.FromCount(5));
+
+                    cfg.DisplayOptions.TopMost = true;
 
                     cfg.Dispatcher = Application.Current.Dispatcher;
                 }));
@@ -44,7 +46,11 @@ namespace GroupMeClient.Notifications.Display.WpfToast
         /// <inheritdoc />
         Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar)
         {
-            // Don't show 'like' notifications and similar
+            this.Notifier.ShowGroupMeToastMessage(
+                body,
+                new DummyAvatarSource(avatarUrl, roundedAvatar),
+                this.GroupMeClient.ImageDownloader);
+
             return Task.CompletedTask;
         }
 
@@ -62,12 +68,12 @@ namespace GroupMeClient.Notifications.Display.WpfToast
         /// <inheritdoc />
         Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar)
         {
-            this.Notifier.ShowGroupMeToastMessage(
+          this.Notifier.ShowGroupMeToastMessage(
                 body,
                 new DummyAvatarSource(avatarUrl, roundedAvatar),
                 this.GroupMeClient.ImageDownloader);
 
-            return Task.CompletedTask;
+          return Task.CompletedTask;
         }
 
         /// <inheritdoc />
