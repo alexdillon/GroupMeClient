@@ -149,6 +149,9 @@ namespace GroupMeClientApi.Models
         }
 
         /// <inheritdoc />
+        public int TotalMessageCount => this.MsgPreview.Count;
+
+        /// <inheritdoc />
         string IAvatarSource.ImageOrAvatarUrl => this.ImageUrl;
 
         /// <inheritdoc />

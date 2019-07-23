@@ -60,6 +60,7 @@ namespace GroupMeClientApi
             dest.Id = source.Id;
             dest.LatestMessage = source.LatestMessage;
             dest.UpdatedAtUnixTime = source.UpdatedAtUnixTime;
+            dest.TotalMessageCount = source.TotalMessageCount;
 
             MergeMember(dest.OtherUser, source.OtherUser);
 

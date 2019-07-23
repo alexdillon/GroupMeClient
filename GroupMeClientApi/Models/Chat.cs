@@ -65,6 +65,14 @@ namespace GroupMeClientApi.Models
         public Message LatestMessage { get; internal set; }
 
         /// <summary>
+        /// Gets a copy of the latest message for preview purposes.
+        /// Note that API Operations, like <see cref="Message.LikeMessage"/> cannot be performed.
+        /// See <see cref="Messages"/> list instead for full message objects.
+        /// </summary>
+        [JsonProperty("messages_count")]
+        public int TotalMessageCount { get; internal set; }
+
+        /// <summary>
         /// Gets the Identifier of this Chat. See <seealso cref="OtherUser"/> for more information.
         /// </summary>
         /// <remarks>

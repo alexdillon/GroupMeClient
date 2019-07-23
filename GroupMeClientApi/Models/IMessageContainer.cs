@@ -44,6 +44,11 @@ namespace GroupMeClientApi.Models
         Message LatestMessage { get; }
 
         /// <summary>
+        /// Gets the total number of messages within this <see cref="IMessageContainer"/>.
+        /// </summary>
+        int TotalMessageCount { get; }
+
+        /// <summary>
         /// Gets the <see cref="GroupMeClient"/> that manages this collection.
         /// </summary>
         GroupMeClient Client { get; }
