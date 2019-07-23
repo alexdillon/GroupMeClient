@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Notifications;
+using GroupMeClient.Settings;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Push;
 using GroupMeClientApi.Push.Notifications;
@@ -21,9 +22,11 @@ namespace GroupMeClient.ViewModels
         /// Initializes a new instance of the <see cref="ChatsViewModel"/> class.
         /// </summary>
         /// <param name="groupMeClient">The API client that should be used.</param>
-        public ChatsViewModel(GroupMeClientApi.GroupMeClient groupMeClient)
+        /// <param name="settingsManager">The application settings manager.</param>
+        public ChatsViewModel(GroupMeClientApi.GroupMeClient groupMeClient, SettingsManager settingsManager)
         {
             this.GroupMeClient = groupMeClient;
+            this.SettingsManager = settingsManager;
 
             this.AllGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
@@ -43,6 +46,8 @@ namespace GroupMeClient.ViewModels
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
 
+        private SettingsManager SettingsManager { get; }
+
         private PushClient PushClient { get; set; }
 
         private SemaphoreSlim ReloadGroupsSem { get; } = new SemaphoreSlim(1, 1);
@@ -54,6 +59,16 @@ namespace GroupMeClient.ViewModels
 
             var groupId = notification.Message.GroupId;
             var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == groupId);
+
+            if (groupVm != null)
+            {
+                // update the latest viewed message in the persistant state
+                var groupState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == container.Id);
+                groupState.LastTotalMessageCount = container.TotalMessageCount + 1; // add one for the new message, since the group hasn't been reloaded yet
+                groupState.LastReadMessageId = notification.Message.Id;
+                this.SettingsManager.SaveSettings();
+            }
+
             await groupVm?.LoadNewMessages();
         }
 
@@ -63,6 +78,16 @@ namespace GroupMeClient.ViewModels
             _ = this.LoadGroupsAndChats();
 
             var chatVm = this.ActiveGroupsChats.FirstOrDefault(c => c.Id == container.Id);
+
+            if (chatVm != null)
+            {
+                // update the latest viewed message in the persistant state
+                var chatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == container.Id);
+                chatState.LastTotalMessageCount = container.TotalMessageCount + 1; // add one for the new message, since the group hasn't been reloaded yet
+                chatState.LastReadMessageId = notification.Message.Id;
+                this.SettingsManager.SaveSettings();
+            }
+
             await chatVm?.LoadNewMessages();
         }
 
@@ -102,46 +127,46 @@ namespace GroupMeClient.ViewModels
                 await this.GroupMeClient.GetGroupsAsync();
                 await this.GroupMeClient.GetChatsAsync();
 
-                foreach (var group in this.GroupMeClient.Groups())
-                {
-                    var existingVm = this.AllGroupsChats.FirstOrDefault(g => g.Id == group.Id);
+                var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
 
+                foreach (var group in groupsAndChats)
+                {
+                    // check the last-read message status from peristant storage
+                    var groupState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == group.Id);
+                    if (groupState == null)
+                    {
+                        groupState = new ChatsSettings.GroupOrChatState()
+                        {
+                            GroupOrChatId = group.Id,
+                            LastReadMessageId = group.LatestMessage.Id,
+                            LastTotalMessageCount = group.TotalMessageCount,
+                        };
+                        this.SettingsManager.ChatsSettings.GroupChatStates.Add(groupState);
+                    }
+
+                    // calculate how many new messages have been added since the group/chat was last read
+                    var unreadMessages = group.TotalMessageCount - groupState.LastTotalMessageCount;
+
+                    var existingVm = this.AllGroupsChats.FirstOrDefault(g => g.Id == group.Id);
                     if (existingVm == null)
                     {
                         // create a new GroupControl ViewModel for this Group
-                        var groupVm = new Controls.GroupControlViewModel(group)
+                        var vm = new Controls.GroupControlViewModel(group)
                         {
                             GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
+                            TotalUnreadCount = unreadMessages,
                         };
-                        this.AllGroupsChats.Add(groupVm);
+                        this.AllGroupsChats.Add(vm);
                     }
                     else
                     {
-                        // Update the existing Group
+                        // Update the existing Group/Chat VM
                         existingVm.MessageContainer = group;
+                        existingVm.TotalUnreadCount = unreadMessages;
                     }
                 }
 
-                foreach (Chat chat in this.GroupMeClient.Chats())
-                {
-                    var existingVm = this.AllGroupsChats.FirstOrDefault(g => g.Id == chat.Id);
-
-                    if (existingVm == null)
-                    {
-                        // create a new GroupControl ViewModel for this Chat
-                        var chatVm = new Controls.GroupControlViewModel(chat)
-                        {
-                            GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
-                        };
-                        this.AllGroupsChats.Add(chatVm);
-                    }
-                    else
-                    {
-                        // Update the existing Chat
-                        existingVm.MessageContainer = chat;
-                    }
-                }
-
+                this.SettingsManager.SaveSettings();
                 await this.GroupMeClient.Update();
             }
             finally
@@ -170,6 +195,16 @@ namespace GroupMeClient.ViewModels
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
 
                 _ = this.PushClient.SubscribeAsync(group.MessageContainer);
+
+                // mark all messages as read
+                var groupChatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == group.Id);
+                groupChatState.LastTotalMessageCount = group.MessageContainer.TotalMessageCount;
+                groupChatState.LastReadMessageId = group.MessageContainer.LatestMessage.Id;
+
+                // clear the notification bubble
+                group.TotalUnreadCount = 0;
+
+                this.SettingsManager.SaveSettings();
             }
 
             // limit to three multi-chats at a time

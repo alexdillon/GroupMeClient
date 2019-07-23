@@ -96,7 +96,7 @@ namespace GroupMeClient.ViewModels
                 this.GroupMeClient = new GroupMeCachedClient(this.SettingsManager.CoreSettings.AuthToken, this.CachePath);
                 this.NotificationRouter = new NotificationRouter(this.GroupMeClient);
 
-                this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient);
+                this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient, this.SettingsManager);
                 this.SecondViewModel = new SecondViewModel();
                 this.SettingsViewModel = new SettingsViewModel();
 
