@@ -17,13 +17,6 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupControlViewModel"/> class.
         /// </summary>
-        public GroupControlViewModel()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GroupControlViewModel"/> class.
-        /// </summary>
         /// <param name="messageContainer">The Group or Chat to show in this control.</param>
         public GroupControlViewModel(IMessageContainer messageContainer)
         {

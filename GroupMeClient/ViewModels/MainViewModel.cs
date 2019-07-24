@@ -115,7 +115,7 @@ namespace GroupMeClient.ViewModels
 
         private void CreateMenuItemsRegular()
         {
-            var chatsTab = new HamburgerMenuIconItem() 
+            var chatsTab = new HamburgerMenuIconItem()
             {
                 Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.MessageText },
                 Label = "Chats",

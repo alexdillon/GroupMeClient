@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.ViewModels.Controls.Attachments;
 using GroupMeClientApi.Models;
@@ -240,7 +239,8 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 if (attachment is ImageAttachment imageAttach)
                 {
-                    this.AttachedItems.Add(new GroupMeImageAttachmentControlViewModel(imageAttach, this.Message.ImageDownloader));
+                    var imageVm = new GroupMeImageAttachmentControlViewModel(imageAttach, this.Message.ImageDownloader);
+                    this.AttachedItems.Add(imageVm);
                     break;
                 }
             }
