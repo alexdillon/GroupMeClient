@@ -75,9 +75,9 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
         private void ClickedAction()
         {
-            var s = new SendImageControlViewModel();
+            var vm = new ViewImageControlViewModel(this.ImageAttachmentStream);
 
-            var request = new Messaging.DialogRequestMessage(s);
+            var request = new Messaging.DialogRequestMessage(vm);
             Messenger.Default.Send(request);
         }
     }

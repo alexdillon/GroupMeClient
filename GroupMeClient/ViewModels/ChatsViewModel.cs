@@ -37,6 +37,7 @@ namespace GroupMeClient.ViewModels
             this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
 
             this.ClosePopup = new RelayCommand(this.CloseBigPopup);
+            this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
 
             Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
 
@@ -64,9 +65,15 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets the action to be be performed when the big popup has been closed.
+        /// Gets the action to be be performed when the big popup has been closed.
         /// </summary>
-        public ICommand ClosePopup { get; set; }
+        public ICommand ClosePopup { get; }
+
+        /// <summary>
+        /// Gets the action to be be performed when the big popup has been closed indirectly.
+        /// This typically is from the user clicking in the gray area around the popup to dismiss it.
+        /// </summary>
+        public ICommand EasyClosePopup { get; }
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
 

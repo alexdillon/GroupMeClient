@@ -84,7 +84,9 @@
             <DataTemplate DataType="{x:Type ctrlvm:SendImageControlViewModel}">
                 <ctrlviews:SendImageControl />
             </DataTemplate>
-
+            <DataTemplate DataType="{x:Type ctrlvm:ViewImageControlViewModel}">
+                <ctrlviews:ViewImageControl />
+            </DataTemplate>
 
             <!-- Adapted from https://stackoverflow.com/questions/10969292/apple-style-scrollbar-wpf-->
             <!--Scrollbar Thumbs-->

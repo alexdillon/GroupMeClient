@@ -36,6 +36,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.SendMessage = new RelayCommand(async () => await this.SendMessageAsync(), true);
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await this.LoadMoreAsync(s), true);
             this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
+            this.EasyClosePopup = null; // EasyClose makes it too easy to accidently close the send dialog.
         }
 
         /// <summary>
@@ -67,9 +68,15 @@ namespace GroupMeClient.ViewModels.Controls
         public ICommand ReloadView { get; private set; }
 
         /// <summary>
-        /// Gets or sets the action to be be performed when a little popup has been closed.
+        /// Gets the action to be be performed when a little popup has been closed.
         /// </summary>
-        public ICommand ClosePopup { get; set; }
+        public ICommand ClosePopup { get; }
+
+        /// <summary>
+        /// Gets the action to be be performed when the big popup has been closed indirectly.
+        /// This typically is from the user clicking in the gray area around the popup to dismiss it.
+        /// </summary>
+        public ICommand EasyClosePopup { get; }
 
         /// <summary>
         /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
