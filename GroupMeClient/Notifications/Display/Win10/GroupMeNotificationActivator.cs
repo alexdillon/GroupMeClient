@@ -9,12 +9,12 @@ namespace GroupMeClient.Notifications.Display.Win10
     /// </summary>
     /// <remarks>
     /// Squirrel automatically generates a CLDID based on the NuGet package name.
-    /// For 'GroupMeDesktopClient', this generated GUID is 'bc6.....e4'.
+    /// For 'GroupMeDesktopClient', this generated GUID is 'c43177b6-7264-5132-b051-89078b372559'.
     /// </remarks>
     [ClassInterface(ClassInterfaceType.None)]
     [ComSourceInterfaces(typeof(INotificationActivationCallback))]
     [ComVisible(true)]
-    [Guid("bc6ba895-fa13-5e3f-8d6b-6f99f0c2e6e4")]
+    [Guid("3d1bf80b-078b-5aee-b9a0-fc40af7fc030")]
     public class GroupMeNotificationActivator : NotificationActivator
     {
         /// <inheritdoc/>
