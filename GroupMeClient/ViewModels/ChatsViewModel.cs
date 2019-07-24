@@ -263,6 +263,11 @@ namespace GroupMeClient.ViewModels
 
         private void CloseBigPopup()
         {
+            if (this.PopupDialog is IDisposable d)
+            {
+                d.Dispose();
+            }
+
             this.PopupDialog = null;
         }
     }

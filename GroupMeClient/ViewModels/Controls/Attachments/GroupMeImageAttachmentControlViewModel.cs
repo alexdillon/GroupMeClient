@@ -36,12 +36,12 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         public ICommand Clicked { get; }
 
         /// <summary>
-        /// Gets or sets the attached image.
+        /// Gets the attached image.
         /// </summary>
         public System.IO.Stream ImageAttachmentStream
         {
             get { return this.imageAttachmentStream; }
-            set { this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value); }
+            internal set { this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value); }
         }
 
         private ImageAttachment ImageAttachment { get; }
@@ -75,7 +75,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
         private void ClickedAction()
         {
-            var vm = new ViewImageControlViewModel(this.ImageAttachmentStream);
+            var vm = new ViewImageControlViewModel(this.ImageAttachment, this.ImageDownloader);
 
             var request = new Messaging.DialogRequestMessage(vm);
             Messenger.Default.Send(request);

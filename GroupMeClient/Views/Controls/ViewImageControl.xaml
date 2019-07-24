@@ -4,16 +4,23 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
              d:DesignHeight="200" d:DesignWidth="200"
              Background="Black">
-    
-    <Image Grid.Row="0"
+
+    <Grid>
+        <Controls:ProgressRing IsActive="{Binding IsLoading}" 
+                               Width="60" Height="60"
+                               HorizontalAlignment="Center"/>
+        <Image
                MaxWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}"
                MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualHeight}"
                Stretch="Uniform"
                HorizontalAlignment="Center"
                gif:AnimationBehavior.SourceStream="{Binding ImageStream}" />
-    
+
+    </Grid>
+
 </UserControl>
