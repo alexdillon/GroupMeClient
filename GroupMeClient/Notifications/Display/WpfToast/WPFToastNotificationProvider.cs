@@ -23,16 +23,18 @@ namespace GroupMeClient.Notifications.Display.WpfToast
                 Application.Current.Dispatcher.Invoke((Action)(() =>
                 {
                     cfg.PositionProvider = new WindowPositionProvider(
-                    parentWindow: Application.Current.MainWindow,
-                    corner: Corner.TopRight,
-                    offsetX: 10,
-                    offsetY: 100);
+                        parentWindow: Application.Current.MainWindow,
+                        corner: Corner.TopRight,
+                        offsetX: 10,
+                        offsetY: 100);
 
                     cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
                         notificationLifetime: TimeSpan.FromSeconds(7),
                         maximumNotificationCount: MaximumNotificationCount.FromCount(5));
 
-                    cfg.DisplayOptions.TopMost = true;
+                    // Only show TopMost when the GroupMe window is focused.
+                    // Otherwise, the Toasts tend to popup on top of other windows
+                    cfg.DisplayOptions.TopMost = Application.Current.MainWindow.IsActive;
 
                     cfg.Dispatcher = Application.Current.Dispatcher;
                 }));

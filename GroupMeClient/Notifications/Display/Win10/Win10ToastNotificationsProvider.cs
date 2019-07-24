@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using DesktopNotifications;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Data.Xml.Dom;
@@ -157,6 +158,18 @@ namespace GroupMeClient.Notifications.Display.Win10
 
         private void ShowToast(ToastContent toastContent)
         {
+            bool isActive = false;
+            Application.Current.Dispatcher.Invoke((Action)(() =>
+            {
+                isActive = Application.Current.MainWindow.IsActive;
+            }));
+
+            if (isActive)
+            {
+                // don't show Windows 10 Notifications if the window is focused.
+                return;
+            }
+
             var doc = new XmlDocument();
             doc.LoadXml(toastContent.GetContent());
 
