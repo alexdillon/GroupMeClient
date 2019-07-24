@@ -48,11 +48,6 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         public Uri Uri { get; protected set; }
 
         /// <summary>
-        /// Gets the action that will occur when the control is clicked.
-        /// </summary>
-        public ICommand ClickAction { get; }
-
-        /// <summary>
         /// Gets or sets the raw Url this control is displaying.
         /// </summary>
         public string Url

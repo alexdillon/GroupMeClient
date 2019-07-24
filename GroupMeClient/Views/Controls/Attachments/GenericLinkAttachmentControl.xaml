@@ -38,7 +38,7 @@
             <StackPanel.Background>
                 <SolidColorBrush Color="Black" Opacity="0.4"/>
             </StackPanel.Background>
-            
+
             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center"
                        TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
                        Text="{Binding Title}"
@@ -65,11 +65,5 @@
 
             </Grid>
         </StackPanel>
-
-        <i:Interaction.Triggers>
-            <i:EventTrigger EventName="MouseDown" >
-                <i:InvokeCommandAction Command="{Binding ClickAction}" />
-            </i:EventTrigger>
-        </i:Interaction.Triggers>
     </Grid>
 </UserControl>

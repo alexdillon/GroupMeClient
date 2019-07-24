@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
 
@@ -22,8 +25,15 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             this.ImageAttachment = attachment;
             this.ImageDownloader = downloader;
 
+            this.Clicked = new RelayCommand(this.ClickedAction);
+
             _ = this.LoadImageAttachment();
         }
+
+        /// <summary>
+        /// Gets the command to be performed when the image is clicked.
+        /// </summary>
+        public ICommand Clicked { get; }
 
         /// <summary>
         /// Gets or sets the attached image.
@@ -61,6 +71,14 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             }
 
             this.ImageAttachmentStream = new System.IO.MemoryStream(image);
+        }
+
+        private void ClickedAction()
+        {
+            var s = new SendImageControlViewModel();
+
+            var request = new Messaging.DialogRequestMessage(s);
+            Messenger.Default.Send(request);
         }
     }
 }
