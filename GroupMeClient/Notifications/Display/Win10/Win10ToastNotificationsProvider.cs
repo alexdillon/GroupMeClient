@@ -26,7 +26,7 @@ namespace GroupMeClient.Notifications.Display.Win10
             DesktopNotificationManagerCompat.RegisterActivator<GroupMeNotificationActivator>();
         }
 
-        private string ApplicationId => "MicroCube.GroupMeDesktopClient";
+        private string ApplicationId => "com.squirrel.GroupMeDesktopClient.GroupMeClient";
 
         private bool HasPerformedCleanup { get; set; } = false;
 
