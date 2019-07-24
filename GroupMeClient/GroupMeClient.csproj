@@ -73,6 +73,7 @@
     <Compile Include="Extensions\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\WebBrowserExtensions.cs" />
     <Compile Include="Extensions\WebBrowserHelper.cs" />
+    <Compile Include="Messaging\DialogRequestMessage.cs" />
     <Compile Include="Notifications\Display\Win10\DesktopNotificationManagerCompat.cs" />
     <Compile Include="Notifications\Display\Win10\GroupMeNotificationActivator.cs" />
     <Compile Include="Notifications\Display\WpfToast\GroupMeToastExtensions.cs" />

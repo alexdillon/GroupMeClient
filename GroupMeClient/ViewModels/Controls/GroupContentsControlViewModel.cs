@@ -67,7 +67,7 @@ namespace GroupMeClient.ViewModels.Controls
         public ICommand ReloadView { get; private set; }
 
         /// <summary>
-        /// Gets or sets the action to be be performed when a popup has been closed.
+        /// Gets or sets the action to be be performed when a little popup has been closed.
         /// </summary>
         public ICommand ClosePopup { get; set; }
 

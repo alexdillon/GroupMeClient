@@ -3,8 +3,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Notifications;
 using GroupMeClient.Settings;
 using GroupMeClientApi.Models;
@@ -18,6 +21,8 @@ namespace GroupMeClient.ViewModels
     /// </summary>
     public class ChatsViewModel : ViewModelBase, INotificationSink
     {
+        private ViewModelBase popupDialog;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatsViewModel"/> class.
         /// </summary>
@@ -31,6 +36,10 @@ namespace GroupMeClient.ViewModels
             this.AllGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
 
+            this.ClosePopup = new RelayCommand(this.CloseBigPopup);
+
+            Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
+
             _ = this.Loaded();
         }
 
@@ -43,6 +52,21 @@ namespace GroupMeClient.ViewModels
         /// Gets a collection of all the Groups and Chats currently opened.
         /// </summary>
         public ObservableCollection<Controls.GroupContentsControlViewModel> ActiveGroupsChats { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the Popup Dialog that should be displayed.
+        /// Null specifies that no popup is shown.
+        /// </summary>
+        public ViewModelBase PopupDialog
+        {
+            get { return this.popupDialog; }
+            set { this.Set(() => this.PopupDialog, ref this.popupDialog, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the action to be be performed when the big popup has been closed.
+        /// </summary>
+        public ICommand ClosePopup { get; set; }
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
 
@@ -223,6 +247,16 @@ namespace GroupMeClient.ViewModels
             this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
 
             ((IDisposable)groupContentsControlViewModel).Dispose();
+        }
+
+        private void OpenBigPopup(Messaging.DialogRequestMessage dialog)
+        {
+            this.PopupDialog = dialog.Dialog;
+        }
+
+        private void CloseBigPopup()
+        {
+            this.PopupDialog = null;
         }
     }
 }
