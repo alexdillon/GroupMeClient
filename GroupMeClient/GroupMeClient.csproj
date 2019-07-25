@@ -87,6 +87,7 @@
     <Compile Include="Notifications\Display\IPopupNotificationSink.cs" />
     <Compile Include="Notifications\Display\PopupNotificationProvider.cs" />
     <Compile Include="Notifications\Display\Win10\Win10ToastNotificationsProvider.cs" />
+    <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="SelectedItemToContentConverter.cs" />
     <Compile Include="Settings\ChatsSettings.cs" />
     <Compile Include="Settings\CoreSettings.cs" />
@@ -285,8 +286,11 @@
       <Project>{25b268ce-04b4-45fb-81f1-309cbe8edf9d}</Project>
       <Name>GroupMeClientApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GroupMeClientPlugin\GroupMeClientPlugin.csproj">
+      <Project>{69d0fb24-80a1-4a35-886e-03d80acf5606}</Project>
+      <Name>GroupMeClientPlugin</Name>
+    </ProjectReference>
   </ItemGroup>
-  
   <ItemGroup>
     <PackageReference Include="Expression.Interaction">
       <Version>3.0.40218</Version>

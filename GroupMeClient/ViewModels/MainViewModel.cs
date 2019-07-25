@@ -3,6 +3,7 @@ using System.IO;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Notifications.Display;
+using GroupMeClient.Plugins;
 using GroupMeClientCached;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
@@ -59,6 +60,8 @@ namespace GroupMeClient.ViewModels
 
         private string CachePath => Path.Combine(this.DataRoot, "cache.db");
 
+        private string PluginsPath => Path.Combine(this.DataRoot, "Plugins");
+
         private GroupMeCachedClient GroupMeClient { get; set; }
 
         private Settings.SettingsManager SettingsManager { get; set; }
@@ -79,6 +82,8 @@ namespace GroupMeClient.ViewModels
 
             this.SettingsManager = new Settings.SettingsManager(this.SettingsPath);
             this.SettingsManager.LoadSettings();
+
+            PluginManager.Instance.LoadPlugins(this.PluginsPath);
 
             if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
             {
