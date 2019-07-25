@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClientCached", "Grou
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bayeux", "externals\bayeux\src\Bayeux\Bayeux.csproj", "{57AAA7D3-5B59-4E9B-83FD-21A39B097138}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupMeClientPlugin", "GroupMeClientPlugin\GroupMeClientPlugin.csproj", "{69D0FB24-80A1-4A35-886E-03D80ACF5606}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
