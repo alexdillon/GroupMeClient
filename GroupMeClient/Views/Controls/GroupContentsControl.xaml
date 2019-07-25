@@ -23,6 +23,7 @@
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
+        <extensions:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
         <extensions:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
     </UserControl.Resources>
 
@@ -56,10 +57,29 @@
                 Width="40" Height="40"
                 DataContext="{Binding TopBarAvatar}"/>
 
-            <TextBlock Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+            <StackPanel Grid.Column="3" Grid.Row="0"
+                        Orientation="Horizontal">
+                <TextBlock  HorizontalAlignment="Left" VerticalAlignment="Center"
                     Height="Auto" FontSize="17" FontWeight="SemiBold"
                     TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
                     Text="{Binding Title}" />
+
+                <ToggleButton Grid.Column="3" Grid.Row="0" Content=""
+                              Width="25" Height="25"
+                              BorderThickness="0"
+                              HorizontalAlignment="Left"
+                              Style="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}"
+                              x:Name="toggleGroupOptionsButton">
+                    <ToggleButton.ContentTemplate>
+                        <DataTemplate>
+                            <iconPacks:PackIconOcticons Kind="TriangleDown"
+                                        Width="15" Height="15" 
+                                        VerticalAlignment="Center"
+                                        Foreground="#637182"/>
+                        </DataTemplate>
+                    </ToggleButton.ContentTemplate>
+                </ToggleButton>
+            </StackPanel>
 
             <Button Grid.Column="4" Grid.Row="0" Content="X"
                     Width="35" Height="35"
@@ -87,6 +107,7 @@
                  VirtualizingStackPanel.IsVirtualizing="True"
                  VirtualizingStackPanel.VirtualizationMode="Recycling"
                  VirtualizingStackPanel.ScrollUnit="Pixel"
+                 UseLayoutRounding="True"
                  extensions:ListBoxExtensions.AutoScrollToEnd="True"
                  extensions:ListBoxExtensions.ScrollToTop="{Binding ReloadView}"
                  AllowDrop="True"
@@ -117,6 +138,35 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <Border Grid.Row="2" Grid.Column="0"
+                Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
+                VerticalAlignment="Top"
+                BorderThickness="20,10,20,30"
+                BorderBrush="White">
+            <ItemsControl ItemsSource="{Binding GroupChatPlugins}" Background="White">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button 
+                            Content="{Binding PluginName}"
+                            Command="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                     AncestorType={x:Type controls:GroupContentsControl}}, Path=DataContext.GroupChatPluginActivated}"
+                            CommandParameter="{Binding Path=.}"
+                            HorizontalContentAlignment="Left"
+                            Foreground="#414A59" 
+                            FontWeight="SemiBold"
+                            Margin="5"
+                            />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Border>
 
         <Grid Grid.Column="0" Grid.Row="3"
               Background="White">

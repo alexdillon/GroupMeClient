@@ -70,6 +70,7 @@
     <Compile Include="Extensions\IsZeroConverter.cs" />
     <Compile Include="Extensions\MultiLineSendBox.cs" />
     <Compile Include="Extensions\ListBoxExtensions.cs" />
+    <Compile Include="Extensions\BoolToVisibilityConverter.cs" />
     <Compile Include="Extensions\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\WebBrowserExtensions.cs" />
     <Compile Include="Extensions\WebBrowserHelper.cs" />
@@ -338,12 +339,10 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-
-  <Target Name="AfterBuild"  Condition=" '$(Configuration)' == 'Release'">
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="myAssemblyInfo" />
     </GetAssemblyIdentity>
-
     <Exec Command="nuget pack GroupMeClient.nuspec -Version %(myAssemblyInfo.Version) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
     <Exec Command="squirrel --releasify $(OutDir)GroupMeDesktopClient.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg --releaseDir=$(OutDir)\..\Publish" />
   </Target>

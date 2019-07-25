@@ -37,6 +37,13 @@ namespace GroupMeClient.ViewModels.Controls
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await this.LoadMoreAsync(s), true);
             this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
             this.EasyClosePopup = null; // EasyClose makes it too easy to accidently close the send dialog.
+            this.GroupChatPluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>(this.ActivateGroupPlugin);
+
+            this.GroupChatPlugins = new ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>();
+            foreach (var plugin in Plugins.PluginManager.Instance.GroupChatPlugins)
+            {
+                this.GroupChatPlugins.Add(plugin);
+            }
         }
 
         /// <summary>
@@ -82,6 +89,17 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
         /// </summary>
         public ObservableCollection<MessageControlViewModelBase> Messages { get; }
+
+        /// <summary>
+        /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
+        /// </summary>
+        public ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatPlugin> GroupChatPlugins { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when a Plugin in the
+        /// Options Menu is activated.
+        /// </summary>
+        public ICommand GroupChatPluginActivated { get; }
 
         /// <summary>
         /// Gets the title of the <see cref="Group"/> or <see cref="Chat"/>.
@@ -356,6 +374,11 @@ namespace GroupMeClient.ViewModels.Controls
         {
             (this.ImageSendDialog as IDisposable)?.Dispose();
             this.ImageSendDialog = null;
+        }
+
+        private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
+        {
+            _ = plugin.Activated(this.MessageContainer);
         }
     }
 }
