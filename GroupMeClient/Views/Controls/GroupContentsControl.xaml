@@ -64,20 +64,42 @@
                     TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
                     Text="{Binding Title}" />
 
-                <ToggleButton Grid.Column="3" Grid.Row="0" Content=""
+                <ToggleButton Grid.Column="3" Grid.Row="0"
                               Width="25" Height="25"
                               BorderThickness="0"
                               HorizontalAlignment="Left"
-                              Style="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}"
                               x:Name="toggleGroupOptionsButton">
-                    <ToggleButton.ContentTemplate>
-                        <DataTemplate>
-                            <iconPacks:PackIconOcticons Kind="TriangleDown"
-                                        Width="15" Height="15" 
-                                        VerticalAlignment="Center"
-                                        Foreground="#637182"/>
-                        </DataTemplate>
-                    </ToggleButton.ContentTemplate>
+                    <ToggleButton.Resources>
+                        <iconPacks:Octicons x:Key="ArrowUp" Width="15" Height="15" Kind="TriangleUp"></iconPacks:Octicons>
+                        <iconPacks:Octicons x:Key="ArrowDown" Width="15" Height="15" Kind="TriangleDown"></iconPacks:Octicons>
+                    </ToggleButton.Resources>
+
+                    <ToggleButton.Style>
+                        <Style TargetType="{x:Type ToggleButton}">
+                            <Setter Property="Content" Value="{StaticResource ArrowDown}" />
+
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                        <Border HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="border" Background="White">
+                                            <ContentPresenter Margin="5"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="true">
+                                                <Setter Property="Background" TargetName="border" Value="White"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            
+                            <Style.Triggers>
+                                <Trigger Property="IsChecked" Value="true">
+                                    <Setter Property="Content" Value="{StaticResource ArrowUp}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
                 </ToggleButton>
             </StackPanel>
 
@@ -154,9 +176,12 @@
                             CommandParameter="{Binding Path=.}"
                             HorizontalContentAlignment="Left"
                             Foreground="#414A59" 
+                            BorderThickness="0"
+                            FontSize="14"
                             FontWeight="SemiBold"
-                            Margin="5"
-                            />
+                            Margin="5">
+
+                        </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 
