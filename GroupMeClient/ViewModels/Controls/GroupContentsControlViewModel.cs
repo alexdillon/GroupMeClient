@@ -24,7 +24,7 @@ namespace GroupMeClient.ViewModels.Controls
         private IMessageContainer messageContainer;
         private AvatarControlViewModel topBarAvatar;
         private string typedMessageContents;
-        private SendImageControlViewModel imageSendDialog;
+        private ViewModelBase smallDialog;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -34,6 +34,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.Messages = new ObservableCollection<MessageControlViewModelBase>();
             this.ReloadSem = new SemaphoreSlim(1, 1);
             this.SendMessage = new RelayCommand(async () => await this.SendMessageAsync(), true);
+            this.OpenMessageSuggestions = new RelayCommand(this.OpenMessageSuggestionsDialog);
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await this.LoadMoreAsync(s), true);
             this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
             this.EasyClosePopup = null; // EasyClose makes it too easy to accidently close the send dialog.
@@ -65,9 +66,14 @@ namespace GroupMeClient.ViewModels.Controls
         public ICommand CloseGroup { get; set; }
 
         /// <summary>
-        /// Gets or sets the action to be performd when a message is ready to send.
+        /// Gets or sets the action to be performed when a message is ready to send.
         /// </summary>
         public ICommand SendMessage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the action to be performd when the user has selected the Message Effects Generator.
+        /// </summary>
+        public ICommand OpenMessageSuggestions { get; set; }
 
         /// <summary>
         /// Gets the action to be performed when more messages need to be loaded.
@@ -139,13 +145,13 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// Gets the Image Send Dialog that should be displayed as a popup.
-        /// Gets null if no Image Send Dialog should be displayed.
+        /// Gets the Small Dialog that should be displayed as a popup.
+        /// Gets null if no dialog should be displayed.
         /// </summary>
-        public SendImageControlViewModel ImageSendDialog
+        public ViewModelBase SmallDialog
         {
-            get { return this.imageSendDialog; }
-            private set { this.Set(() => this.ImageSendDialog, ref this.imageSendDialog, value); }
+            get { return this.smallDialog; }
+            private set { this.Set(() => this.SmallDialog, ref this.smallDialog, value); }
         }
 
         private SemaphoreSlim ReloadSem { get; }
@@ -313,15 +319,22 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task SendImageMessageAsync()
         {
-            this.ImageSendDialog.IsSending = true;
+            if (!(this.SmallDialog is SendImageControlViewModel))
+            {
+                return;
+            }
 
-            var contents = this.ImageSendDialog.TypedMessageContents;
+            var imageSendDialog = this.SmallDialog as SendImageControlViewModel;
+
+            imageSendDialog.IsSending = true;
+
+            var contents = imageSendDialog.TypedMessageContents;
             byte[] image;
 
             using (var ms = new MemoryStream())
             {
-                this.ImageSendDialog.ImageStream.Seek(0, SeekOrigin.Begin);
-                await this.ImageSendDialog.ImageStream.CopyToAsync(ms);
+                imageSendDialog.ImageStream.Seek(0, SeekOrigin.Begin);
+                await imageSendDialog.ImageStream.CopyToAsync(ms);
                 image = ms.ToArray();
             }
 
@@ -352,12 +365,6 @@ namespace GroupMeClient.ViewModels.Controls
             return success;
         }
 
-        private void ShowImageSendDialog(byte[] image)
-        {
-            var ms = new MemoryStream(image);
-            this.ShowImageSendDialog(ms);
-        }
-
         private void ShowImageSendDialog(Stream image)
         {
             var dialog = new SendImageControlViewModel()
@@ -367,18 +374,43 @@ namespace GroupMeClient.ViewModels.Controls
                 SendMessage = new RelayCommand(async () => await this.SendImageMessageAsync(), true),
             };
 
-            this.ImageSendDialog = dialog;
+            this.SmallDialog = dialog;
         }
 
         private void ClosePopupHandler()
         {
-            (this.ImageSendDialog as IDisposable)?.Dispose();
-            this.ImageSendDialog = null;
+            (this.SmallDialog as IDisposable)?.Dispose();
+            this.SmallDialog = null;
         }
 
         private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
         {
             _ = plugin.Activated(this.MessageContainer);
+        }
+
+        private void OpenMessageSuggestionsDialog()
+        {
+            var dialog = new MessageEffectsControlViewModel()
+            {
+                TypedMessageContents = this.TypedMessageContents,
+                UpdateMessage = new RelayCommand(this.UseMessageEffectSuggestion),
+            };
+
+            this.SmallDialog = dialog;
+        }
+
+        private void UseMessageEffectSuggestion()
+        {
+            if (!(this.SmallDialog is MessageEffectsControlViewModel))
+            {
+                return;
+            }
+
+            var messageEffectsDialog = this.SmallDialog as MessageEffectsControlViewModel;
+
+            this.TypedMessageContents = messageEffectsDialog.SelectedMessageContents;
+
+            this.ClosePopupHandler();
         }
     }
 }

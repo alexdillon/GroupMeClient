@@ -212,6 +212,19 @@
                     Margin="0,0,0,0"
                     VerticalAlignment="Bottom"/>
 
+            <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="0"
+                                        VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"
+                                        Width="15" Height="15" Foreground="#637182" 
+                                        Kind="React"
+                                        Margin="0">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDown" >
+                        <i:InvokeCommandAction Command="{Binding OpenMessageSuggestions}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </iconPacks:PackIconMaterial>
+
             <extensions:MultiLineSendBox
                 Grid.Row="1" Grid.Column="1"
                 MinHeight="49"
@@ -266,8 +279,8 @@
         <controls:Popup Grid.RowSpan="4"
                         Grid.ColumnSpan="1"
                         DataContext="{Binding Path=.}"
-                        Visibility="{Binding ImageSendDialog, Converter={StaticResource nullToVisibilityConverter}}">
-            <UserControl Content="{Binding ImageSendDialog}" />
+                        Visibility="{Binding SmallDialog, Converter={StaticResource nullToVisibilityConverter}}">
+            <UserControl Content="{Binding SmallDialog}" />
         </controls:Popup>
     </Grid>
 </UserControl>

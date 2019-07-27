@@ -105,6 +105,7 @@
     <Compile Include="ViewModels\Controls\Attachments\LinkAttachmentBaseViewModel.cs" />
     <Compile Include="ViewModels\Controls\InlineTimestampControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModelBase.cs" />
+    <Compile Include="ViewModels\Controls\MessageEffectsControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\ViewImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
@@ -136,6 +137,9 @@
     </Compile>
     <Compile Include="Views\Controls\Popup.xaml.cs">
       <DependentUpon>Popup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\MessageEffectsControl.xaml.cs">
+      <DependentUpon>MessageEffectsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\ViewImageControl.xaml.cs">
       <DependentUpon>ViewImageControl.xaml</DependentUpon>
@@ -215,6 +219,10 @@
     <Page Include="Views\Controls\Popup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\MessageEffectsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\ViewImageControl.xaml">
       <Generator>MSBuild:Compile</Generator>

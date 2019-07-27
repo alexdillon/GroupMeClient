@@ -9,6 +9,15 @@ namespace GroupMeClientPlugin.MessageCompose
     public class MessageSuggestions
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="MessageSuggestions"/> class.
+        /// </summary>
+        public MessageSuggestions()
+        {
+            this.TextOptions = new List<string>();
+            this.ImageOptions = new List<byte[]>();
+        }
+
+        /// <summary>
         /// Gets or sets the listing of text messages that are suggested.
         /// </summary>
         public List<string> TextOptions { get; set; }

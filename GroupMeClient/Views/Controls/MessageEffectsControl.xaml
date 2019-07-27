@@ -1,0 +1,140 @@
+﻿<UserControl x:Class="GroupMeClient.Views.Controls.MessageEffectsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             mc:Ignorable="d" 
+             FontFamily="Segoe UI"
+             d:DesignHeight="200" d:DesignWidth="200"
+             Background="Black"
+             FocusManager.FocusedElement="{Binding ElementName=SourceText}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.Resources>
+            <CollectionViewSource x:Key="ListBoxItems" Source="{Binding Path=GeneratedMessages}">
+                <CollectionViewSource.GroupDescriptions>
+                    <PropertyGroupDescription PropertyName="Plugin" />
+                </CollectionViewSource.GroupDescriptions>
+            </CollectionViewSource>
+        </Grid.Resources>
+
+        <ListBox Grid.Row="0"
+                 MaxWidth="900" 
+                 HorizontalAlignment="Stretch"
+                 Margin="0,0,5,0"
+                 ItemsSource="{Binding Source={StaticResource ListBoxItems}}"
+                 SelectedIndex="-1"
+                 SelectedItem="{Binding Path=SelectedMessageContents, Mode=OneWayToSource}" >
+            <ListBox.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.Panel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Vertical" />
+                        </ItemsPanelTemplate>
+                    </GroupStyle.Panel>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Expander
+                                            Padding="0"                                           
+                                            BorderThickness="0"
+                                            Header="{Binding Name}"
+                                            IsExpanded="True">
+                                            <ItemsPresenter/>
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ListBox.GroupStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderThickness="0">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Message}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Margin" Value="0" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+ 
+        <Grid Grid.Column="0" Grid.Row="3"
+              Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" MinHeight="50"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"
+                    BorderBrush="#637182" BorderThickness="0,0,0,1"
+                    Height="4"
+                    Margin="0,0,0,0"
+                    VerticalAlignment="Bottom"/>
+
+            <extensions:MultiLineSendBox
+                x:Name="SourceText"
+                Grid.Row="1" Grid.Column="1"
+                BorderBrush="Transparent"
+                BorderThickness="0"
+                FontSize="15"
+                MinHeight="49"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                VerticalContentAlignment="Center"
+                AcceptsReturn="True"
+                TextWrapping="Wrap"
+                Controls:TextBoxHelper.Watermark="Send a Message..."
+                Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Send">
+                        <i:InvokeCommandAction Command="{Binding Path=UpdateMessage}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+            </extensions:MultiLineSendBox>
+
+            <Button Grid.Row="1" Grid.Column="2"
+                    Width="35" Height="35"
+                    Margin="0,0,30,0"
+                    HorizontalAlignment="Right"
+                    BorderThickness="0"
+                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                    Command="{Binding Path=UpdateMessage}">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="#637182" Kind="KeyboardReturn"/>
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>
