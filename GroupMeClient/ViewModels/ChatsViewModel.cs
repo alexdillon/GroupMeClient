@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Notifications;
 using GroupMeClient.Settings;
+using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Push;
 using GroupMeClientApi.Push.Notifications;
@@ -21,6 +24,7 @@ namespace GroupMeClient.ViewModels
     public class ChatsViewModel : ViewModelBase, INotificationSink
     {
         private ViewModelBase popupDialog;
+        private string groupChatFilter = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatsViewModel"/> class.
@@ -32,26 +36,38 @@ namespace GroupMeClient.ViewModels
             this.GroupMeClient = groupMeClient;
             this.SettingsManager = settingsManager;
 
-            this.AllGroupsChats = new ObservableCollection<Controls.GroupControlViewModel>();
-            this.ActiveGroupsChats = new ObservableCollection<Controls.GroupContentsControlViewModel>();
+            this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
+            this.ActiveGroupsChats = new ObservableCollection<GroupContentsControlViewModel>();
 
             this.ClosePopup = new RelayCommand(this.CloseBigPopup);
             this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
 
+            this.MarkAllAsRead = new RelayCommand(this.MarkAllGroupsChatsRead);
+            this.SearchToggled = new RelayCommand<bool>((t) => this.GroupChatFilter = t ? this.GroupChatFilter : string.Empty);
+
             Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
+
+            this.SortedFilteredGroupChats = CollectionViewSource.GetDefaultView(this.AllGroupsChats);
+            this.SortedFilteredGroupChats.SortDescriptions.Add(new SortDescription("LastUpdated", ListSortDirection.Descending));
+            this.SortedFilteredGroupChats.Filter = o => (o as GroupControlViewModel).Title.ToLower().Contains(this.GroupChatFilter.ToLower());
+
+            var liveCollection = this.SortedFilteredGroupChats as ICollectionViewLiveShaping;
+            liveCollection.LiveSortingProperties.Add("LastUpdated");
+            liveCollection.IsLiveSorting = true;
 
             _ = this.Loaded();
         }
 
         /// <summary>
-        /// Gets a collection of all the Groups and Chats displayed in the left sidebar.
+        /// Gets a view of the Groups and Chats that are sorted and filtered to
+        /// display in the left-panel.
         /// </summary>
-        public ObservableCollection<Controls.GroupControlViewModel> AllGroupsChats { get; private set; }
+        public ICollectionView SortedFilteredGroupChats { get; private set; }
 
         /// <summary>
         /// Gets a collection of all the Groups and Chats currently opened.
         /// </summary>
-        public ObservableCollection<Controls.GroupContentsControlViewModel> ActiveGroupsChats { get; private set; }
+        public ObservableCollection<GroupContentsControlViewModel> ActiveGroupsChats { get; private set; }
 
         /// <summary>
         /// Gets or sets the Popup Dialog that should be displayed.
@@ -73,6 +89,35 @@ namespace GroupMeClient.ViewModels
         /// This typically is from the user clicking in the gray area around the popup to dismiss it.
         /// </summary>
         public ICommand EasyClosePopup { get; }
+
+        /// <summary>
+        /// Gets the action to be performed to mark all Groups/Chats as "read".
+        /// </summary>
+        public ICommand MarkAllAsRead { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when the Group Search box is toggled.
+        /// </summary>
+        public ICommand SearchToggled { get; }
+
+        /// <summary>
+        /// Gets or sets the string entered to filter the available groups or chat with.
+        /// </summary>
+        public string GroupChatFilter
+        {
+            get
+            {
+                return this.groupChatFilter;
+            }
+
+            set
+            {
+                this.Set(() => this.GroupChatFilter, ref this.groupChatFilter, value);
+                this.SortedFilteredGroupChats.Refresh();
+            }
+        }
+
+        private ObservableCollection<GroupControlViewModel> AllGroupsChats { get; }
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
 
@@ -181,9 +226,9 @@ namespace GroupMeClient.ViewModels
                     if (existingVm == null)
                     {
                         // create a new GroupControl ViewModel for this Group
-                        var vm = new Controls.GroupControlViewModel(group)
+                        var vm = new GroupControlViewModel(group)
                         {
-                            GroupSelected = new RelayCommand<Controls.GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
+                            GroupSelected = new RelayCommand<GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
                             TotalUnreadCount = unreadMessages,
                         };
                         this.AllGroupsChats.Add(vm);
@@ -205,7 +250,7 @@ namespace GroupMeClient.ViewModels
             }
         }
 
-        private void OpenNewGroupChat(Controls.GroupControlViewModel group)
+        private void OpenNewGroupChat(GroupControlViewModel group)
         {
             if (this.ActiveGroupsChats.Any(g => g.Id == group.Id))
             {
@@ -217,9 +262,9 @@ namespace GroupMeClient.ViewModels
             else
             {
                 // open a new group or chat
-                var groupContentsDisplay = new Controls.GroupContentsControlViewModel(group.MessageContainer)
+                var groupContentsDisplay = new GroupContentsControlViewModel(group.MessageContainer)
                 {
-                    CloseGroup = new RelayCommand<Controls.GroupContentsControlViewModel>(this.CloseChat),
+                    CloseGroup = new RelayCommand<GroupContentsControlViewModel>(this.CloseChat),
                 };
 
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
@@ -247,7 +292,7 @@ namespace GroupMeClient.ViewModels
             }
         }
 
-        private void CloseChat(Controls.GroupContentsControlViewModel groupContentsControlViewModel)
+        private void CloseChat(GroupContentsControlViewModel groupContentsControlViewModel)
         {
             this.ActiveGroupsChats.Remove(groupContentsControlViewModel);
             this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
@@ -268,6 +313,22 @@ namespace GroupMeClient.ViewModels
             }
 
             this.PopupDialog = null;
+        }
+
+        private void MarkAllGroupsChatsRead()
+        {
+            foreach (var groupChatVm in this.AllGroupsChats)
+            {
+                // mark all messages as read
+                var groupChatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == groupChatVm.Id);
+                groupChatState.LastTotalMessageCount = groupChatVm.MessageContainer.TotalMessageCount;
+                groupChatState.LastReadMessageId = groupChatVm.MessageContainer.LatestMessage.Id;
+
+                // clear the notification bubble
+                groupChatVm.TotalUnreadCount = 0;
+            }
+
+            this.SettingsManager.SaveSettings();
         }
     }
 }
