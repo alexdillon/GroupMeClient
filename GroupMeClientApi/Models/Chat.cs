@@ -20,6 +20,8 @@ namespace GroupMeClientApi.Models
         public Chat()
         {
             this.Messages = new List<Message>();
+
+            this.FindMessageFunction = new Func<string, Message>(this.FindMessage);
         }
 
         /// <summary>
@@ -106,6 +108,14 @@ namespace GroupMeClientApi.Models
         public bool IsRoundedAvatar => ((IAvatarSource)this.OtherUser).IsRoundedAvatar;
 
         /// <summary>
+        /// Gets or sets a function used to find a message.
+        /// If not provided, a default search function that operates in-memory will be provided.
+        /// This can be used to specify a more advanced function that, for example, searches a database.
+        /// </summary>
+        [NotMapped]
+        public Func<string, Message> FindMessageFunction { get; set; }
+
+        /// <summary>
         /// Returns a set of messages from a this Direct Message / Chat.
         /// </summary>
         /// <param name="mode">The method that should be used to determine the set of messages returned.</param>
@@ -141,7 +151,7 @@ namespace GroupMeClientApi.Models
                     // ensure every Message has a reference to the parent Chat (this)
                     message.Chat = this;
 
-                    var oldMessage = this.Messages.Find(m => m.Id == message.Id);
+                    var oldMessage = this.FindMessageFunction(message.Id);
                     if (oldMessage == null)
                     {
                         this.Messages.Add(message);
@@ -165,6 +175,13 @@ namespace GroupMeClientApi.Models
             {
                 throw new System.Net.WebException($"Failure retreving Messages from Chat. Status Code {restResponse.StatusCode}");
             }
+        }
+
+        /// <inheritdoc />
+        public async Task<ICollection<Message>> GetMaxMessagesAsync(MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
+        {
+            // Chats only support retreiving in blocks of 20 :(
+            return await this.GetMessagesAsync(mode, messageId);
         }
 
         /// <summary>
@@ -199,6 +216,11 @@ namespace GroupMeClientApi.Models
         public Member WhoAmI()
         {
             return this.Client.WhoAmI();
+        }
+
+        private Message FindMessage(string id)
+        {
+            return this.Messages.Find(m => m.Id == id);
         }
     }
 }

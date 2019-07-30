@@ -46,6 +46,7 @@ namespace GroupMeClientCached
                 foreach (var group in this.Database.Groups)
                 {
                     group.Client = this;
+                    group.FindMessageFunction = new System.Func<string, Message>(this.FindMessageInDatabase);
                     yield return group;
                 }
             }
@@ -65,6 +66,7 @@ namespace GroupMeClientCached
                 foreach (var chat in this.Database.Chats)
                 {
                     chat.Client = this;
+                    chat.FindMessageFunction = new System.Func<string, Message>(this.FindMessageInDatabase);
                     yield return chat;
                 }
             }
@@ -130,6 +132,20 @@ namespace GroupMeClientCached
             try
             {
                 await this.Database.SaveChangesAsync();
+            }
+            finally
+            {
+                this.DatabaseSem.Release();
+            }
+        }
+
+        private Message FindMessageInDatabase(string id)
+        {
+            this.DatabaseSem.Wait();
+
+            try
+            {
+                return this.Database.Find<Message>(id);
             }
             finally
             {

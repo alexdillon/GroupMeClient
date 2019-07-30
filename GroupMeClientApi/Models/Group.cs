@@ -19,6 +19,8 @@ namespace GroupMeClientApi.Models
         public Group()
         {
             this.Messages = new List<Message>();
+
+            this.FindMessageFunction = new Func<string, Message>(this.FindMessage);
         }
 
         /// <summary>
@@ -158,6 +160,14 @@ namespace GroupMeClientApi.Models
         bool IAvatarSource.IsRoundedAvatar => false;
 
         /// <summary>
+        /// Gets or sets a function used to find a message.
+        /// If not provided, a default search function that operates in-memory will be provided.
+        /// This can be used to specify a more advanced function that, for example, searches a database.
+        /// </summary>
+        [NotMapped]
+        public Func<string, Message> FindMessageFunction { get; set; }
+
+        /// <summary>
         /// Returns a set of messages from a this Group Chat.
         /// </summary>
         /// <param name="mode">The method that should be used to determine the set of messages returned. </param>
@@ -166,6 +176,12 @@ namespace GroupMeClientApi.Models
         public async Task<ICollection<Message>> GetMessagesAsync(MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
         {
             return await this.GetMessagesAsync(20, mode, messageId);
+        }
+
+        /// <inheritdoc />
+        public async Task<ICollection<Message>> GetMaxMessagesAsync(MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "")
+        {
+            return await this.GetMessagesAsync(100, mode, messageId);
         }
 
         /// <summary>
@@ -206,7 +222,7 @@ namespace GroupMeClientApi.Models
                     // ensure every Message has a reference to the parent Group (this)
                     message.Group = this;
 
-                    var oldMessage = this.Messages.Find(m => m.Id == message.Id);
+                    var oldMessage = this.FindMessageFunction(message.Id);
                     if (oldMessage == null)
                     {
                         this.Messages.Add(message);
@@ -260,6 +276,11 @@ namespace GroupMeClientApi.Models
         public Member WhoAmI()
         {
             return this.Client.WhoAmI();
+        }
+
+        private Message FindMessage(string id)
+        {
+            return this.Messages.Find(m => m.Id == id);
         }
 
         /// <summary>
