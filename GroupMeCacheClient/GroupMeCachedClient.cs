@@ -31,6 +31,12 @@ namespace GroupMeClientCached
 
         /// <inheritdoc/>
         public override ImageDownloader ImageDownloader { get; }
+        /// <summary>
+        /// Gets or sets a value indicating whether the updates will automatically be commited to the database.
+        /// When performing many sequential GroupMe operations, disabling automatic updating can improve performance.
+        /// To manually commit changes to the database, see <see cref="ForceUpdateAsync"/>.
+        /// </summary>
+        public bool DatabaseUpdatingEnabled { get; set; } = true;
 
         private Context.DatabaseContext Database { get; set; }
 
@@ -126,6 +132,18 @@ namespace GroupMeClientCached
 
         /// <inheritdoc/>
         public override async Task Update()
+        {
+            if (this.DatabaseUpdatingEnabled)
+            {
+                await this.ForceUpdateAsync();
+            }
+        }
+
+        /// <summary>
+        /// Forces all changes to be updated in the client and committed to the cache database.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task ForceUpdateAsync()
         {
             await this.DatabaseSem.WaitAsync();
 
