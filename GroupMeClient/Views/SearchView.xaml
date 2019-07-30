@@ -6,14 +6,30 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
 
     <UserControl.Resources>
+        <CollectionViewSource Source="{Binding Path=AllGroupsChats}" x:Key="GroupsChatsViewSource"
+                              IsLiveSortingRequested="True">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="LastUpdated" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <CollectionViewSource Source="{Binding Path=ResultsMessages}" x:Key="ResultsViewSource">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="Id" Direction="Ascending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <extensions:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
         <extensions:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
     </UserControl.Resources>
-    
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding Loaded}" />
@@ -21,11 +37,167 @@
     </i:Interaction.Triggers>
     
     <Grid>
-        <Label Name="label1" Content="THIS IS THE SECOND VIEW!" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="350" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="55" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <controls:Popup DataContext="{Binding Path=.}"
-                        Visibility="{Binding SmallDialog, Converter={StaticResource nullToVisibilityConverter}}">
-            <UserControl Content="{Binding SmallDialog}" />
+        <!--Chats Header-->
+        <Grid Grid.Column="0" Grid.Row="0"
+              Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="55"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Padding="15,0,0,0"
+                        Height="Auto" FontSize="17" FontWeight="SemiBold"
+                        Text="Chats" />
+
+            <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+        </Grid>
+
+        <!--All Groups and Chats List-->
+        <ScrollViewer Grid.Column="0" Grid.Row="1"
+                      VerticalScrollBarVisibility="Visible" PanningMode="VerticalOnly" CanContentScroll="True"
+                      VerticalAlignment="Stretch">
+            <ItemsControl ItemsSource="{Binding Source={StaticResource GroupsChatsViewSource}}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:GroupControl Content="{Binding Path=.}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!--Search Area-->
+        <Grid Grid.Column="1" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="55"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"
+                           Padding="15,0,0,0"
+                           Height="Auto" FontSize="17" FontWeight="SemiBold"
+                           Text="Search Messages" />
+
+            <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+        </Grid>
+
+        <DockPanel Grid.Column="1" Grid.Row="1"
+                    VerticalAlignment="Stretch">
+            <TextBox DockPanel.Dock="Top"
+                     Margin="15,5,25,0"
+                     Controls:TextBoxHelper.Watermark="Search..."
+                     Controls:TextBoxHelper.ClearTextButton="True"
+                     Controls:TextBoxHelper.UseFloatingWatermark="True"
+                     FontSize="16"
+                     Text="{Binding SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                <TextBox.Style>
+                    <Style BasedOn="{StaticResource SearchMetroTextBox}" TargetType="{x:Type TextBox}">
+                        <Style.Triggers>
+                            <Trigger Property="Controls:TextBoxHelper.HasText" Value="True">
+                                <Setter Property="Controls:TextBoxHelper.ButtonContent" Value="r" />
+                                <Setter Property="Controls:TextBoxHelper.ButtonContentTemplate" Value="{x:Null}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+            <ListBox ItemsSource="{Binding Source={StaticResource ResultsViewSource}}"
+                     BorderThickness="0"
+                     ScrollViewer.VerticalScrollBarVisibility="Visible"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.CanContentScroll="True" 
+                     ScrollViewer.PanningMode="VerticalOnly" 
+                     VirtualizingStackPanel.IsVirtualizing="True"
+                     VirtualizingStackPanel.VirtualizationMode="Recycling"
+                     VirtualizingStackPanel.ScrollUnit="Pixel"
+                     UseLayoutRounding="True"
+                     extensions:ListBoxExtensions.AutoScrollToEnd="True"
+                     extensions:ListBoxExtensions.ScrollToTop="{Binding ReloadView}"
+                     AllowDrop="True"
+                     extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
+                     extensions:FileDragDropHelper.FileDragDropTarget="{Binding}"
+                     Background="White">
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                        <Setter Property="VerticalContentAlignment" Value="Top"/>
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <ContentPresenter/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <UserControl
+                        Content="{Binding Path=.}" 
+                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <!--Context Area-->
+        <Grid Grid.Column="2" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="55"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"
+                           Padding="15,0,0,0"
+                           Height="Auto" FontSize="17" FontWeight="SemiBold"
+                           Text="-Group Name-" />
+
+            <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+        </Grid>
+
+        <controls:Popup Grid.Column="0" Grid.Row="0"
+                        Grid.ColumnSpan="3"
+                        Grid.RowSpan="2"
+                        DataContext="{Binding Path=.}"
+                        Visibility="{Binding PopupDialog, Converter={StaticResource nullToVisibilityConverter}}">
+            <UserControl Content="{Binding PopupDialog}" />
         </controls:Popup>
     </Grid>
 </UserControl>
+
