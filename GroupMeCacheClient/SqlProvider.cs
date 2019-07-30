@@ -1,7 +1,7 @@
 ﻿namespace GroupMeClientCached
 {
     /// <summary>
-    /// <see cref="SqlProvider"/> handles static initialization tasks required for SQLite
+    /// <see cref="SqlProvider"/> handles static initialization tasks required for SQLite.
     /// </summary>
     public static class SqlProvider
     {
