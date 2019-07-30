@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="GroupMeClient.Views.SearchView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
+             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             d:DesignHeight="300"
+             d:DesignWidth="300"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <extensions:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+    </UserControl.Resources>
+    
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding Loaded}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    
+    <Grid>
+        <Label Name="label1" Content="THIS IS THE SECOND VIEW!" />
+
+        <controls:Popup DataContext="{Binding Path=.}"
+                        Visibility="{Binding SmallDialog, Converter={StaticResource nullToVisibilityConverter}}">
+            <UserControl Content="{Binding SmallDialog}" />
+        </controls:Popup>
+    </Grid>
+</UserControl>

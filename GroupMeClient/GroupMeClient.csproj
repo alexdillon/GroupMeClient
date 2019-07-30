@@ -106,6 +106,7 @@
     <Compile Include="ViewModels\Controls\InlineTimestampControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModelBase.cs" />
     <Compile Include="ViewModels\Controls\MessageEffectsControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\LoadingControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\ViewImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
@@ -141,6 +142,9 @@
     <Compile Include="Views\Controls\MessageEffectsControl.xaml.cs">
       <DependentUpon>MessageEffectsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\LoadingControl.xaml.cs">
+      <DependentUpon>LoadingControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\ViewImageControl.xaml.cs">
       <DependentUpon>ViewImageControl.xaml</DependentUpon>
     </Compile>
@@ -155,7 +159,7 @@
     </Compile>
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
-    <Compile Include="ViewModels\SecondViewModel.cs" />
+    <Compile Include="ViewModels\SearchViewModel.cs" />
     <Compile Include="Views\ChatsView.xaml.cs">
       <DependentUpon>ChatsView.xaml</DependentUpon>
     </Compile>
@@ -165,8 +169,8 @@
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SecondView.xaml.cs">
-      <DependentUpon>SecondView.xaml</DependentUpon>
+    <Compile Include="Views\SearchView.xaml.cs">
+      <DependentUpon>SearchView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -224,6 +228,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Controls\LoadingControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Controls\ViewImageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -252,7 +260,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\SecondView.xaml">
+    <Page Include="Views\SearchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

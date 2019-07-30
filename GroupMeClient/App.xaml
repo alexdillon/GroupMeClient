@@ -40,8 +40,8 @@
             <DataTemplate DataType="{x:Type vm:ChatsViewModel}">
                 <views:ChatsView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:SecondViewModel}">
-                <views:SecondView />
+            <DataTemplate DataType="{x:Type vm:SearchViewModel}">
+                <views:SearchView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
                 <views:SettingsView />
@@ -90,6 +90,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type ctrlvm:MessageEffectsControlViewModel}">
                 <ctrlviews:MessageEffectsControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:LoadingControlViewModel}">
+                <ctrlviews:LoadingControl />
             </DataTemplate>
 
             <!-- Adapted from https://stackoverflow.com/questions/10969292/apple-style-scrollbar-wpf-->

@@ -73,7 +73,7 @@ namespace GroupMeClient.ViewModels
 
         private ChatsViewModel ChatsViewModel { get; set; }
 
-        private SecondViewModel SecondViewModel { get; set; }
+        private SearchViewModel SearchViewModel { get; set; }
 
         private SettingsViewModel SettingsViewModel { get; set; }
 
@@ -108,7 +108,7 @@ namespace GroupMeClient.ViewModels
                 this.NotificationRouter = new NotificationRouter(this.GroupMeClient);
 
                 this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient, this.SettingsManager);
-                this.SecondViewModel = new SecondViewModel();
+                this.SearchViewModel = new SearchViewModel(this.GroupMeCachedClient, this.SettingsManager);
                 this.SettingsViewModel = new SettingsViewModel();
 
                 this.RegisterNotifications();
@@ -136,10 +136,10 @@ namespace GroupMeClient.ViewModels
 
             var secondTab = new HamburgerMenuIconItem()
             {
-                Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.Settings },
-                Label = "Second Menu",
-                ToolTip = "The Application settings.",
-                Tag = this.SecondViewModel,
+                Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.EmailSearch },
+                Label = "Search",
+                ToolTip = "Search all Groups and Chats.",
+                Tag = this.SearchViewModel,
             };
 
             var settingsTab = new HamburgerMenuIconItem()

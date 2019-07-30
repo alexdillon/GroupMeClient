@@ -3,11 +3,11 @@
 namespace GroupMeClient.Views
 {
     /// <summary>
-    /// Interaction logic for SecondView.xaml
+    /// Interaction logic for SearchView.xaml.
     /// </summary>
-    public partial class SecondView : UserControl
+    public partial class SearchView : UserControl
     {
-        public SecondView()
+        public SearchView()
         {
             this.InitializeComponent();
         }
