@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Notifications.Display;
@@ -62,7 +63,9 @@ namespace GroupMeClient.ViewModels
 
         private string PluginsPath => Path.Combine(this.DataRoot, "Plugins");
 
-        private GroupMeCachedClient GroupMeClient { get; set; }
+        private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
+
+        private GroupMeCachedClient GroupMeCachedClient { get; set; }
 
         private Settings.SettingsManager SettingsManager { get; set; }
 
@@ -98,7 +101,10 @@ namespace GroupMeClient.ViewModels
             else
             {
                 // Startup Regularly
-                this.GroupMeClient = new GroupMeCachedClient(this.SettingsManager.CoreSettings.AuthToken, this.CachePath);
+                this.GroupMeClient = new GroupMeClientApi.GroupMeClient(this.SettingsManager.CoreSettings.AuthToken);
+                this.GroupMeCachedClient = new GroupMeCachedClient(this.SettingsManager.CoreSettings.AuthToken, this.CachePath);
+                this.GroupMeClient.ImageDownloader = this.GroupMeCachedClient.ImageDownloader; // share a common image cache
+
                 this.NotificationRouter = new NotificationRouter(this.GroupMeClient);
 
                 this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient, this.SettingsManager);
