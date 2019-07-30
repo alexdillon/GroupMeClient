@@ -20,17 +20,17 @@ namespace GroupMeClientCached
             : base(authToken)
         {
             this.Database = new Context.DatabaseContext(databasePath);
+            this.Database.Database.EnsureCreated();
 
             // Keep images on a seperate context to allow async operations for images
             // to occur at the same time as other database operations
             var contextForImages = new Context.DatabaseContext(databasePath);
             this.ImageDownloader = new Images.CachedImageDownloader(contextForImages);
-
-            this.Database.Database.EnsureCreated();
         }
 
         /// <inheritdoc/>
-        public override ImageDownloader ImageDownloader { get; }
+        public override ImageDownloader ImageDownloader { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the updates will automatically be commited to the database.
         /// When performing many sequential GroupMe operations, disabling automatic updating can improve performance.
@@ -93,7 +93,7 @@ namespace GroupMeClientCached
 
                 if (oldGroup == null)
                 {
-                   this.Database.Groups.Add(group);
+                    this.Database.Groups.Add(group);
                 }
                 else
                 {

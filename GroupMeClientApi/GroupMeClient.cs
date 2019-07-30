@@ -27,9 +27,9 @@ namespace GroupMeClientApi
         }
 
         /// <summary>
-        /// Gets the <see cref="ImageDownloader"/> that is used for image downloads.
+        /// Gets or sets the <see cref="ImageDownloader"/> that is used for image downloads.
         /// </summary>
-        public virtual ImageDownloader ImageDownloader { get; } = new ImageDownloader();
+        public virtual ImageDownloader ImageDownloader { get; set; } = new ImageDownloader();
 
         /// <summary>
         /// Gets the <see cref="RestClient"/> that is used to perform GroupMe API calls.
