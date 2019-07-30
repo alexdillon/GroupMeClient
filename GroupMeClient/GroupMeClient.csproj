@@ -65,6 +65,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Extensions\EventFocusAttachment.cs" />
     <Compile Include="Extensions\FileDragDropHelper.cs" />
     <Compile Include="Extensions\ImageUtils.cs" />
     <Compile Include="Extensions\IsZeroConverter.cs" />

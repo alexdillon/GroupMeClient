@@ -63,7 +63,8 @@
                          Height="35"
                          Margin="10,0,0,0"
                          BorderThickness="0"
-                         Text="{Binding GroupChatFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                         Text="{Binding GroupChatFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                         x:Name="searchTextBox"/>
 
                 <ToggleButton Grid.Column="2"
                               Width="35" Height="35"
@@ -72,14 +73,13 @@
                               HorizontalAlignment="Left"
                               x:Name="toggleSearchBox"
                               Command="{Binding SearchToggled}"
-                              CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">
+                              CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"
+                              extensions:EventFocusAttachment.ElementToFocus="{Binding ElementName=searchTextBox}">
                     <ToggleButton.ContentTemplate>
                         <DataTemplate>
                             <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="#637182" Kind="Magnify"/>
                         </DataTemplate>
                     </ToggleButton.ContentTemplate>
-                    
-                    
                 </ToggleButton>
                 
                 <Button Grid.Column="3"
