@@ -69,6 +69,14 @@ namespace GroupMeClientApi.Models
         Task<ICollection<Message>> GetMessagesAsync(MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "");
 
         /// <summary>
+        /// Returns a set of messages from a this container in the largest possible block-size.
+        /// </summary>
+        /// <param name="mode">The method that should be used to determine the set of messages returned.</param>
+        /// <param name="messageId">The Message Id that will be used by the sorting mode set in <paramref name="mode"/>.</param>
+        /// <returns>A list of <see cref="Message"/>.</returns>
+        Task<ICollection<Message>> GetMaxMessagesAsync(MessageRetreiveMode mode = MessageRetreiveMode.None, string messageId = "");
+
+        /// <summary>
         /// Returns the authenticated user who is accessing this collection.
         /// </summary>
         /// <returns>A <see cref="Member"/>.</returns>
