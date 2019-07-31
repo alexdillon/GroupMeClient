@@ -59,7 +59,7 @@ namespace GroupMeClient.Plugins
                 assemblies.Add(assembly);
             }
 
-            Type pluginType = typeof(IPluginBase);
+            Type pluginType = typeof(PluginBase);
             ICollection<Type> pluginTypes = new List<Type>();
             foreach (Assembly assembly in assemblies)
             {
@@ -74,7 +74,7 @@ namespace GroupMeClient.Plugins
                         }
                         else
                         {
-                            if (type.GetInterface(pluginType.FullName) != null)
+                            if (type.IsSubclassOf(pluginType))
                             {
                                 pluginTypes.Add(type);
                             }
@@ -88,7 +88,7 @@ namespace GroupMeClient.Plugins
 
             foreach (Type type in pluginTypes)
             {
-                IPluginBase plugin = (IPluginBase)Activator.CreateInstance(type);
+                var plugin = (PluginBase)Activator.CreateInstance(type);
 
                 if (plugin is IMessageComposePlugin messageComposePlugin)
                 {
