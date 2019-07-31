@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClientApi", "GroupMe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClientCached", "GroupMeCacheClient\GroupMeClientCached.csproj", "{BE89E618-6529-4179-BC29-341954677E18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupMeClientPlugin", "GroupMeClientPlugin\GroupMeClientPlugin.csproj", "{69D0FB24-80A1-4A35-886E-03D80ACF5606}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,14 +27,6 @@ Global
 		{BE89E618-6529-4179-BC29-341954677E18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE89E618-6529-4179-BC29-341954677E18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE89E618-6529-4179-BC29-341954677E18}.Release|Any CPU.Build.0 = Release|Any CPU
-		{57AAA7D3-5B59-4E9B-83FD-21A39B097138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57AAA7D3-5B59-4E9B-83FD-21A39B097138}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57AAA7D3-5B59-4E9B-83FD-21A39B097138}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57AAA7D3-5B59-4E9B-83FD-21A39B097138}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69D0FB24-80A1-4A35-886E-03D80ACF5606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69D0FB24-80A1-4A35-886E-03D80ACF5606}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69D0FB24-80A1-4A35-886E-03D80ACF5606}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69D0FB24-80A1-4A35-886E-03D80ACF5606}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
