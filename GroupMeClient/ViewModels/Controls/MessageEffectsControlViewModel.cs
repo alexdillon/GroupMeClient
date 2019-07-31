@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -43,7 +44,16 @@ namespace GroupMeClient.ViewModels.Controls
             set
             {
                 this.Set(() => this.TypedMessageContents, ref this.typedMessageContents, value);
-                _ = this.GenerateResults();
+
+                if (this.GeneratorCancel != null)
+                {
+                    this.GeneratorCancel.Cancel();
+                }
+
+                this.GeneratedMessages.Clear();
+
+                this.GeneratorCancel = new CancellationTokenSource();
+                Task.Run(() => this.GenerateResults(this.GeneratorCancel.Token), this.GeneratorCancel.Token);
             }
         }
 
@@ -56,24 +66,50 @@ namespace GroupMeClient.ViewModels.Controls
             set { this.Set(() => this.SelectedMessageContents, ref this.selectedMessageContents, value); }
         }
 
-        private async Task GenerateResults()
-        {
-            this.GeneratedMessages.Clear();
+        private CancellationTokenSource GeneratorCancel { get; set; }
 
-            foreach (var plugin in Plugins.PluginManager.Instance.MessageComposePlugins)
+        private void GenerateResults(CancellationToken cancellationToken)
+        {
+            App.Current.Dispatcher.Invoke(() =>
             {
+                this.GeneratedMessages.Clear();
+            });
+
+            var parallelOptions = new ParallelOptions()
+            {
+                CancellationToken = cancellationToken,
+            };
+
+            // Run all generators in parallel in case one plugin hangs or runs very slowly
+            Parallel.ForEach(Plugins.PluginManager.Instance.MessageComposePlugins, parallelOptions, async (plugin) =>
+            {
+                if (parallelOptions.CancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 try
                 {
                     var results = await plugin.ProvideOptions(this.TypedMessageContents);
                     foreach (var text in results.TextOptions)
                     {
-                        this.GeneratedMessages.Add(new SuggestedMessage { Message = text, Plugin = plugin.EffectPluginName });
+                        if (parallelOptions.CancellationToken.IsCancellationRequested)
+                        {
+                            return;
+                        }
+
+                        var textResults = new SuggestedMessage { Message = text, Plugin = plugin.EffectPluginName };
+
+                        App.Current.Dispatcher.Invoke(() =>
+                        {
+                            this.GeneratedMessages.Add(textResults);
+                        });
                     }
                 }
                 catch (Exception)
                 {
                 }
-            }
+            });
         }
 
         /// <summary>
