@@ -19,6 +19,7 @@ namespace GroupMeClient.ViewModels
         private HamburgerMenuItemCollection menuItems = new HamburgerMenuItemCollection();
         private HamburgerMenuItemCollection menuOptionItems = new HamburgerMenuItemCollection();
         private HamburgerMenuItem selectedItem;
+        private ViewModelBase popupDialog;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainViewModel"/> class.
@@ -54,6 +55,27 @@ namespace GroupMeClient.ViewModels
             get { return this.selectedItem; }
             private set { this.Set(() => this.SelectedItem, ref this.selectedItem, value); }
         }
+
+        /// <summary>
+        /// Gets or sets the Popup Dialog that should be displayed.
+        /// Null specifies that no popup is shown.
+        /// </summary>
+        public ViewModelBase PopupDialog
+        {
+            get { return this.popupDialog; }
+            set { this.Set(() => this.PopupDialog, ref this.popupDialog, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the action to be be performed when the big popup has been closed.
+        /// </summary>
+        public ICommand ClosePopup { get; set; }
+
+        /// <summary>
+        /// Gets or sets the action to be be performed when the big popup has been closed indirectly.
+        /// This typically is from the user clicking in the gray area around the popup to dismiss it.
+        /// </summary>
+        public ICommand EasyClosePopup { get; set; }
 
         private string DataRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicroCube", "GroupMe Desktop Client");
 
@@ -191,6 +213,21 @@ namespace GroupMeClient.ViewModels
             this.MenuOptionItems = new HamburgerMenuItemCollection();
 
             this.SelectedItem = this.MenuItems[0];
+        }
+
+        private void OpenBigPopup(Messaging.DialogRequestMessage dialog)
+        {
+            this.PopupDialog = dialog.Dialog;
+        }
+
+        private void CloseBigPopup()
+        {
+            if (this.PopupDialog is IDisposable d)
+            {
+                d.Dispose();
+            }
+
+            this.PopupDialog = null;
         }
     }
 }

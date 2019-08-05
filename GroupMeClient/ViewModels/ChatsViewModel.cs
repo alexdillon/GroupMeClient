@@ -8,7 +8,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Notifications;
 using GroupMeClient.Settings;
 using GroupMeClient.ViewModels.Controls;
@@ -23,7 +22,6 @@ namespace GroupMeClient.ViewModels
     /// </summary>
     public class ChatsViewModel : ViewModelBase, INotificationSink
     {
-        private ViewModelBase popupDialog;
         private string groupChatFilter = string.Empty;
 
         /// <summary>
@@ -39,13 +37,8 @@ namespace GroupMeClient.ViewModels
             this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<GroupContentsControlViewModel>();
 
-            this.ClosePopup = new RelayCommand(this.CloseBigPopup);
-            this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
-
             this.MarkAllAsRead = new RelayCommand(this.MarkAllGroupsChatsRead);
             this.SearchToggled = new RelayCommand<bool>((t) => this.GroupChatFilter = t ? this.GroupChatFilter : string.Empty);
-
-            Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
 
             this.SortedFilteredGroupChats = CollectionViewSource.GetDefaultView(this.AllGroupsChats);
             this.SortedFilteredGroupChats.SortDescriptions.Add(new SortDescription("LastUpdated", ListSortDirection.Descending));
@@ -68,27 +61,6 @@ namespace GroupMeClient.ViewModels
         /// Gets a collection of all the Groups and Chats currently opened.
         /// </summary>
         public ObservableCollection<GroupContentsControlViewModel> ActiveGroupsChats { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the Popup Dialog that should be displayed.
-        /// Null specifies that no popup is shown.
-        /// </summary>
-        public ViewModelBase PopupDialog
-        {
-            get { return this.popupDialog; }
-            set { this.Set(() => this.PopupDialog, ref this.popupDialog, value); }
-        }
-
-        /// <summary>
-        /// Gets the action to be be performed when the big popup has been closed.
-        /// </summary>
-        public ICommand ClosePopup { get; }
-
-        /// <summary>
-        /// Gets the action to be be performed when the big popup has been closed indirectly.
-        /// This typically is from the user clicking in the gray area around the popup to dismiss it.
-        /// </summary>
-        public ICommand EasyClosePopup { get; }
 
         /// <summary>
         /// Gets the action to be performed to mark all Groups/Chats as "read".
@@ -298,21 +270,6 @@ namespace GroupMeClient.ViewModels
             this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
 
             ((IDisposable)groupContentsControlViewModel).Dispose();
-        }
-
-        private void OpenBigPopup(Messaging.DialogRequestMessage dialog)
-        {
-            this.PopupDialog = dialog.Dialog;
-        }
-
-        private void CloseBigPopup()
-        {
-            if (this.PopupDialog is IDisposable d)
-            {
-                d.Dispose();
-            }
-
-            this.PopupDialog = null;
         }
 
         private void MarkAllGroupsChatsRead()

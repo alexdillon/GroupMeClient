@@ -6,6 +6,8 @@
                  xmlns:local="clr-namespace:GroupMeClient"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                  xmlns:viewModels="clr-namespace:GroupMeClient.ViewModels"
+                 xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
+                 xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
                  Title="GroupMe Desktop Client"
                  TitleCaps="False"
                  Width="1024"
@@ -22,6 +24,7 @@
     <Grid>
         <Grid.Resources>
             <local:SelectedItemToContentConverter x:Key="SelectedItemToContentConverter" />
+            <extensions:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
 
             <!--  this is the template for the items (options too)  -->
             <DataTemplate x:Key="MenuItemTemplate" DataType="{x:Type mah:HamburgerMenuIconItem}">
@@ -76,5 +79,13 @@
 
         </mah:HamburgerMenu>
 
+        <!--Big Dialog Popup-->
+        <controls:Popup Grid.Row="0" Grid.Column="0"
+                        Grid.RowSpan="1"
+                        Grid.ColumnSpan="2"
+                        DataContext="{Binding Path=.}"
+                        Visibility="{Binding PopupDialog, Converter={StaticResource nullToVisibilityConverter}}">
+            <UserControl Content="{Binding PopupDialog}" />
+        </controls:Popup>
     </Grid>
 </mah:MetroWindow>
