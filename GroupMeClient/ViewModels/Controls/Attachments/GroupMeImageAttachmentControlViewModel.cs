@@ -20,12 +20,15 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// </summary>
         /// <param name="attachment">The attachment to display.</param>
         /// <param name="downloader">The downloader to use for loading the image.</param>
-        public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, ImageDownloader downloader)
+        /// <param name="lowQualityPreview">Low quality preview lowers the resolution of attachments but increases performance.</param>
+        public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, ImageDownloader downloader, bool lowQualityPreview = false)
         {
             this.ImageAttachment = attachment;
             this.ImageDownloader = downloader;
 
             this.Clicked = new RelayCommand(this.ClickedAction);
+
+            this.LowQualityPreview = lowQualityPreview;
 
             _ = this.LoadImageAttachment();
         }
@@ -48,6 +51,8 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
         private ImageDownloader ImageDownloader { get; }
 
+        private bool LowQualityPreview { get; }
+
         /// <inheritdoc/>
         public override void Dispose()
         {
@@ -63,7 +68,10 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         private async Task LoadImageAttachment()
         {
             byte[] image = null;
-            image = await this.ImageDownloader.DownloadPostImage($"{this.ImageAttachment.Url}.large");
+
+            var resolution = this.LowQualityPreview ? "small" : "large";
+
+            image = await this.ImageDownloader.DownloadPostImageAsync($"{this.ImageAttachment.Url}.{resolution}");
 
             if (image == null)
             {

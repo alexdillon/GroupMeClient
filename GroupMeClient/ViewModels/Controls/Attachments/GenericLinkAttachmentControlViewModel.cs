@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -63,12 +64,18 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
         private async Task DownloadFaviconImage(string url)
         {
-            if (!string.IsNullOrEmpty(url))
+            try
             {
-                var httpClient = new HttpClient();
-                var result = await httpClient.GetByteArrayAsync(url);
+                if (!string.IsNullOrEmpty(url))
+                {
+                    var httpClient = new HttpClient();
+                    var result = await httpClient.GetByteArrayAsync(url);
 
-                this.FaviconImage = Extensions.ImageUtils.BytesToImageSource(result);
+                    this.FaviconImage = Extensions.ImageUtils.BytesToImageSource(result);
+                }
+            }
+            catch (Exception)
+            {
             }
         }
 

@@ -25,12 +25,15 @@ namespace GroupMeClient.ViewModels.Controls
         /// Initializes a new instance of the <see cref="MessageControlViewModel"/> class.
         /// </summary>
         /// <param name="message">The message to bind to this control.</param>
-        public MessageControlViewModel(Message message)
+        /// <param name="lowQualityPreview">Low quality preview lowers the resolution of attachments but increases performance.</param>
+        public MessageControlViewModel(Message message, bool lowQualityPreview = false)
         {
             this.Message = message;
 
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.LikeAction = new RelayCommand(async () => { await this.LikeMessageActionAsync(); }, () => { return true; }, true);
+
+            this.LowQualityPreview = lowQualityPreview;
 
             this.LoadAttachments();
         }
@@ -218,6 +221,8 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        private bool LowQualityPreview { get; }
+
         /// <summary>
         /// Redraw the message immediately.
         /// </summary>
@@ -242,7 +247,7 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 if (attachment is ImageAttachment imageAttach)
                 {
-                    var imageVm = new GroupMeImageAttachmentControlViewModel(imageAttach, this.Message.ImageDownloader);
+                    var imageVm = new GroupMeImageAttachmentControlViewModel(imageAttach, this.Message.ImageDownloader, this.LowQualityPreview);
                     this.AttachedItems.Add(imageVm);
                     break;
                 }
