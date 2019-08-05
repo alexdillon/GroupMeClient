@@ -220,11 +220,11 @@ namespace GroupMeClient.Notifications.Display.Win10
 
                 if (isAvatar)
                 {
-                    imageData = await this.GroupMeClient.ImageDownloader.DownloadAvatarImage(image, !isRounded);
+                    imageData = await this.GroupMeClient.ImageDownloader.DownloadAvatarImageAsync(image, !isRounded);
                 }
                 else
                 {
-                    imageData = await this.GroupMeClient.ImageDownloader.DownloadPostImage(image);
+                    imageData = await this.GroupMeClient.ImageDownloader.DownloadPostImageAsync(image);
                 }
 
                 using (var fileStream = File.OpenWrite(imagePath))

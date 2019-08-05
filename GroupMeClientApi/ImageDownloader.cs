@@ -26,7 +26,7 @@ namespace GroupMeClientApi
         /// <param name="url">The URL of the avatar image.</param>
         /// <param name="isGroup">Indicates if the avatar is for a group (true) or a chat (false).</param>
         /// <returns>An image.</returns>
-        public virtual async Task<byte[]> DownloadAvatarImage(string url, bool isGroup = true)
+        public virtual async Task<byte[]> DownloadAvatarImageAsync(string url, bool isGroup = true)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -44,7 +44,7 @@ namespace GroupMeClientApi
                 url = $"{url}.avatar";
             }
 
-            return await this.DownloadRawImage(url);
+            return await this.DownloadRawImageAsync(url);
         }
 
         /// <summary>
@@ -52,9 +52,9 @@ namespace GroupMeClientApi
         /// </summary>
         /// <param name="url">The URL of the image.</param>
         /// <returns>An image.</returns>
-        public virtual async Task<byte[]> DownloadPostImage(string url)
+        public virtual async Task<byte[]> DownloadPostImageAsync(string url)
         {
-            return await this.DownloadRawImage(url);
+            return await this.DownloadRawImageAsync(url);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace GroupMeClientApi
         /// </summary>
         /// <param name="url">The URL of the image.</param>
         /// <returns>An image.</returns>
-        protected virtual async Task<byte[]> DownloadRawImage(string url)
+        protected virtual async Task<byte[]> DownloadRawImageAsync(string url)
         {
             var bytes = await this.HttpClient.GetByteArrayAsync(url);
             return bytes;
