@@ -18,13 +18,13 @@ namespace GroupMeClient.ViewModels
     {
         private ViewModelBase popupDialog;
         private string searchTerm = string.Empty;
+        private string selectedGroupName = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchViewModel"/> class.
         /// </summary>
         /// <param name="groupMeClient">The client to use.</param>
         /// <param name="settingsManager">The settings to use.</param>
-        public SearchViewModel(GroupMeCachedClient groupMeClient, Settings.SettingsManager settingsManager)
         /// <param name="cacheContext">The cache database to use.</param>
         public SearchViewModel(GroupMeClientApi.GroupMeClient groupMeClient, Settings.SettingsManager settingsManager, Caching.CacheContext cacheContext)
         {
@@ -34,8 +34,18 @@ namespace GroupMeClient.ViewModels
 
             this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
 
-            this.ClosePopup = new RelayCommand(this.CloseBigPopup);
-            this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
+            this.ResultsView = new PaginatedMessagesControlViewModel()
+            {
+                MessageSelectedCommand = new RelayCommand<MessageControlViewModelBase>(this.MessageSelected),
+            };
+
+            this.ContextView = new PaginatedMessagesControlViewModel()
+            {
+                ShowTitle = false,
+            };
+
+            this.ClosePopup = new RelayCommand(this.CloseLittlePopup);
+            this.EasyClosePopup = new RelayCommand(this.CloseLittlePopup);
 
             this.Loaded = new RelayCommand(async () => await this.IndexGroups(), true);
         }
@@ -62,6 +72,16 @@ namespace GroupMeClient.ViewModels
         public ICommand EasyClosePopup { get; }
 
         /// <summary>
+        /// Gets the ViewModel for the paginated search results.
+        /// </summary>
+        public PaginatedMessagesControlViewModel ResultsView { get; }
+
+        /// <summary>
+        /// Gets the ViewModel for the in-context message view.
+        /// </summary>
+        public PaginatedMessagesControlViewModel ContextView { get; }
+
+        /// <summary>
         /// Gets the Big Dialog that should be displayed as a popup.
         /// Gets null if no dialog should be displayed.
         /// </summary>
@@ -84,54 +104,52 @@ namespace GroupMeClient.ViewModels
             set
             {
                 this.Set(() => this.SearchTerm, ref this.searchTerm, value);
+                this.UpdateSearchResults();
             }
         }
 
-        private GroupMeCachedClient GroupMeClient { get; }
+        /// <summary>
+        /// Gets the name of the selected group.
+        /// </summary>
+        public string SelectedGroupName
+        {
+            get { return this.selectedGroupName; }
+            private set { this.Set(() => this.SelectedGroupName, ref this.selectedGroupName, value); }
+        }
+
+        private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
 
         private Settings.SettingsManager SettingsManager { get; }
 
+        private Caching.CacheContext CacheContext { get; }
+
+        private IMessageContainer SelectedGroupChat { get; set; }
+
         private async Task IndexGroups()
         {
-            try
+            var loadingDialog = new LoadingControlViewModel();
+            this.PopupDialog = loadingDialog;
+
+            var groups = await this.GroupMeClient.GetGroupsAsync();
+            var chats = await this.GroupMeClient.GetChatsAsync();
+            var groupsAndChats = Enumerable.Concat<IMessageContainer>(groups, chats);
+
+            this.AllGroupsChats.Clear();
+
+            foreach (var group in groupsAndChats)
             {
-                var loadingDialog = new LoadingControlViewModel();
-                this.PopupDialog = loadingDialog;
+                loadingDialog.Message = $"Indexing {group.Name}";
+                await this.IndexGroup(group);
 
-                // disable automatic database commits to improve performance
-                this.GroupMeClient.DatabaseUpdatingEnabled = false;
-
-                var groups = await this.GroupMeClient.GetGroupsAsync();
-                var chats = await this.GroupMeClient.GetChatsAsync();
-
-                var groupsAndChats = Enumerable.Concat<IMessageContainer>(groups, chats);
-
-                this.AllGroupsChats.Clear();
-
-                foreach (var group in groupsAndChats)
+                // Add Group/Chat to the list
+                var vm = new GroupControlViewModel(group)
                 {
-                    loadingDialog.Message = $"Indexing {group.Name}";
-                    await this.IndexGroup(group);
+                    GroupSelected = new RelayCommand<GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
+                };
+                this.AllGroupsChats.Add(vm);
+            }
 
-                    // Add Group/Chat to the list
-                    var vm = new GroupControlViewModel(group)
-                    {
-                        GroupSelected = new RelayCommand<GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
-                    };
-                    this.AllGroupsChats.Add(vm);
-                }
-
-                this.PopupDialog = null;
-            }
-            catch (Exception)
-            {
-            }
-            finally
-            {
-                // ensure automatic commits are always turned back on to prevent
-                // unintended behavior elsewhere in the application.
-                this.GroupMeClient.DatabaseUpdatingEnabled = true;
-            }
+            this.PopupDialog = null;
         }
 
         private async Task IndexGroup(IMessageContainer container)
@@ -139,6 +157,7 @@ namespace GroupMeClient.ViewModels
             var groupState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == container.Id);
 
             var newestMessages = await container.GetMessagesAsync();
+            this.CacheContext.AddMessages(newestMessages);
 
             long.TryParse(groupState.LastFullyIndexedId, out var lastIndexId);
             long.TryParse(newestMessages.Last().Id, out var retreiveFrom);
@@ -147,6 +166,7 @@ namespace GroupMeClient.ViewModels
             {
                 // not up-to-date, we need to retreive the delta
                 var results = await container.GetMaxMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, retreiveFrom.ToString());
+                this.CacheContext.AddMessages(results);
 
                 if (results.Count == 0)
                 {
@@ -159,54 +179,78 @@ namespace GroupMeClient.ViewModels
             }
 
             groupState.LastFullyIndexedId = newestMessages.First().Id; // everything is downloaded
+            await this.CacheContext.SaveChangesAsync();
             this.SettingsManager.SaveSettings();
-
-            await this.GroupMeClient.ForceUpdateAsync();
         }
 
         private void OpenNewGroupChat(GroupControlViewModel group)
         {
-            //if (this.ActiveGroupsChats.Any(g => g.Id == group.Id))
-            //{
-            //    // this group or chat is already open, we just need to move it to the front
-            //    var openGroup = this.ActiveGroupsChats.First(g => g.Id == group.Id);
-            //    var indexOpenGroup = this.ActiveGroupsChats.IndexOf(openGroup);
-            //    this.ActiveGroupsChats.Move(indexOpenGroup, 0);
-            //}
-            //else
-            //{
-            //    // open a new group or chat
-            //    var groupContentsDisplay = new GroupContentsControlViewModel(group.MessageContainer)
-            //    {
-            //        CloseGroup = new RelayCommand<GroupContentsControlViewModel>(this.CloseChat),
-            //    };
-
-            //    this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
-
-            //    _ = this.PushClient.SubscribeAsync(group.MessageContainer);
-
-            //    // mark all messages as read
-            //    var groupChatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == group.Id);
-            //    groupChatState.LastTotalMessageCount = group.MessageContainer.TotalMessageCount;
-            //    groupChatState.LastReadMessageId = group.MessageContainer.LatestMessage.Id;
-
-            //    // clear the notification bubble
-            //    group.TotalUnreadCount = 0;
-
-            //    this.SettingsManager.SaveSettings();
-            //}
-
-            //// limit to three multi-chats at a time
-            //while (this.ActiveGroupsChats.Count > 3)
-            //{
-            //    var removeGroup = this.ActiveGroupsChats.Last();
-            //    this.PushClient.Unsubscribe(group.MessageContainer);
-
-            //    this.ActiveGroupsChats.Remove(removeGroup);
-            //}
+            this.SelectedGroupChat = group.MessageContainer;
+            this.SearchTerm = string.Empty;
+            this.SelectedGroupName = group.Title;
+            this.ContextView.Messages = null;
         }
 
-        private void CloseBigPopup()
+        private void MessageSelected(MessageControlViewModelBase message)
+        {
+            if (message != null)
+            {
+                this.UpdateContextView(message.Message);
+            }
+        }
+
+        private IQueryable<Message> GetMessageForCurrentGroup()
+        {
+            if (this.SelectedGroupChat is Group g)
+            {
+                return this.CacheContext.Messages
+                    .AsNoTracking()
+                    .Where(m => m.GroupId == g.Id);
+            }
+            else if (this.SelectedGroupChat is Chat c)
+            {
+                // Chat.Id returns the Id of the other user
+                // However, GroupMe messages are natively returned with a Conversation Id instead
+                // Conversation IDs are user1+user2.
+                var sampleMessage = c.Messages.FirstOrDefault();
+
+                return this.CacheContext.Messages
+                    .AsNoTracking()
+                    .Where(m => m.ConversationId == sampleMessage.ConversationId);
+            }
+            else
+            {
+                return Enumerable.Empty<Message>().AsQueryable();
+            }
+        }
+
+        private void UpdateSearchResults()
+        {
+            this.ResultsView.Messages = null;
+
+            var messagesForGroupChat = this.GetMessageForCurrentGroup();
+
+            var results = messagesForGroupChat
+                .Where(m => m.Text.ToLower().Contains(this.SearchTerm.ToLower()))
+                .OrderByDescending(m => m.Id);
+
+            this.ResultsView.AssociateWith = this.SelectedGroupChat;
+            this.ResultsView.Messages = results;
+        }
+
+        private void UpdateContextView(Message message)
+        {
+            this.ContextView.Messages = null;
+
+            var messagesForGroupChat = this.GetMessageForCurrentGroup()
+                .OrderBy(m => m.Id);
+
+            this.ContextView.AssociateWith = this.SelectedGroupChat;
+            this.ContextView.Messages = messagesForGroupChat;
+            this.ContextView.EnsureVisible(message);
+        }
+
+        private void CloseLittlePopup()
         {
             if (this.PopupDialog is LoadingControlViewModel)
             {

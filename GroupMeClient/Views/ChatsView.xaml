@@ -16,7 +16,6 @@
     
     <UserControl.Resources>
         <extensions:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
-        <extensions:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
     </UserControl.Resources>
     
     <Grid>
@@ -147,14 +146,5 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-
-        <!--Small Dialog Popup-->
-        <controls:Popup Grid.Row="0" Grid.Column="0"
-                        Grid.RowSpan="1"
-                        Grid.ColumnSpan="2"
-                        DataContext="{Binding Path=.}"
-                        Visibility="{Binding PopupDialog, Converter={StaticResource nullToVisibilityConverter}}">
-            <UserControl Content="{Binding PopupDialog}" />
-        </controls:Popup>
     </Grid>
 </UserControl>
