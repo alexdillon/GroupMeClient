@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -19,8 +18,6 @@ namespace GroupMeClientApi.Models
         public Group()
         {
             this.Messages = new List<Message>();
-
-            this.FindMessageFunction = new Func<string, Message>(this.FindMessage);
         }
 
         /// <summary>
@@ -114,19 +111,11 @@ namespace GroupMeClientApi.Models
         /// <summary>
         /// Gets a list of <see cref="Message"/>s in this <see cref="Group"/>.
         /// </summary>
-        [InverseProperty("Group")]
         public virtual List<Message> Messages { get; internal set; }
-
-        /// <summary>
-        /// Gets a unique value to determine if the internal state of the Group has changed.
-        /// If two accesses to this property return a different string, a state change has occured.
-        /// </summary>
-        public string InternalStateChanged { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="GroupMeClient"/> that manages this <see cref="Group"/>.
         /// </summary>
-        [NotMapped]
         public GroupMeClient Client { get; internal set; }
 
         /// <summary>
@@ -158,14 +147,6 @@ namespace GroupMeClientApi.Models
 
         /// <inheritdoc />
         bool IAvatarSource.IsRoundedAvatar => false;
-
-        /// <summary>
-        /// Gets or sets a function used to find a message.
-        /// If not provided, a default search function that operates in-memory will be provided.
-        /// This can be used to specify a more advanced function that, for example, searches a database.
-        /// </summary>
-        [NotMapped]
-        public Func<string, Message> FindMessageFunction { get; set; }
 
         /// <summary>
         /// Returns a set of messages from a this Group Chat.
@@ -222,7 +203,7 @@ namespace GroupMeClientApi.Models
                     // ensure every Message has a reference to the parent Group (this)
                     message.Group = this;
 
-                    var oldMessage = this.FindMessageFunction(message.Id);
+                    var oldMessage = this.Messages.Find(m => m.Id == message.Id);
                     if (oldMessage == null)
                     {
                         this.Messages.Add(message);
@@ -232,9 +213,6 @@ namespace GroupMeClientApi.Models
                         DataMerger.MergeMessage(oldMessage, message);
                     }
                 }
-
-                this.InternalStateChanged = Guid.NewGuid().ToString();
-                await this.Client.Update();
 
                 return results.Response.Messages;
             }
@@ -276,11 +254,6 @@ namespace GroupMeClientApi.Models
         public Member WhoAmI()
         {
             return this.Client.WhoAmI();
-        }
-
-        private Message FindMessage(string id)
-        {
-            return this.Messages.Find(m => m.Id == id);
         }
 
         /// <summary>

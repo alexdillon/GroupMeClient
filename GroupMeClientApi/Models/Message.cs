@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -125,19 +124,18 @@ namespace GroupMeClientApi.Models
         /// Gets the <see cref="Chat"/> this message belongs to.
         /// If this message is a Group Message, this field will be null.
         /// </summary>
-        public virtual Chat Chat { get; internal set; }
+        public Chat Chat { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="Group"/> this messages belongs to.
         /// If this message is a Direct message, this field will be null.
         /// </summary>
-        public virtual Group Group { get; internal set; }
+        public Group Group { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="ImageDownloader" /> that can be used
         /// to download attachments.
         /// </summary>
-        [NotMapped]
         public ImageDownloader ImageDownloader
         {
             get
@@ -214,6 +212,28 @@ namespace GroupMeClientApi.Models
             var restResponse = await groupmeClient.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
 
             return restResponse.StatusCode == System.Net.HttpStatusCode.OK;
+        }
+
+        /// <summary>
+        /// Associates this <see cref="Message"/> with a <see cref="Group"/>.
+        /// This will enable API operations on a message that was not retreived directly from a <see cref="GroupMeClient"/>.
+        /// Unassociated messages may be loaded or deserialized from a database or other persistant storage.
+        /// </summary>
+        /// <param name="group">The group to associate this message with.</param>
+        public void AssociateWithGroup(Group group)
+        {
+            this.Group = group;
+        }
+
+        /// <summary>
+        /// Associates this <see cref="Message"/> with a <see cref="Chat"/>.
+        /// This will enable API operations on a message that was not retreived directly from a <see cref="GroupMeClient"/>.
+        /// Unassociated messages may be loaded or deserialized from a database or other persistant storage.
+        /// </summary>
+        /// <param name="chat">The chat to associate this message with.</param>
+        public void AssociateWithChat(Chat chat)
+        {
+            this.Chat = chat;
         }
     }
 }

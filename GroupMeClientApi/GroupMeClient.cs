@@ -196,15 +196,6 @@ namespace GroupMeClientApi
         }
 
         /// <summary>
-        /// Updates the internal state of the GroupMe Client.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public virtual Task Update()
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <summary>
         /// Enables subscribing to push notifications for all <see cref="Groups"/>
         /// and <see cref="Chat"/> controlled by this client.
         /// This must be enabled before calling <see cref="GetChatsAsync"/> or <see cref="GetGroupsAsync"/>.

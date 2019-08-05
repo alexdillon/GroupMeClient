@@ -214,7 +214,6 @@ namespace GroupMeClient.ViewModels
                 }
 
                 this.SettingsManager.SaveSettings();
-                await this.GroupMeClient.Update();
             }
             finally
             {
