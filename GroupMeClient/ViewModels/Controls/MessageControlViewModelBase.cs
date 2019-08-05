@@ -19,6 +19,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public abstract Message Message { get; set; }
 
+        /// <summary>
+        /// Gets a value indicating whether this control is selectable.
+        /// </summary>
+        public abstract bool IsSelectable { get; }
+
         /// <inheritdoc/>
         void IDisposable.Dispose()
         {

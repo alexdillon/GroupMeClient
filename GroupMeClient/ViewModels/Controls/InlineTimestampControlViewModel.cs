@@ -39,6 +39,9 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public Brush MessageColor { get; private set; }
 
+        /// <inheritdoc />
+        public override bool IsSelectable => false;
+
         /// <summary>
         /// Gets the timestamp for this marker.
         /// </summary>

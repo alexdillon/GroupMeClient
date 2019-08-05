@@ -70,6 +70,9 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public string Sender => this.Message.Name;
 
+        /// <inheritdoc />
+        public override bool IsSelectable => true;
+
         /// <summary>
         /// Gets or sets the displayed <see cref="Message"/>.
         /// </summary>

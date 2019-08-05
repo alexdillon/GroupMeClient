@@ -100,6 +100,7 @@
     <Compile Include="ViewModels\Controls\Attachments\ImageLinkAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\VideoAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\AvatarControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\PaginatedMessagesControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupContentsControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\GenericLinkAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\TwitterAttachmentControlViewModel.cs" />
@@ -121,6 +122,9 @@
     </Compile>
     <Compile Include="Views\Controls\Attachments\VideoAttachmentControl.xaml.cs">
       <DependentUpon>VideoAttachmentControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\PaginatedMessagesControl.xaml.cs">
+      <DependentUpon>PaginatedMessagesControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\GroupContentsControl.xaml.cs">
       <DependentUpon>GroupContentsControl.xaml</DependentUpon>
@@ -198,6 +202,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Attachments\VideoAttachmentControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\PaginatedMessagesControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
