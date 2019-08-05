@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Notifications.Display;
 using GroupMeClient.Plugins;
-using GroupMeClientCached;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 
@@ -87,7 +88,7 @@ namespace GroupMeClient.ViewModels
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
-        private GroupMeCachedClient GroupMeCachedClient { get; set; }
+        private Caching.CacheContext CacheContext { get; set; }
 
         private Settings.SettingsManager SettingsManager { get; set; }
 
@@ -124,8 +125,7 @@ namespace GroupMeClient.ViewModels
             {
                 // Startup Regularly
                 this.GroupMeClient = new GroupMeClientApi.GroupMeClient(this.SettingsManager.CoreSettings.AuthToken);
-                this.GroupMeCachedClient = new GroupMeCachedClient(this.SettingsManager.CoreSettings.AuthToken, this.CachePath);
-                this.GroupMeClient.ImageDownloader = this.GroupMeCachedClient.ImageDownloader; // share a common image cache
+                this.CacheContext = new Caching.CacheContext(this.CachePath);
 
                 this.NotificationRouter = new NotificationRouter(this.GroupMeClient);
 
@@ -137,6 +137,10 @@ namespace GroupMeClient.ViewModels
 
                 this.CreateMenuItemsRegular();
             }
+
+            Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
+            this.ClosePopup = new RelayCommand(this.CloseBigPopup);
+            this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
         }
 
         private void RegisterNotifications()

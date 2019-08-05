@@ -7,7 +7,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
-using GroupMeClientCached;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupMeClient.ViewModels
 {
@@ -25,9 +25,12 @@ namespace GroupMeClient.ViewModels
         /// <param name="groupMeClient">The client to use.</param>
         /// <param name="settingsManager">The settings to use.</param>
         public SearchViewModel(GroupMeCachedClient groupMeClient, Settings.SettingsManager settingsManager)
+        /// <param name="cacheContext">The cache database to use.</param>
+        public SearchViewModel(GroupMeClientApi.GroupMeClient groupMeClient, Settings.SettingsManager settingsManager, Caching.CacheContext cacheContext)
         {
             this.GroupMeClient = groupMeClient ?? throw new System.ArgumentNullException(nameof(groupMeClient));
             this.SettingsManager = settingsManager ?? throw new ArgumentNullException(nameof(settingsManager));
+            this.CacheContext = cacheContext ?? throw new ArgumentNullException(nameof(cacheContext));
 
             this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
 
