@@ -84,6 +84,8 @@ namespace GroupMeClient.ViewModels
 
         private string CachePath => Path.Combine(this.DataRoot, "cache.db");
 
+        private string ImageCachePath => Path.Combine(this.DataRoot, "ImageCache");
+
         private string PluginsPath => Path.Combine(this.DataRoot, "Plugins");
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
@@ -126,6 +128,7 @@ namespace GroupMeClient.ViewModels
                 // Startup Regularly
                 this.GroupMeClient = new GroupMeClientApi.GroupMeClient(this.SettingsManager.CoreSettings.AuthToken);
                 this.CacheContext = new Caching.CacheContext(this.CachePath);
+                this.GroupMeClient.ImageDownloader = new GroupMeClientApi.CachedImageDownloader(this.ImageCachePath);
 
                 this.NotificationRouter = new NotificationRouter(this.GroupMeClient);
 
