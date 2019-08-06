@@ -60,7 +60,7 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                <Border BorderThickness="1"
+                                <Border BorderThickness="0"
                                         x:Name="highlightBorder"
                                         Margin="0" >
                                     <ContentPresenter 
