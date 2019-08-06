@@ -23,7 +23,7 @@ namespace GroupMeClient.ViewModels.Controls
     {
         private IMessageContainer messageContainer;
         private AvatarControlViewModel topBarAvatar;
-        private string typedMessageContents;
+        private string typedMessageContents = string.Empty;
         private ViewModelBase smallDialog;
 
         /// <summary>
