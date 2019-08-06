@@ -110,6 +110,8 @@ namespace GroupMeClient.ViewModels.Controls
 
             set
             {
+                this.DisposeClearPage();
+
                 this.Set(() => this.Messages, ref this.messages, value);
 
                 this.TotalMessagesCount = this.Messages?.Count() ?? 0;
@@ -145,7 +147,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void ChangePage(int pageNumber = 0)
         {
-            this.CurrentPage.Clear();
+            this.DisposeClearPage();
             this.CurrentPageNumber = pageNumber;
 
             if (this.Messages == null)
@@ -181,6 +183,16 @@ namespace GroupMeClient.ViewModels.Controls
             this.GoBackCommand.RaiseCanExecuteChanged();
             this.GoForwardCommand.RaiseCanExecuteChanged();
             this.RaisePropertyChanged(nameof(this.Title));
+        }
+
+        private void DisposeClearPage()
+        {
+            foreach (var msg in this.CurrentPage)
+            {
+                (msg as IDisposable).Dispose();
+            }
+
+            this.CurrentPage.Clear();
         }
 
         private void GoBack()

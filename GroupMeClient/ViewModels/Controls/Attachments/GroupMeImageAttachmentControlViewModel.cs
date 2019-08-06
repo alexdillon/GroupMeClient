@@ -54,7 +54,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// <inheritdoc/>
         public override void Dispose()
         {
-            ((IDisposable)this.imageAttachmentStream).Dispose();
+            ((IDisposable)this.imageAttachmentStream)?.Dispose();
         }
 
         /// <inheritdoc/>

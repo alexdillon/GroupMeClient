@@ -59,7 +59,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// <inheritdoc/>
         protected override void MetadataDownloadCompleted()
         {
-            _ = this.DownloadImageAsync(this.LinkInfo.AnyPreviewPictureUrl);
+            _ = this.DownloadImageAsync(this.LinkInfo.AnyPreviewPictureUrl, 350, 300);
             _ = this.DownloadFaviconImage(this.LinkInfo.Favicon);
             this.RaisePropertyChanged(string.Empty);
         }

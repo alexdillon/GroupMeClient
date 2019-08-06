@@ -49,7 +49,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// <inheritdoc/>
         protected override void MetadataDownloadCompleted()
         {
-            _ = this.DownloadImageAsync(this.LinkInfo.ProfileImageUrl);
+            _ = this.DownloadImageAsync(this.LinkInfo.ProfileImageUrl, 30, 30);
             this.RaisePropertyChanged(string.Empty);
         }
 

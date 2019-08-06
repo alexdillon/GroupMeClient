@@ -102,14 +102,16 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// Downloads an image and stores it in <see cref="RenderedImage"/>.
         /// </summary>
         /// <param name="url">The image to download.</param>
+        /// <param name="maxWidth">The maximum image width.</param>
+        /// <param name="maxHeight">The maximum image height.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected async Task DownloadImageAsync(string url)
+        protected async Task DownloadImageAsync(string url, int maxWidth, int maxHeight)
         {
             if (!string.IsNullOrEmpty(url))
             {
                 var result = await this.ImageDownloader.DownloadByteDataAsync(url);
 
-                this.RenderedImage = Extensions.ImageUtils.BytesToImageSource(result);
+                this.RenderedImage = Extensions.ImageUtils.BytesToImageSource(result, maxWidth, maxHeight);
             }
         }
 

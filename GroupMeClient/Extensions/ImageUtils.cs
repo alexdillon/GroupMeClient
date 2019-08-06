@@ -45,5 +45,37 @@ namespace GroupMeClient.Extensions
                 return bitmapImage;
             }
         }
+
+        /// <summary>
+        /// Converts raw image data into an <see cref="ImageSource"/>.
+        /// </summary>
+        /// <param name="image">The raw image data.</param>
+        /// <param name="maxWidth">The maximum image width.</param>
+        /// <param name="maxHeight">The maximum image height.</param>
+        /// <returns>A Wpf <see cref="ImageSource"/>.</returns>
+        public static ImageSource BytesToImageSource(byte[] image, int maxWidth, int maxHeight)
+        {
+            using (var ms = new MemoryStream(image))
+            {
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = ms;
+
+                if (maxWidth > maxHeight)
+                {
+                    bitmapImage.DecodePixelWidth = maxWidth;
+                }
+                else
+                {
+                    bitmapImage.DecodePixelHeight = maxHeight;
+                }
+
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+
+                return bitmapImage;
+            }
+        }
     }
 }

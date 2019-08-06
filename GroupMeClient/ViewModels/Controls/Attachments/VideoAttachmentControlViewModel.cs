@@ -24,7 +24,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
                 var newUri = this.Uri.AbsoluteUri;
                 newUri = newUri.Replace(".mp4", ".jpg");
 
-                _ = this.DownloadImageAsync(newUri);
+                _ = this.DownloadImageAsync(newUri, 600, 300);
             }
 
             this.Clicked = new RelayCommand(this.ClickedAction);
