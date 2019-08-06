@@ -277,22 +277,22 @@ namespace GroupMeClient.ViewModels.Controls
 
             if (text.StartsWith(TwitterPrefixHttps) || text.StartsWith(TwitterPrefixHttp))
             {
-                vm = new TwitterAttachmentControlViewModel(text);
+                vm = new TwitterAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
             }
             else if (text.StartsWith(GroupMeVideoPrefixHttps))
             {
-                vm = new VideoAttachmentControlViewModel(text);
+                vm = new VideoAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
             }
             else if (imageExtensions.Contains(linkExtension))
             {
-                vm = new ImageLinkAttachmentControlViewModel(text);
+                vm = new ImageLinkAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
             }
             else if (text.StartsWith(WebPrefixHttps) || text.StartsWith(WebPrefixHttp))
             {
-                vm = new GenericLinkAttachmentControlViewModel(text);
+                vm = new GenericLinkAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
             }
             else

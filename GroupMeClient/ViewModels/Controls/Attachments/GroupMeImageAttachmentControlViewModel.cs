@@ -19,12 +19,12 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// Initializes a new instance of the <see cref="GroupMeImageAttachmentControlViewModel"/> class.
         /// </summary>
         /// <param name="attachment">The attachment to display.</param>
-        /// <param name="downloader">The downloader to use for loading the image.</param>
+        /// <param name="imageDownloader">The downloader to use for loading the image.</param>
         /// <param name="lowQualityPreview">Low quality preview lowers the resolution of attachments but increases performance.</param>
-        public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, ImageDownloader downloader, bool lowQualityPreview = false)
+        public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, ImageDownloader imageDownloader, bool lowQualityPreview = false)
+            : base(imageDownloader)
         {
             this.ImageAttachment = attachment;
-            this.ImageDownloader = downloader;
 
             this.Clicked = new RelayCommand(this.ClickedAction);
 
@@ -48,8 +48,6 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         }
 
         private ImageAttachment ImageAttachment { get; }
-
-        private ImageDownloader ImageDownloader { get; }
 
         private bool LowQualityPreview { get; }
 

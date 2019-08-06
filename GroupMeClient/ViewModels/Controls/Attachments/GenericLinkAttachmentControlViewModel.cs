@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using GalaSoft.MvvmLight.Command;
+using GroupMeClientApi;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
 {
@@ -18,8 +19,9 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// Initializes a new instance of the <see cref="GenericLinkAttachmentControlViewModel"/> class.
         /// </summary>
         /// <param name="url">The url of the attached website.</param>
-        public GenericLinkAttachmentControlViewModel(string url)
-            : base(url)
+        /// <param name="imageDownloader">The downloader to use when retreiving data.</param>
+        public GenericLinkAttachmentControlViewModel(string url, ImageDownloader imageDownloader)
+            : base(url, imageDownloader)
         {
             this.Clicked = new RelayCommand(this.ClickedAction);
         }
@@ -68,8 +70,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             {
                 if (!string.IsNullOrEmpty(url))
                 {
-                    var httpClient = new HttpClient();
-                    var result = await httpClient.GetByteArrayAsync(url);
+                    var result = await this.ImageDownloader.DownloadByteDataAsync(url);
 
                     this.FaviconImage = Extensions.ImageUtils.BytesToImageSource(result);
                 }

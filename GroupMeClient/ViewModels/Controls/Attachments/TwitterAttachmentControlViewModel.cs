@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
+using GroupMeClientApi;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
 {
@@ -12,8 +13,9 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// Initializes a new instance of the <see cref="TwitterAttachmentControlViewModel"/> class.
         /// </summary>
         /// <param name="tweetUrl">The URL of the Tweet to display.</param>
-        public TwitterAttachmentControlViewModel(string tweetUrl)
-            : base(tweetUrl)
+        /// <param name="imageDownloader">The downloader to use when retreiving data.</param>
+        public TwitterAttachmentControlViewModel(string tweetUrl, ImageDownloader imageDownloader)
+            : base(tweetUrl, imageDownloader)
         {
             this.Clicked = new RelayCommand(this.ClickedAction);
         }

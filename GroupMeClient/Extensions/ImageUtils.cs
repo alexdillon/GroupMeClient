@@ -35,18 +35,14 @@ namespace GroupMeClient.Extensions
         {
             using (var ms = new MemoryStream(image))
             {
-                return BitmapFrame.Create(
-                        ms,
-                        BitmapCreateOptions.None,
-                        BitmapCacheOption.OnLoad);
-
-                /*var bitmapImage = new BitmapImage();
+                var bitmapImage = new BitmapImage();
                 bitmapImage.BeginInit();
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.StreamSource = ms;
                 bitmapImage.EndInit();
+                bitmapImage.Freeze();
 
-                return bitmapImage;*/
+                return bitmapImage;
             }
         }
     }

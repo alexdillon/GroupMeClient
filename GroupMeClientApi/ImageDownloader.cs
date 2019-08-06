@@ -52,9 +52,29 @@ namespace GroupMeClientApi
         /// </summary>
         /// <param name="url">The URL of the image.</param>
         /// <returns>An image.</returns>
-        public virtual async Task<byte[]> DownloadPostImageAsync(string url)
+        public virtual Task<byte[]> DownloadPostImageAsync(string url)
         {
-            return await this.DownloadRawImageAsync(url);
+            return this.DownloadRawImageAsync(url);
+        }
+
+        /// <summary>
+        /// Downloads raw data from GroupMe.
+        /// </summary>
+        /// <param name="url">The url to download.</param>
+        /// <returns>Raw bytes.</returns>
+        public virtual Task<byte[]> DownloadByteDataAsync(string url)
+        {
+            return this.HttpClient.GetByteArrayAsync(url);
+        }
+
+        /// <summary>
+        /// Downloads raw string data from GroupMe.
+        /// </summary>
+        /// <param name="url">The url to download.</param>
+        /// <returns>Raw bytes.</returns>
+        public virtual Task<string> DownloadStringDataAsync(string url)
+        {
+            return this.HttpClient.GetStringAsync(url);
         }
 
         /// <summary>
@@ -62,10 +82,9 @@ namespace GroupMeClientApi
         /// </summary>
         /// <param name="url">The URL of the image.</param>
         /// <returns>An image.</returns>
-        protected virtual async Task<byte[]> DownloadRawImageAsync(string url)
+        protected virtual Task<byte[]> DownloadRawImageAsync(string url)
         {
-            var bytes = await this.HttpClient.GetByteArrayAsync(url);
-            return bytes;
+            return this.HttpClient.GetByteArrayAsync(url);
         }
 
         /// <summary>

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using System.Windows.Media;
 using GalaSoft.MvvmLight;
+using GroupMeClientApi;
 using Newtonsoft.Json;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
@@ -21,9 +20,11 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// <summary>
         /// Initializes a new instance of the <see cref="LinkAttachmentBaseViewModel"/> class.
         /// </summary>
-        public LinkAttachmentBaseViewModel()
+        /// <param name="imageDownloader">The downloader to use when retreiving data.</param>
+        public LinkAttachmentBaseViewModel(ImageDownloader imageDownloader)
         {
             // in case the inline-downloader is not needed
+            this.ImageDownloader = imageDownloader ?? throw new ArgumentNullException(nameof(imageDownloader));
         }
 
         /// <summary>
@@ -31,9 +32,11 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// and begins retreiving data from GroupMe's Inline Downloader Service.
         /// </summary>
         /// <param name="url">The website to resolve against GroupMe's downloader.</param>
-        public LinkAttachmentBaseViewModel(string url)
+        /// <param name="imageDownloader">The downloader to use when retreiving data.</param>
+        public LinkAttachmentBaseViewModel(string url, ImageDownloader imageDownloader)
         {
             this.Url = url;
+            this.ImageDownloader = imageDownloader ?? throw new ArgumentNullException(nameof(imageDownloader));
 
             if (this.Uri != null)
             {
@@ -87,6 +90,11 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// </summary>
         protected GroupMeInlineDownloaderInfo LinkInfo { get; private set; }
 
+        /// <summary>
+        /// Gets the downloader that should be used for GroupMe operations.
+        /// </summary>
+        protected ImageDownloader ImageDownloader { get; }
+
         /// <inheritdoc/>
         public abstract void Dispose();
 
@@ -99,8 +107,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         {
             if (!string.IsNullOrEmpty(url))
             {
-                var httpClient = new HttpClient();
-                var result = await httpClient.GetByteArrayAsync(url);
+                var result = await this.ImageDownloader.DownloadByteDataAsync(url);
 
                 this.RenderedImage = Extensions.ImageUtils.BytesToImageSource(result);
             }
@@ -117,8 +124,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             {
                 const string GROUPME_INLINE_URL = "https://inline-downloader.groupme.com/info?url=";
 
-                var downloader = new HttpClient();
-                var data = await downloader.GetStringAsync($"{GROUPME_INLINE_URL}{WebUtility.UrlEncode(this.Url)}");
+                var data = await this.ImageDownloader.DownloadStringDataAsync($"{GROUPME_INLINE_URL}{WebUtility.UrlEncode(this.Url)}");
 
                 var results = JsonConvert.DeserializeObject<GroupMeInlineDownloaderInfo>(data);
                 this.LinkInfo = results;

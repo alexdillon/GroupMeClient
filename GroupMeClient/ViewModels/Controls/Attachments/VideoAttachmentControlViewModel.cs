@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
+using GroupMeClientApi;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
 {
@@ -12,7 +13,9 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// Initializes a new instance of the <see cref="VideoAttachmentControlViewModel"/> class.
         /// </summary>
         /// <param name="url">The URL of the video to display.</param>
-        public VideoAttachmentControlViewModel(string url)
+        /// <param name="imageDownloader">The downloader to use when retreiving data.</param>
+        public VideoAttachmentControlViewModel(string url, ImageDownloader imageDownloader)
+            : base(imageDownloader)
         {
             this.Url = url;
 
