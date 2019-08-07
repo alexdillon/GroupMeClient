@@ -112,7 +112,6 @@ namespace GroupMeClient.ViewModels
                 // update the latest viewed message in the persistant state
                 var groupState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == container.Id);
                 groupState.LastTotalMessageCount = container.TotalMessageCount + 1; // add one for the new message, since the group hasn't been reloaded yet
-                groupState.LastReadMessageId = notification.Message.Id;
                 this.SettingsManager.SaveSettings();
             }
 
@@ -131,7 +130,6 @@ namespace GroupMeClient.ViewModels
                 // update the latest viewed message in the persistant state
                 var chatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == container.Id);
                 chatState.LastTotalMessageCount = container.TotalMessageCount + 1; // add one for the new message, since the group hasn't been reloaded yet
-                chatState.LastReadMessageId = notification.Message.Id;
                 this.SettingsManager.SaveSettings();
             }
 
@@ -185,7 +183,6 @@ namespace GroupMeClient.ViewModels
                         groupState = new ChatsSettings.GroupOrChatState()
                         {
                             GroupOrChatId = group.Id,
-                            LastReadMessageId = group.LatestMessage.Id,
                             LastTotalMessageCount = group.TotalMessageCount,
                         };
                         this.SettingsManager.ChatsSettings.GroupChatStates.Add(groupState);
@@ -245,7 +242,6 @@ namespace GroupMeClient.ViewModels
                 // mark all messages as read
                 var groupChatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == group.Id);
                 groupChatState.LastTotalMessageCount = group.MessageContainer.TotalMessageCount;
-                groupChatState.LastReadMessageId = group.MessageContainer.LatestMessage.Id;
 
                 // clear the notification bubble
                 group.TotalUnreadCount = 0;
@@ -278,7 +274,6 @@ namespace GroupMeClient.ViewModels
                 // mark all messages as read
                 var groupChatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == groupChatVm.Id);
                 groupChatState.LastTotalMessageCount = groupChatVm.MessageContainer.TotalMessageCount;
-                groupChatState.LastReadMessageId = groupChatVm.MessageContainer.LatestMessage.Id;
 
                 // clear the notification bubble
                 groupChatVm.TotalUnreadCount = 0;

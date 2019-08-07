@@ -24,12 +24,10 @@ namespace GroupMeClient.ViewModels
         /// Initializes a new instance of the <see cref="SearchViewModel"/> class.
         /// </summary>
         /// <param name="groupMeClient">The client to use.</param>
-        /// <param name="settingsManager">The settings to use.</param>
         /// <param name="cacheContext">The cache database to use.</param>
-        public SearchViewModel(GroupMeClientApi.GroupMeClient groupMeClient, Settings.SettingsManager settingsManager, Caching.CacheContext cacheContext)
+        public SearchViewModel(GroupMeClientApi.GroupMeClient groupMeClient, Caching.CacheContext cacheContext)
         {
             this.GroupMeClient = groupMeClient ?? throw new System.ArgumentNullException(nameof(groupMeClient));
-            this.SettingsManager = settingsManager ?? throw new ArgumentNullException(nameof(settingsManager));
             this.CacheContext = cacheContext ?? throw new ArgumentNullException(nameof(cacheContext));
 
             this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
@@ -119,8 +117,6 @@ namespace GroupMeClient.ViewModels
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
 
-        private Settings.SettingsManager SettingsManager { get; }
-
         private Caching.CacheContext CacheContext { get; }
 
         private IMessageContainer SelectedGroupChat { get; set; }
@@ -154,12 +150,21 @@ namespace GroupMeClient.ViewModels
 
         private async Task IndexGroup(IMessageContainer container)
         {
-            var groupState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == container.Id);
+            var groupState = this.CacheContext.IndexStatus.Find(container.Id);
+
+            if (groupState == null)
+            {
+                groupState = new Caching.CacheContext.GroupIndexStatus()
+                {
+                    Id = container.Id,
+                };
+                this.CacheContext.IndexStatus.Add(groupState);
+            }
 
             var newestMessages = await container.GetMessagesAsync();
             this.CacheContext.AddMessages(newestMessages);
 
-            long.TryParse(groupState.LastFullyIndexedId, out var lastIndexId);
+            long.TryParse(groupState.LastIndexedId, out var lastIndexId);
             long.TryParse(newestMessages.Last().Id, out var retreiveFrom);
 
             while (lastIndexId < retreiveFrom)
@@ -178,9 +183,8 @@ namespace GroupMeClient.ViewModels
                 retreiveFrom = latestRetreivedOldestId;
             }
 
-            groupState.LastFullyIndexedId = newestMessages.First().Id; // everything is downloaded
+            groupState.LastIndexedId = newestMessages.First().Id; // everything is downloaded
             await this.CacheContext.SaveChangesAsync();
-            this.SettingsManager.SaveSettings();
         }
 
         private void OpenNewGroupChat(GroupControlViewModel group)

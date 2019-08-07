@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,11 @@ namespace GroupMeClient.Caching
         /// Gets or sets the <see cref="Message"/>s stored in the database.
         /// </summary>
         public DbSet<Message> Messages { get; set; }
+
+        /// <summary>
+        /// Gets or sets index status for each <see cref="Group"/> or <see cref="Chat"/> stored in this cache.
+        /// </summary>
+        public DbSet<GroupIndexStatus> IndexStatus { get; set; }
 
         private string DatabaseName { get; set; } = "cache.db";
 
@@ -95,6 +101,24 @@ namespace GroupMeClient.Caching
             .HasConversion(
                 v => JsonConvert.SerializeObject(v),
                 v => JsonConvert.DeserializeObject<List<Attachment>>(v));
+        }
+
+        /// <summary>
+        /// Represents the current index status for a specific <see cref="Group"/> or <see cref="Chat"/>.
+        /// </summary>
+        public class GroupIndexStatus
+        {
+            /// <summary>
+            /// Gets or sets the <see cref="Group"/> or <see cref="Chat"/> identifier.
+            /// </summary>
+            [Key]
+            public string Id { get; set; }
+
+            /// <summary>
+            /// Gets or sets the identifer for the last message that has been continuously indexed.
+            /// All messages prior to this ID are guaranteed to be stored in the cache database.
+            /// </summary>
+            public string LastIndexedId { get; set; }
         }
     }
 }

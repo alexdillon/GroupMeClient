@@ -29,21 +29,10 @@ namespace GroupMeClient.Settings
             public string GroupOrChatId { get; set; }
 
             /// <summary>
-            /// Gets or sets the identifier for the last read message.
-            /// </summary>
-            public string LastReadMessageId { get; set; }
-
-            /// <summary>
             /// Gets or sets the number of total messages in the Group or Chat
             /// when it was last opened.
             /// </summary>
             public int LastTotalMessageCount { get; set; }
-
-            /// <summary>
-            /// Gets or sets the identifier of the most recent contiguous message that
-            /// has been downloaded and index for searching.
-            /// </summary>
-            public string LastFullyIndexedId { get; set; }
         }
     }
 }
