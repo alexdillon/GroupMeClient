@@ -114,7 +114,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get
             {
-                if (string.IsNullOrEmpty(this.hiddenText))
+                if (string.IsNullOrEmpty(this.HiddenText))
                 {
                     return this.Message.Text;
                 }
@@ -223,6 +223,22 @@ namespace GroupMeClient.ViewModels.Controls
 
         private bool LowQualityPreview { get; }
 
+        private string HiddenText
+        {
+            get
+            {
+                return this.hiddenText;
+            }
+
+            set
+            {
+                this.hiddenText = value;
+
+                // Force the Text property to be re-evaluated.
+                this.RaisePropertyChanged(nameof(this.Text));
+            }
+        }
+
         /// <summary>
         /// Redraw the message immediately.
         /// </summary>
@@ -250,6 +266,17 @@ namespace GroupMeClient.ViewModels.Controls
                     var imageVm = new GroupMeImageAttachmentControlViewModel(imageAttach, this.Message.ImageDownloader, this.LowQualityPreview);
                     this.AttachedItems.Add(imageVm);
                     break;
+                }
+                else if (attachment is LinkedImageAttachment linkedImage)
+                {
+                    var imageLinkVm = new ImageLinkAttachmentControlViewModel(linkedImage.Url, this.Message.ImageDownloader);
+                    this.AttachedItems.Add(imageLinkVm);
+
+                    // Linked Images can't have captions, so hide the entire body
+                    this.HiddenText = this.Message.Text;
+
+                    // Don't allow any other attachment types to be included if a linked_image is.
+                    return;
                 }
             }
 
@@ -302,8 +329,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             if (vm.Uri != null)
             {
-                this.hiddenText = vm.Url;
-                this.RaisePropertyChanged("Text");
+                this.HiddenText = vm.Url;
             }
         }
 

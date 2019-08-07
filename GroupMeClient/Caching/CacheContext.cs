@@ -95,10 +95,6 @@ namespace GroupMeClient.Caching
             .HasConversion(
                 v => JsonConvert.SerializeObject(v),
                 v => JsonConvert.DeserializeObject<List<Attachment>>(v));
-
-            // Primary key for Attachment is never used
-            modelBuilder.Entity<Attachment>()
-                .HasKey(x => x.FakeId);
         }
     }
 }
