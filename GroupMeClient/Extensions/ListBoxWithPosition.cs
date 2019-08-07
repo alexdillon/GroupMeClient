@@ -49,6 +49,8 @@ namespace GroupMeClient.Extensions
 
         private ScrollViewer ScrollViewer { get; set; }
 
+        private bool ShouldSnapToBottom { get; set; } = false;
+
         private void ListBoxWithPosition_Loaded(object sender, RoutedEventArgs e)
         {
             this.ScrollViewer = ListBoxExtensions.FindSimpleVisualChild<ScrollViewer>(this);
@@ -59,11 +61,24 @@ namespace GroupMeClient.Extensions
         {
             var atBottom = e.VerticalOffset == (e.OriginalSource as ScrollViewer).ScrollableHeight;
             this.SetValue(IsNotAtBottomPropertyKey, !atBottom);
+
+            if (this.ShouldSnapToBottom)
+            {
+                if (atBottom)
+                {
+                    this.ShouldSnapToBottom = false;
+                }
+                else
+                {
+                    this.ScrollViewer.ScrollToBottom();
+                }
+            }
         }
 
         private void DoScrollToEnd()
         {
-            this.ScrollViewer.ScrollToEnd();
+            this.ShouldSnapToBottom = true;
+            this.ScrollViewer.ScrollToBottom();
         }
     }
 }
