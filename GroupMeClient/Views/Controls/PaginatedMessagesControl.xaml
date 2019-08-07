@@ -46,7 +46,7 @@
                  ScrollViewer.CanContentScroll="True" 
                  ScrollViewer.PanningMode="VerticalOnly" 
                  VirtualizingStackPanel.IsVirtualizing="True"
-                 VirtualizingStackPanel.VirtualizationMode="Recycling"
+                 VirtualizingStackPanel.VirtualizationMode="Standard"
                  VirtualizingStackPanel.ScrollUnit="Pixel"
                  UseLayoutRounding="True"
                  SelectedItem="{Binding SelectedMessage, Mode=OneWay}"

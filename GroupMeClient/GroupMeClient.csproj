@@ -69,7 +69,9 @@
     <Compile Include="Extensions\EventFocusAttachment.cs" />
     <Compile Include="Extensions\FileDragDropHelper.cs" />
     <Compile Include="Extensions\ImageUtils.cs" />
+    <Compile Include="Extensions\InverseBoolConverter.cs" />
     <Compile Include="Extensions\IsZeroConverter.cs" />
+    <Compile Include="Extensions\ListBoxWithPosition.cs" />
     <Compile Include="Extensions\MultiLineSendBox.cs" />
     <Compile Include="Extensions\ListBoxExtensions.cs" />
     <Compile Include="Extensions\BoolToVisibilityConverter.cs" />

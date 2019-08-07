@@ -23,6 +23,7 @@
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
+        <extensions:InverseBoolConverter x:Key="inverseBoolConverter"/>
         <extensions:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
         <extensions:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
     </UserControl.Resources>
@@ -119,7 +120,8 @@
             <Border Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1"/>
         </Grid>
 
-        <ListBox ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
+        <extensions:ListBoxWithPosition
+            ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
                  Grid.Row="2" Grid.Column="0"
                  BorderThickness="0"
                  ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -135,8 +137,9 @@
                  AllowDrop="True"
                  extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
                  extensions:FileDragDropHelper.FileDragDropTarget="{Binding}"
-                 Background="#F7F7F7">
-            
+                 Background="#F7F7F7"
+                 x:Name="messagesList">
+
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -159,7 +162,29 @@
                         SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
-        </ListBox>
+        </extensions:ListBoxWithPosition>
+
+        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
+                Grid.Row="2" Grid.Column="0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="0,0,30,20"
+                Background="#637182"
+                BorderBrush="#637182"
+                Visibility="{Binding IsNotAtBottom, ElementName=messagesList, Converter={StaticResource boolToVisibilityConverter}}"
+                Command="{Binding ElementName=messagesList, Path=ScrollToEnd}">
+            <Button.Content>
+                <iconPacks:PackIconMaterial 
+                    Kind="ArrowDown"
+                    Width="17"
+                    Height="17"
+                    Foreground="White"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Margin="10"/>
+            </Button.Content>
+        </Button>
+
 
         <Border Grid.Row="2" Grid.Column="0"
                 Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
