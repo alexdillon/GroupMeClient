@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              mc:Ignorable="d"
              Background="White"
              d:DesignHeight="700" d:DesignWidth="500">
@@ -92,6 +93,10 @@
                     <i:InvokeCommandAction Command="{Binding MessageSelectedCommand}"  CommandParameter="{Binding ElementName=messagesListbox, Path=SelectedItem}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
+
+            <i:Interaction.Behaviors>
+                <extensions:ScrollIntoViewForListBox />
+            </i:Interaction.Behaviors>
         </ListBox>
     </Grid>
 </UserControl>
