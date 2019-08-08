@@ -19,7 +19,9 @@ namespace GroupMeClient.Notifications.Display.WpfToast
         /// <param name="avatar">The notification avatar.</param>
         /// <param name="imageDownloader">The downloader to use when displaying the avatar.</param>
         public GroupMeToastNotification(string message, IAvatarSource avatar, ImageDownloader imageDownloader)
-            : base(message, new MessageOptions())
+            : base(
+                  message,
+                  new MessageOptions() { FreezeOnMouseEnter = false, })
         {
             this.Avatar = new AvatarControlViewModel(avatar, imageDownloader);
         }
