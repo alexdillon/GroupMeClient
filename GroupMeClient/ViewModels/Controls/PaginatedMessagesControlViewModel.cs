@@ -140,7 +140,7 @@ namespace GroupMeClient.ViewModels.Controls
             var temp = this.Messages.ToList();
             var index = temp.FindIndex(m => m.Id == message.Id);
 
-            int pageNumber = (int)Math.Floor((double)(index + 1) / this.MessagesPerPage);
+            int pageNumber = (int)Math.Floor((double)index / this.MessagesPerPage);
             this.ChangePage(pageNumber);
             this.SelectedMessage = this.CurrentPage.First(m => m.Id == message.Id);
         }
