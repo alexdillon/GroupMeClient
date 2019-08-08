@@ -277,7 +277,7 @@ namespace GroupMeClient.ViewModels.Controls
                 }
                 else if (attachment is LinkedImageAttachment linkedImage)
                 {
-                    var imageLinkVm = new ImageLinkAttachmentControlViewModel(linkedImage.Url, this.Message.ImageDownloader);
+                    var imageLinkVm = new ImageLinkAttachmentControlViewModel(linkedImage.Url, this.Message.ImageDownloader, this.Message.Text);
                     this.AttachedItems.Add(imageLinkVm);
 
                     // Linked Images can't have captions, so hide the entire body

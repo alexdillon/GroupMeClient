@@ -14,10 +14,12 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// </summary>
         /// <param name="url">The URL of the image to display.</param>
         /// <param name="imageDownloader">The downloader to use when retreiving data.</param>
-        public ImageLinkAttachmentControlViewModel(string url, ImageDownloader imageDownloader)
+        /// <param name="navigateToUrl">The URL of the image to open in a web browser when the user clicks on it.</param>
+        public ImageLinkAttachmentControlViewModel(string url, ImageDownloader imageDownloader, string navigateToUrl = null)
             : base(imageDownloader)
         {
             this.Url = url;
+            this.NavigateToUrl = navigateToUrl;
 
             this.Clicked = new RelayCommand(this.ClickedAction);
         }
@@ -26,6 +28,8 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// Gets the command to be performed when the image is clicked.
         /// </summary>
         public ICommand Clicked { get; }
+
+        private string NavigateToUrl { get; }
 
         /// <inheritdoc/>
         public override void Dispose()
@@ -40,7 +44,8 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
         private void ClickedAction()
         {
-            Extensions.WebBrowserHelper.OpenUrl(this.Url);
+            var navigateUrl = !string.IsNullOrEmpty(this.NavigateToUrl) ? this.NavigateToUrl : this.Url;
+            Extensions.WebBrowserHelper.OpenUrl(navigateUrl);
         }
     }
 }

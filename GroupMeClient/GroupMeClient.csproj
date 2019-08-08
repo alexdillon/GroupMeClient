@@ -76,6 +76,7 @@
     <Compile Include="Extensions\ListBoxExtensions.cs" />
     <Compile Include="Extensions\BoolToVisibilityConverter.cs" />
     <Compile Include="Extensions\NullToVisibilityConverter.cs" />
+    <Compile Include="Extensions\ScrollIntoViewForListBox.cs" />
     <Compile Include="Extensions\WebBrowserExtensions.cs" />
     <Compile Include="Extensions\WebBrowserHelper.cs" />
     <Compile Include="Messaging\DialogRequestMessage.cs" />
