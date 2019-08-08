@@ -7,6 +7,111 @@
              d:DesignWidth="300"
              mc:Ignorable="d">
     <Grid>
-        <Label Name="label1" Content="THIS IS THE Settings VIEW!" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!--Settings Header-->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="55"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"
+                           Padding="15,0,0,0"
+                           Height="Auto" FontSize="17" FontWeight="SemiBold"
+                           Text="Settings" />
+
+            <Border Grid.Column="0" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+        </Grid>
+
+        <!--Settings Area-->
+        <GroupBox Grid.Row="1" 
+                  Margin="10" Padding="10">
+            <GroupBox.Header>
+                <TextBlock Foreground="White" Text="UI Settings"/>
+            </GroupBox.Header>
+            
+            <StackPanel>
+                <!--<TextBlock>First name:</TextBlock>
+                <TextBox />
+                <TextBlock>Last name:</TextBlock>
+                <TextBox />
+                <Button Margin="0,20">Add User</Button>-->
+            </StackPanel>
+        </GroupBox>
+
+        <!--Credits and License Area-->
+        <GroupBox Grid.Row="2" 
+                  Margin="10" Padding="10">
+            <GroupBox.Header>
+                <TextBlock Foreground="White" Text="Open Source Credits"/>
+            </GroupBox.Header>
+
+            <TextBlock TextWrapping="Wrap">
+                GroupMe Desktop Client uses a lot of open source technologies. We would like to send a big thank you to the following projects and the thousands of contributors that help make this program possible!
+                <LineBreak />
+                <LineBreak />
+                
+                <Hyperlink 
+                    NavigateUri="https://mahapps.com/">
+                    MahApps Metro UI Toolkit
+                </Hyperlink>
+                <LineBreak />
+                
+                <Hyperlink 
+                    NavigateUri="http://www.mvvmlight.net/">
+                    MVVMLight
+                </Hyperlink>
+                <LineBreak />
+                
+                <Hyperlink 
+                    NavigateUri="https://github.com/ericsink/SQLitePCL.raw">
+                    SQLitePCLRaw
+                </Hyperlink>
+                <LineBreak />
+                
+                <Hyperlink 
+                    NavigateUri="https://github.com/aspnet/EntityFrameworkCore">
+                    Entity Framework Core
+                </Hyperlink>
+                <LineBreak />
+                
+                <Hyperlink 
+                    NavigateUri="https://github.com/Squirrel/Squirrel.Windows">
+                    Squirrel for Windows
+                </Hyperlink>
+                <LineBreak />
+                
+                <Hyperlink 
+                    NavigateUri="https://github.com/rafallopatka/ToastNotifications">
+                    ToastNotifications v2
+                </Hyperlink>
+                <LineBreak />
+                
+                <Hyperlink 
+                    NavigateUri="https://github.com/XamlAnimatedGif/XamlAnimatedGif">
+                    XAML Animated Gif
+                </Hyperlink>
+                <LineBreak />
+                
+                <LineBreak />
+                Main application icon made by 
+                <Hyperlink NavigateUri="https://www.flaticon.com/authors/freepik">Freepik</Hyperlink>
+                from 
+                <Hyperlink NavigateUri="https://www.flaticon.com/">www.flaticon.com</Hyperlink>
+                is licensed by
+                <Hyperlink NavigateUri="http://creativecommons.org/licenses/by/3.0/">CC 3.0 BY</Hyperlink>
+            </TextBlock>
+
+        </GroupBox>
+
     </Grid>
 </UserControl>
