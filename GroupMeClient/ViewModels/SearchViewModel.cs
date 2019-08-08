@@ -36,6 +36,7 @@ namespace GroupMeClient.ViewModels
             {
                 MessageSelectedCommand = new RelayCommand<MessageControlViewModelBase>(this.MessageSelected),
                 ShowLikers = false,
+                NewestAtBottom = false,
             };
 
             this.ContextView = new PaginatedMessagesControlViewModel()
@@ -43,6 +44,7 @@ namespace GroupMeClient.ViewModels
                 ShowTitle = false,
                 ShowLikers = true,
                 SyncAndUpdate = true,
+                NewestAtBottom = true,
             };
 
             this.ClosePopup = new RelayCommand(this.CloseLittlePopup);

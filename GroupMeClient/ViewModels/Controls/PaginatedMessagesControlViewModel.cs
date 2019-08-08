@@ -19,6 +19,7 @@ namespace GroupMeClient.ViewModels.Controls
         private readonly TimeSpan maxMarkerDistanceTime = TimeSpan.FromMinutes(15);
         private IQueryable<Message> messages;
         private MessageControlViewModelBase selectedMessage;
+        private bool newestAtBottom;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PaginatedMessagesControlViewModel"/> class.
@@ -30,6 +31,8 @@ namespace GroupMeClient.ViewModels.Controls
 
             this.GoBackCommand = new RelayCommand(this.GoBack, this.CanGoBack);
             this.GoForwardCommand = new RelayCommand(this.GoForward, this.CanGoForward);
+
+            this.NewestAtBottom = false;
         }
 
         /// <summary>
@@ -67,6 +70,25 @@ namespace GroupMeClient.ViewModels.Controls
         /// and displayed with up-to-date information.
         /// </summary>
         public bool SyncAndUpdate { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the ordering of <see cref="Messages"/>
+        /// places new messages at the bottom.
+        /// This value is used when placing inline timestamps.
+        /// </summary>
+        public bool NewestAtBottom
+        {
+            get
+            {
+                return this.newestAtBottom;
+            }
+
+            set
+            {
+                this.newestAtBottom = value;
+                this.LastMarkerTime = this.NewestAtBottom ? DateTime.MinValue : DateTime.MaxValue;
+            }
+        }
 
         /// <summary>
         /// Gets the action to be performed when the back button is clicked.
@@ -128,7 +150,9 @@ namespace GroupMeClient.ViewModels.Controls
                 this.Set(() => this.Messages, ref this.messages, value);
 
                 this.TotalMessagesCount = this.Messages?.Count() ?? 0;
-                this.LastMarkerTime = DateTime.MaxValue;
+
+                // Reset timestamp ordering
+                this.NewestAtBottom = this.NewestAtBottom;
             }
         }
 
@@ -141,7 +165,7 @@ namespace GroupMeClient.ViewModels.Controls
             set { this.Set(() => this.SelectedMessage, ref this.selectedMessage, value); }
         }
 
-        private DateTime LastMarkerTime { get; set; } = DateTime.MaxValue;
+        private DateTime LastMarkerTime { get; set; }
 
         /// <summary>
         /// Ensures the page containing a specific <see cref="Message"/> is displayed.
@@ -195,7 +219,8 @@ namespace GroupMeClient.ViewModels.Controls
                     showLikers: this.ShowLikers);
 
                 // add an inline timestamp if needed
-                if (this.LastMarkerTime.Subtract(msg.CreatedAtTime) > this.maxMarkerDistanceTime)
+                if ((this.NewestAtBottom && msg.CreatedAtTime.Subtract(this.LastMarkerTime) > this.maxMarkerDistanceTime) ||
+                    (!this.NewestAtBottom && this.LastMarkerTime.Subtract(msg.CreatedAtTime) > this.maxMarkerDistanceTime))
                 {
                     this.CurrentPage.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, "id-not-used", msgVm.MessageColor));
                     this.LastMarkerTime = msg.CreatedAtTime;
