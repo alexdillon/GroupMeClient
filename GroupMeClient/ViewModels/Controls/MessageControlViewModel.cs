@@ -26,7 +26,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         /// <param name="message">The message to bind to this control.</param>
         /// <param name="lowQualityPreview">Low quality preview lowers the resolution of attachments but increases performance.</param>
-        public MessageControlViewModel(Message message, bool lowQualityPreview = false)
+        /// <param name="showLikers">Indicates whether the like status for a message should be displayed.</param>
+        public MessageControlViewModel(Message message, bool lowQualityPreview = false, bool showLikers = true)
         {
             this.Message = message;
 
@@ -34,6 +35,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.LikeAction = new RelayCommand(async () => { await this.LikeMessageActionAsync(); }, () => { return true; }, true);
 
             this.LowQualityPreview = lowQualityPreview;
+            this.ShowLikers = showLikers;
 
             this.LoadAttachments();
         }
@@ -152,7 +154,11 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get
             {
-                if (this.Message.FavoritedBy.Count > 0)
+                if (!this.ShowLikers)
+                {
+                    return MahApps.Metro.IconPacks.PackIconFontAwesomeKind.None;
+                }
+                else if (this.Message.FavoritedBy.Count > 0)
                 {
                     return MahApps.Metro.IconPacks.PackIconFontAwesomeKind.HeartSolid;
                 }
@@ -190,7 +196,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get
             {
-                if (this.message.FavoritedBy.Count == 0)
+                if (this.message.FavoritedBy.Count == 0 || !this.ShowLikers)
                 {
                     return string.Empty;
                 }
@@ -222,6 +228,8 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         private bool LowQualityPreview { get; }
+
+        private bool ShowLikers { get; }
 
         private string HiddenText
         {
