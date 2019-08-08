@@ -279,7 +279,8 @@
                 Controls:TextBoxHelper.Watermark="Send a Message..."
                 Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
-                extensions:FileDragDropHelper.FileDragDropTarget="{Binding}">
+                extensions:FileDragDropHelper.FileDragDropTarget="{Binding}"
+                SpellCheck.IsEnabled="True">
 
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Send">

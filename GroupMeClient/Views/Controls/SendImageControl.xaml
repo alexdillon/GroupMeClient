@@ -64,7 +64,8 @@
                 AcceptsReturn="True"
                 TextWrapping="Wrap"
                 Controls:TextBoxHelper.Watermark="Send a Message..."
-                Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                SpellCheck.IsEnabled="True">
 
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Send">
