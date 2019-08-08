@@ -142,7 +142,9 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <controls:GroupContentsControl Content="{Binding Path=.}" HorizontalAlignment="Stretch" Margin="5,5,5,5" />
+                    <controls:GroupContentsControl Content="{Binding Path=.}" 
+                                                   HorizontalAlignment="Stretch" 
+                                                   Margin="5,5,5,5" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

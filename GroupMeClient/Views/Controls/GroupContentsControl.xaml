@@ -39,13 +39,11 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        <!--Top Bar-->
         <Grid Grid.Column="0" Grid.Row="0" Background="White">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20" />
-                <!--Padding-->
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="10" />
-                <!--Padding-->
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
@@ -53,58 +51,63 @@
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
 
+            <!--Top Bar Avatar-->
             <controls:AvatarControl 
-                Grid.Column="1" Grid.Row="0"
+                Grid.Column="0"
                 Width="40" Height="40"
+                Margin="10,0,10,0"
                 DataContext="{Binding TopBarAvatar}"/>
 
-            <StackPanel Grid.Column="3" Grid.Row="0"
-                        Orientation="Horizontal">
-                <TextBlock  HorizontalAlignment="Left" VerticalAlignment="Center"
-                    Height="Auto" FontSize="17" FontWeight="SemiBold"
-                    TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
-                    Text="{Binding Title}" />
+            <!--Group Name-->
+            <TextBlock Grid.Column="1"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Height="Auto" 
+                        FontSize="17" FontWeight="SemiBold"
+                        TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                        Text="{Binding Title}" />
 
-                <ToggleButton Grid.Column="3" Grid.Row="0"
-                              Width="25" Height="25"
-                              BorderThickness="0"
-                              HorizontalAlignment="Left"
-                              x:Name="toggleGroupOptionsButton">
-                    <ToggleButton.Resources>
-                        <iconPacks:Octicons x:Key="ArrowUp" Width="15" Height="15" Kind="TriangleUp"></iconPacks:Octicons>
-                        <iconPacks:Octicons x:Key="ArrowDown" Width="15" Height="15" Kind="TriangleDown"></iconPacks:Octicons>
-                    </ToggleButton.Resources>
+            <!--Plugins Drop Down Menu Button-->
+            <ToggleButton Grid.Column="2"
+                            Width="25" Height="25"
+                            BorderThickness="0"
+                            HorizontalAlignment="Left"
+                            x:Name="toggleGroupOptionsButton">
+                <ToggleButton.Resources>
+                    <iconPacks:Octicons x:Key="ArrowUp" Width="15" Height="15" Kind="TriangleUp"></iconPacks:Octicons>
+                    <iconPacks:Octicons x:Key="ArrowDown" Width="15" Height="15" Kind="TriangleDown"></iconPacks:Octicons>
+                </ToggleButton.Resources>
 
-                    <ToggleButton.Style>
-                        <Style TargetType="{x:Type ToggleButton}">
-                            <Setter Property="Content" Value="{StaticResource ArrowDown}" />
+                <ToggleButton.Style>
+                    <Style TargetType="{x:Type ToggleButton}">
+                        <Setter Property="Content" Value="{StaticResource ArrowDown}" />
 
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                        <Border HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="border" Background="White">
-                                            <ContentPresenter Margin="5"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsChecked" Value="true">
-                                                <Setter Property="Background" TargetName="border" Value="White"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            
-                            <Style.Triggers>
-                                <Trigger Property="IsChecked" Value="true">
-                                    <Setter Property="Content" Value="{StaticResource ArrowUp}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ToggleButton.Style>
-                </ToggleButton>
-            </StackPanel>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                    <Border HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="border" Background="White">
+                                        <ContentPresenter Margin="5"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsChecked" Value="true">
+                                            <Setter Property="Background" TargetName="border" Value="White"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
 
-            <Button Grid.Column="4" Grid.Row="0" Content="X"
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter Property="Content" Value="{StaticResource ArrowUp}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+            </ToggleButton>
+
+            <!--Close Group Button-->
+            <Button Grid.Column="3"
+                    Content="X"
                     Width="35" Height="35"
                     BorderThickness="0"
                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
@@ -117,34 +120,39 @@
                 </Button.ContentTemplate>
             </Button>
 
-            <Border Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1"/>
+            <!--Top Bar Underline-->
+            <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1"/>
         </Grid>
 
+        <!--Messages List-->
         <extensions:ListBoxWithPosition
             ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
-                 Grid.Row="2" Grid.Column="0"
-                 BorderThickness="0"
-                 ScrollViewer.VerticalScrollBarVisibility="Visible"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 ScrollViewer.CanContentScroll="True" 
-                 ScrollViewer.PanningMode="VerticalOnly" 
-                 VirtualizingStackPanel.IsVirtualizing="True"
-                 VirtualizingStackPanel.VirtualizationMode="Standard"
-                 VirtualizingStackPanel.ScrollUnit="Pixel"
-                 UseLayoutRounding="True"
-                 extensions:ListBoxExtensions.AutoScrollToEnd="True"
-                 extensions:ListBoxExtensions.ScrollToTop="{Binding ReloadView}"
-                 AllowDrop="True"
-                 extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
-                 extensions:FileDragDropHelper.FileDragDropTarget="{Binding}"
-                 Background="#F7F7F7"
-                 x:Name="messagesList">
+            Grid.Row="2" Grid.Column="0"
+            BorderThickness="0"
+            ScrollViewer.VerticalScrollBarVisibility="Visible"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.CanContentScroll="True" 
+            ScrollViewer.PanningMode="VerticalOnly" 
+            VirtualizingStackPanel.IsVirtualizing="True"
+            VirtualizingStackPanel.VirtualizationMode="Standard"
+            VirtualizingStackPanel.ScrollUnit="Pixel"
+            UseLayoutRounding="True"
+            extensions:ListBoxExtensions.AutoScrollToEnd="True"
+            extensions:ListBoxExtensions.ScrollToTop="{Binding ReloadView}"
+            AllowDrop="True"
+            extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
+            extensions:FileDragDropHelper.FileDragDropTarget="{Binding}"
+            Background="#F7F7F7"
+            x:Name="messagesList">
 
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Setter Property="HorizontalContentAlignment" Value="Left"/>
                     <Setter Property="VerticalContentAlignment" Value="Top"/>
                     
+                    <!--Sometimes, the ListBoxItem will not adjust when multiple chats are rapidly opened. Bind the width to solve it.-->
+                    <Setter Property="Width" Value="{Binding Path=ViewportWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}"/>
+
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -164,8 +172,9 @@
             </ListBox.ItemTemplate>
         </extensions:ListBoxWithPosition>
 
-        <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
-                Grid.Row="2" Grid.Column="0"
+        <!--Scroll-To-Bottom Button-->
+        <Button Grid.Row="2"
+                Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Margin="0,0,30,20"
@@ -185,8 +194,8 @@
             </Button.Content>
         </Button>
 
-
-        <Border Grid.Row="2" Grid.Column="0"
+        <!--Plugins Dropdown List-->
+        <Border Grid.Row="2"
                 Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
                 VerticalAlignment="Top"
                 BorderThickness="20,10,20,30"
@@ -218,7 +227,8 @@
             </ItemsControl>
         </Border>
 
-        <Grid Grid.Column="0" Grid.Row="3"
+        <!--Send Message Bar-->
+        <Grid Grid.Row="3"
               Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
@@ -231,16 +241,20 @@
                 <RowDefinition Height="Auto" MinHeight="50"/>
             </Grid.RowDefinitions>
 
+            <!--Send Bar Top Line-->
             <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"
                     BorderBrush="#637182" BorderThickness="0,0,0,1"
                     Height="4"
                     Margin="0,0,0,0"
                     VerticalAlignment="Bottom"/>
 
+            <!--Message Effects Button-->
             <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="0"
                                         VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"
-                                        Width="15" Height="15" Foreground="#637182" 
+                                        Width="15" Height="15" 
+                                        Background="White"
+                                        Foreground="#637182" 
                                         Kind="React"
                                         Margin="0">
                 <i:Interaction.Triggers>
@@ -250,6 +264,7 @@
                 </i:Interaction.Triggers>
             </iconPacks:PackIconMaterial>
 
+            <!--Message Text Box-->
             <extensions:MultiLineSendBox
                 Grid.Row="1" Grid.Column="1"
                 MinHeight="49"
@@ -271,9 +286,9 @@
                         <i:InvokeCommandAction Command="{Binding Path=SendMessage}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
-
             </extensions:MultiLineSendBox>
 
+            <!--Plus Button (not currently used)-->
             <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="2"
                                         VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"
@@ -287,6 +302,7 @@
                 </i:Interaction.Triggers>
             </iconPacks:PackIconMaterial>
 
+            <!--Send Message Button-->
             <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="3"
                                         VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"
@@ -301,6 +317,7 @@
             </iconPacks:PackIconMaterial>
         </Grid>
 
+        <!--Popup Dialog-->
         <controls:Popup Grid.RowSpan="4"
                         Grid.ColumnSpan="1"
                         DataContext="{Binding Path=.}"
