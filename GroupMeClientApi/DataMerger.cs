@@ -41,7 +41,7 @@ namespace GroupMeClientApi
                 }
             }
 
-            source.Members.Clear();
+            dest.Members.Clear();
             foreach (var member in source.Members)
             {
                 dest.Members.Add(member);
