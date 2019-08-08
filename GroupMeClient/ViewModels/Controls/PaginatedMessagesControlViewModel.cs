@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -54,6 +56,17 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets or sets the <see cref="Group"/> or <see cref="Chat"/> the displayed messages are associated with.
         /// </summary>
         public IMessageContainer AssociateWith { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether 'Like' status will be shown on Messages.
+        /// </summary>
+        public bool ShowLikers { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether displayed messages will be sychronized with GroupMe,
+        /// and displayed with up-to-date information.
+        /// </summary>
+        public bool SyncAndUpdate { get; set; } = false;
 
         /// <summary>
         /// Gets the action to be performed when the back button is clicked.
@@ -116,7 +129,6 @@ namespace GroupMeClient.ViewModels.Controls
 
                 this.TotalMessagesCount = this.Messages?.Count() ?? 0;
                 this.LastMarkerTime = DateTime.MaxValue;
-                this.ChangePage();
             }
         }
 
@@ -145,7 +157,11 @@ namespace GroupMeClient.ViewModels.Controls
             this.SelectedMessage = this.CurrentPage.First(m => m.Id == message.Id);
         }
 
-        private void ChangePage(int pageNumber = 0)
+        /// <summary>
+        /// Changes the currently displayed page.
+        /// </summary>
+        /// <param name="pageNumber">The page number to display.</param>
+        public void ChangePage(int pageNumber = 0)
         {
             this.DisposeClearPage();
             this.CurrentPageNumber = pageNumber;
@@ -157,7 +173,13 @@ namespace GroupMeClient.ViewModels.Controls
 
             var range = this.Messages.Skip(pageNumber * this.MessagesPerPage).Take(this.MessagesPerPage);
 
-            foreach (var msg in range)
+            IEnumerable<Message> displayRange = range;
+            if (this.SyncAndUpdate)
+            {
+                displayRange = this.GetFromGroupMe(range.First(), range.Last());
+            }
+
+            foreach (var msg in displayRange)
             {
                 if (this.AssociateWith is Group g)
                 {
@@ -168,7 +190,9 @@ namespace GroupMeClient.ViewModels.Controls
                     msg.AssociateWithChat(c);
                 }
 
-                var msgVm = new MessageControlViewModel(msg);
+                var msgVm = new MessageControlViewModel(
+                    msg,
+                    showLikers: this.ShowLikers);
 
                 // add an inline timestamp if needed
                 if (this.LastMarkerTime.Subtract(msg.CreatedAtTime) > this.maxMarkerDistanceTime)
@@ -213,6 +237,37 @@ namespace GroupMeClient.ViewModels.Controls
         private bool CanGoForward()
         {
             return ((this.CurrentPageNumber * this.MessagesPerPage) + this.MessagesPerPage) < this.TotalMessagesCount;
+        }
+
+        private IEnumerable<Message> GetFromGroupMe(Message startAt, Message endAt)
+        {
+            return Task.Run(async () => await this.GetFromGroupMeAsync(startAt, endAt)).Result;
+        }
+
+        private async Task<IEnumerable<Message>> GetFromGroupMeAsync(Message startAt, Message endAt)
+        {
+            var result = new List<Message>(this.MessagesPerPage);
+            long.TryParse(startAt.Id, out var startId);
+            long.TryParse(endAt.Id, out var endId);
+
+            // GroupMe only allows before_id searches on Chat's (not after_id), so we have to go backwards...
+            // Add 1 to include the endAt message in the returned data.
+            long currentId = endId + 1;
+            while (currentId > startId)
+            {
+                var msgs = await this.AssociateWith.GetMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, currentId.ToString());
+                result.AddRange(msgs);
+
+                currentId = long.Parse(msgs.Last().Id);
+            }
+
+            // Since we went backwards, reverse the list.
+            result.Reverse();
+
+            // GroupMe block sizes might not align with the pagination page-sizes.
+            // Cut to match the expected page size.
+            int startIndex = result.FindIndex(m => m.Id == startAt.Id);
+            return result.Skip(startIndex);
         }
     }
 }

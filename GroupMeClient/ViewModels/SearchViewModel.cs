@@ -35,11 +35,14 @@ namespace GroupMeClient.ViewModels
             this.ResultsView = new PaginatedMessagesControlViewModel()
             {
                 MessageSelectedCommand = new RelayCommand<MessageControlViewModelBase>(this.MessageSelected),
+                ShowLikers = false,
             };
 
             this.ContextView = new PaginatedMessagesControlViewModel()
             {
                 ShowTitle = false,
+                ShowLikers = true,
+                SyncAndUpdate = true,
             };
 
             this.ClosePopup = new RelayCommand(this.CloseLittlePopup);
@@ -240,6 +243,7 @@ namespace GroupMeClient.ViewModels
 
             this.ResultsView.AssociateWith = this.SelectedGroupChat;
             this.ResultsView.Messages = results;
+            this.ResultsView.ChangePage(0);
         }
 
         private void UpdateContextView(Message message)
