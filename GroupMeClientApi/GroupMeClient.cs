@@ -89,7 +89,10 @@ namespace GroupMeClientApi
         /// <returns>A list of <see cref="Group"/>.</returns>
         public virtual async Task<ICollection<Group>> GetGroupsAsync()
         {
+            const int MaxPerPage = 500; // GroupMe allows 500 Groups/page
+
             var request = this.CreateRestRequest($"/groups", Method.GET);
+            request.AddParameter("per_page", MaxPerPage); // always all available groups.
 
             var cancellationTokenSource = new CancellationTokenSource();
             var restResponse = await this.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
@@ -128,7 +131,10 @@ namespace GroupMeClientApi
         /// <returns>A list of <see cref="Chat"/>.</returns>
         public virtual async Task<ICollection<Chat>> GetChatsAsync()
         {
+            const int MaxPerPage = 100; // GroupMe allows 100 Chats/Page.
+
             var request = this.CreateRestRequest($"/chats", Method.GET);
+            request.AddParameter("per_page", MaxPerPage); // always all available chats.
 
             var cancellationTokenSource = new CancellationTokenSource();
             var restResponse = await this.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
