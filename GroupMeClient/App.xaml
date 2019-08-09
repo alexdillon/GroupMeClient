@@ -65,6 +65,9 @@
             <DataTemplate DataType="{x:Type ctrlvm:InlineTimestampControlViewModel}">
                 <ctrlviews:InlineTimestampControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:InlineReadSentMarkerControlViewModel}">
+                <ctrlviews:InlineReadSentMarkerControl />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type ctrlvm:PaginatedMessagesControlViewModel}">
                 <ctrlviews:PaginatedMessagesControl />
             </DataTemplate>

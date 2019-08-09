@@ -54,6 +54,11 @@ namespace GroupMeClientApi.Models
         GroupMeClient Client { get; }
 
         /// <summary>
+        /// Gets the latest Read Receipt for this collection.
+        /// </summary>
+        ChatMessagesList.MessageListResponse.ReadReceipt ReadReceipt { get; }
+
+        /// <summary>
         /// Sends a new message to this <see cref="IMessageContainer"/>.
         /// </summary>
         /// <param name="message">The message to send.</param>

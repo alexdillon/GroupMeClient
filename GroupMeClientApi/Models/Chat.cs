@@ -89,6 +89,9 @@ namespace GroupMeClientApi.Models
         public GroupMeClient Client { get; internal set; }
 
         /// <inheritdoc />
+        public ChatMessagesList.MessageListResponse.ReadReceipt ReadReceipt { get; private set; }
+
+        /// <inheritdoc />
         public string ImageOrAvatarUrl => ((IAvatarSource)this.OtherUser).ImageOrAvatarUrl;
 
         /// <inheritdoc />
@@ -124,6 +127,8 @@ namespace GroupMeClientApi.Models
             if (restResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var results = JsonConvert.DeserializeObject<ChatMessagesList>(restResponse.Content);
+
+                this.ReadReceipt = results.Response.LastReadReceipt;
 
                 foreach (var message in results.Response.Messages)
                 {

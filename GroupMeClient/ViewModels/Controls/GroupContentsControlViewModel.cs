@@ -294,6 +294,50 @@ namespace GroupMeClient.ViewModels.Controls
                 }
             }
 
+            // process read receipt and sent receipts
+            if (this.MessageContainer.ReadReceipt != null)
+            {
+                // Remove old markers
+                var toRemove = this.Messages.OfType<InlineReadSentMarkerControlViewModel>().ToList();
+                foreach (var marker in toRemove)
+                {
+                    this.Messages.Remove(marker);
+                }
+
+                var matchedMessage = this.Messages.FirstOrDefault(m => m.Id == this.MessageContainer.ReadReceipt.MessageId);
+                if (matchedMessage != null)
+                {
+                    var msgId = long.Parse(matchedMessage.Id);
+
+                    var readMarker = new InlineReadSentMarkerControlViewModel(
+                        this.MessageContainer.ReadReceipt.ReadAtTime,
+                        true,
+                        (msgId + 1).ToString(),
+                        (matchedMessage as MessageControlViewModel).MessageColor);
+
+                    this.Messages.Add(readMarker);
+                }
+
+                var me = this.MessageContainer.WhoAmI();
+                var lastSentMessage = this.Messages
+                    .OfType<MessageControlViewModel>()
+                    .OrderByDescending(m => m.Id)
+                    .FirstOrDefault(m => m.Message.UserId == me.Id);
+
+                if (lastSentMessage != null && lastSentMessage != matchedMessage)
+                {
+                    var msgId = long.Parse(lastSentMessage.Id);
+
+                    var sentMarker = new InlineReadSentMarkerControlViewModel(
+                        lastSentMessage.Message.CreatedAtTime,
+                        false,
+                        (msgId + 1).ToString(),
+                        (lastSentMessage as MessageControlViewModel).MessageColor);
+
+                    this.Messages.Add(sentMarker);
+                }
+            }
+
             if (originalHeight != 0)
             {
                 // Calculate the offset where the last message the user was looking at is
