@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using GalaSoft.MvvmLight.Command;
@@ -19,7 +21,6 @@ namespace GroupMeClient.ViewModels.Controls
     {
         private Message message;
         private AvatarControlViewModel avatar;
-        private string hiddenText = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageControlViewModel"/> class.
@@ -32,12 +33,14 @@ namespace GroupMeClient.ViewModels.Controls
             this.Message = message;
 
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
+            this.Inlines = new ObservableCollection<Inline>();
             this.LikeAction = new RelayCommand(async () => { await this.LikeMessageActionAsync(); }, () => { return true; }, true);
 
             this.LowQualityPreview = lowQualityPreview;
             this.ShowLikers = showLikers;
 
             this.LoadAttachments();
+            this.LoadInlinesForMessageBody();
         }
 
         /// <summary>
@@ -110,22 +113,9 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// Gets the contents of this <see cref="Message"/>.
+        /// Gets a collection of inline text blocks to display for the message.
         /// </summary>
-        public string Text
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(this.HiddenText))
-                {
-                    return this.Message.Text;
-                }
-                else
-                {
-                    return this.Message.Text.Replace(this.hiddenText, string.Empty);
-                }
-            }
-        }
+        public ObservableCollection<Inline> Inlines { get; }
 
         /// <summary>
         /// Gets the background color to use when rendering this <see cref="Message"/>.
@@ -231,21 +221,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private bool ShowLikers { get; }
 
-        private string HiddenText
-        {
-            get
-            {
-                return this.hiddenText;
-            }
-
-            set
-            {
-                this.hiddenText = value;
-
-                // Force the Text property to be re-evaluated.
-                this.RaisePropertyChanged(nameof(this.Text));
-            }
-        }
+        private string HiddenText { get; set; }
 
         /// <summary>
         /// Redraw the message immediately.
@@ -367,6 +343,87 @@ namespace GroupMeClient.ViewModels.Controls
             this.RaisePropertyChanged("LikeCount");
             this.RaisePropertyChanged("LikeColor");
             this.RaisePropertyChanged("LikeStatus");
+        }
+
+        private void LoadInlinesForMessageBody()
+        {
+            var text = this.Message.Text ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(this.HiddenText))
+            {
+                text = text.Replace(this.HiddenText, string.Empty);
+            }
+
+            var inlinesTemp = new List<Inline>();
+            var inlinesResult = new List<Inline>();
+            inlinesTemp.Add(new Run(text));
+
+            foreach (var part in inlinesTemp)
+            {
+                if (part is Run r)
+                {
+                    // scan this portion of the message for hyperlinks
+                    inlinesResult.AddRange(this.ProcessHyperlinks(r));
+                }
+                else
+                {
+                    // this part of the message has already been processed, pass it through
+                    inlinesResult.Add(part);
+                }
+            }
+
+            /* TODO: Swap inlinesTemp and inlinesResult and repeat for addition special content types */
+
+            this.Inlines.Clear();
+            foreach (var result in inlinesResult)
+            {
+                this.Inlines.Add(result);
+            }
+        }
+
+        private List<Inline> ProcessHyperlinks(Run run)
+        {
+            var result = new List<Inline>();
+            var text = run.Text;
+
+            while (true)
+            {
+                if (!Regex.IsMatch(text, Extensions.RegexUtils.UrlRegex))
+                {
+                    // no URLs contained
+                    result.Add(new Run(text));
+                    break;
+                }
+                else
+                {
+                    // url is contained in the input string
+                    var match = Regex.Match(text, Extensions.RegexUtils.UrlRegex);
+
+                    if (match.Index > 0)
+                    {
+                        // convert the leading text to a Run
+                        result.Add(new Run(text.Substring(0, match.Index)));
+                    }
+
+                    var hyperlink = new Hyperlink(new Run(match.Value))
+                    {
+                        NavigateUri = new Uri(match.Value),
+                    };
+                    hyperlink.RequestNavigate += this.HyperlinkHandler;
+
+                    result.Add(hyperlink);
+
+                    // Keep looping over the rest of the string.
+                    text = text.Substring(match.Index + match.Length);
+                }
+            }
+
+            return result;
+        }
+
+        private void HyperlinkHandler(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Extensions.WebBrowserHelper.OpenUrl(e.Uri.ToString());
         }
     }
 }

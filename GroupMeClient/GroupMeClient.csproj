@@ -71,6 +71,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
+    <Compile Include="Extensions\RegexUtils.cs" />
+    <Compile Include="Extensions\TextBlockExtensions.cs" />
     <Compile Include="Extensions\EventFocusAttachment.cs" />
     <Compile Include="Extensions\FileDragDropHelper.cs" />
     <Compile Include="Extensions\ImageUtils.cs" />
