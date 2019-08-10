@@ -304,6 +304,7 @@ namespace GroupMeClient.ViewModels.Controls
                     this.Messages.Remove(marker);
                 }
 
+                // Attach a "Read Receipt" if the read message is displayed.
                 var matchedMessage = this.Messages.FirstOrDefault(m => m.Id == this.MessageContainer.ReadReceipt.MessageId);
                 if (matchedMessage != null)
                 {
@@ -318,6 +319,7 @@ namespace GroupMeClient.ViewModels.Controls
                     this.Messages.Add(readMarker);
                 }
 
+                // Attach a "Sent Receipt" to the last message confirmed sent by GroupMe
                 var me = this.MessageContainer.WhoAmI();
                 var lastSentMessage = this.Messages
                     .OfType<MessageControlViewModel>()
@@ -335,6 +337,17 @@ namespace GroupMeClient.ViewModels.Controls
                         (lastSentMessage as MessageControlViewModel).MessageColor);
 
                     this.Messages.Add(sentMarker);
+                }
+
+                // Send a Read Receipt for the last message received
+                var lastReceivedMessage = this.Messages
+                    .OfType<MessageControlViewModel>()
+                    .OrderByDescending(m => m.Id)
+                    .FirstOrDefault(m => m.Message.UserId != me.Id);
+
+                if (lastReceivedMessage != null && this.MessageContainer is Chat c)
+                {
+                    var result = Task.Run(async () => await c.SendReadReceipt(lastReceivedMessage.Message)).Result;
                 }
             }
 

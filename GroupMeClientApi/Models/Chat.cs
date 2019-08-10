@@ -73,9 +73,6 @@ namespace GroupMeClientApi.Models
         /// <summary>
         /// Gets the Identifier of this Chat. See <seealso cref="OtherUser"/> for more information.
         /// </summary>
-        /// <remarks>
-        /// This key is required for EF. It must always match OtherUser.Id.
-        /// </remarks>
         public string Id { get; internal set; }
 
         /// <summary>
@@ -188,6 +185,31 @@ namespace GroupMeClientApi.Models
             var restResponse = await this.Client.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
 
             return restResponse.StatusCode == System.Net.HttpStatusCode.Created;
+        }
+
+        /// <summary>
+        /// Sends a Read Receipt to this <see cref="Chat"/> in regards to a specific <see cref="Message"/>.
+        /// </summary>
+        /// <param name="message">The message mark as 'read'.</param>
+        /// <returns>A <see cref="bool"/> indicating the success of the send operation.</returns>
+        public async Task<bool> SendReadReceipt(Message message)
+        {
+            var request = this.Client.CreateRestRequest(GroupMeClient.GroupMeReadReceiptUrl, Method.POST);
+            var payload = new
+            {
+                read_receipt = new
+                {
+                    chat_id = message.ConversationId,
+                    message_id = message.Id,
+                },
+            };
+
+            request.AddJsonBody(payload);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var restResponse = await this.Client.ApiClient.ExecuteTaskAsync(request, cancellationTokenSource.Token);
+
+            return restResponse.StatusCode == System.Net.HttpStatusCode.OK;
         }
 
         /// <summary>
