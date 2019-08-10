@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GroupMeClientApi.Models;
@@ -103,7 +106,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Gets a string showing the most recent post in this Group or Chat.
         /// </summary>
-        public string QuickPreview
+        public ObservableCollection<Inline> QuickPreview
         {
             get
             {
@@ -122,14 +125,19 @@ namespace GroupMeClient.ViewModels.Controls
                     }
                 }
 
+                var result = new ObservableCollection<Inline>();
+
                 if (wasImageSent)
                 {
-                    return $"{sender} shared an picture";
+                    result.Add(new Run($"{sender} shared an picture"));
                 }
                 else
                 {
-                    return $"{sender}: {message}";
+                    result.Add(new Bold(new Run(sender) { FontWeight = FontWeights.SemiBold }));
+                    result.Add(new Run($": {message}"));
                 }
+
+                return result;
             }
         }
 
