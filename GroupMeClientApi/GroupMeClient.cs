@@ -12,6 +12,11 @@ namespace GroupMeClientApi
     /// </summary>
     public class GroupMeClient
     {
+        /// <summary>
+        /// The URL to which GroupMe Read Receipt POSTs should be submitted.
+        /// </summary>
+        internal const string GroupMeReadReceiptUrl = "https://v2.groupme.com/read_receipts";
+
         private const string GroupMeAPIUrl = "https://api.groupme.com/v3";
 
         /// <summary>
