@@ -20,7 +20,8 @@ namespace GroupMeClient.Extensions
                 typeof(ListBoxWithPosition),
                 new PropertyMetadata(false));
 
-#pragma warning disable SA1202 // Elements should be ordered by access. Initialization for IsNotAtBottomProperty depends on IsNotAtBottomPropertyKey.
+        // Elements should be ordered by access. Initialization for IsNotAtBottomProperty depends on IsNotAtBottomPropertyKey.
+#pragma warning disable SA1202
         /// <summary>
         /// Gets a Dependency Property indicating whether the ListBox is scrolled to the bottom.
         /// </summary>
