@@ -19,6 +19,8 @@ namespace GroupMeClient.ViewModels.Controls
     /// </summary>
     public class MessageControlViewModel : MessageControlViewModelBase, IDisposable
     {
+        private readonly object messageLock = new object();
+
         private Message message;
         private AvatarControlViewModel avatar;
 
@@ -98,8 +100,11 @@ namespace GroupMeClient.ViewModels.Controls
                     return;
                 }
 
-                this.message = value;
-                this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
+                lock (this.messageLock)
+                {
+                    this.message = value;
+                    this.UpdateDisplay();
+                }
             }
         }
 
@@ -204,15 +209,20 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get
             {
-                foreach (var memberId in this.Message.FavoritedBy)
+                // Lock on Message is needed to prevent the FavoritedBy collection from
+                // changing mid-update if new 'like' notifications are delivered asyncronously.
+                lock (this.messageLock)
                 {
-                    // member is either a Group Member, Other Chat User, or This User
-                    var member = this.Message.Group?.Members.FirstOrDefault(m => m.UserId == memberId) ??
-                        (this.Message.Chat?.OtherUser.Id == memberId ? this.Message.Chat?.OtherUser : null) ??
-                        ((this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI()).Id == memberId ? (this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI()) : null);
+                    foreach (var memberId in this.Message.FavoritedBy)
+                    {
+                        // member is either a Group Member, Other Chat User, or This User
+                        var member = this.Message.Group?.Members.FirstOrDefault(m => m.UserId == memberId) ??
+                            (this.Message.Chat?.OtherUser.Id == memberId ? this.Message.Chat?.OtherUser : null) ??
+                            ((this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI()).Id == memberId ? (this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI()) : null);
 
-                    var liker = new AvatarControlViewModel(member, this.Message.ImageDownloader);
-                    yield return liker;
+                        var liker = new AvatarControlViewModel(member, this.Message.ImageDownloader);
+                        yield return liker;
+                    }
                 }
             }
         }
