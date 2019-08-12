@@ -276,6 +276,7 @@ namespace GroupMeClient.ViewModels.Controls
             const string TwitterPrefixHttp = "http://twitter.com/";
 
             const string GroupMeVideoPrefixHttps = "https://v.groupme.com";
+            const string GroupMeImageRegexHttps = @"https:\/\/i.groupme.com\/[0-99999]*x[0-99999]*\..*";
 
             string[] imageExtensions = { "png", "jpg", "jpeg", "gif", "bmp" };
 
@@ -299,6 +300,12 @@ namespace GroupMeClient.ViewModels.Controls
             else if (imageExtensions.Contains(linkExtension))
             {
                 vm = new ImageLinkAttachmentControlViewModel(text, this.Message.ImageDownloader);
+                this.AttachedItems.Add(vm);
+            }
+            else if (Regex.IsMatch(text, GroupMeImageRegexHttps))
+            {
+                var groupMeIUrl = Regex.Match(text, GroupMeImageRegexHttps).Value;
+                vm = new ImageLinkAttachmentControlViewModel(groupMeIUrl, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
             }
             else if (text.StartsWith(WebPrefixHttps) || text.StartsWith(WebPrefixHttp))
