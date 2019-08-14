@@ -71,6 +71,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
+    <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
     <Compile Include="Extensions\RegexUtils.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />
     <Compile Include="Extensions\TextBlockExtensions.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="Extensions\ScrollIntoViewForListBox.cs" />
     <Compile Include="Extensions\WebBrowserExtensions.cs" />
     <Compile Include="Extensions\WebBrowserHelper.cs" />
+    <Compile Include="Messaging\UnreadRequestMessage.cs" />
     <Compile Include="Messaging\DialogRequestMessage.cs" />
     <Compile Include="Notifications\Display\Win10\DesktopNotificationManagerCompat.cs" />
     <Compile Include="Notifications\Display\Win10\GroupMeNotificationActivator.cs" />

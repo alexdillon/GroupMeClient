@@ -8,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Notifications;
 using GroupMeClient.Settings;
 using GroupMeClient.ViewModels.Controls;
@@ -211,6 +212,7 @@ namespace GroupMeClient.ViewModels
                 }
 
                 this.SettingsManager.SaveSettings();
+                this.PublishTotalUnreadCount();
             }
             finally
             {
@@ -240,13 +242,10 @@ namespace GroupMeClient.ViewModels
                 _ = this.PushClient.SubscribeAsync(group.MessageContainer);
 
                 // mark all messages as read
-                var groupChatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == group.Id);
-                groupChatState.LastTotalMessageCount = group.MessageContainer.TotalMessageCount;
-
-                // clear the notification bubble
-                group.TotalUnreadCount = 0;
+                this.MarkGroupChatAsRead(group);
 
                 this.SettingsManager.SaveSettings();
+                this.PublishTotalUnreadCount();
             }
 
             // limit to three multi-chats at a time
@@ -271,15 +270,34 @@ namespace GroupMeClient.ViewModels
         {
             foreach (var groupChatVm in this.AllGroupsChats)
             {
-                // mark all messages as read
-                var groupChatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == groupChatVm.Id);
-                groupChatState.LastTotalMessageCount = groupChatVm.MessageContainer.TotalMessageCount;
-
-                // clear the notification bubble
-                groupChatVm.TotalUnreadCount = 0;
+                this.MarkGroupChatAsRead(groupChatVm);
             }
 
             this.SettingsManager.SaveSettings();
+            this.PublishTotalUnreadCount();
+        }
+
+        private void MarkGroupChatAsRead(GroupControlViewModel groupChatVm)
+        {
+            // mark all messages as read
+            var groupChatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == groupChatVm.Id);
+            groupChatState.LastTotalMessageCount = groupChatVm.MessageContainer.TotalMessageCount;
+
+            // clear the notification bubble
+            groupChatVm.TotalUnreadCount = 0;
+        }
+
+        private void PublishTotalUnreadCount()
+        {
+            var count = 0;
+
+            foreach (var group in this.AllGroupsChats)
+            {
+                count += group.TotalUnreadCount;
+            }
+
+            var updateRequest = new Messaging.UnreadRequestMessage(count);
+            Messenger.Default.Send(updateRequest);
         }
     }
 }

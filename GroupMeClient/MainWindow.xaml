@@ -21,6 +21,25 @@
         <viewModels:MainViewModel />
     </Window.DataContext>
 
+    <Window.Resources>
+        <DataTemplate x:Key="OverlayIcon">
+            <Grid Width="16" Height="16">
+                <Ellipse 
+                    Fill="Red" 
+                    Stroke="White" 
+                    StrokeThickness=".5" />
+                <TextBlock 
+                    Text="{Binding}" 
+                    TextAlignment="Center" 
+                    Foreground="White" 
+                    FontWeight="Bold" 
+                    Height="16" 
+                    VerticalAlignment="Center" 
+                    FontSize="10"/>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
     <Grid>
         <Grid.Resources>
             <local:SelectedItemToContentConverter x:Key="SelectedItemToContentConverter" />
@@ -88,4 +107,10 @@
             <UserControl Content="{Binding PopupDialog}" />
         </controls:Popup>
     </Grid>
+
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo 
+            extensions:TaskbarItemOverlayExtensions.Content="{Binding UnreadCount}" 
+            extensions:TaskbarItemOverlayExtensions.Template="{StaticResource OverlayIcon}" />
+    </Window.TaskbarItemInfo>
 </mah:MetroWindow>

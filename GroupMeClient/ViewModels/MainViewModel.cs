@@ -21,6 +21,7 @@ namespace GroupMeClient.ViewModels
         private HamburgerMenuItemCollection menuOptionItems = new HamburgerMenuItemCollection();
         private HamburgerMenuItem selectedItem;
         private ViewModelBase popupDialog;
+        private int unreadCount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainViewModel"/> class.
@@ -71,6 +72,16 @@ namespace GroupMeClient.ViewModels
         /// Gets or sets the action to be be performed when the big popup has been closed.
         /// </summary>
         public ICommand ClosePopup { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of unread notifications that should be displayed in the
+        /// taskbar badge.
+        /// </summary>
+        public int UnreadCount
+        {
+            get { return this.unreadCount; }
+            set { this.Set(() => this.UnreadCount, ref this.unreadCount, value); }
+        }
 
         /// <summary>
         /// Gets or sets the action to be be performed when the big popup has been closed indirectly.
@@ -144,6 +155,8 @@ namespace GroupMeClient.ViewModels
             Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
             this.ClosePopup = new RelayCommand(this.CloseBigPopup);
             this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
+
+            Messenger.Default.Register<Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
         }
 
         private void RegisterNotifications()
@@ -235,6 +248,11 @@ namespace GroupMeClient.ViewModels
             }
 
             this.PopupDialog = null;
+        }
+
+        private void UpdateNotificationCount(Messaging.UnreadRequestMessage update)
+        {
+            this.UnreadCount = update.Count;
         }
     }
 }
