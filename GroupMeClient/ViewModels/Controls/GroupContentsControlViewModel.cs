@@ -197,10 +197,17 @@ namespace GroupMeClient.ViewModels.Controls
         void IDisposable.Dispose()
         {
             this.Messages.Clear();
-            /*foreach (var msg in this.Messages)
+
+            try
             {
-                (msg as IDisposable)?.Dispose();
-            }*/
+                foreach (var msg in this.Messages)
+                {
+                    (msg as IDisposable)?.Dispose();
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
 
         /// <inheritdoc />
