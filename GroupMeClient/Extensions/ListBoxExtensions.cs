@@ -183,9 +183,10 @@ namespace GroupMeClient.Extensions
             /// <param name="listBox">The ListBox to bind to.</param>
             public ListBoxAutoScrollToEndHandler(ListBox listBox)
             {
-                this.scrollViewer = ListBoxExtensions.FindSimpleVisualChild<ScrollViewer>(listBox);
+                this.scrollViewer = FindSimpleVisualChild<ScrollViewer>(listBox);
                 this.scrollViewer.ScrollToEnd();
                 this.scrollViewer.ScrollChanged += this.ScrollChanged;
+                this.scrollViewer.SizeChanged += this.SizeChanged;
             }
 
             /// <inheritdoc/>
@@ -206,6 +207,15 @@ namespace GroupMeClient.Extensions
 
                 // Content scroll event : autoscroll eventually
                 if (this.doScroll && e.ExtentHeightChange != 0)
+                {
+                    this.scrollViewer.ScrollToVerticalOffset(this.scrollViewer.ExtentHeight);
+                }
+            }
+
+            private void SizeChanged(object sender, SizeChangedEventArgs e)
+            {
+                // If autoscroll is enabled and scrolled to the bottom, keep the bottom tracked if the size changes.
+                if (this.doScroll)
                 {
                     this.scrollViewer.ScrollToVerticalOffset(this.scrollViewer.ExtentHeight);
                 }
