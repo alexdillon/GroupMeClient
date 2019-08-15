@@ -448,7 +448,7 @@ namespace GroupMeClient.ViewModels.Controls
                     {
                         NavigateUri = new Uri(match.Value),
                     };
-                    hyperlink.RequestNavigate += this.HyperlinkHandler;
+                    Extensions.WebHyperlinkExtensions.SetIsWebLink(hyperlink, true);
 
                     result.Add(hyperlink);
 
@@ -458,11 +458,6 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             return result;
-        }
-
-        private void HyperlinkHandler(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
-        {
-            Extensions.WebBrowserHelper.OpenUrl(e.Uri.ToString());
         }
     }
 }
