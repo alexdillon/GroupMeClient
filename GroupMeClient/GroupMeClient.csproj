@@ -88,6 +88,7 @@
     <Compile Include="Extensions\ScrollIntoViewForListBox.cs" />
     <Compile Include="Extensions\WebBrowserExtensions.cs" />
     <Compile Include="Extensions\WebBrowserHelper.cs" />
+    <Compile Include="Extensions\WebHyperlinkExtensions.cs" />
     <Compile Include="Messaging\UnreadRequestMessage.cs" />
     <Compile Include="Messaging\DialogRequestMessage.cs" />
     <Compile Include="Notifications\Display\Win10\DesktopNotificationManagerCompat.cs" />
