@@ -236,9 +236,31 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Redraw the message immediately.
         /// </summary>
-        public override void UpdateDisplay()
+        public void UpdateDisplay()
         {
             this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
+        }
+
+        /// <summary>
+        /// Updates the list of Likers for the <see cref="Message"/>, and re-draws
+        /// the message on-screen.
+        /// </summary>
+        /// <param name="newLikersList">The list of new likers for the <see cref="Message"/>.</param>
+        public void UpdateLikers(IEnumerable<string> newLikersList)
+        {
+            // The Message needs to be locked to prevent accessing the liker's
+            // collection asychronously on a UI thread (for example, on mouse-over)
+            // mid-update.
+            lock (this.messageLock)
+            {
+                this.Message.FavoritedBy.Clear();
+                foreach (var liker in newLikersList)
+                {
+                    this.Message.FavoritedBy.Add(liker);
+                }
+
+                this.UpdateDisplay();
+            }
         }
 
         /// <inheritdoc />

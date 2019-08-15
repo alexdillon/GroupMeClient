@@ -83,10 +83,5 @@ namespace GroupMeClient.ViewModels.Controls
         void IDisposable.Dispose()
         {
         }
-
-        /// <inheritdoc/>
-        public override void UpdateDisplay()
-        {
-        }
     }
 }

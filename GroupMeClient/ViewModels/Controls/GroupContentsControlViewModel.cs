@@ -181,16 +181,10 @@ namespace GroupMeClient.ViewModels.Controls
         public void UpdateMessageLikes(Message message)
         {
             var msgVm = this.Messages.FirstOrDefault(m => m.Id == message.Id);
-
-            // Only update the display copy and leave the cached copy alone
-            // Cached copy is never used for displaying 'Like' status
-            msgVm.Message.FavoritedBy.Clear();
-            foreach (var liker in message.FavoritedBy)
+            if (msgVm is MessageControlViewModel messageVm)
             {
-                msgVm.Message.FavoritedBy.Add(liker);
+                messageVm.UpdateLikers(message.FavoritedBy);
             }
-
-            msgVm.UpdateDisplay();
         }
 
         /// <inheritdoc />
@@ -296,7 +290,7 @@ namespace GroupMeClient.ViewModels.Controls
                 }
                 else
                 {
-                    // update and existing one if needed
+                    // update an existing one if needed
                     oldMsg.Message = msg;
                 }
             }

@@ -28,10 +28,5 @@ namespace GroupMeClient.ViewModels.Controls
         void IDisposable.Dispose()
         {
         }
-
-        /// <summary>
-        /// Redraw the message immediately.
-        /// </summary>
-        public abstract void UpdateDisplay();
     }
 }
