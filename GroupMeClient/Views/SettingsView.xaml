@@ -3,9 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             d:DesignHeight="300"
-             d:DesignWidth="300"
+             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             d:DesignHeight="1024"
+             d:DesignWidth="768"
              mc:Ignorable="d">
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -61,54 +63,61 @@
                 <LineBreak />
                 
                 <Hyperlink 
-                    NavigateUri="https://mahapps.com/">
+                    NavigateUri="https://mahapps.com/"
+                    extensions:WebHyperlinkExtensions.IsWebLink="True">
                     MahApps Metro UI Toolkit
                 </Hyperlink>
                 <LineBreak />
                 
                 <Hyperlink 
-                    NavigateUri="http://www.mvvmlight.net/">
+                    NavigateUri="http://www.mvvmlight.net/"
+                    extensions:WebHyperlinkExtensions.IsWebLink="True">
                     MVVMLight
                 </Hyperlink>
                 <LineBreak />
                 
                 <Hyperlink 
-                    NavigateUri="https://github.com/ericsink/SQLitePCL.raw">
+                    NavigateUri="https://github.com/ericsink/SQLitePCL.raw"
+                    extensions:WebHyperlinkExtensions.IsWebLink="True">
                     SQLitePCLRaw
                 </Hyperlink>
                 <LineBreak />
                 
                 <Hyperlink 
-                    NavigateUri="https://github.com/aspnet/EntityFrameworkCore">
+                    NavigateUri="https://github.com/aspnet/EntityFrameworkCore"
+                    extensions:WebHyperlinkExtensions.IsWebLink="True">
                     Entity Framework Core
                 </Hyperlink>
                 <LineBreak />
                 
                 <Hyperlink 
-                    NavigateUri="https://github.com/Squirrel/Squirrel.Windows">
+                    NavigateUri="https://github.com/Squirrel/Squirrel.Windows"
+                    extensions:WebHyperlinkExtensions.IsWebLink="True">
                     Squirrel for Windows
                 </Hyperlink>
                 <LineBreak />
                 
                 <Hyperlink 
-                    NavigateUri="https://github.com/rafallopatka/ToastNotifications">
+                    NavigateUri="https://github.com/rafallopatka/ToastNotifications"
+                    extensions:WebHyperlinkExtensions.IsWebLink="True">
                     ToastNotifications v2
                 </Hyperlink>
                 <LineBreak />
                 
                 <Hyperlink 
-                    NavigateUri="https://github.com/XamlAnimatedGif/XamlAnimatedGif">
+                    NavigateUri="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
+                    extensions:WebHyperlinkExtensions.IsWebLink="True">
                     XAML Animated Gif
                 </Hyperlink>
                 <LineBreak />
                 
                 <LineBreak />
                 Main application icon made by 
-                <Hyperlink NavigateUri="https://www.flaticon.com/authors/freepik">Freepik</Hyperlink>
+                <Hyperlink NavigateUri="https://www.flaticon.com/authors/freepik" extensions:WebHyperlinkExtensions.IsWebLink="True">Freepik</Hyperlink>
                 from 
-                <Hyperlink NavigateUri="https://www.flaticon.com/">www.flaticon.com</Hyperlink>
+                <Hyperlink NavigateUri="https://www.flaticon.com/" extensions:WebHyperlinkExtensions.IsWebLink="True">www.flaticon.com</Hyperlink>
                 is licensed by
-                <Hyperlink NavigateUri="http://creativecommons.org/licenses/by/3.0/">CC 3.0 BY</Hyperlink>
+                <Hyperlink NavigateUri="http://creativecommons.org/licenses/by/3.0/" extensions:WebHyperlinkExtensions.IsWebLink="True">CC 3.0 BY</Hyperlink>
             </TextBlock>
 
         </GroupBox>
