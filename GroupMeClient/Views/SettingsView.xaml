@@ -4,12 +4,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              d:DesignHeight="1024"
              d:DesignWidth="768"
              mc:Ignorable="d">
 
+    <UserControl.Resources>
+        <Style x:Key="MyColumnHeader" 
+               BasedOn="{StaticResource MetroGridViewColumnHeader}" 
+               TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="controls:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -50,8 +60,45 @@
             </StackPanel>
         </GroupBox>
 
-        <!--Credits and License Area-->
+        <!--Plugins Area-->
         <GroupBox Grid.Row="2" 
+                  Margin="10" Padding="10">
+            <GroupBox.Header>
+                <TextBlock Foreground="White" Text="Plugins"/>
+            </GroupBox.Header>
+
+            <GroupBox.Resources>
+                <CollectionViewSource x:Key="ListBoxItems" Source="{Binding Path=InstalledPlugins}">
+                    <CollectionViewSource.GroupDescriptions>
+                        <PropertyGroupDescription PropertyName="Type" />
+                    </CollectionViewSource.GroupDescriptions>
+                </CollectionViewSource>
+            </GroupBox.Resources>
+
+            <ListView
+                ItemsSource="{Binding Source={StaticResource ListBoxItems}}">
+                
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
+                        <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Name}" />
+                        <GridViewColumn Header="Version" Width="70" DisplayMemberBinding="{Binding Version}" />
+                    </GridView>
+                </ListView.View>
+
+                <ListView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock FontWeight="Bold" FontSize="14" Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListView.GroupStyle>
+            </ListView>
+        </GroupBox>
+
+        <!--Credits and License Area-->
+        <GroupBox Grid.Row="3" 
                   Margin="10" Padding="10">
             <GroupBox.Header>
                 <TextBlock Foreground="White" Text="Open Source Credits"/>

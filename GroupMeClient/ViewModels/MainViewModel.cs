@@ -145,7 +145,7 @@ namespace GroupMeClient.ViewModels
 
                 this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient, this.SettingsManager);
                 this.SearchViewModel = new SearchViewModel(this.GroupMeClient, this.CacheContext);
-                this.SettingsViewModel = new SettingsViewModel();
+                this.SettingsViewModel = new SettingsViewModel(this.SettingsManager);
 
                 this.RegisterNotifications();
 
