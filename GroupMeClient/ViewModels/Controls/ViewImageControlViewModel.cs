@@ -53,7 +53,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <inheritdoc/>
         void IDisposable.Dispose()
         {
-            ((IDisposable)this.imageAttachmentStream).Dispose();
+            (this.imageAttachmentStream as IDisposable)?.Dispose();
         }
 
         private async Task LoadImageAttachment()

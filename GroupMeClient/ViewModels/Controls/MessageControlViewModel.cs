@@ -268,7 +268,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             foreach (var attachment in this.AttachedItems)
             {
-                (attachment as IDisposable).Dispose();
+                (attachment as IDisposable)?.Dispose();
             }
         }
 
