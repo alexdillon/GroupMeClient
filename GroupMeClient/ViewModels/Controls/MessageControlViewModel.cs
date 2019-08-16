@@ -366,7 +366,10 @@ namespace GroupMeClient.ViewModels.Controls
                 var success = await this.Message.UnlikeMessage();
                 if (success)
                 {
-                    this.Message.FavoritedBy.Remove(me.Id);
+                    lock (this.messageLock)
+                    {
+                        this.Message.FavoritedBy.Remove(me.Id);
+                    }
                 }
             }
             else
@@ -374,14 +377,14 @@ namespace GroupMeClient.ViewModels.Controls
                 var success = await this.Message.LikeMessage();
                 if (success)
                 {
-                    this.Message.FavoritedBy.Add(me.Id);
+                    lock (this.messageLock)
+                    {
+                        this.Message.FavoritedBy.Add(me.Id);
+                    }
                 }
             }
 
-            this.RaisePropertyChanged("LikedByAvatars");
-            this.RaisePropertyChanged("LikeCount");
-            this.RaisePropertyChanged("LikeColor");
-            this.RaisePropertyChanged("LikeStatus");
+            this.UpdateDisplay();
         }
 
         private void LoadInlinesForMessageBody()
