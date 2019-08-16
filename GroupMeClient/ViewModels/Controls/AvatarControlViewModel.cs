@@ -63,7 +63,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// <returns>A <see cref="Task"/> with the download status.</returns>
         public async Task LoadAvatarAsync()
         {
-            byte[] image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl);
+            var isGroup = !this.AvatarSource.IsRoundedAvatar;
+            byte[] image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl, isGroup);
 
             var bitmapImage = Extensions.ImageUtils.BytesToImageSource(image);
 
