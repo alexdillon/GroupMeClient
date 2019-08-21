@@ -22,19 +22,19 @@
                HorizontalAlignment="Center"
                gif:AnimationBehavior.SourceStream="{Binding ImageStream}" />
 
-        <Button Width="40"
-                Height="40"
+        <Button Width="30"
+                Height="30"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="0,-40,0,0"
+                Margin="0,-30,0,0"
                 Foreground="White"
                 BorderThickness="0"
                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                 Command="{Binding Path=SaveImage}">
             <Button.ContentTemplate>
                 <DataTemplate>
-                    <iconPacks:PackIconEntypo Width="20"
-                                              Height="20"
+                    <iconPacks:PackIconEntypo Width="15"
+                                              Height="15"
                                               Kind="Save" />
                 </DataTemplate>
             </Button.ContentTemplate>
