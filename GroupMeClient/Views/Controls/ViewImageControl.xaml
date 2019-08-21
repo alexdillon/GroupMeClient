@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
              d:DesignHeight="200" d:DesignWidth="200"
@@ -20,6 +21,24 @@
                Stretch="Uniform"
                HorizontalAlignment="Center"
                gif:AnimationBehavior.SourceStream="{Binding ImageStream}" />
+
+        <Button Width="40"
+                Height="40"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="0,-40,0,0"
+                Foreground="White"
+                BorderThickness="0"
+                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                Command="{Binding Path=SaveImage}">
+            <Button.ContentTemplate>
+                <DataTemplate>
+                    <iconPacks:PackIconEntypo Width="20"
+                                              Height="20"
+                                              Kind="Save" />
+                </DataTemplate>
+            </Button.ContentTemplate>
+        </Button>
 
     </Grid>
 

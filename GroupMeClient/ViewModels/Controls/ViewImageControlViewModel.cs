@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
+using Microsoft.Win32;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -24,9 +27,16 @@ namespace GroupMeClient.ViewModels.Controls
             this.ImageAttachment = attachment;
             this.ImageDownloader = downloader;
 
+            this.SaveImage = new RelayCommand(this.SaveImageAction);
+
             this.IsLoading = true;
             _ = this.LoadImageAttachment();
         }
+
+        /// <summary>
+        /// Gets the action to be performed when the save image button is clicked.
+        /// </summary>
+        public ICommand SaveImage { get; }
 
         /// <summary>
         /// Gets the attached image.
@@ -58,8 +68,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task LoadImageAttachment()
         {
-            byte[] image = null;
-            image = await this.ImageDownloader.DownloadPostImageAsync($"{this.ImageAttachment.Url}");
+            var image = await this.ImageDownloader.DownloadPostImageAsync($"{this.ImageAttachment.Url}");
 
             if (image == null)
             {
@@ -68,6 +77,26 @@ namespace GroupMeClient.ViewModels.Controls
 
             this.ImageStream = new MemoryStream(image);
             this.IsLoading = false;
+        }
+
+        private void SaveImageAction()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            var imageUrlWithoutLongId = this.ImageAttachment.Url.Substring(0, this.ImageAttachment.Url.LastIndexOf('.'));
+            var extension = System.IO.Path.GetExtension(imageUrlWithoutLongId);
+            var filter = $"Image (*{extension})|*{extension}";
+
+            saveFileDialog.Filter = filter;
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                using (var fs = File.OpenWrite(saveFileDialog.FileName))
+                {
+                    this.ImageStream.Seek(0, SeekOrigin.Begin);
+                    this.ImageStream.CopyTo(fs);
+                }
+            }
         }
     }
 }
