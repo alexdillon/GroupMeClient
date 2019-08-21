@@ -402,15 +402,20 @@ namespace GroupMeClient.ViewModels.Controls
             var attachmentsList = new List<GroupMeClientApi.Models.Attachments.Attachment> { attachment };
 
             var message = Message.CreateMessage(contents, attachmentsList);
-            await this.SendMessageAsync(message);
+            bool success = await this.SendMessageAsync(message);
 
-            this.ClosePopupHandler();
+            if (success)
+            {
+                this.ClosePopupHandler();
+            }
+            else
+            {
+                imageSendDialog.IsSending = false;
+            }
         }
 
         private async Task<bool> SendMessageAsync(Message newMessage)
         {
-            this.TypedMessageContents = string.Empty;
-
             bool success;
 
             success = await this.MessageContainer.SendMessage(newMessage);
@@ -418,6 +423,16 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 this.MessageContainer.Messages.Add(newMessage);
                 await this.LoadMoreAsync(null, true);
+
+                this.TypedMessageContents = string.Empty;
+            }
+            else
+            {
+                MessageBox.Show(
+                    "Could Not Send Message",
+                    "GroupMe Desktop Client",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
 
             return success;
