@@ -62,8 +62,11 @@ namespace GroupMeClientApi
 
         private string Hash(string input)
         {
-            var hash = new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(input));
-            return string.Concat(hash.Select(b => b.ToString("x2")));
+            using (var sha1Managed = new SHA1Managed())
+            {
+                var hash = sha1Managed.ComputeHash(Encoding.UTF8.GetBytes(input));
+                return string.Concat(hash.Select(b => b.ToString("x2")));
+            }
         }
     }
 }

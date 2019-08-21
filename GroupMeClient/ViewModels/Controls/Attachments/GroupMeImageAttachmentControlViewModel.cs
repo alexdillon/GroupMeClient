@@ -65,11 +65,9 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
         private async Task LoadImageAttachment()
         {
-            byte[] image = null;
-
             var resolution = this.LowQualityPreview ? "small" : "large";
 
-            image = await this.ImageDownloader.DownloadPostImageAsync($"{this.ImageAttachment.Url}.{resolution}");
+            var image = await this.ImageDownloader.DownloadPostImageAsync($"{this.ImageAttachment.Url}.{resolution}");
 
             if (image == null)
             {
