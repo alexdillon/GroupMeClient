@@ -9,6 +9,7 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:converters="clr-namespace:GroupMeClient.Converters"
              mc:Ignorable="d"
              Background="#F7F7F7"
              d:DesignHeight="700" d:DesignWidth="500">
@@ -23,9 +24,9 @@
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
-        <extensions:InverseBoolConverter x:Key="inverseBoolConverter"/>
-        <extensions:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
-        <extensions:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+        <converters:InverseBoolConverter x:Key="inverseBoolConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
     </UserControl.Resources>
 
     <Grid>

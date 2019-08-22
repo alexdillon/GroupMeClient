@@ -8,6 +8,7 @@
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:converters="clr-namespace:GroupMeClient.Converters"
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
@@ -26,8 +27,8 @@
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
-        <extensions:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
-        <extensions:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
     </UserControl.Resources>
 
     <i:Interaction.Triggers>

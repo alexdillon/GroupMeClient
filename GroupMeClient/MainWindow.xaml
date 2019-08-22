@@ -8,6 +8,7 @@
                  xmlns:viewModels="clr-namespace:GroupMeClient.ViewModels"
                  xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
                  xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+                 xmlns:converters="clr-namespace:GroupMeClient.Converters"
                  Title="GroupMe Desktop Client"
                  TitleCaps="False"
                  Width="1024"
@@ -43,7 +44,7 @@
     <Grid>
         <Grid.Resources>
             <local:SelectedItemToContentConverter x:Key="SelectedItemToContentConverter" />
-            <extensions:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+            <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
 
             <!--  this is the template for the items (options too)  -->
             <DataTemplate x:Key="MenuItemTemplate" DataType="{x:Type mah:HamburgerMenuIconItem}">

@@ -6,6 +6,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             xmlns:converters="clr-namespace:GroupMeClient.Converters"
              mc:Ignorable="d" 
              Background="White"
              FontFamily="Segoe UI"
@@ -18,7 +19,7 @@
     </i:Interaction.Triggers>
 
     <UserControl.Resources>
-        <extensions:IsZeroConverter x:Key="isZeroConverter"/>
+        <converters:IsZeroConverter x:Key="isZeroConverter"/>
     </UserControl.Resources>
 
     <Grid>

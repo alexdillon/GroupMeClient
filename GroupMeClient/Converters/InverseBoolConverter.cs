@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace GroupMeClient.Extensions
+namespace GroupMeClient.Converters
 {
     /// <summary>
     /// <see cref="InverseBoolConverter"/> provides a converter for boolean logical NOT.

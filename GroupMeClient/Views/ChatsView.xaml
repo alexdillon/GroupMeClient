@@ -4,18 +4,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
-             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:ic="http://schemas.microsoft.com/expression/2010/interactions"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:converters="clr-namespace:GroupMeClient.Converters"
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
     
     <UserControl.Resources>
-        <extensions:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
     </UserControl.Resources>
     
     <Grid>

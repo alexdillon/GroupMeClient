@@ -3,17 +3,18 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace GroupMeClient.Extensions
+namespace GroupMeClient.Converters
 {
     /// <summary>
-    /// <see cref="NullToVisibilityConverter"/> provides a converter to hide null items in XAML.
+    /// <see cref="BoolToVisibilityConverter"/> provides a converter to hide false items in XAML.
     /// </summary>
-    public sealed class NullToVisibilityConverter : IValueConverter
+    public sealed class BoolToVisibilityConverter : IValueConverter
     {
         /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? Visibility.Hidden : Visibility.Visible;
+            var visible = System.Convert.ToBoolean(value, culture);
+            return visible == false ? Visibility.Hidden : Visibility.Visible;
         }
 
         /// <inheritdoc />
