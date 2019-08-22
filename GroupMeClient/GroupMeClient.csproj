@@ -72,12 +72,12 @@
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
-    <Compile Include="Extensions\RegexUtils.cs" />
+    <Compile Include="Utilities\RegexUtils.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />
     <Compile Include="Extensions\TextBlockExtensions.cs" />
     <Compile Include="Extensions\EventFocusAttachment.cs" />
     <Compile Include="Extensions\FileDragDropHelper.cs" />
-    <Compile Include="Extensions\ImageUtils.cs" />
+    <Compile Include="Utilities\ImageUtils.cs" />
     <Compile Include="Converters\InverseBoolConverter.cs" />
     <Compile Include="Converters\IsZeroConverter.cs" />
     <Compile Include="Extensions\ListBoxWithPosition.cs" />
