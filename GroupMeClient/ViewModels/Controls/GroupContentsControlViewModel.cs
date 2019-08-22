@@ -371,8 +371,11 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task SendMessageAsync()
         {
-            var newMessage = Message.CreateMessage(this.TypedMessageContents);
-            await this.SendMessageAsync(newMessage);
+            if (!string.IsNullOrEmpty(this.TypedMessageContents))
+            {
+                var newMessage = Message.CreateMessage(this.TypedMessageContents);
+                await this.SendMessageAsync(newMessage);
+            }
         }
 
         private async Task SendImageMessageAsync()
@@ -383,6 +386,11 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             var imageSendDialog = this.SmallDialog as SendImageControlViewModel;
+
+            if (imageSendDialog.ImageStream == null)
+            {
+                return;
+            }
 
             imageSendDialog.IsSending = true;
 
