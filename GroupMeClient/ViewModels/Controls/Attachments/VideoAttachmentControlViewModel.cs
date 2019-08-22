@@ -1,6 +1,7 @@
 ﻿using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi;
+using GroupMeClientApi.Models.Attachments;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
 {
@@ -26,6 +27,20 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
                 _ = this.DownloadImageAsync(newUri, 600, 300);
             }
+
+            this.Clicked = new RelayCommand(this.ClickedAction);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VideoAttachmentControlViewModel"/> class.
+        /// </summary>
+        /// <param name="attachment">The GroupMe Video Attachment to display.</param>
+        /// <param name="imageDownloader">The downloader to use when retreiving data.</param>
+        public VideoAttachmentControlViewModel(VideoAttachment attachment, ImageDownloader imageDownloader)
+            : base(imageDownloader)
+        {
+            this.Url = attachment.Url;
+            _ = this.DownloadImageAsync(attachment.PreviewUrl, 600, 300);
 
             this.Clicked = new RelayCommand(this.ClickedAction);
         }

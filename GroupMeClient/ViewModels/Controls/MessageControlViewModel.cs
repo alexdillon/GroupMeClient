@@ -274,7 +274,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void LoadAttachments()
         {
-            // Load GroupMe Image Attachments
+            // Load GroupMe Image and Video Attachments
             foreach (var attachment in this.Message.Attachments)
             {
                 if (attachment is ImageAttachment imageAttach)
@@ -294,9 +294,20 @@ namespace GroupMeClient.ViewModels.Controls
                     // Don't allow any other attachment types to be included if a linked_image is.
                     return;
                 }
+                else if (attachment is VideoAttachment videoAttach)
+                {
+                    var videoLinkedVm = new VideoAttachmentControlViewModel(videoAttach, this.Message.ImageDownloader);
+                    this.AttachedItems.Add(videoLinkedVm);
+
+                    // Videos can have captions, so only exclude the v.groupme url from the body
+                    this.HiddenText = videoAttach.Url;
+
+                    // Don't allow any other attachment types to be included if a video is.
+                    return;
+                }
             }
 
-            // Load Link-Based Attachments (Tweets, Web Images, GroupMe Hosted Video, Websites, etc.)
+            // Load Link-Based Attachments (Tweets, Web Images, Websites, etc.)
             var text = this.Message.Text ?? string.Empty;
             if (text.Contains(" "))
             {
@@ -307,7 +318,6 @@ namespace GroupMeClient.ViewModels.Controls
             const string TwitterPrefixHttps = "https://twitter.com/";
             const string TwitterPrefixHttp = "http://twitter.com/";
 
-            const string GroupMeVideoPrefixHttps = "https://v.groupme.com";
             const string GroupMeImageRegexHttps = @"https:\/\/i.groupme.com\/[0-99999]*x[0-99999]*\..*";
 
             string[] imageExtensions = { "png", "jpg", "jpeg", "gif", "bmp" };
@@ -322,11 +332,6 @@ namespace GroupMeClient.ViewModels.Controls
             if (text.StartsWith(TwitterPrefixHttps) || text.StartsWith(TwitterPrefixHttp))
             {
                 vm = new TwitterAttachmentControlViewModel(text, this.Message.ImageDownloader);
-                this.AttachedItems.Add(vm);
-            }
-            else if (text.StartsWith(GroupMeVideoPrefixHttps))
-            {
-                vm = new VideoAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
             }
             else if (imageExtensions.Contains(linkExtension))
