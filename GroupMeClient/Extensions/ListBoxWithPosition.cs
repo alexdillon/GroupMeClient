@@ -60,7 +60,9 @@ namespace GroupMeClient.Extensions
 
         private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            var atBottom = e.VerticalOffset == (e.OriginalSource as ScrollViewer).ScrollableHeight;
+            // When DPI scaling is enabled, pixel values may be floating point. Round down to integers to
+            // prevent floating-point roundoff error when comparing values.
+            var atBottom = (int)e.VerticalOffset == (int)(e.OriginalSource as ScrollViewer).ScrollableHeight;
             this.SetValue(IsNotAtBottomPropertyKey, !atBottom);
 
             if (this.ShouldSnapToBottom)
