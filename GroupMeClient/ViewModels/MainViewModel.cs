@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -115,6 +116,10 @@ namespace GroupMeClient.ViewModels
 
         private LoginViewModel LoginViewModel { get; set; }
 
+        private ProgressRing ReconnectingSpinner { get; } = new ProgressRing() { IsActive = false, Width = 20, Foreground = System.Windows.Media.Brushes.White };
+
+        private int DisconnectedComponentCount { get; set; }
+
         private void InitializeClient()
         {
             Directory.CreateDirectory(this.DataRoot);
@@ -123,6 +128,9 @@ namespace GroupMeClient.ViewModels
             this.SettingsManager.LoadSettings();
 
             PluginManager.Instance.LoadPlugins(this.PluginsPath);
+
+            Messenger.Default.Register<Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
+            Messenger.Default.Register<Messaging.DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
 
             if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
             {
@@ -155,8 +163,6 @@ namespace GroupMeClient.ViewModels
             Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
             this.ClosePopup = new RelayCommand(this.CloseBigPopup);
             this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
-
-            Messenger.Default.Register<Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
         }
 
         private void RegisterNotifications()
@@ -192,9 +198,20 @@ namespace GroupMeClient.ViewModels
                 Tag = this.SettingsViewModel,
             };
 
+            var loadingSpinner = new HamburgerMenuIconItem()
+            {
+                Icon = this.ReconnectingSpinner,
+                Label = "Loading...",
+                ToolTip = "Loading...",
+                Tag = null,
+                IsEnabled = false,
+            };
+
             // Add new Tabs
             this.MenuItems.Add(chatsTab);
             this.MenuItems.Add(secondTab);
+
+            this.MenuItems.Add(loadingSpinner);
 
             // Add new Options
             this.MenuOptionItems.Add(settingsTab);
@@ -253,6 +270,16 @@ namespace GroupMeClient.ViewModels
         private void UpdateNotificationCount(Messaging.UnreadRequestMessage update)
         {
             this.UnreadCount = update.Count;
+        }
+
+        private void UpdateDisconnectedComponentsCount(Messaging.DisconnectedRequestMessage update)
+        {
+            this.DisconnectedComponentCount += update.Disconnected ? 1 : -1;
+            this.DisconnectedComponentCount = Math.Max(this.DisconnectedComponentCount, 0); // make sure it never goes negative
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.ReconnectingSpinner.IsActive = this.DisconnectedComponentCount > 0;
+            });
         }
     }
 }

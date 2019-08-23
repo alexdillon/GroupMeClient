@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -11,6 +12,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Notifications;
 using GroupMeClient.Settings;
+using GroupMeClient.Utilities;
 using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Push;
@@ -99,6 +101,10 @@ namespace GroupMeClient.ViewModels
         private PushClient PushClient { get; set; }
 
         private SemaphoreSlim ReloadGroupsSem { get; } = new SemaphoreSlim(1, 1);
+
+        private ReliabilityStateMachine ReliabilityStateMachine { get; } = new ReliabilityStateMachine();
+
+        private Timer RetryTimer { get; set; }
 
         /// <inheritdoc/>
         async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification, IMessageContainer container)
@@ -189,30 +195,45 @@ namespace GroupMeClient.ViewModels
                         this.SettingsManager.ChatsSettings.GroupChatStates.Add(groupState);
                     }
 
-                    // calculate how many new messages have been added since the group/chat was last read
-                    var unreadMessages = group.TotalMessageCount - groupState.LastTotalMessageCount;
+                    // Code to update the UI needs to be run on the Application Dispatcher
+                    // This is typically the case, but Timer events from ReliabilityStateMachine for
+                    // retry-callbacks will NOT run on the original thread.
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        // calculate how many new messages have been added since the group/chat was last read
+                        var unreadMessages = group.TotalMessageCount - groupState.LastTotalMessageCount;
 
-                    var existingVm = this.AllGroupsChats.FirstOrDefault(g => g.Id == group.Id);
-                    if (existingVm == null)
-                    {
-                        // create a new GroupControl ViewModel for this Group
-                        var vm = new GroupControlViewModel(group)
+                        var existingVm = this.AllGroupsChats.FirstOrDefault(g => g.Id == group.Id);
+                        if (existingVm == null)
                         {
-                            GroupSelected = new RelayCommand<GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
-                            TotalUnreadCount = unreadMessages,
-                        };
-                        this.AllGroupsChats.Add(vm);
-                    }
-                    else
-                    {
-                        // Update the existing Group/Chat VM
-                        existingVm.MessageContainer = group;
-                        existingVm.TotalUnreadCount = unreadMessages;
-                    }
+                            // create a new GroupControl ViewModel for this Group
+                            var vm = new GroupControlViewModel(group)
+                            {
+                                GroupSelected = new RelayCommand<GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
+                                TotalUnreadCount = unreadMessages,
+                            };
+                            this.AllGroupsChats.Add(vm);
+                        }
+                        else
+                        {
+                            // Update the existing Group/Chat VM
+                            existingVm.MessageContainer = group;
+                            existingVm.TotalUnreadCount = unreadMessages;
+                        }
+                    });
                 }
 
                 this.SettingsManager.SaveSettings();
                 this.PublishTotalUnreadCount();
+
+                // if everything was successful, reset the reliability monitor
+                this.ReliabilityStateMachine.Succeeded();
+                this.RetryTimer?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception in {nameof(this.LoadGroupsAndChats)} - {ex.Message}. Retrying...");
+                this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(async () => await this.LoadGroupsAndChats());
             }
             finally
             {

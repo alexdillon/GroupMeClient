@@ -11,6 +11,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Extensions;
+using GroupMeClient.Utilities;
 using GroupMeClientApi.Models;
 
 namespace GroupMeClient.ViewModels.Controls
@@ -32,13 +33,17 @@ namespace GroupMeClient.ViewModels.Controls
         public GroupContentsControlViewModel()
         {
             this.Messages = new ObservableCollection<MessageControlViewModelBase>();
+
             this.ReloadSem = new SemaphoreSlim(1, 1);
+
             this.SendMessage = new RelayCommand(async () => await this.SendMessageAsync(), true);
             this.OpenMessageSuggestions = new RelayCommand(this.OpenMessageSuggestionsDialog);
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await this.LoadMoreAsync(s), true);
             this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
             this.EasyClosePopup = null; // EasyClose makes it too easy to accidently close the send dialog.
             this.GroupChatPluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>(this.ActivateGroupPlugin);
+
+            this.ReliabilityStateMachine = new ReliabilityStateMachine();
 
             this.GroupChatPlugins = new ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>();
             foreach (var plugin in Plugins.PluginManager.Instance.GroupChatPlugins)
@@ -160,6 +165,10 @@ namespace GroupMeClient.ViewModels.Controls
 
         private DateTime LastMarkerTime { get; set; } = DateTime.MinValue;
 
+        private ReliabilityStateMachine ReliabilityStateMachine { get; }
+
+        private Timer RetryTimer { get; set; }
+
         /// <summary>
         /// Reloads and redisplay the newest messages.
         /// This will capture any messages send since the last reload.
@@ -167,11 +176,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LoadNewMessages()
         {
-            await Application.Current.Dispatcher.Invoke(async () =>
-            {
-                // the code that's accessing UI properties
-                await this.LoadMoreAsync(null, true);
-            });
+            await this.LoadMoreAsync(null, true);
         }
 
         /// <summary>
@@ -191,6 +196,8 @@ namespace GroupMeClient.ViewModels.Controls
         void IDisposable.Dispose()
         {
             this.Messages.Clear();
+
+            this.RetryTimer?.Dispose();
 
             try
             {
@@ -246,6 +253,15 @@ namespace GroupMeClient.ViewModels.Controls
                 }
 
                 this.UpdateDisplay(scrollViewer, results);
+
+                // if everything was successful, reset the reliability monitor
+                this.ReliabilityStateMachine.Succeeded();
+                this.RetryTimer?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception in {nameof(this.LoadMoreAsync)} - {ex.Message}. Retrying...");
+                this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(async () => await this.LoadMoreAsync(scrollViewer, updateNewest));
             }
             finally
             {
@@ -255,118 +271,122 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void UpdateDisplay(ScrollViewer scrollViewer, ICollection<Message> messages)
         {
-            double originalHeight = scrollViewer?.ExtentHeight ?? 0.0;
-            if (originalHeight != 0)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                // prevent the At Top event from firing while we are adding new messages
-                scrollViewer.ScrollToVerticalOffset(1);
-            }
-
-            var maxTimeDifference = TimeSpan.FromMinutes(15);
-
-            // Messages retrieved with the before_id parameter are returned in descending order
-            // Reverse iterate through the messages collection to go newest->oldest
-            for (int i = messages.Count - 1; i >= 0; i--)
-            {
-                var msg = messages.ElementAt(i);
-
-                var oldMsg = this.Messages.FirstOrDefault(m => m.Id == msg.Id);
-
-                if (oldMsg == null)
+                // the code that's accessing UI properties
+                double originalHeight = scrollViewer?.ExtentHeight ?? 0.0;
+                if (originalHeight != 0)
                 {
-                    // add new message
-                    var msgVm = new MessageControlViewModel(msg);
-                    this.Messages.Add(msgVm);
+                    // prevent the At Top event from firing while we are adding new messages
+                    scrollViewer.ScrollToVerticalOffset(1);
+                }
 
-                    // add an inline timestamp if needed
-                    if (msg.CreatedAtTime.Subtract(this.LastMarkerTime) > maxTimeDifference)
+                var maxTimeDifference = TimeSpan.FromMinutes(15);
+
+                // Messages retrieved with the before_id parameter are returned in descending order
+                // Reverse iterate through the messages collection to go newest->oldest
+                for (int i = messages.Count - 1; i >= 0; i--)
+                {
+                    var msg = messages.ElementAt(i);
+
+                    var oldMsg = this.Messages.FirstOrDefault(m => m.Id == msg.Id);
+
+                    if (oldMsg == null)
                     {
-                        var messageId = long.Parse(msg.Id);
-                        var timeStampId = (messageId - 1).ToString();
+                        // add new message
+                        var msgVm = new MessageControlViewModel(msg);
+                        this.Messages.Add(msgVm);
 
-                        this.Messages.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, timeStampId, msgVm.MessageColor));
-                        this.LastMarkerTime = msg.CreatedAtTime;
+                        // add an inline timestamp if needed
+                        if (msg.CreatedAtTime.Subtract(this.LastMarkerTime) > maxTimeDifference)
+                        {
+                            var messageId = long.Parse(msg.Id);
+                            var timeStampId = (messageId - 1).ToString();
+
+                            this.Messages.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, timeStampId, msgVm.MessageColor));
+                            this.LastMarkerTime = msg.CreatedAtTime;
+                        }
+                    }
+                    else
+                    {
+                        // update an existing one if needed
+                        oldMsg.Message = msg;
                     }
                 }
-                else
+
+                // process read receipt and sent receipts
+                if (this.MessageContainer.ReadReceipt != null)
                 {
-                    // update an existing one if needed
-                    oldMsg.Message = msg;
-                }
-            }
+                    // Remove old markers
+                    var toRemove = this.Messages.OfType<InlineReadSentMarkerControlViewModel>().ToList();
+                    foreach (var marker in toRemove)
+                    {
+                        this.Messages.Remove(marker);
+                    }
 
-            // process read receipt and sent receipts
-            if (this.MessageContainer.ReadReceipt != null)
-            {
-                // Remove old markers
-                var toRemove = this.Messages.OfType<InlineReadSentMarkerControlViewModel>().ToList();
-                foreach (var marker in toRemove)
+                    // Attach a "Read Receipt" if the read message is displayed.
+                    var matchedMessage = this.Messages.FirstOrDefault(m => m.Id == this.MessageContainer.ReadReceipt.MessageId);
+                    if (matchedMessage != null)
+                    {
+                        var msgId = long.Parse(matchedMessage.Id);
+
+                        var readMarker = new InlineReadSentMarkerControlViewModel(
+                            this.MessageContainer.ReadReceipt.ReadAtTime,
+                            true,
+                            (msgId + 1).ToString(),
+                            (matchedMessage as MessageControlViewModel).MessageColor);
+
+                        this.Messages.Add(readMarker);
+                    }
+
+                    // Attach a "Sent Receipt" to the last message confirmed sent by GroupMe
+                    var me = this.MessageContainer.WhoAmI();
+                    var lastSentMessage = this.Messages
+                        .OfType<MessageControlViewModel>()
+                        .OrderByDescending(m => m.Id)
+                        .FirstOrDefault(m => m.Message.UserId == me.Id);
+
+                    if (lastSentMessage != null && lastSentMessage != matchedMessage)
+                    {
+                        var msgId = long.Parse(lastSentMessage.Id);
+
+                        var sentMarker = new InlineReadSentMarkerControlViewModel(
+                            lastSentMessage.Message.CreatedAtTime,
+                            false,
+                            (msgId + 1).ToString(),
+                            (lastSentMessage as MessageControlViewModel).MessageColor);
+
+                        this.Messages.Add(sentMarker);
+                    }
+
+                    // Send a Read Receipt for the last message received
+                    var lastReceivedMessage = this.Messages
+                        .OfType<MessageControlViewModel>()
+                        .OrderByDescending(m => m.Id)
+                        .FirstOrDefault(m => m.Message.UserId != me.Id);
+
+                    if (lastReceivedMessage != null && this.MessageContainer is Chat c)
+                    {
+                        var result = Task.Run(async () => await c.SendReadReceipt(lastReceivedMessage.Message)).Result;
+                    }
+                }
+
+                if (originalHeight != 0)
                 {
-                    this.Messages.Remove(marker);
+                    // Calculate the offset where the last message the user was looking at is
+                    // Scroll back to there so new messages appear on top, above screen
+                    scrollViewer.UpdateLayout();
+                    double newHeight = scrollViewer?.ExtentHeight ?? 0.0;
+                    double difference = newHeight - originalHeight;
+
+                    scrollViewer.ScrollToVerticalOffset(difference);
                 }
 
-                // Attach a "Read Receipt" if the read message is displayed.
-                var matchedMessage = this.Messages.FirstOrDefault(m => m.Id == this.MessageContainer.ReadReceipt.MessageId);
-                if (matchedMessage != null)
+                if (messages.Count > 0)
                 {
-                    var msgId = long.Parse(matchedMessage.Id);
-
-                    var readMarker = new InlineReadSentMarkerControlViewModel(
-                        this.MessageContainer.ReadReceipt.ReadAtTime,
-                        true,
-                        (msgId + 1).ToString(),
-                        (matchedMessage as MessageControlViewModel).MessageColor);
-
-                    this.Messages.Add(readMarker);
+                    this.FirstDisplayedMessage = messages.Last();
                 }
-
-                // Attach a "Sent Receipt" to the last message confirmed sent by GroupMe
-                var me = this.MessageContainer.WhoAmI();
-                var lastSentMessage = this.Messages
-                    .OfType<MessageControlViewModel>()
-                    .OrderByDescending(m => m.Id)
-                    .FirstOrDefault(m => m.Message.UserId == me.Id);
-
-                if (lastSentMessage != null && lastSentMessage != matchedMessage)
-                {
-                    var msgId = long.Parse(lastSentMessage.Id);
-
-                    var sentMarker = new InlineReadSentMarkerControlViewModel(
-                        lastSentMessage.Message.CreatedAtTime,
-                        false,
-                        (msgId + 1).ToString(),
-                        (lastSentMessage as MessageControlViewModel).MessageColor);
-
-                    this.Messages.Add(sentMarker);
-                }
-
-                // Send a Read Receipt for the last message received
-                var lastReceivedMessage = this.Messages
-                    .OfType<MessageControlViewModel>()
-                    .OrderByDescending(m => m.Id)
-                    .FirstOrDefault(m => m.Message.UserId != me.Id);
-
-                if (lastReceivedMessage != null && this.MessageContainer is Chat c)
-                {
-                    var result = Task.Run(async () => await c.SendReadReceipt(lastReceivedMessage.Message)).Result;
-                }
-            }
-
-            if (originalHeight != 0)
-            {
-                // Calculate the offset where the last message the user was looking at is
-                // Scroll back to there so new messages appear on top, above screen
-                scrollViewer.UpdateLayout();
-                double newHeight = scrollViewer?.ExtentHeight ?? 0.0;
-                double difference = newHeight - originalHeight;
-
-                scrollViewer.ScrollToVerticalOffset(difference);
-            }
-
-            if (messages.Count > 0)
-            {
-                this.FirstDisplayedMessage = messages.Last();
-            }
+            });
         }
 
         private async Task SendMessageAsync()

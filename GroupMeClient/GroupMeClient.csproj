@@ -72,6 +72,7 @@
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
+    <Compile Include="Messaging\DisconnectedRequestMessage.cs" />
     <Compile Include="Utilities\RegexUtils.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />
     <Compile Include="Extensions\TextBlockExtensions.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Settings\CoreSettings.cs" />
     <Compile Include="Settings\SettingsManager.cs" />
     <Compile Include="Settings\UISettings.cs" />
+    <Compile Include="Utilities\ReliabilityStateMachine.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\GroupMeImageAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\ImageLinkAttachmentControlViewModel.cs" />
