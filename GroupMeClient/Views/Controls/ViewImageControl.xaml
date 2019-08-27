@@ -6,6 +6,7 @@
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
              d:DesignHeight="200" d:DesignWidth="200"
@@ -15,13 +16,16 @@
         <Controls:ProgressRing IsActive="{Binding IsLoading}" 
                                Width="60" Height="60"
                                HorizontalAlignment="Center"/>
-        <Image
+
+        <extensions:ZoomBorder x:Name="border" ClipToBounds="False">
+            <Image
                MaxWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}"
                MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualHeight}"
                Stretch="Uniform"
                HorizontalAlignment="Center"
                gif:AnimationBehavior.SourceStream="{Binding ImageStream}" />
-
+        </extensions:ZoomBorder>
+        
         <Button Width="30"
                 Height="30"
                 HorizontalAlignment="Left"

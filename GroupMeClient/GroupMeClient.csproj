@@ -72,6 +72,7 @@
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
+    <Compile Include="Extensions\ZoomBorder.cs" />
     <Compile Include="Messaging\DisconnectedRequestMessage.cs" />
     <Compile Include="Utilities\RegexUtils.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />
