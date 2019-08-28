@@ -339,6 +339,11 @@
     <PackageReference Include="Expression.Interaction">
       <Version>3.0.40218</Version>
     </PackageReference>
+    <PackageReference Include="GitInfo">
+      <Version>2.0.20</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="GroupMeClientPlugin">
       <Version>1.0.1</Version>
     </PackageReference>

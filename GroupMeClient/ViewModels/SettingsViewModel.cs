@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -25,6 +26,16 @@ namespace GroupMeClient.ViewModels
         /// Gets a collection installed plugins.
         /// </summary>
         public ObservableCollection<Plugin> InstalledPlugins { get; } = new ObservableCollection<Plugin>();
+
+        /// <summary>
+        /// Gets a string displaying the friendly version number for the application.
+        /// </summary>
+        public string ApplicationVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+        /// <summary>
+        /// Gets a string describing the git commit the application has built from.
+        /// </summary>
+        public string ApplicationCommit => $"{ThisAssembly.Git.Commit}-{ThisAssembly.Git.Branch}{(ThisAssembly.Git.IsDirty ? "-dirty" : string.Empty)}";
 
         private void LoadPluginInfo()
         {

@@ -17,16 +17,9 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
+    <StackPanel Orientation="Vertical">
         <!--Settings Header-->
-        <Grid Grid.Row="0">
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
@@ -45,8 +38,7 @@
         </Grid>
 
         <!--Settings Area-->
-        <GroupBox Grid.Row="1" 
-                  Margin="10" Padding="10">
+        <GroupBox Margin="10" Padding="10">
             <GroupBox.Header>
                 <TextBlock Foreground="White" Text="UI Settings"/>
             </GroupBox.Header>
@@ -60,9 +52,27 @@
             </StackPanel>
         </GroupBox>
 
+        <!--About Area-->
+        <GroupBox Margin="10" Padding="10">
+            <GroupBox.Header>
+                <TextBlock Foreground="White" Text="About"/>
+            </GroupBox.Header>
+
+            <TextBlock TextWrapping="Wrap">
+                <Run FontWeight="SemiBold">GroupMe Desktop Client is a modular client for accessing GroupMe on Windows.</Run>
+                <LineBreak />
+                By Alex Dillon, 2019
+                <LineBreak />
+                <LineBreak />
+                Version: <Run Text="{Binding ApplicationVersion, Mode=OneWay}"/>
+                <LineBreak />
+                Built: <Run Text="{Binding ApplicationCommit, Mode=OneWay}"/>
+            </TextBlock>
+
+        </GroupBox>
+
         <!--Plugins Area-->
-        <GroupBox Grid.Row="2" 
-                  Margin="10" Padding="10">
+        <GroupBox Margin="10" Padding="10">
             <GroupBox.Header>
                 <TextBlock Foreground="White" Text="Plugins"/>
             </GroupBox.Header>
@@ -98,8 +108,7 @@
         </GroupBox>
 
         <!--Credits and License Area-->
-        <GroupBox Grid.Row="3" 
-                  Margin="10" Padding="10">
+        <GroupBox Margin="10" Padding="10">
             <GroupBox.Header>
                 <TextBlock Foreground="White" Text="Open Source Credits"/>
             </GroupBox.Header>
@@ -166,8 +175,6 @@
                 is licensed by
                 <Hyperlink NavigateUri="http://creativecommons.org/licenses/by/3.0/" extensions:WebHyperlinkExtensions.IsWebLink="True">CC 3.0 BY</Hyperlink>
             </TextBlock>
-
         </GroupBox>
-
-    </Grid>
+    </StackPanel>
 </UserControl>
