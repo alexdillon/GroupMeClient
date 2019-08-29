@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <Authors>Alex Dillon</Authors>
     <Company>MicroCube Software</Company>
     <Description>GroupMeClientApi provides a C# API Client for interacting with GroupMe</Description>
