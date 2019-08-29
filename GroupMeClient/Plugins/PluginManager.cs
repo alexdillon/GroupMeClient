@@ -34,6 +34,11 @@ namespace GroupMeClient.Plugins
         public ICollection<IGroupChatPlugin> GroupChatPlugins { get; } = new List<IGroupChatPlugin>();
 
         /// <summary>
+        /// Gets the available <see cref="IGroupChatCachePlugin"/> plugins.
+        /// </summary>
+        public ICollection<IGroupChatCachePlugin> GroupChatCachePlugins { get; } = new List<IGroupChatCachePlugin>();
+
+        /// <summary>
         /// Gets the available <see cref="IMessageComposePlugin"/> plugins.
         /// </summary>
         public ICollection<IMessageComposePlugin> MessageComposePlugins { get; } = new List<IMessageComposePlugin>();
@@ -97,6 +102,10 @@ namespace GroupMeClient.Plugins
                 else if (plugin is IGroupChatPlugin groupChatPlugin)
                 {
                     this.GroupChatPlugins.Add(groupChatPlugin);
+                }
+                else if (plugin is IGroupChatCachePlugin groupChatCachePlugin)
+                {
+                    this.GroupChatCachePlugins.Add(groupChatCachePlugin);
                 }
             }
         }

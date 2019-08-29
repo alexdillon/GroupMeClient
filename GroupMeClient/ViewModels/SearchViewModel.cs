@@ -50,6 +50,15 @@ namespace GroupMeClient.ViewModels
             this.ClosePopup = new RelayCommand(this.CloseLittlePopup);
             this.EasyClosePopup = new RelayCommand(this.CloseLittlePopup);
 
+            this.GroupChatCachePlugins = new ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin>();
+            this.GroupChatCachePluginActivated =
+                new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin>(this.ActivateGroupPlugin);
+
+            foreach (var plugin in Plugins.PluginManager.Instance.GroupChatCachePlugins)
+            {
+                this.GroupChatCachePlugins.Add(plugin);
+            }
+
             this.Loaded = new RelayCommand(async () => await this.IndexGroups(), true);
         }
 
@@ -83,6 +92,17 @@ namespace GroupMeClient.ViewModels
         /// Gets the ViewModel for the in-context message view.
         /// </summary>
         public PaginatedMessagesControlViewModel ContextView { get; }
+
+        /// <summary>
+        /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
+        /// </summary>
+        public ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin> GroupChatCachePlugins { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when a Plugin in the
+        /// Options Menu is activated.
+        /// </summary>
+        public ICommand GroupChatCachePluginActivated { get; }
 
         /// <summary>
         /// Gets the Big Dialog that should be displayed as a popup.
@@ -208,7 +228,7 @@ namespace GroupMeClient.ViewModels
             }
         }
 
-        private IQueryable<Message> GetMessageForCurrentGroup()
+        private IQueryable<Message> GetMessagesForCurrentGroup()
         {
             if (this.SelectedGroupChat is Group g)
             {
@@ -237,7 +257,7 @@ namespace GroupMeClient.ViewModels
         {
             this.ResultsView.Messages = null;
 
-            var messagesForGroupChat = this.GetMessageForCurrentGroup();
+            var messagesForGroupChat = this.GetMessagesForCurrentGroup();
 
             var results = messagesForGroupChat
                 .Where(m => m.Text.ToLower().Contains(this.SearchTerm.ToLower()))
@@ -252,12 +272,18 @@ namespace GroupMeClient.ViewModels
         {
             this.ContextView.Messages = null;
 
-            var messagesForGroupChat = this.GetMessageForCurrentGroup()
+            var messagesForGroupChat = this.GetMessagesForCurrentGroup()
                 .OrderBy(m => m.Id);
 
             this.ContextView.AssociateWith = this.SelectedGroupChat;
             this.ContextView.Messages = messagesForGroupChat;
             this.ContextView.EnsureVisible(message);
+        }
+
+        private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin plugin)
+        {
+            var cache = this.GetMessagesForCurrentGroup();
+            _ = plugin.Activated(this.SelectedGroupChat, cache);
         }
 
         private void CloseLittlePopup()

@@ -5,9 +5,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
-             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             xmlns:views="clr-namespace:GroupMeClient.Views"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
              d:DesignHeight="300"
              d:DesignWidth="300"
@@ -165,6 +166,7 @@
         <Grid Grid.Column="2" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -173,19 +175,88 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Column="0"
-                           HorizontalAlignment="Left" VerticalAlignment="Center"
-                           Padding="15,0,0,0"
-                           Height="Auto" FontSize="17" FontWeight="SemiBold"
-                           Text="{Binding SelectedGroupName}" />
+                       HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Padding="15,0,0,0"
+                       Height="Auto" FontSize="17" FontWeight="SemiBold"
+                       Text="{Binding SelectedGroupName}" />
 
-            <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+            <!--Plugins Drop Down Menu Button-->
+            <ToggleButton Grid.Column="1"
+                            Width="25" Height="25"
+                            BorderThickness="0"
+                            HorizontalAlignment="Left"
+                            x:Name="toggleGroupOptionsButton">
+                <ToggleButton.Resources>
+                    <iconPacks:Octicons x:Key="ArrowUp" Width="15" Height="15" Kind="TriangleUp"></iconPacks:Octicons>
+                    <iconPacks:Octicons x:Key="ArrowDown" Width="15" Height="15" Kind="TriangleDown"></iconPacks:Octicons>
+                </ToggleButton.Resources>
+
+                <ToggleButton.Style>
+                    <Style TargetType="{x:Type ToggleButton}">
+                        <Setter Property="Content" Value="{StaticResource ArrowDown}" />
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                    <Border HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="border" Background="White">
+                                        <ContentPresenter Margin="5"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsChecked" Value="true">
+                                            <Setter Property="Background" TargetName="border" Value="White"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter Property="Content" Value="{StaticResource ArrowUp}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+            </ToggleButton>
+
+            <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
         </Grid>
-
 
         <controls:PaginatedMessagesControl 
             Grid.Column="2" Grid.Row="1"
             Content="{Binding ContextView}" />
-        
+
+        <!--Plugins Dropdown List-->
+        <Border Grid.Column="2" Grid.Row="1"
+                Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
+                VerticalAlignment="Top"
+                BorderThickness="20,10,20,30"
+                BorderBrush="White">
+            <ItemsControl ItemsSource="{Binding GroupChatCachePlugins}" Background="White">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button 
+                            Content="{Binding PluginName}"
+                            Command="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                     AncestorType={x:Type views:SearchView}}, Path=DataContext.GroupChatCachePluginActivated}"
+                            CommandParameter="{Binding Path=.}"
+                            HorizontalContentAlignment="Left"
+                            Foreground="#414A59" 
+                            BorderThickness="0"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Margin="5" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Border>
+
         <controls:Popup Grid.Column="0" Grid.Row="0"
                         Grid.ColumnSpan="3"
                         Grid.RowSpan="2"

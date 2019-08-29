@@ -99,7 +99,7 @@
                     <GroupStyle>
                         <GroupStyle.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock FontWeight="Bold" FontSize="14" Text="{Binding Name}"/>
+                                <TextBlock FontWeight="Bold" FontSize="12" Text="{Binding Name}"/>
                             </DataTemplate>
                         </GroupStyle.HeaderTemplate>
                     </GroupStyle>
