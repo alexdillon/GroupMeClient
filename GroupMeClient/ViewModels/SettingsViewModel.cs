@@ -43,14 +43,21 @@ namespace GroupMeClient.ViewModels
             foreach (var plugin in Plugins.PluginManager.Instance.GroupChatPlugins)
             {
                 var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
-                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Group Chat Plugin" });
+                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Group Chat Plugins" });
+            }
+
+            // Load Group Chat Cached Plugins
+            foreach (var plugin in Plugins.PluginManager.Instance.GroupChatCachePlugins)
+            {
+                var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
+                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Group Chat Cache Plugins" });
             }
 
             // Load Message Effect Plugins
             foreach (var plugin in Plugins.PluginManager.Instance.MessageComposePlugins)
             {
                 var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
-                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Message Effect Plugin" });
+                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Message Effect Plugins" });
             }
         }
 
