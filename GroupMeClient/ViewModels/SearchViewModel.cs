@@ -7,6 +7,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
+using GroupMeClientPlugin.GroupChat;
 using Microsoft.EntityFrameworkCore;
 
 namespace GroupMeClient.ViewModels
@@ -14,7 +15,7 @@ namespace GroupMeClient.ViewModels
     /// <summary>
     /// <see cref="SearchViewModel"/> provides a ViewModel for the <see cref="Controls.SearchView"/> view.
     /// </summary>
-    public class SearchViewModel : ViewModelBase
+    public class SearchViewModel : ViewModelBase, GroupMeClientPlugin.GroupChat.ICachePluginUIIntegration
     {
         private ViewModelBase popupDialog;
         private string searchTerm = string.Empty;
@@ -146,6 +147,13 @@ namespace GroupMeClient.ViewModels
 
         private IMessageContainer SelectedGroupChat { get; set; }
 
+        /// <inheritdoc/>
+        void ICachePluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
+        {
+            this.OpenNewGroupChat(container);
+            this.UpdateContextView(message);
+        }
+
         private async Task IndexGroups()
         {
             var loadingDialog = new LoadingControlViewModel();
@@ -165,7 +173,7 @@ namespace GroupMeClient.ViewModels
                 // Add Group/Chat to the list
                 var vm = new GroupControlViewModel(group)
                 {
-                    GroupSelected = new RelayCommand<GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
+                    GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s.MessageContainer), (g) => true, true),
                 };
                 this.AllGroupsChats.Add(vm);
             }
@@ -212,11 +220,11 @@ namespace GroupMeClient.ViewModels
             await this.CacheContext.SaveChangesAsync();
         }
 
-        private void OpenNewGroupChat(GroupControlViewModel group)
+        private void OpenNewGroupChat(IMessageContainer group)
         {
-            this.SelectedGroupChat = group.MessageContainer;
+            this.SelectedGroupChat = group;
             this.SearchTerm = string.Empty;
-            this.SelectedGroupName = group.Title;
+            this.SelectedGroupName = group.Name;
             this.ContextView.Messages = null;
         }
 
@@ -228,15 +236,15 @@ namespace GroupMeClient.ViewModels
             }
         }
 
-        private IQueryable<Message> GetMessagesForCurrentGroup()
+        private IQueryable<Message> GetMessagesForGroup(IMessageContainer group)
         {
-            if (this.SelectedGroupChat is Group g)
+            if (group is Group g)
             {
                 return this.CacheContext.Messages
                     .AsNoTracking()
                     .Where(m => m.GroupId == g.Id);
             }
-            else if (this.SelectedGroupChat is Chat c)
+            else if (group is Chat c)
             {
                 // Chat.Id returns the Id of the other user
                 // However, GroupMe messages are natively returned with a Conversation Id instead
@@ -257,7 +265,7 @@ namespace GroupMeClient.ViewModels
         {
             this.ResultsView.Messages = null;
 
-            var messagesForGroupChat = this.GetMessagesForCurrentGroup();
+            var messagesForGroupChat = this.GetMessagesForGroup(this.SelectedGroupChat);
 
             var results = messagesForGroupChat
                 .Where(m => m.Text.ToLower().Contains(this.SearchTerm.ToLower()))
@@ -272,7 +280,7 @@ namespace GroupMeClient.ViewModels
         {
             this.ContextView.Messages = null;
 
-            var messagesForGroupChat = this.GetMessagesForCurrentGroup()
+            var messagesForGroupChat = this.GetMessagesForGroup(this.SelectedGroupChat)
                 .OrderBy(m => m.Id);
 
             this.ContextView.AssociateWith = this.SelectedGroupChat;
@@ -280,10 +288,10 @@ namespace GroupMeClient.ViewModels
             this.ContextView.EnsureVisible(message);
         }
 
-        private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin plugin)
+        private void ActivateGroupPlugin(IGroupChatCachePlugin plugin)
         {
-            var cache = this.GetMessagesForCurrentGroup();
-            _ = plugin.Activated(this.SelectedGroupChat, cache);
+            var cache = this.GetMessagesForGroup(this.SelectedGroupChat);
+            _ = plugin.Activated(this.SelectedGroupChat, cache, this);
         }
 
         private void CloseLittlePopup()
