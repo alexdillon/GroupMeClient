@@ -56,7 +56,7 @@ namespace GroupMeClient.ViewModels
         public HamburgerMenuItem SelectedItem
         {
             get { return this.selectedItem; }
-            private set { this.Set(() => this.SelectedItem, ref this.selectedItem, value); }
+            set { this.Set(() => this.SelectedItem, ref this.selectedItem, value); }
         }
 
         /// <summary>
@@ -131,6 +131,7 @@ namespace GroupMeClient.ViewModels
 
             Messenger.Default.Register<Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
             Messenger.Default.Register<Messaging.DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
+            Messenger.Default.Register<Messaging.IndexAndRunPluginRequestMessage>(this, this.IndexAndRunCommand);
 
             if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
             {
@@ -280,6 +281,22 @@ namespace GroupMeClient.ViewModels
             {
                 this.ReconnectingSpinner.IsActive = this.DisconnectedComponentCount > 0;
             });
+        }
+
+        private void IndexAndRunCommand(Messaging.IndexAndRunPluginRequestMessage cmd)
+        {
+            this.SearchViewModel.ActivatePluginOnLoad = cmd.Plugin;
+            this.SearchViewModel.ActivatePluginForGroupOnLoad = cmd.MessageContainer;
+
+            // Find Search Tab entry and set as active
+            foreach (var menuItem in this.MenuItems)
+            {
+                if (menuItem.Tag == this.SearchViewModel)
+                {
+                    this.SelectedItem = menuItem;
+                    break;
+                }
+            }
         }
     }
 }

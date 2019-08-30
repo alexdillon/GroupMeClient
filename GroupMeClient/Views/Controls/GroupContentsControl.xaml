@@ -201,31 +201,61 @@
                 VerticalAlignment="Top"
                 BorderThickness="20,10,20,30"
                 BorderBrush="White">
-            <ItemsControl ItemsSource="{Binding GroupChatPlugins}" Background="White">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button 
-                            Content="{Binding PluginName}"
-                            Command="{Binding RelativeSource={RelativeSource FindAncestor, 
-                                     AncestorType={x:Type controls:GroupContentsControl}}, Path=DataContext.GroupChatPluginActivated}"
-                            CommandParameter="{Binding Path=.}"
-                            HorizontalContentAlignment="Left"
-                            Foreground="#414A59" 
-                            BorderThickness="0"
-                            FontSize="14"
-                            FontWeight="SemiBold"
-                            Margin="5">
+            <StackPanel Orientation="Vertical">
+                <!--Regular Plugins-->
+                <ItemsControl ItemsSource="{Binding GroupChatPlugins}" Background="White">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button 
+                                Content="{Binding PluginName}"
+                                Command="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                         AncestorType={x:Type controls:GroupContentsControl}}, Path=DataContext.GroupChatPluginActivated}"
+                                CommandParameter="{Binding Path=.}"
+                                HorizontalContentAlignment="Left"
+                                Foreground="#414A59" 
+                                BorderThickness="0"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Margin="5">
 
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
 
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <!--Cache Plugins-->
+                <ItemsControl ItemsSource="{Binding GroupChatCachePlugins}" Background="White">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button 
+                                Content="{Binding PluginName}"
+                                Command="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                         AncestorType={x:Type controls:GroupContentsControl}}, Path=DataContext.GroupChatCachePluginActivated}"
+                                CommandParameter="{Binding Path=.}"
+                                HorizontalContentAlignment="Left"
+                                Foreground="#414A59" 
+                                BorderThickness="0"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Margin="5">
+
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </StackPanel>
         </Border>
 
         <!--Send Message Bar-->

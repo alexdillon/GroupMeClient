@@ -80,7 +80,7 @@
                            ItemsSource="{Binding MenuItems}"
                            OptionsItemTemplate="{StaticResource MenuItemTemplate}"
                            OptionsItemsSource="{Binding MenuOptionItems}"
-                           SelectedItem="{Binding SelectedItem, Mode=OneWay}"
+                           SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                            PaneBackground="#1873BA">
 
             <!--  select the tag (ViewModel) of the selected item (options item)  -->

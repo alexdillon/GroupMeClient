@@ -106,6 +106,20 @@ namespace GroupMeClient.ViewModels
         public ICommand GroupChatCachePluginActivated { get; }
 
         /// <summary>
+        /// Gets or sets the plugin that should be automatically executed when indexing is complete.
+        /// This property is only used for UI-automation tasks. If null, the UI will be displayed normally
+        /// when loading is complete. If a plugin is specified, the group specified in <see cref="ActivatePluginForGroupOnLoad"/>
+        /// will be used as a parameter.
+        /// </summary>
+        public IGroupChatCachePlugin ActivatePluginOnLoad { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating which group should be passed as a parameter to an automatically executed
+        /// plugin. See <see cref="ActivatePluginOnLoad"/> for more information.
+        /// </summary>
+        public IMessageContainer ActivatePluginForGroupOnLoad { get; set; }
+
+        /// <summary>
         /// Gets the Big Dialog that should be displayed as a popup.
         /// Gets null if no dialog should be displayed.
         /// </summary>
@@ -179,6 +193,16 @@ namespace GroupMeClient.ViewModels
             }
 
             this.PopupDialog = null;
+
+            // Check to see if a plugin should be automatically executed.
+            if (this.ActivatePluginForGroupOnLoad != null && this.ActivatePluginOnLoad != null)
+            {
+                var cache = this.GetMessagesForGroup(this.ActivatePluginForGroupOnLoad);
+                _ = this.ActivatePluginOnLoad.Activated(this.ActivatePluginForGroupOnLoad, cache, this);
+
+                this.ActivatePluginForGroupOnLoad = null;
+                this.ActivatePluginOnLoad = null;
+            }
         }
 
         private async Task IndexGroup(IMessageContainer container)
