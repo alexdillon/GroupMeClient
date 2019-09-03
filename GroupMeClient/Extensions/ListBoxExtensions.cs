@@ -202,7 +202,8 @@ namespace GroupMeClient.Extensions
                 // User scroll event : set or unset autoscroll mode
                 if (e.ExtentHeightChange == 0)
                 {
-                    this.doScroll = this.scrollViewer.VerticalOffset == this.scrollViewer.ScrollableHeight;
+                    // Trucate to integers before comparing to prevent round-off errors when high-DPI scaling is used.
+                    this.doScroll = (int)this.scrollViewer.VerticalOffset == (int)this.scrollViewer.ScrollableHeight;
                 }
 
                 // Content scroll event : autoscroll eventually
