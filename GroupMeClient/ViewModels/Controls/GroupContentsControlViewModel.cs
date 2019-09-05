@@ -37,7 +37,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             this.ReloadSem = new SemaphoreSlim(1, 1);
 
-            this.SendMessage = new RelayCommand(async () => await this.SendMessageAsync(), true);
+            this.SendMessage = new RelayCommand(async () => await this.SendMessageAsync(), () => !this.IsSending, true);
             this.OpenMessageSuggestions = new RelayCommand(this.OpenMessageSuggestionsDialog);
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await this.LoadMoreAsync(s), true);
             this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
@@ -187,6 +187,8 @@ namespace GroupMeClient.ViewModels.Controls
         private ReliabilityStateMachine ReliabilityStateMachine { get; }
 
         private Timer RetryTimer { get; set; }
+
+        private bool IsSending { get; set; }
 
         /// <summary>
         /// Reloads and redisplay the newest messages.
@@ -412,6 +414,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             if (!string.IsNullOrEmpty(this.TypedMessageContents))
             {
+                this.IsSending = true;
                 var newMessage = Message.CreateMessage(this.TypedMessageContents);
                 await this.SendMessageAsync(newMessage);
             }
@@ -432,6 +435,7 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             imageSendDialog.IsSending = true;
+            this.IsSending = true;
 
             var contents = imageSendDialog.TypedMessageContents;
             byte[] image;
@@ -482,6 +486,8 @@ namespace GroupMeClient.ViewModels.Controls
                     MessageBoxImage.Error);
             }
 
+            this.IsSending = false;
+
             return success;
         }
 
@@ -491,7 +497,7 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 ImageStream = image,
                 TypedMessageContents = this.TypedMessageContents,
-                SendMessage = new RelayCommand(async () => await this.SendImageMessageAsync(), true),
+                SendMessage = new RelayCommand(async () => await this.SendImageMessageAsync(), () => !this.IsSending, true),
             };
 
             this.SmallDialog = dialog;
