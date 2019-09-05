@@ -1,6 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -8,6 +9,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Notifications.Display;
 using GroupMeClient.Plugins;
+using GroupMeClient.Updates;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 
@@ -51,7 +53,7 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
-        /// Gets the currently selected Hamburger Menu Tab.
+        /// Gets or sets the currently selected Hamburger Menu Tab.
         /// </summary>
         public HamburgerMenuItem SelectedItem
         {
@@ -107,6 +109,8 @@ namespace GroupMeClient.ViewModels
         private Settings.SettingsManager SettingsManager { get; set; }
 
         private NotificationRouter NotificationRouter { get; set; }
+
+        private UpdateAssist UpdateAssist { get; set; }
 
         private ChatsViewModel ChatsViewModel { get; set; }
 
@@ -164,6 +168,9 @@ namespace GroupMeClient.ViewModels
             Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
             this.ClosePopup = new RelayCommand(this.CloseBigPopup);
             this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
+
+            this.UpdateAssist = new UpdateAssist();
+            Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
         }
 
         private void RegisterNotifications()
@@ -251,6 +258,35 @@ namespace GroupMeClient.ViewModels
             this.MenuOptionItems = new HamburgerMenuItemCollection();
 
             this.SelectedItem = this.MenuItems[0];
+        }
+
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (!this.UpdateAssist.CanShutdown)
+            {
+                this.UpdateAssist.UpdateMonitor.Task.ContinueWith(this.UpdateCompleted);
+                e.Cancel = true;
+
+                var updatingTab = new HamburgerMenuIconItem()
+                {
+                    Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.Loading },
+                    Label = "Updating",
+                    ToolTip = "Updating",
+                    Tag = new UpdatingViewModel(),
+                };
+
+                this.MenuItems.Add(updatingTab);
+                this.SelectedItem = updatingTab;
+            }
+        }
+
+        private void UpdateCompleted(Task<bool> result)
+        {
+            // safe to shutdown now.
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Application.Current.MainWindow.Close();
+            });
         }
 
         private void OpenBigPopup(Messaging.DialogRequestMessage dialog)
