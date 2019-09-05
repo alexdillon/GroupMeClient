@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Squirrel;
 
@@ -14,7 +16,26 @@ namespace GroupMeClient.Updates
         /// </summary>
         public UpdateAssist()
         {
-            UpdateManager.GitHubUpdateManager(this.GitHubUpdateUrl).ContinueWith(this.LoadComplete);
+            var assembly = Assembly.GetEntryAssembly();
+
+            var updateDotExe = Path.Combine(
+              Path.GetDirectoryName(assembly.Location),
+              "..",
+              "Update.exe");
+
+            var isInstalled = File.Exists(updateDotExe);
+
+            if (isInstalled)
+            {
+                // Only install updates if this is running as an installed copy
+                // (i.e., not a portable installation or running under Visual Studio)
+                UpdateManager.GitHubUpdateManager(this.GitHubUpdateUrl).ContinueWith(this.LoadComplete);
+            }
+            else
+            {
+                this.UpdateMonitor.SetResult(false);
+                this.CanShutdown = true;
+            }
         }
 
         /// <summary>
@@ -37,6 +58,7 @@ namespace GroupMeClient.Updates
             try
             {
                 this.UpdateManager = manager.Result;
+
                 this.UpdateManager.UpdateApp().ContinueWith(this.UpdateCompleted);
                 this.CanShutdown = false;
             }
