@@ -111,36 +111,22 @@ namespace GroupMeClient.ViewModels
         {
             _ = this.LoadGroupsAndChats();
 
-            var groupId = notification.Message.GroupId;
-            var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == groupId);
-
+            var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
             if (groupVm != null)
             {
-                // update the latest viewed message in the persistant state
-                var groupState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == container.Id);
-                groupState.LastTotalMessageCount = container.TotalMessageCount + 1; // add one for the new message, since the group hasn't been reloaded yet
-                this.SettingsManager.SaveSettings();
+                await groupVm.LoadNewMessages();
             }
-
-            await groupVm?.LoadNewMessages();
         }
 
         /// <inheritdoc/>
         async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
         {
             _ = this.LoadGroupsAndChats();
-
-            var chatVm = this.ActiveGroupsChats.FirstOrDefault(c => c.Id == container.Id);
-
+            var chatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
             if (chatVm != null)
             {
-                // update the latest viewed message in the persistant state
-                var chatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == container.Id);
-                chatState.LastTotalMessageCount = container.TotalMessageCount + 1; // add one for the new message, since the group hasn't been reloaded yet
-                this.SettingsManager.SaveSettings();
+                await chatVm.LoadNewMessages();
             }
-
-            await chatVm?.LoadNewMessages();
         }
 
         /// <inheritdoc/>
@@ -203,6 +189,14 @@ namespace GroupMeClient.ViewModels
                         // calculate how many new messages have been added since the group/chat was last read
                         var unreadMessages = group.TotalMessageCount - groupState.LastTotalMessageCount;
 
+                        if (unreadMessages < 0)
+                        {
+                            // strange errors can occur when the Group Listing lags behind the
+                            // actual group contents. If this occurs, cancel and reload the sidebar.
+                            this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(async () => await this.LoadGroupsAndChats());
+                            return;
+                        }
+
                         var existingVm = this.AllGroupsChats.FirstOrDefault(g => g.Id == group.Id);
                         if (existingVm == null)
                         {
@@ -219,6 +213,14 @@ namespace GroupMeClient.ViewModels
                             // Update the existing Group/Chat VM
                             existingVm.MessageContainer = group;
                             existingVm.TotalUnreadCount = unreadMessages;
+                        }
+
+                        var openChatGroup = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == group.Id);
+                        if (openChatGroup != null)
+                        {
+                            // chat is open and already receiving new messages, so mark all messages as "read"
+                            existingVm.TotalUnreadCount = 0;
+                            groupState.LastTotalMessageCount = openChatGroup.MessageContainer.TotalMessageCount;
                         }
                     });
                 }
