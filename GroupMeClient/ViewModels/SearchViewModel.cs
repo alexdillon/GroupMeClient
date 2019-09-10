@@ -181,6 +181,16 @@ namespace GroupMeClient.ViewModels
 
             foreach (var group in groupsAndChats)
             {
+                if (this.ActivatePluginForGroupOnLoad != null && this.ActivatePluginOnLoad != null)
+                {
+                    // if a plugin is set to automatically execute for only a single group,
+                    // index only that group to improve performance
+                    if (this.ActivatePluginForGroupOnLoad.Id != group.Id)
+                    {
+                        continue;
+                    }
+                }
+
                 loadingDialog.Message = $"Indexing {group.Name}";
                 await this.IndexGroup(group);
 
