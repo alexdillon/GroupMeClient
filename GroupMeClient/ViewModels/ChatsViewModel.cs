@@ -184,7 +184,7 @@ namespace GroupMeClient.ViewModels
                     // Code to update the UI needs to be run on the Application Dispatcher
                     // This is typically the case, but Timer events from ReliabilityStateMachine for
                     // retry-callbacks will NOT run on the original thread.
-                    Application.Current.Dispatcher.Invoke(() =>
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
                     {
                         // calculate how many new messages have been added since the group/chat was last read
                         var unreadMessages = group.TotalMessageCount - groupState.LastTotalMessageCount;
