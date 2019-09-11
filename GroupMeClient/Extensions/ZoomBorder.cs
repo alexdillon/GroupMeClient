@@ -59,6 +59,8 @@ namespace GroupMeClient.Extensions
                 this.MouseMove += this.Child_MouseMove;
                 this.PreviewMouseRightButtonDown += new MouseButtonEventHandler(
                   this.Child_PreviewMouseRightButtonDown);
+                this.ManipulationStarting += this.ZoomBorder_ManipulationStarting;
+                this.ManipulationDelta += this.ZoomBorder_ManipulationDelta;
             }
         }
 
@@ -83,13 +85,13 @@ namespace GroupMeClient.Extensions
 
         private TranslateTransform GetTranslateTransform(UIElement element)
         {
-            return (TranslateTransform)((TransformGroup)element.RenderTransform)
+            return (TranslateTransform)(element.RenderTransform as TransformGroup)
               .Children.First(tr => tr is TranslateTransform);
         }
 
         private ScaleTransform GetScaleTransform(UIElement element)
         {
-            return (ScaleTransform)((TransformGroup)element.RenderTransform)
+            return (ScaleTransform)(element.RenderTransform as TransformGroup)
               .Children.First(tr => tr is ScaleTransform);
         }
 
@@ -99,6 +101,11 @@ namespace GroupMeClient.Extensions
             {
                 var st = this.GetScaleTransform(this.child);
                 var tt = this.GetTranslateTransform(this.child);
+
+                if (st == null || tt == null)
+                {
+                    return;
+                }
 
                 double zoom = e.Delta > 0 ? .2 : -.2;
                 if (!(e.Delta > 0) && (st.ScaleX < .4 || st.ScaleY < .4))
@@ -151,6 +158,45 @@ namespace GroupMeClient.Extensions
             }
         }
 
+        private void ZoomBorder_ManipulationStarting(object sender, ManipulationStartingEventArgs e)
+        {
+            e.ManipulationContainer = this;
+        }
+
+        private void ZoomBorder_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
+        {
+            if (this.child != null)
+            {
+                var st = this.GetScaleTransform(this.child);
+                var tt = this.GetTranslateTransform(this.child);
+
+                if (st == null || tt == null)
+                {
+                    return;
+                }
+
+                st.ScaleX *= e.DeltaManipulation.Scale.X;
+                st.ScaleY *= e.DeltaManipulation.Scale.Y;
+                if (e.DeltaManipulation.Scale.X > 1.0 || e.DeltaManipulation.Scale.Y > 1.0)
+                {
+                    st.CenterX = e.ManipulationOrigin.X;
+                    st.CenterY = e.ManipulationOrigin.Y;
+                }
+
+                tt.X += e.DeltaManipulation.Translation.X;
+                tt.Y += e.DeltaManipulation.Translation.Y;
+
+                if (st.ScaleX < 1.0 || st.ScaleY < 1.0)
+                {
+                    st.ScaleX = 1.0;
+                    st.ScaleY = 1.0;
+
+                    tt.X = 0;
+                    tt.Y = 0;
+                }
+            }
+        }
+
         private void Child_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.Reset();
@@ -163,6 +209,11 @@ namespace GroupMeClient.Extensions
                 if (this.child.IsMouseCaptured)
                 {
                     var tt = this.GetTranslateTransform(this.child);
+                    if (tt == null)
+                    {
+                        return;
+                    }
+
                     Vector v = this.start - e.GetPosition(this);
                     tt.X = this.origin.X - v.X;
                     tt.Y = this.origin.Y - v.Y;
