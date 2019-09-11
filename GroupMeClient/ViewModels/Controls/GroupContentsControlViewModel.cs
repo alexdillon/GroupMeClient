@@ -14,6 +14,7 @@ using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Extensions;
 using GroupMeClient.Utilities;
 using GroupMeClientApi.Models;
+using Microsoft.Win32;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -38,6 +39,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.ReloadSem = new SemaphoreSlim(1, 1);
 
             this.SendMessage = new RelayCommand(async () => await this.SendMessageAsync(), () => !this.IsSending, true);
+            this.SendAttachment = new RelayCommand(this.SendFileImageAttachment);
             this.OpenMessageSuggestions = new RelayCommand(this.OpenMessageSuggestionsDialog);
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await this.LoadMoreAsync(s), true);
             this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
@@ -82,6 +84,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets or sets the action to be performed when a message is ready to send.
         /// </summary>
         public ICommand SendMessage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the action to be performed when the user wants to send an attachment file.
+        /// </summary>
+        public ICommand SendAttachment { get; set; }
 
         /// <summary>
         /// Gets or sets the action to be performd when the user has selected the Message Effects Generator.
@@ -417,6 +424,18 @@ namespace GroupMeClient.ViewModels.Controls
                 this.IsSending = true;
                 var newMessage = Message.CreateMessage(this.TypedMessageContents);
                 await this.SendMessageAsync(newMessage);
+            }
+        }
+
+        private void SendFileImageAttachment()
+        {
+            var openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Filter = $"Images (*.bmp; *.jpg; *.jpeg; *.png; *.gif)|*.bmp; *.jpg; *.jpeg; *.png; *.gif";
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                this.ShowImageSendDialog(File.OpenRead(openFileDialog.FileName));
             }
         }
 
