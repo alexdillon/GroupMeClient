@@ -17,13 +17,14 @@
                                Width="60" Height="60"
                                HorizontalAlignment="Center"/>
 
-        <extensions:ZoomBorder x:Name="border" ClipToBounds="False">
+        <extensions:ZoomBorder x:Name="border" ClipToBounds="False" IsManipulationEnabled="true">
             <Image
                MaxWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}"
                MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualHeight}"
                Stretch="Uniform"
                HorizontalAlignment="Center"
-               gif:AnimationBehavior.SourceStream="{Binding ImageStream}" />
+               gif:AnimationBehavior.SourceStream="{Binding ImageStream}">
+            </Image>
         </extensions:ZoomBorder>
         
         <Button Width="30"
