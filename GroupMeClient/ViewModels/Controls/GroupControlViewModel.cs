@@ -129,7 +129,7 @@ namespace GroupMeClient.ViewModels.Controls
 
                 if (wasImageSent)
                 {
-                    result.Add(new Run($"{sender} shared an picture"));
+                    result.Add(new Run($"{sender} shared a picture"));
                 }
                 else
                 {
