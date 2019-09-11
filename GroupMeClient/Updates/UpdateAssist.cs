@@ -23,7 +23,9 @@ namespace GroupMeClient.Updates
               "..",
               "Update.exe");
 
-            var isInstalled = File.Exists(updateDotExe);
+            var isVsDebug = updateDotExe.Contains(Path.Combine("Debug", "..", "Update.exe"));
+
+            var isInstalled = File.Exists(updateDotExe) && !isVsDebug;
 
             if (isInstalled)
             {
