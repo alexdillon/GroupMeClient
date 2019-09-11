@@ -273,7 +273,7 @@ namespace GroupMeClient.ViewModels.Controls
                     results = await this.MessageContainer.GetMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, this.FirstDisplayedMessage.Id);
                 }
 
-                this.UpdateDisplay(scrollViewer, results);
+                await this.UpdateDisplay(scrollViewer, results);
 
                 // if everything was successful, reset the reliability monitor
                 this.ReliabilityStateMachine.Succeeded();
@@ -290,9 +290,9 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
-        private void UpdateDisplay(ScrollViewer scrollViewer, ICollection<Message> messages)
+        private async Task UpdateDisplay(ScrollViewer scrollViewer, ICollection<Message> messages)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            await Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 // the code that's accessing UI properties
                 double originalHeight = scrollViewer?.ExtentHeight ?? 0.0;
