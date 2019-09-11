@@ -320,16 +320,18 @@
                 </i:Interaction.Triggers>
             </extensions:MultiLineSendBox>
 
-            <!--Plus Button (not currently used)-->
+            <!--Plus Button-->
             <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="2"
                                         VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"
-                                        Width="15" Height="15" Foreground="#637182" 
+                                        Width="15" Height="15"
+                                        Background="White"
+                                        Foreground="#637182" 
                                         Kind="Plus"
                                         Margin="0,0,20,0">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseDown" >
-                        <i:InvokeCommandAction Command="{Binding SendMessage}" />
+                        <i:InvokeCommandAction Command="{Binding SendAttachment}" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </iconPacks:PackIconMaterial>
