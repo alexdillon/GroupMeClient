@@ -18,6 +18,7 @@ namespace GroupMeClient.ViewModels
         public SettingsViewModel(Settings.SettingsManager settingsManager)
         {
             this.InstalledPlugins = new ObservableCollection<Plugin>();
+            this.SettingsManager = settingsManager;
 
             this.LoadPluginInfo();
         }
@@ -36,6 +37,24 @@ namespace GroupMeClient.ViewModels
         /// Gets a string describing the git commit the application has built from.
         /// </summary>
         public string ApplicationCommit => $"{ThisAssembly.Git.Commit}-{ThisAssembly.Git.Branch}{(ThisAssembly.Git.IsDirty ? "-dirty" : string.Empty)}";
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the UI Setting for only showing previews when multiple images are attached to a single message is enabled.
+        /// </summary>
+        public bool ShowPreviewsForMultiImages
+        {
+            get
+            {
+                return this.SettingsManager.UISettings.ShowPreviewsForMultiImages;
+            }
+
+            set
+            {
+                this.SettingsManager.UISettings.ShowPreviewsForMultiImages = value;
+                this.RaisePropertyChanged(nameof(this.ShowPreviewsForMultiImages));
+                this.SettingsManager.SaveSettings();
+            }
+        }
 
         private void LoadPluginInfo()
         {
@@ -60,6 +79,8 @@ namespace GroupMeClient.ViewModels
                 this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Message Effect Plugins" });
             }
         }
+
+        private Settings.SettingsManager SettingsManager { get; }
 
         /// <summary>
         /// <see cref="Plugin"/> provides metadata and display information about a GroupMe Desktop Client plugin.

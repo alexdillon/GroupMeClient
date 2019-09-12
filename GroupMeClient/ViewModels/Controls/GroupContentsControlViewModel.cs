@@ -66,10 +66,12 @@ namespace GroupMeClient.ViewModels.Controls
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
         /// </summary>
         /// <param name="messageContainer">The Group or Chat to bind to.</param>
-        public GroupContentsControlViewModel(IMessageContainer messageContainer)
+        /// <param name="settings">The settings instance to use.</param>
+        public GroupContentsControlViewModel(IMessageContainer messageContainer, Settings.SettingsManager settings)
             : this()
         {
             this.MessageContainer = messageContainer;
+            this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
 
             _ = this.LoadMoreAsync();
@@ -197,6 +199,8 @@ namespace GroupMeClient.ViewModels.Controls
 
         private bool IsSending { get; set; }
 
+        private Settings.SettingsManager Settings { get; }
+
         /// <summary>
         /// Reloads and redisplay the newest messages.
         /// This will capture any messages send since the last reload.
@@ -322,7 +326,9 @@ namespace GroupMeClient.ViewModels.Controls
                     if (oldMsg == null)
                     {
                         // add new message
-                        var msgVm = new MessageControlViewModel(msg);
+                        var msgVm = new MessageControlViewModel(
+                            msg,
+                            showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages);
                         this.Messages.Add(msgVm);
 
                         // add an inline timestamp if needed
