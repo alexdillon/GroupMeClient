@@ -49,6 +49,12 @@
                         Content="{Binding Path=.}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
+            
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
         </ItemsControl>
 
         <Label Grid.Column="1" Grid.Row="3" Padding="0">

@@ -28,9 +28,9 @@ namespace GroupMeClient.ViewModels.Controls
         /// Initializes a new instance of the <see cref="MessageControlViewModel"/> class.
         /// </summary>
         /// <param name="message">The message to bind to this control.</param>
-        /// <param name="lowQualityPreview">Low quality preview lowers the resolution of attachments but increases performance.</param>
         /// <param name="showLikers">Indicates whether the like status for a message should be displayed.</param>
-        public MessageControlViewModel(Message message, bool lowQualityPreview = false, bool showLikers = true)
+        /// <param name="showPreviewsOnlyForMultiImages">Indicates whether only previews, or full images, should be shown for multi-images.</param>
+        public MessageControlViewModel(Message message, bool showLikers = true, bool showPreviewsOnlyForMultiImages = false)
         {
             this.Message = message;
 
@@ -38,8 +38,8 @@ namespace GroupMeClient.ViewModels.Controls
             this.Inlines = new ObservableCollection<Inline>();
             this.LikeAction = new RelayCommand(async () => { await this.LikeMessageActionAsync(); }, () => { return true; }, true);
 
-            this.LowQualityPreview = lowQualityPreview;
             this.ShowLikers = showLikers;
+            this.ShowPreviewsOnlyForMultiImages = showPreviewsOnlyForMultiImages;
 
             this.LoadAttachments();
             this.LoadInlinesForMessageBody();
@@ -227,11 +227,11 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
-        private bool LowQualityPreview { get; }
-
         private bool ShowLikers { get; }
 
         private string HiddenText { get; set; }
+
+        private bool ShowPreviewsOnlyForMultiImages { get; set; }
 
         /// <summary>
         /// Redraw the message immediately.
@@ -274,14 +274,23 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void LoadAttachments()
         {
+            bool hasMultipleImages = this.Message.Attachments.OfType<ImageAttachment>().Count() > 1;
+
             // Load GroupMe Image and Video Attachments
             foreach (var attachment in this.Message.Attachments)
             {
                 if (attachment is ImageAttachment imageAttach)
                 {
-                    var imageVm = new GroupMeImageAttachmentControlViewModel(imageAttach, this.Message.ImageDownloader, this.LowQualityPreview);
+                    var displayMode = GroupMeImageAttachmentControlViewModel.GroupMeImageDisplayMode.Large;
+                    if (hasMultipleImages && this.ShowPreviewsOnlyForMultiImages)
+                    {
+                        displayMode = GroupMeImageAttachmentControlViewModel.GroupMeImageDisplayMode.Preview;
+                    }
+
+                    var imageVm = new GroupMeImageAttachmentControlViewModel(imageAttach, this.Message.ImageDownloader, displayMode);
                     this.AttachedItems.Add(imageVm);
-                    break;
+
+                    // Starting in 9/2019, GroupMe supports multiple images-per-message.
                 }
                 else if (attachment is LinkedImageAttachment linkedImage)
                 {

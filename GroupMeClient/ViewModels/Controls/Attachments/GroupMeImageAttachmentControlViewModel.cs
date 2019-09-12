@@ -20,17 +20,37 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// </summary>
         /// <param name="attachment">The attachment to display.</param>
         /// <param name="imageDownloader">The downloader to use for loading the image.</param>
-        /// <param name="lowQualityPreview">Low quality preview lowers the resolution of attachments but increases performance.</param>
-        public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, ImageDownloader imageDownloader, bool lowQualityPreview = false)
+        /// <param name="previewMode">The resolution in which to download and render the image.</param>
+        public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, ImageDownloader imageDownloader, GroupMeImageDisplayMode previewMode = GroupMeImageDisplayMode.Large)
             : base(imageDownloader)
         {
             this.ImageAttachment = attachment;
-
             this.Clicked = new RelayCommand(this.ClickedAction);
-
-            this.LowQualityPreview = lowQualityPreview;
+            this.PreviewMode = previewMode;
 
             _ = this.LoadImageAttachment();
+        }
+
+        /// <summary>
+        /// Different resolution options in which GroupMe Attached Images can be rendered.
+        /// </summary>
+        public enum GroupMeImageDisplayMode
+        {
+            /// <summary>
+            /// Large resolution image
+            /// </summary>
+            Large,
+
+            /// <summary>
+            /// Small resolution image. Original image is scaled down, but
+            /// aspect ratio is preserved.
+            /// </summary>
+            Small,
+
+            /// <summary>
+            /// Small, square image. The original photo will be cropped to fit.
+            /// </summary>
+            Preview,
         }
 
         /// <summary>
@@ -49,7 +69,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
         private ImageAttachment ImageAttachment { get; }
 
-        private bool LowQualityPreview { get; }
+        private GroupMeImageDisplayMode PreviewMode { get; }
 
         /// <inheritdoc/>
         public override void Dispose()
@@ -63,9 +83,27 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             // not really a link class, but still need this method.
         }
 
+        private static string GetGroupMeImageDisplayModeString(GroupMeImageDisplayMode mode)
+        {
+            switch (mode)
+            {
+                case GroupMeImageDisplayMode.Large:
+                    return "large";
+
+                case GroupMeImageDisplayMode.Small:
+                    return "small";
+
+                case GroupMeImageDisplayMode.Preview:
+                    return "preview";
+
+                default:
+                    return "large";
+            }
+        }
+
         private async Task LoadImageAttachment()
         {
-            var resolution = this.LowQualityPreview ? "small" : "large";
+            var resolution = GetGroupMeImageDisplayModeString(this.PreviewMode);
 
             var image = await this.ImageDownloader.DownloadPostImageAsync($"{this.ImageAttachment.Url}.{resolution}");
 

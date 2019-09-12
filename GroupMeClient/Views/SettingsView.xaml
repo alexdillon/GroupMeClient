@@ -45,11 +45,8 @@
                 </GroupBox.Header>
 
                 <StackPanel>
-                    <!--<TextBlock>First name:</TextBlock>
-                    <TextBox />
-                    <TextBlock>Last name:</TextBlock>
-                    <TextBox />
-                    <Button Margin="0,20">Add User</Button>-->
+                    <CheckBox Content="Show Only Previews When Multiple Images Are Attached to a Single Message"
+                              IsChecked="{Binding ShowPreviewsForMultiImages, Mode=TwoWay}"/>
                 </StackPanel>
             </GroupBox>
 
