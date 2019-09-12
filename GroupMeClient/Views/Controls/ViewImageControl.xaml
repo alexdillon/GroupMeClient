@@ -10,12 +10,13 @@
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
              d:DesignHeight="200" d:DesignWidth="200"
-             Background="Black">
+             Background="Transparent">
 
     <Grid>
         <Controls:ProgressRing IsActive="{Binding IsLoading}" 
                                Width="60" Height="60"
-                               HorizontalAlignment="Center"/>
+                               HorizontalAlignment="Center"
+                               Background="Black"/>
 
         <extensions:ZoomBorder x:Name="border" ClipToBounds="False" IsManipulationEnabled="true">
             <Image
