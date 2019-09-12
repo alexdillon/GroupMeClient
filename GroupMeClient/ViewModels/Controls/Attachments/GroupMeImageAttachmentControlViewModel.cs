@@ -14,6 +14,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
     public class GroupMeImageAttachmentControlViewModel : LinkAttachmentBaseViewModel, IDisposable
     {
         private System.IO.Stream imageAttachmentStream;
+        private bool isLoading;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupMeImageAttachmentControlViewModel"/> class.
@@ -28,6 +29,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             this.Clicked = new RelayCommand(this.ClickedAction);
             this.PreviewMode = previewMode;
 
+            this.IsLoading = true;
             _ = this.LoadImageAttachment();
         }
 
@@ -65,6 +67,15 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         {
             get { return this.imageAttachmentStream; }
             internal set { this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the loading animation should be displayed.
+        /// </summary>
+        public bool IsLoading
+        {
+            get { return this.isLoading; }
+            private set { this.Set(() => this.IsLoading, ref this.isLoading, value); }
         }
 
         private ImageAttachment ImageAttachment { get; }
@@ -113,6 +124,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             }
 
             this.ImageAttachmentStream = new System.IO.MemoryStream(image);
+            this.IsLoading = false;
         }
 
         private void ClickedAction()

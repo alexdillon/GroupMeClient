@@ -5,26 +5,33 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
              d:DesignHeight="200" d:DesignWidth="200"
              Background="White">
 
     <Border BorderThickness="8" BorderBrush="White">
-        <Image MaxWidth="500" 
-           MaxHeight="600"
-           Stretch="Uniform"
-           StretchDirection="DownOnly"
-           HorizontalAlignment="Left"
-           UseLayoutRounding="True" 
-           SnapsToDevicePixels="True"
-           gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDown" >
-                    <i:InvokeCommandAction Command="{Binding Clicked}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Image>
+        <Grid>
+            <Image MaxWidth="500" 
+               MaxHeight="600"
+               Stretch="Uniform"
+               StretchDirection="DownOnly"
+               HorizontalAlignment="Left"
+               UseLayoutRounding="True" 
+               SnapsToDevicePixels="True"
+               gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDown" >
+                        <i:InvokeCommandAction Command="{Binding Clicked}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Image>
+
+            <Controls:ProgressRing IsActive="{Binding IsLoading}" 
+                                   Width="60" Height="60"
+                                   HorizontalAlignment="Center"/>
+        </Grid>
     </Border>
 
 </UserControl>
