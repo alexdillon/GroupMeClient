@@ -43,8 +43,7 @@
                         </Button>
                     </Grid>
 
-                    <Grid Grid.Row="1"
-                                Background="White">
+                    <Grid Grid.Row="1">
                         <ContentPresenter/>
                     </Grid>
                 </Grid>
