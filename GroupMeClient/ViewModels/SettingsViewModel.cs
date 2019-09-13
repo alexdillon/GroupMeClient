@@ -56,6 +56,8 @@ namespace GroupMeClient.ViewModels
             }
         }
 
+        private Settings.SettingsManager SettingsManager { get; }
+
         private void LoadPluginInfo()
         {
             // Load Group Chat Plugins
@@ -79,8 +81,6 @@ namespace GroupMeClient.ViewModels
                 this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Message Effect Plugins" });
             }
         }
-
-        private Settings.SettingsManager SettingsManager { get; }
 
         /// <summary>
         /// <see cref="Plugin"/> provides metadata and display information about a GroupMe Desktop Client plugin.
