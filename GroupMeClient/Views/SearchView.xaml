@@ -28,7 +28,7 @@
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
-        <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
         <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
     </UserControl.Resources>
 
