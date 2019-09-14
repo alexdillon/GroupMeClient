@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -253,7 +254,13 @@ namespace GroupMeClient.ViewModels
                 this.CacheContext.IndexStatus.Add(groupState);
             }
 
-            var newestMessages = await container.GetMessagesAsync();
+            async Task<ICollection<Message>> InitialDownloadAction()
+            {
+                return await container.GetMessagesAsync();
+            }
+
+            var newestMessages = await Utilities.ReliabilityStateMachine.TryUntilSuccess(InitialDownloadAction, this.CancellationTokenSource.Token);
+
             this.CacheContext.AddMessages(newestMessages);
 
             long.TryParse(groupState.LastIndexedId, out var lastIndexId);
@@ -262,7 +269,13 @@ namespace GroupMeClient.ViewModels
             while (lastIndexId < retreiveFrom && !this.CancellationTokenSource.IsCancellationRequested)
             {
                 // not up-to-date, we need to retreive the delta
-                var results = await container.GetMaxMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, retreiveFrom.ToString());
+                async Task<ICollection<Message>> DownloadDeltaAction()
+                {
+                    return await container.GetMaxMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, retreiveFrom.ToString());
+                }
+
+                var results = await Utilities.ReliabilityStateMachine.TryUntilSuccess(DownloadDeltaAction, this.CancellationTokenSource.Token);
+
                 this.CacheContext.AddMessages(results);
 
                 if (results.Count == 0)
