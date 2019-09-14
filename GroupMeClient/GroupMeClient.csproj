@@ -87,7 +87,6 @@
     <Compile Include="Extensions\ListBoxWithPosition.cs" />
     <Compile Include="Extensions\MultiLineSendBox.cs" />
     <Compile Include="Extensions\ListBoxExtensions.cs" />
-    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\ScrollIntoViewForListBox.cs" />
     <Compile Include="Extensions\WebBrowserHelper.cs" />

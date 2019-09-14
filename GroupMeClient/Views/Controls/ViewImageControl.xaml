@@ -13,7 +13,11 @@
              Background="Transparent">
 
     <Grid>
-        <Controls:ProgressRing IsActive="{Binding IsLoading}" 
+        <Grid.Resources>
+            <BooleanToVisibilityConverter x:Key="VisibleIfTrueConverter" />
+        </Grid.Resources>
+        <Controls:ProgressRing IsActive="True"
+                               Visibility="{Binding Path=IsLoading, Converter={StaticResource VisibleIfTrueConverter}}"
                                Width="60" Height="60"
                                HorizontalAlignment="Center"
                                Background="Black"/>

@@ -9,13 +9,12 @@
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:converters="clr-namespace:GroupMeClient.Converters"
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
     
     <UserControl.Resources>
-        <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
     </UserControl.Resources>
     
     <Grid>
