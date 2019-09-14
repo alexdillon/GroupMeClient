@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace GroupMeClient.Utilities
@@ -27,6 +28,44 @@ namespace GroupMeClient.Utilities
                 TimeSpan.FromSeconds(10),
                 TimeSpan.FromSeconds(30),
             };
+
+        /// <summary>
+        /// Performs a specific action repeatedly until the action succeeds or cancellation is requested.
+        /// Upon completion, the result of the operation is returned.
+        /// A <see cref="ReliabilityStateMachine"/> will be used to determine the automatic retry sequence.
+        /// </summary>
+        /// <typeparam name="T">The return type of the action to be reliably performed.</typeparam>
+        /// <param name="action">The action to be performed.</param>
+        /// <param name="cancellationToken">A token to cancel the operation.</param>
+        /// <returns>The result of the operation.</returns>
+        public static async Task<T> TryUntilSuccess<T>(Func<Task<T>> action, CancellationToken cancellationToken)
+        {
+            var reliabilityMonitor = new ReliabilityStateMachine();
+
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    var result = await action();
+                    reliabilityMonitor.Succeeded();
+
+                    return result;
+                }
+                catch (Exception)
+                {
+                    var tcs = new TaskCompletionSource<bool>();
+                    var timer = reliabilityMonitor.GetRetryTimer(() => tcs.SetResult(true));
+
+                    // Allow cancellation of the timer
+                    cancellationToken.Register(() => tcs.TrySetCanceled());
+
+                    // Wait for the retry timer to expire
+                    await tcs.Task;
+                }
+            }
+        }
 
         /// <summary>
         /// Generates a new timer to retry an action again after the appropriate timeout has elapsed. Determining the appropriate

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -60,7 +63,7 @@ namespace GroupMeClient.ViewModels
                 this.GroupChatCachePlugins.Add(plugin);
             }
 
-            this.Loaded = new RelayCommand(async () => await this.IndexGroups(), true);
+            this.Loaded = new RelayCommand(this.StartIndexing);
         }
 
         /// <summary>
@@ -161,11 +164,32 @@ namespace GroupMeClient.ViewModels
 
         private IMessageContainer SelectedGroupChat { get; set; }
 
+        private Task IndexingTask { get; set; }
+
+        private CancellationTokenSource CancellationTokenSource { get; set; }
+
         /// <inheritdoc/>
         void ICachePluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
         {
             this.OpenNewGroupChat(container);
             this.UpdateContextView(message);
+        }
+
+        private void StartIndexing()
+        {
+            if (this.IndexingTask != null && !(this.IndexingTask.IsCompleted || this.IndexingTask.IsCanceled))
+            {
+                // handle cancellation and restart
+                this.CancellationTokenSource.Cancel();
+                this.IndexingTask.ContinueWith(async (l) =>
+                {
+                    await Application.Current.Dispatcher.InvokeAsync(() => this.StartIndexing());
+                });
+                return;
+            }
+
+            this.CancellationTokenSource = new CancellationTokenSource();
+            this.IndexingTask = this.IndexGroups();
         }
 
         private async Task IndexGroups()
@@ -181,6 +205,8 @@ namespace GroupMeClient.ViewModels
 
             foreach (var group in groupsAndChats)
             {
+                this.CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
                 if (this.ActivatePluginForGroupOnLoad != null && this.ActivatePluginOnLoad != null)
                 {
                     // if a plugin is set to automatically execute for only a single group,
@@ -228,16 +254,28 @@ namespace GroupMeClient.ViewModels
                 this.CacheContext.IndexStatus.Add(groupState);
             }
 
-            var newestMessages = await container.GetMessagesAsync();
+            async Task<ICollection<Message>> InitialDownloadAction()
+            {
+                return await container.GetMessagesAsync();
+            }
+
+            var newestMessages = await Utilities.ReliabilityStateMachine.TryUntilSuccess(InitialDownloadAction, this.CancellationTokenSource.Token);
+
             this.CacheContext.AddMessages(newestMessages);
 
             long.TryParse(groupState.LastIndexedId, out var lastIndexId);
             long.TryParse(newestMessages.Last().Id, out var retreiveFrom);
 
-            while (lastIndexId < retreiveFrom)
+            while (lastIndexId < retreiveFrom && !this.CancellationTokenSource.IsCancellationRequested)
             {
                 // not up-to-date, we need to retreive the delta
-                var results = await container.GetMaxMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, retreiveFrom.ToString());
+                async Task<ICollection<Message>> DownloadDeltaAction()
+                {
+                    return await container.GetMaxMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, retreiveFrom.ToString());
+                }
+
+                var results = await Utilities.ReliabilityStateMachine.TryUntilSuccess(DownloadDeltaAction, this.CancellationTokenSource.Token);
+
                 this.CacheContext.AddMessages(results);
 
                 if (results.Count == 0)
@@ -251,7 +289,7 @@ namespace GroupMeClient.ViewModels
             }
 
             groupState.LastIndexedId = newestMessages.First().Id; // everything is downloaded
-            await this.CacheContext.SaveChangesAsync();
+            await this.CacheContext.SaveChangesAsync(this.CancellationTokenSource.Token);
         }
 
         private void OpenNewGroupChat(IMessageContainer group)
@@ -332,8 +370,16 @@ namespace GroupMeClient.ViewModels
         {
             if (this.PopupDialog is LoadingControlViewModel)
             {
-                // Can't cancel a loading screen.
-                return;
+                if (this.IndexingTask != null && !(this.IndexingTask.IsCompleted || this.IndexingTask.IsCanceled))
+                {
+                    // handle cancellation and restart
+                    this.CancellationTokenSource.Cancel();
+                    this.IndexingTask.ContinueWith((l) =>
+                    {
+                        Application.Current.Dispatcher.Invoke(() => this.CloseLittlePopup());
+                    });
+                    return;
+                }
             }
 
             if (this.PopupDialog is IDisposable d)
