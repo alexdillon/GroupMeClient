@@ -303,6 +303,11 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task UpdateDisplay(ScrollViewer scrollViewer, ICollection<Message> messages)
         {
+            if (messages.Count == 0)
+            {
+                return;
+            }
+
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 // the code that's accessing UI properties
