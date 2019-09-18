@@ -14,12 +14,31 @@
              mc:Ignorable="d">
     
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
+        <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
+            
+            <Style TargetType="{x:Type ToggleButton}" 
+                   BasedOn="{StaticResource MahApps.Metro.Styles.MetroButton}"
+                   x:Key="FlatButtonNoCaps">
+                <Setter Property="Controls:ButtonHelper.PreserveTextCase" Value="True"/>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
     
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="350" />
+            <ColumnDefinition>
+                <ColumnDefinition.Style>
+                    <Style TargetType="{x:Type ColumnDefinition}">
+                        <Setter Property="Width" Value="350" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsChecked, ElementName=toggleMiniSidebar}" Value="True">
+                                <Setter Property="Width" Value="100" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ColumnDefinition.Style>
+            </ColumnDefinition>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -47,11 +66,16 @@
                     <RowDefinition Height="55"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Column="0"
-                           HorizontalAlignment="Left" VerticalAlignment="Center"
-                           Padding="15,0,0,0"
-                           Height="Auto" FontSize="17" FontWeight="SemiBold"
-                           Text="Chats" />
+                <ToggleButton Grid.Column="0"
+                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                              Margin="15,0,0,0"
+                              Height="Auto" FontSize="17" FontWeight="SemiBold"
+                              BorderThickness="0"
+                              Background="White"
+                              Focusable="False"
+                              Content="Chats" 
+                              Style="{StaticResource FlatButtonNoCaps}"
+                              x:Name="toggleMiniSidebar" />
 
                 <TextBox Grid.Column="1"
                          Visibility="{Binding IsChecked, ElementName=toggleSearchBox, Converter={StaticResource boolToVisibilityConverter}}"
