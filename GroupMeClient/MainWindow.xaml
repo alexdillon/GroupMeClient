@@ -9,6 +9,7 @@
                  xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
                  xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
                  xmlns:converters="clr-namespace:GroupMeClient.Converters"
+                 xmlns:wpftoast="clr-namespace:GroupMeClient.Notifications.Display.WpfToast"
                  Title="GroupMe Desktop Client"
                  TitleCaps="False"
                  Width="1024"
@@ -107,6 +108,13 @@
                         Visibility="{Binding PopupDialog, Converter={StaticResource nullToVisibilityConverter}}">
             <UserControl Content="{Binding PopupDialog}" />
         </controls:Popup>
+
+        <!--In-App Toast Area-->
+        <UserControl HorizontalAlignment="Right" 
+                        VerticalAlignment="Top"
+                        Width="250"
+                        Margin="0,60,5,0"
+                        Content="{Binding ToastHolderManager}" />
     </Grid>
 
     <Window.TaskbarItemInfo>

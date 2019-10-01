@@ -8,6 +8,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Notifications.Display;
+using GroupMeClient.Notifications.Display.WpfToast;
 using GroupMeClient.Plugins;
 using GroupMeClient.Updates;
 using MahApps.Metro.Controls;
@@ -92,6 +93,11 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public ICommand EasyClosePopup { get; set; }
 
+        /// <summary>
+        /// Gets the Toast Holder Manager for this application.
+        /// </summary>
+        public ToastHolderViewModel ToastHolderManager { get; private set; }
+
         private string DataRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicroCube", "GroupMe Desktop Client");
 
         private string SettingsPath => Path.Combine(this.DataRoot, "settings.json");
@@ -175,9 +181,11 @@ namespace GroupMeClient.ViewModels
 
         private void RegisterNotifications()
         {
+            this.ToastHolderManager = new ToastHolderViewModel();
+
             this.NotificationRouter.RegisterNewSubscriber(this.ChatsViewModel);
             this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
-            this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider());
+            this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider(this.ToastHolderManager));
         }
 
         private void CreateMenuItemsRegular()

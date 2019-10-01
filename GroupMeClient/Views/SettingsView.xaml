@@ -150,14 +150,7 @@
                         Squirrel for Windows
                     </Hyperlink>
                     <LineBreak />
-                
-                    <Hyperlink 
-                        NavigateUri="https://github.com/rafallopatka/ToastNotifications"
-                        extensions:WebHyperlinkExtensions.IsWebLink="True">
-                        ToastNotifications v2
-                    </Hyperlink>
-                    <LineBreak />
-                
+
                     <Hyperlink 
                         NavigateUri="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
                         extensions:WebHyperlinkExtensions.IsWebLink="True">

@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Windows;
 using GroupMeClientApi.Models;
-using ToastNotifications;
-using ToastNotifications.Lifetime;
-using ToastNotifications.Position;
 
 namespace GroupMeClient.Notifications.Display.WpfToast
 {
@@ -16,42 +12,30 @@ namespace GroupMeClient.Notifications.Display.WpfToast
         /// <summary>
         /// Initializes a new instance of the <see cref="WpfToastNotificationProvider"/> class.
         /// </summary>
-        public WpfToastNotificationProvider()
+        /// <param name="manager">The manager to use for displaying toast notifications.</param>
+        public WpfToastNotificationProvider(WpfToast.ToastHolderViewModel manager)
         {
-            this.Notifier = new Notifier(cfg =>
-            {
-                Application.Current.Dispatcher.Invoke((Action)(() =>
-                {
-                    cfg.PositionProvider = new WindowPositionProvider(
-                        parentWindow: Application.Current.MainWindow,
-                        corner: Corner.TopRight,
-                        offsetX: 10,
-                        offsetY: 100);
-
-                    cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-                        notificationLifetime: TimeSpan.FromSeconds(7),
-                        maximumNotificationCount: MaximumNotificationCount.FromCount(5));
-
-                    // Only show TopMost when the GroupMe window is focused.
-                    // Otherwise, the Toasts tend to popup on top of other windows
-                    cfg.DisplayOptions.TopMost = Application.Current.MainWindow.IsActive;
-
-                    cfg.Dispatcher = Application.Current.Dispatcher;
-                }));
-            });
+            this.Manager = manager;
         }
 
-        private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
+        private WpfToast.ToastHolderViewModel Manager { get; }
 
-        private Notifier Notifier { get; set; }
+        private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
         /// <inheritdoc />
         Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar)
         {
-            this.Notifier.ShowGroupMeToastMessage(
+            var toast = new ToastNotificationViewModel(
                 body,
                 new DummyAvatarSource(avatarUrl, roundedAvatar),
                 this.GroupMeClient.ImageDownloader);
+
+            this.Manager.DisplayNewToast(toast);
+
+            //this.Notifier.ShowGroupMeToastMessage(
+            //    body,
+            //    new DummyAvatarSource(avatarUrl, roundedAvatar),
+            //    this.GroupMeClient.ImageDownloader);
 
             return Task.CompletedTask;
         }
@@ -59,10 +43,12 @@ namespace GroupMeClient.Notifications.Display.WpfToast
         /// <inheritdoc />
         Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl)
         {
-            this.Notifier.ShowGroupMeToastMessage(
-                body,
-                new DummyAvatarSource(avatarUrl, roundedAvatar),
-                this.GroupMeClient.ImageDownloader);
+            var toast = new ToastNotificationViewModel(
+              body,
+              new DummyAvatarSource(avatarUrl, roundedAvatar),
+              this.GroupMeClient.ImageDownloader);
+
+            this.Manager.DisplayNewToast(toast);
 
             return Task.CompletedTask;
         }
@@ -70,12 +56,14 @@ namespace GroupMeClient.Notifications.Display.WpfToast
         /// <inheritdoc />
         Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar)
         {
-          this.Notifier.ShowGroupMeToastMessage(
-                body,
-                new DummyAvatarSource(avatarUrl, roundedAvatar),
-                this.GroupMeClient.ImageDownloader);
+            var toast = new ToastNotificationViewModel(
+              body,
+              new DummyAvatarSource(avatarUrl, roundedAvatar),
+              this.GroupMeClient.ImageDownloader);
 
-          return Task.CompletedTask;
+            this.Manager.DisplayNewToast(toast);
+
+            return Task.CompletedTask;
         }
 
         /// <inheritdoc />

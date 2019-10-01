@@ -34,10 +34,11 @@ namespace GroupMeClient.Notifications.Display
         /// <summary>
         /// Creates a <see cref="PopupNotificationProvider"/> to display internal (popup) toast notifications.
         /// </summary>
+        /// <param name="manager">The manager to use for displaying notifications.</param>
         /// <returns>A PopupNotificationProvider.</returns>
-        public static PopupNotificationProvider CreateInternalNotificationProvider()
+        public static PopupNotificationProvider CreateInternalNotificationProvider(WpfToast.ToastHolderViewModel manager)
         {
-            return new PopupNotificationProvider(new WpfToast.WpfToastNotificationProvider());
+            return new PopupNotificationProvider(new WpfToast.WpfToastNotificationProvider(manager));
         }
 
         /// <inheritdoc/>
