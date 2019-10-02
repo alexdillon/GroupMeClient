@@ -76,6 +76,10 @@
     <Compile Include="GlobalAssemblyInfo.cs" />
     <Compile Include="Messaging\IndexAndRunPluginRequestMessage.cs" />
     <Compile Include="Messaging\DisconnectedRequestMessage.cs" />
+    <Compile Include="Notifications\Display\WpfToast\ToastHolder.xaml.cs">
+      <DependentUpon>ToastHolder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Notifications\Display\WpfToast\ToastHolderViewModel.cs" />
     <Compile Include="Updates\UpdateAssist.cs" />
     <Compile Include="Utilities\RegexUtils.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />
@@ -96,11 +100,10 @@
     <Compile Include="Messaging\DialogRequestMessage.cs" />
     <Compile Include="Notifications\Display\Win10\DesktopNotificationManagerCompat.cs" />
     <Compile Include="Notifications\Display\Win10\GroupMeNotificationActivator.cs" />
-    <Compile Include="Notifications\Display\WpfToast\GroupMeToastExtensions.cs" />
-    <Compile Include="Notifications\Display\WpfToast\GroupMeToastDisplayPart.xaml.cs">
-      <DependentUpon>GroupMeToastDisplayPart.xaml</DependentUpon>
+    <Compile Include="Notifications\Display\WpfToast\ToastNotification.xaml.cs">
+      <DependentUpon>ToastNotification.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Notifications\Display\WpfToast\GroupMeToastNotification.cs" />
+    <Compile Include="Notifications\Display\WpfToast\ToastNotificationViewModel.cs" />
     <Compile Include="Notifications\Display\WpfToast\WpfToastNotificationProvider.cs" />
     <Compile Include="Notifications\INotificationSink.cs" />
     <Compile Include="Notifications\NotificationRouter.cs" />
@@ -216,7 +219,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Notifications\Display\WpfToast\GroupMeToastDisplayPart.xaml">
+    <Page Include="Notifications\Display\WpfToast\ToastHolder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Notifications\Display\WpfToast\ToastNotification.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -393,12 +400,6 @@
       <Version>1.1.118</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="ToastNotifications">
-      <Version>2.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="ToastNotifications.Messages">
-      <Version>2.5.1</Version>
     </PackageReference>
     <PackageReference Include="XamlAnimatedGif">
       <Version>1.2.1</Version>

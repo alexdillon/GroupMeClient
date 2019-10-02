@@ -10,6 +10,7 @@
              xmlns:ctrlvm="clr-namespace:GroupMeClient.ViewModels.Controls"
              xmlns:attachviews="clr-namespace:GroupMeClient.Views.Controls.Attachments"
              xmlns:attachvm="clr-namespace:GroupMeClient.ViewModels.Controls.Attachments"
+             xmlns:toast="clr-namespace:GroupMeClient.Notifications.Display.WpfToast"
              StartupUri="MainWindow.xaml"
              mc:Ignorable="d">
     <Application.Resources>
@@ -21,8 +22,6 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
 
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-
-                <ResourceDictionary Source="pack://application:,,,/ToastNotifications.Messages;component/Themes/Default.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type Controls:WindowButtonCommands}" BasedOn="{StaticResource MahApps.Metro.Styles.WindowButtonCommands.Win10}" />
 
@@ -104,6 +103,13 @@
                 <ctrlviews:LoadingControl />
             </DataTemplate>
 
+            <DataTemplate DataType="{x:Type toast:ToastNotificationViewModel}">
+                <toast:ToastNotification />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type toast:ToastHolderViewModel}">
+                <toast:ToastHolder />
+            </DataTemplate>
+            
             <!-- Adapted from https://stackoverflow.com/questions/10969292/apple-style-scrollbar-wpf-->
             <!--Scrollbar Thumbs-->
             <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
