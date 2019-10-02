@@ -43,7 +43,9 @@ namespace GroupMeClient.Notifications.Display
         /// <inheritdoc/>
         async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
         {
-            if (!string.IsNullOrEmpty(notification.Alert) && !this.DidISendIt(notification.Message))
+            if (!string.IsNullOrEmpty(notification.Alert) &&
+                !this.DidISendIt(notification.Message) &&
+                !this.IsGroupMuted(container))
             {
                 var image = notification.Message.Attachments.FirstOrDefault(a => a is ImageAttachment);
 
@@ -70,7 +72,9 @@ namespace GroupMeClient.Notifications.Display
         /// <inheritdoc/>
         async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification, IMessageContainer container)
         {
-            if (!string.IsNullOrEmpty(notification.Alert) && !this.DidISendIt(notification.Message))
+            if (!string.IsNullOrEmpty(notification.Alert) &&
+                !this.DidISendIt(notification.Message) &&
+                !this.IsGroupMuted(container))
             {
                 var image = notification.Message.Attachments.FirstOrDefault(a => a is ImageAttachment);
 
@@ -97,7 +101,8 @@ namespace GroupMeClient.Notifications.Display
         /// <inheritdoc/>
         async Task INotificationSink.MessageUpdated(Message message, string alert, IMessageContainer container)
         {
-            if (!string.IsNullOrEmpty(alert))
+            if (!string.IsNullOrEmpty(alert) &&
+                !this.IsGroupMuted(container))
             {
                 await this.PopupNotificationSink.ShowNotification(
                     container.Name,
@@ -123,6 +128,23 @@ namespace GroupMeClient.Notifications.Display
         {
             var me = this.GroupMeClient.WhoAmI();
             return message.UserId == me.Id;
+        }
+
+        private bool IsGroupMuted(IMessageContainer messageContainer)
+        {
+            if (messageContainer is Group group)
+            {
+                var me = this.GroupMeClient.WhoAmI();
+                foreach (var member in group.Members)
+                {
+                    if (member.UserId == me.UserId)
+                    {
+                        return member.Muted;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
