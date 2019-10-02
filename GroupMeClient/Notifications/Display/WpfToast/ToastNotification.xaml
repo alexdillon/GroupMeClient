@@ -5,52 +5,50 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="clr-namespace:GroupMeClient.Views.Controls"
-             mc:Ignorable="d" d:DesignWidth="250"  >
+             mc:Ignorable="d" d:DesignWidth="250">
 
-    <Border Background="White" Padding="5" Height="65">
-        <Border.Effect>
-            <DropShadowEffect Opacity="0.5" ShadowDepth="1" BlurRadius="2" />
-        </Border.Effect>
-        
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="25" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto"  />
-            </Grid.ColumnDefinitions>
-            
-            <Controls:AvatarControl Width="25" Height="25"
-                                    Content="{Binding Avatar}"/>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="25" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto"  />
+        </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="1" 
-                       Foreground="Black"
-                       FontSize="10"
-                       FontWeight="Regular"
-                       TextOptions.TextRenderingMode="ClearType"
-                       TextOptions.TextFormattingMode="Display"
-                       Text="{Binding Message}" 
-                       TextWrapping="Wrap"
-                       TextTrimming="CharacterEllipsis"
-                       MaxHeight="50"
-                       VerticalAlignment="Center"
-                       Margin="5"/>
+        <Border Grid.ColumnSpan="3" Height="65" Background="White" Padding="5">
+            <Border.Effect>
+                <DropShadowEffect Opacity="0.5" ShadowDepth="1" BlurRadius="2" />
+            </Border.Effect>
+        </Border>
 
-            <Button Grid.Column="2"
-                    Margin="1"
-                    Content="X"
-                    VerticalAlignment="Top"
-                    Width="20" 
-                    Height="20"
-                    BorderThickness="0"
-                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                    Command="{Binding Path=CloseAction}"
-                    CommandParameter="{Binding Path=.}">
-                <Button.ContentTemplate>
-                    <DataTemplate>
-                        <iconPacks:PackIconOcticons Width="8" Height="8" Foreground="#637182" Kind="X"/>
-                    </DataTemplate>
-                </Button.ContentTemplate>
-            </Button>
-        </Grid>
-    </Border>
+        <Controls:AvatarControl Width="25" Height="25"
+                                Content="{Binding Avatar}"/>
+
+        <TextBlock Grid.Column="1" 
+                    Foreground="Black"
+                    FontSize="11"
+                    FontWeight="Regular"
+                    Text="{Binding Message}" 
+                    TextWrapping="Wrap"
+                    TextTrimming="CharacterEllipsis"
+                    MaxHeight="50"
+                    VerticalAlignment="Center"
+                    Margin="5"/>
+
+        <Button Grid.Column="2"
+                Margin="1"
+                Content="X"
+                VerticalAlignment="Top"
+                Width="20" 
+                Height="20"
+                BorderThickness="0"
+                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                Command="{Binding Path=CloseAction}"
+                CommandParameter="{Binding Path=.}">
+            <Button.ContentTemplate>
+                <DataTemplate>
+                    <iconPacks:PackIconOcticons Width="8" Height="8" Foreground="#637182" Kind="X"/>
+                </DataTemplate>
+            </Button.ContentTemplate>
+        </Button>
+    </Grid>
 </UserControl>
