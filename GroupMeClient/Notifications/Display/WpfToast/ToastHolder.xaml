@@ -10,7 +10,7 @@
         <ItemsControl ItemsSource="{Binding Notifications}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel />
+                    <StackPanel/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
@@ -18,11 +18,35 @@
                 <DataTemplate>
                     <wpftoast:ToastNotification Content="{Binding Path=.}"
                                                 Padding="0,2,0,0"
-                                               />
+                                                RenderTransformOrigin="0.5,0.5">
+                        <wpftoast:ToastNotification.RenderTransform>
+                            <ScaleTransform ScaleX="0" ScaleY="0" />
+                        </wpftoast:ToastNotification.RenderTransform>
+
+                        <wpftoast:ToastNotification.Triggers>
+                            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" From="0" To="1" Duration="0:0:0.3"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" From="0" To="1" Duration="0:0:0.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+                            <EventTrigger RoutedEvent="FrameworkElement.Unloaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0" Duration="0:0:1.3"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0" Duration="0:0:1.3"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </wpftoast:ToastNotification.Triggers>
+                    </wpftoast:ToastNotification>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
 
-            <ItemsControl.ItemContainerStyle>
+            <!--<ItemsControl.ItemContainerStyle>
                 <Style TargetType="{x:Type ContentPresenter}">
                     <Setter Property="RenderTransform">
                         <Setter.Value>
@@ -55,7 +79,7 @@
                         </EventTrigger>
                     </Style.Triggers>
                 </Style>
-            </ItemsControl.ItemContainerStyle>
+            </ItemsControl.ItemContainerStyle>-->
         </ItemsControl>
     </Grid>
 </UserControl>

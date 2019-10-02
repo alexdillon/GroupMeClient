@@ -14,13 +14,14 @@
             <ColumnDefinition Width="Auto"  />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.ColumnSpan="3" Height="65" Background="White" Padding="5">
+        <Border Grid.ColumnSpan="3" Height="65" Background="White">
             <Border.Effect>
                 <DropShadowEffect Opacity="0.5" ShadowDepth="1" BlurRadius="2" />
             </Border.Effect>
         </Border>
 
         <Controls:AvatarControl Width="25" Height="25"
+                                Padding="5,0,0,0"
                                 Content="{Binding Avatar}"/>
 
         <TextBlock Grid.Column="1" 
