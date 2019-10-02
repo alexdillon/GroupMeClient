@@ -461,13 +461,23 @@ namespace GroupMeClient.ViewModels.Controls
                         result.Add(new Run(text.Substring(0, match.Index)));
                     }
 
-                    var hyperlink = new Hyperlink(new Run(match.Value))
+                    try
                     {
-                        NavigateUri = new Uri(match.Value),
-                    };
-                    Extensions.WebHyperlinkExtensions.SetIsWebLink(hyperlink, true);
+                        var hyperlink = new Hyperlink(new Run(match.Value))
+                        {
+                            NavigateUri = new Uri(match.Value),
+                        };
 
-                    result.Add(hyperlink);
+                        Extensions.WebHyperlinkExtensions.SetIsWebLink(hyperlink, true);
+
+                        result.Add(hyperlink);
+                    }
+                    catch (Exception)
+                    {
+                        // Some super strange URLs pass the regex, but fail
+                        // to decode correctly. Ignore if this happens.
+                        result.Add(new Run(match.Value));
+                    }
 
                     // Keep looping over the rest of the string.
                     text = text.Substring(match.Index + match.Length);
