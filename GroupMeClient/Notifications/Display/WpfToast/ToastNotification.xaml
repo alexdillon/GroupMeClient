@@ -21,7 +21,6 @@
         </Border>
 
         <Controls:AvatarControl Width="25" Height="25"
-                                Padding="5,0,0,0"
                                 Content="{Binding Avatar}"/>
 
         <TextBlock Grid.Column="1" 
