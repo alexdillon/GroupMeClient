@@ -28,6 +28,7 @@ namespace GroupMeClient.ViewModels.Controls
         private AvatarControlViewModel topBarAvatar;
         private string typedMessageContents = string.Empty;
         private ViewModelBase smallDialog;
+        private bool isSelectionAllowed = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -46,6 +47,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.EasyClosePopup = null; // EasyClose makes it too easy to accidently close the send dialog.
             this.GroupChatPluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>(this.ActivateGroupPlugin);
             this.GroupChatCachePluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin>(this.ActivateGroupCachePlugin);
+            this.SelectionChangedCommand = new RelayCommand<object>(this.SelectionChangedHandler);
 
             this.ReliabilityStateMachine = new ReliabilityStateMachine();
 
@@ -60,6 +62,8 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 this.GroupChatCachePlugins.Add(plugin);
             }
+
+            this.GroupChatPlugins.Add(new MultiLikeControlViewModel.MultiLikePseudoPlugin(this));
         }
 
         /// <summary>
@@ -114,6 +118,12 @@ namespace GroupMeClient.ViewModels.Controls
         public ICommand EasyClosePopup { get; }
 
         /// <summary>
+        /// Gets the action to be be performed when the selected messages have changed.
+        /// This is used by the Multi-Like plugin.
+        /// </summary>
+        public ICommand SelectionChangedCommand { get; }
+
+        /// <summary>
         /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
         /// </summary>
         public ObservableCollection<MessageControlViewModelBase> Messages { get; }
@@ -151,6 +161,11 @@ namespace GroupMeClient.ViewModels.Controls
         public string Id => this.MessageContainer.Id;
 
         /// <summary>
+        /// Gets the list of messages that are currently selected.
+        /// </summary>
+        public object CurrentlySelectedMessages { get; private set; }
+
+        /// <summary>
         /// Gets or sets the <see cref="IMessageContainer"/> being displayed.
         /// </summary>
         public IMessageContainer MessageContainer
@@ -178,13 +193,22 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// Gets the Small Dialog that should be displayed as a popup.
+        /// Gets or sets the Small Dialog that should be displayed as a popup.
         /// Gets null if no dialog should be displayed.
         /// </summary>
         public ViewModelBase SmallDialog
         {
             get { return this.smallDialog; }
-            private set { this.Set(() => this.SmallDialog, ref this.smallDialog, value); }
+            set { this.Set(() => this.SmallDialog, ref this.smallDialog, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether selecting messages is allowed.
+        /// </summary>
+        public bool IsSelectionAllowed
+        {
+            get { return this.isSelectionAllowed; }
+            set { this.Set(() => this.IsSelectionAllowed, ref this.isSelectionAllowed, value); }
         }
 
         private SemaphoreSlim ReloadSem { get; }
@@ -440,9 +464,10 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void SendFileImageAttachment()
         {
-            var openFileDialog = new OpenFileDialog();
-
-            openFileDialog.Filter = $"Images (*.bmp; *.jpg; *.jpeg; *.png; *.gif)|*.bmp; *.jpg; *.jpeg; *.png; *.gif";
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = $"Images (*.bmp; *.jpg; *.jpeg; *.png; *.gif)|*.bmp; *.jpg; *.jpeg; *.png; *.gif"
+            };
 
             if (openFileDialog.ShowDialog() == true)
             {
@@ -452,7 +477,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task SendImageMessageAsync()
         {
-            if (!(this.SmallDialog is SendImageControlViewModel))
+            if (!(this.SmallDialog is MultiLikeControlViewModel))
             {
                 return;
             }
@@ -573,6 +598,11 @@ namespace GroupMeClient.ViewModels.Controls
             this.TypedMessageContents = messageEffectsDialog.SelectedMessageContents;
 
             this.ClosePopupHandler();
+        }
+
+        private void SelectionChangedHandler(object data)
+        {
+            this.CurrentlySelectedMessages = data;
         }
     }
 }

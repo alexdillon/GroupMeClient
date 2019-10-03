@@ -25,7 +25,6 @@
         </CollectionViewSource>
 
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
-        <converters:InverseBoolConverter x:Key="inverseBoolConverter"/>
         <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
     </UserControl.Resources>
 
@@ -137,6 +136,9 @@
             ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
             Grid.Row="2" Grid.Column="0"
             BorderThickness="0"
+            Background="#F7F7F7"
+            UseLayoutRounding="True"
+            SelectionMode="Multiple"
             ScrollViewer.VerticalScrollBarVisibility="Visible"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" 
@@ -144,27 +146,37 @@
             VirtualizingStackPanel.IsVirtualizing="True"
             VirtualizingStackPanel.VirtualizationMode="Standard"
             VirtualizingStackPanel.ScrollUnit="Pixel"
-            UseLayoutRounding="True"
             extensions:ListBoxExtensions.AutoScrollToEnd="True"
             extensions:ListBoxExtensions.ScrollToTop="{Binding ReloadView}"
             AllowDrop="True"
             extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
             extensions:FileDragDropHelper.FileDragDropTarget="{Binding}"
-            Background="#F7F7F7"
             x:Name="messagesList">
 
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Setter Property="HorizontalContentAlignment" Value="Left"/>
                     <Setter Property="VerticalContentAlignment" Value="Top"/>
-                    
+                    <Setter Property="Focusable" Value="{Binding Path=DataContext.IsSelectionAllowed, RelativeSource={RelativeSource AncestorType=controls:GroupContentsControl}}"/>
+
                     <!--Sometimes, the ListBoxItem will not adjust when multiple chats are rapidly opened. Bind the width to solve it.-->
                     <Setter Property="Width" Value="{Binding Path=ViewportWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}"/>
 
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                <ContentPresenter/>
+                                <Border BorderThickness="0"
+                                        x:Name="highlightBorder"
+                                        Margin="0" >
+                                    <ContentPresenter />
+                                </Border>
+
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="true">
+                                        <Setter TargetName="highlightBorder" Property="BorderThickness" Value="3"/>
+                                        <Setter TargetName="highlightBorder" Property="BorderBrush" Value="#1873BA"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
@@ -178,6 +190,13 @@
                         SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
+
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding DataContext.SelectionChangedCommand, RelativeSource={RelativeSource AncestorType=controls:GroupContentsControl}}"
+                                           CommandParameter="{Binding SelectedItems, ElementName=messagesList}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
         </extensions:ListBoxWithPosition>
 
         <!--Scroll-To-Bottom Button-->

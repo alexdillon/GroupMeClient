@@ -129,6 +129,7 @@
     <Compile Include="ViewModels\Controls\MessageControlViewModelBase.cs" />
     <Compile Include="ViewModels\Controls\MessageEffectsControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\LoadingControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\MultiLikeControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\ViewImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
@@ -173,6 +174,9 @@
     </Compile>
     <Compile Include="Views\Controls\LoadingControl.xaml.cs">
       <DependentUpon>LoadingControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\MultiLikeControl.xaml.cs">
+      <DependentUpon>MultiLikeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\ViewImageControl.xaml.cs">
       <DependentUpon>ViewImageControl.xaml</DependentUpon>
@@ -269,6 +273,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\LoadingControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\MultiLikeControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
