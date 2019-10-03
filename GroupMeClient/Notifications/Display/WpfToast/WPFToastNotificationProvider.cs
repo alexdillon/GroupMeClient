@@ -32,11 +32,6 @@ namespace GroupMeClient.Notifications.Display.WpfToast
 
             this.Manager.DisplayNewToast(toast);
 
-            //this.Notifier.ShowGroupMeToastMessage(
-            //    body,
-            //    new DummyAvatarSource(avatarUrl, roundedAvatar),
-            //    this.GroupMeClient.ImageDownloader);
-
             return Task.CompletedTask;
         }
 
