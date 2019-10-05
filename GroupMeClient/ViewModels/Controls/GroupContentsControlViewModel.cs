@@ -466,7 +466,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = $"Images (*.bmp; *.jpg; *.jpeg; *.png; *.gif)|*.bmp; *.jpg; *.jpeg; *.png; *.gif"
+                Filter = $"Images (*.bmp; *.jpg; *.jpeg; *.png; *.gif)|*.bmp; *.jpg; *.jpeg; *.png; *.gif",
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -477,7 +477,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task SendImageMessageAsync()
         {
-            if (!(this.SmallDialog is MultiLikeControlViewModel))
+            if (!(this.SmallDialog is SendImageControlViewModel))
             {
                 return;
             }
