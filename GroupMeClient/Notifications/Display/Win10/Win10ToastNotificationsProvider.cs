@@ -161,7 +161,7 @@ namespace GroupMeClient.Notifications.Display.Win10
             bool isActive = false;
             Application.Current.Dispatcher.Invoke((Action)(() =>
             {
-                isActive = Application.Current.MainWindow.IsActive;
+                isActive = Application.Current.MainWindow?.IsActive ?? false;
             }));
 
             if (isActive)
