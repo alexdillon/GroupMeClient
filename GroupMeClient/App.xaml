@@ -35,7 +35,7 @@
             the underlying view is already set at this point, so the
             view (UserControl), doesn't need to have it's DataContext set
             directly.
-        -->
+            -->
             <DataTemplate DataType="{x:Type vm:ChatsViewModel}">
                 <views:ChatsView />
             </DataTemplate>
