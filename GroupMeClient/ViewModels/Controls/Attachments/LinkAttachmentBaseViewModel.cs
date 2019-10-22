@@ -111,7 +111,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             {
                 var result = await this.ImageDownloader.DownloadByteDataAsync(url);
 
-                this.RenderedImage = Extensions.ImageUtils.BytesToImageSource(result, maxWidth, maxHeight);
+                this.RenderedImage = Utilities.ImageUtils.BytesToImageSource(result, maxWidth, maxHeight);
             }
         }
 

@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace GroupMeClient.Extensions
+namespace GroupMeClient.Utilities
 {
     /// <summary>
     /// <see cref="RegexUtils"/> provides utility methods to help with Regular Expressions.

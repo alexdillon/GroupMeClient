@@ -145,7 +145,7 @@ namespace GroupMeClient.Extensions
                     if (target is IDragDropTarget fileTarget)
                     {
                         var image = Clipboard.GetImage();
-                        var imageBytes = ImageUtils.BitmapSourceToBytes(image);
+                        var imageBytes = Utilities.ImageUtils.BitmapSourceToBytes(image);
 
                         fileTarget.OnImageDrop(imageBytes);
                     }

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
@@ -28,6 +29,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.ImageDownloader = downloader;
 
             this.SaveImage = new RelayCommand(this.SaveImageAction);
+            this.CopyImage = new RelayCommand(this.CopyImageAction);
 
             this.IsLoading = true;
             _ = this.LoadImageAttachment();
@@ -37,6 +39,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets the action to be performed when the save image button is clicked.
         /// </summary>
         public ICommand SaveImage { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when the copy image button is clicked.
+        /// </summary>
+        public ICommand CopyImage { get; }
 
         /// <summary>
         /// Gets the attached image.
@@ -97,6 +104,17 @@ namespace GroupMeClient.ViewModels.Controls
                     this.ImageStream.CopyTo(fs);
                 }
             }
+        }
+
+        private void CopyImageAction()
+        {
+            var ms = new MemoryStream();
+            this.ImageStream.Seek(0, SeekOrigin.Begin);
+            this.ImageStream.CopyTo(ms);
+
+            var image = Utilities.ImageUtils.BytesToImageSource(ms.ToArray());
+
+            System.Windows.Clipboard.SetImage(image as BitmapSource);
         }
     }
 }

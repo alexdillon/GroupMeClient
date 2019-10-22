@@ -66,7 +66,7 @@ namespace GroupMeClient.ViewModels.Controls
             var isGroup = !this.AvatarSource.IsRoundedAvatar;
             byte[] image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl, isGroup);
 
-            var bitmapImage = Extensions.ImageUtils.BytesToImageSource(image);
+            var bitmapImage = Utilities.ImageUtils.BytesToImageSource(image);
 
             if (this.AvatarSource.IsRoundedAvatar)
             {
