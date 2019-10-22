@@ -64,9 +64,13 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             {
                 this.url = value;
 
-                if (this.url.Contains(" "))
+                var stopAtCharacters = new string[] { " ", "\n" };
+                foreach (var stopChar in stopAtCharacters)
                 {
-                    this.url = this.url.Substring(0, this.url.IndexOf(" "));
+                    if (this.url.Contains(stopChar))
+                    {
+                        this.url = this.url.Substring(0, this.url.IndexOf(stopChar));
+                    }
                 }
 
                 if (Uri.TryCreate(this.url, UriKind.Absolute, out var uri))
