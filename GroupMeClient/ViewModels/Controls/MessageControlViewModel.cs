@@ -444,7 +444,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             while (true)
             {
-                if (!Regex.IsMatch(text, Extensions.RegexUtils.UrlRegex))
+                if (!Regex.IsMatch(text, Utilities.RegexUtils.UrlRegex))
                 {
                     // no URLs contained
                     result.Add(new Run(text));
@@ -453,7 +453,7 @@ namespace GroupMeClient.ViewModels.Controls
                 else
                 {
                     // url is contained in the input string
-                    var match = Regex.Match(text, Extensions.RegexUtils.UrlRegex);
+                    var match = Regex.Match(text, Utilities.RegexUtils.UrlRegex);
 
                     if (match.Index > 0)
                     {

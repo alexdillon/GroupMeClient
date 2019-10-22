@@ -72,7 +72,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
                 {
                     var result = await this.ImageDownloader.DownloadByteDataAsync(url);
 
-                    this.FaviconImage = Extensions.ImageUtils.BytesToImageSource(result);
+                    this.FaviconImage = Utilities.ImageUtils.BytesToImageSource(result);
                 }
             }
             catch (Exception)
