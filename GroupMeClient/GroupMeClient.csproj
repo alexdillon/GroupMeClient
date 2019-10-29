@@ -71,6 +71,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
+    <Compile Include="Extensions\ModernScrolling\ModernScrollBase.cs" />
+    <Compile Include="Extensions\ModernScrolling\ModernScrollViewer.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
     <Compile Include="Extensions\ZoomBorder.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />
@@ -81,6 +83,9 @@
     </Compile>
     <Compile Include="Notifications\Display\WpfToast\ToastHolderViewModel.cs" />
     <Compile Include="Updates\UpdateAssist.cs" />
+    <Compile Include="Utilities\DirectManipulation\DirectManipulation.cs" />
+    <Compile Include="Utilities\DirectManipulation\MouseNative.cs" />
+    <Compile Include="Utilities\DirectManipulation\PointerBasedManipulationHandler.cs" />
     <Compile Include="Utilities\RegexUtils.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />
     <Compile Include="Extensions\TextBlockExtensions.cs" />

@@ -9,6 +9,7 @@
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:modernscrolling="clr-namespace:GroupMeClient.Extensions.ModernScrolling"
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
@@ -125,7 +126,7 @@
             </Grid>
 
             <!--All Groups and Chats List-->
-            <ScrollViewer Grid.Row="1"
+            <modernscrolling:ModernScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Visible" PanningMode="VerticalOnly" CanContentScroll="True"
                           VerticalAlignment="Stretch">
                 <ItemsControl ItemsSource="{Binding SortedFilteredGroupChats}">
@@ -152,7 +153,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </ScrollViewer>
+            </modernscrolling:ModernScrollViewer>
         </Grid>
 
         <!--Opened Groups and Chats-->

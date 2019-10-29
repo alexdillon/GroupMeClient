@@ -177,6 +177,8 @@ namespace GroupMeClient.ViewModels
 
             this.UpdateAssist = new UpdateAssist();
             Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
+
+            Extensions.ModernScrolling.ModernScrollBase.Setup();
         }
 
         private void RegisterNotifications()
