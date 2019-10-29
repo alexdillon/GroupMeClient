@@ -365,7 +365,7 @@
       <Version>3.0.40218</Version>
     </PackageReference>
     <PackageReference Include="GitInfo">
-      <Version>2.0.20</Version>
+      <Version>2.0.21</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -388,13 +388,13 @@
       <Version>5.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.18362.2002-preview</Version>
+      <Version>10.0.18362.2005</Version>
     </PackageReference>
     <PackageReference Include="MvvmLight">
       <Version>5.4.1.1</Version>
     </PackageReference>
     <PackageReference Include="NuGet.CommandLine">
-      <Version>5.1.0</Version>
+      <Version>5.3.1</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -410,7 +410,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="XamlAnimatedGif">
-      <Version>1.2.1</Version>
+      <Version>1.2.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />
