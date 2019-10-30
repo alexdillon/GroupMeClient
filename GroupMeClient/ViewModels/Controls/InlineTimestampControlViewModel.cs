@@ -74,7 +74,7 @@ namespace GroupMeClient.ViewModels.Controls
                 else
                 {
                     // full format
-                    return this.Timestamp.ToString("MMM dd h:mm tt");
+                    return this.Timestamp.ToString("MMM d, yyyy h:mm tt");
                 }
             }
         }
