@@ -46,19 +46,25 @@ namespace GroupMeClient.Extensions
             this.child = element;
             if (this.child != null)
             {
-                TransformGroup group = new TransformGroup();
-                ScaleTransform st = new ScaleTransform();
+                var group = new TransformGroup();
+                var st = new ScaleTransform();
+                var tt = new TranslateTransform();
+
                 group.Children.Add(st);
-                TranslateTransform tt = new TranslateTransform();
                 group.Children.Add(tt);
+
                 this.child.RenderTransform = group;
                 this.child.RenderTransformOrigin = new Point(0.0, 0.0);
+
                 this.MouseWheel += this.Child_MouseWheel;
                 this.MouseLeftButtonDown += this.Child_MouseLeftButtonDown;
+                this.MouseRightButtonDown += this.Child_MouseLeftButtonDown;
+
                 this.MouseLeftButtonUp += this.Child_MouseLeftButtonUp;
+                this.MouseRightButtonUp += this.Child_MouseLeftButtonUp;
+
                 this.MouseMove += this.Child_MouseMove;
-                this.PreviewMouseRightButtonDown += new MouseButtonEventHandler(
-                  this.Child_PreviewMouseRightButtonDown);
+
                 this.ManipulationStarting += this.ZoomBorder_ManipulationStarting;
                 this.ManipulationDelta += this.ZoomBorder_ManipulationDelta;
             }
@@ -197,11 +203,7 @@ namespace GroupMeClient.Extensions
             }
         }
 
-        private void Child_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            this.Reset();
-        }
-
+    
         private void Child_MouseMove(object sender, MouseEventArgs e)
         {
             if (this.child != null)
