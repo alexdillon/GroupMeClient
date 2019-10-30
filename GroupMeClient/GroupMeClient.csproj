@@ -71,6 +71,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
+    <Compile Include="Converters\ValueConverterGroup.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
     <Compile Include="Extensions\ZoomBorder.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />

@@ -7,6 +7,8 @@
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             xmlns:converters="clr-namespace:GroupMeClient.Converters"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              FontFamily="Segoe UI"
              d:DesignHeight="200" d:DesignWidth="200"
@@ -15,12 +17,17 @@
     <Grid>
         <Grid.Resources>
             <BooleanToVisibilityConverter x:Key="VisibleIfTrueConverter" />
+            
+            <converters:ValueConverterGroup x:Key="VisibleIfFalseConverter">
+                <converters:InverseBoolConverter />
+                <BooleanToVisibilityConverter />
+            </converters:ValueConverterGroup>
         </Grid.Resources>
         <Controls:ProgressRing IsActive="True"
                                Visibility="{Binding Path=IsLoading, Converter={StaticResource VisibleIfTrueConverter}}"
                                Width="60" Height="60"
                                HorizontalAlignment="Center"
-                               Background="Black"/>
+                               Background="Transparent"/>
 
         <extensions:ZoomBorder x:Name="border" ClipToBounds="False" IsManipulationEnabled="true">
             <Image
@@ -40,7 +47,8 @@
                 Foreground="White"
                 BorderThickness="0"
                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                Command="{Binding Path=SaveImage}">
+                Command="{Binding Path=SaveImage}"
+                Visibility="{Binding Path=IsLoading, Converter={StaticResource VisibleIfFalseConverter}}">
             <Button.ContentTemplate>
                 <DataTemplate>
                     <iconPacks:PackIconEntypo Width="15"
@@ -58,7 +66,8 @@
                 Foreground="White"
                 BorderThickness="0"
                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                Command="{Binding Path=CopyImage}">
+                Command="{Binding Path=CopyImage}"
+                Visibility="{Binding Path=IsLoading, Converter={StaticResource VisibleIfFalseConverter}}">
             <Button.ContentTemplate>
                 <DataTemplate>
                     <iconPacks:PackIconFontAwesome Width="15"
@@ -67,7 +76,5 @@
                 </DataTemplate>
             </Button.ContentTemplate>
         </Button>
-
     </Grid>
-
 </UserControl>
