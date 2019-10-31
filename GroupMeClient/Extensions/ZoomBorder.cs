@@ -203,7 +203,6 @@ namespace GroupMeClient.Extensions
             }
         }
 
-    
         private void Child_MouseMove(object sender, MouseEventArgs e)
         {
             if (this.child != null)
