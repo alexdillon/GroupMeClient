@@ -65,6 +65,35 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public bool IsDisabled => !this.IsEnabled;
 
+        /// <summary>
+        /// Gets a value indicating whether any messages are currently selected for liking.
+        /// </summary>
+        public bool AnyMessagesSelected
+        {
+            get
+            {
+                var range = this.GroupContentsControlViewModel.CurrentlySelectedMessages;
+                if (range == null)
+                {
+                    return false;
+                }
+
+                try
+                {
+                    var itemList = (range as ObservableCollection<object>).Cast<MessageControlViewModelBase>().ToList();
+
+                    var oldestId = itemList.Min(m => long.Parse(m.Id));
+                    var newestId = itemList.Max(m => long.Parse(m.Id));
+
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
         private GroupContentsControlViewModel GroupContentsControlViewModel { get; }
 
         private TimeSpan LikeDelay { get; } = TimeSpan.FromMilliseconds(20);
@@ -88,7 +117,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.GroupContentsControlViewModel.IsSelectionAllowed = false;
 
             var itemList = this.GroupContentsControlViewModel.CurrentlySelectedMessages as ObservableCollection<object>;
-            itemList.Clear();
+            itemList?.Clear();
 
             this.GroupContentsControlViewModel.SmallDialog = null;
         }
