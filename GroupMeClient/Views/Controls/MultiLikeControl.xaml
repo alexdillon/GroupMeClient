@@ -35,6 +35,7 @@
 
         <Button Grid.Row="2"
                 Content="Like Message Range"
+                Visibility="{Binding AnyMessagesSelected, Converter={StaticResource boolToVisibilityConverter}}"
                 Command="{Binding PerformMultiLikeCommand}"
                 />
     </Grid>
