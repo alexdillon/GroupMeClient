@@ -228,9 +228,9 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// 
+        /// Likes a message and updates the Liker's Display area for the current <see cref="Message"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LikeMessageAsync()
         {
             var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
