@@ -141,10 +141,10 @@ namespace GroupMeClient.ViewModels.Controls
             foreach (var message in this.GroupContentsControlViewModel.Messages)
             {
                 var id = long.Parse(message.Id);
-                if (id >= oldestId && id <= newestId && message is MessageControlViewModel)
+                if (id >= oldestId && id <= newestId && message is MessageControlViewModel mcvm)
                 {
-                    loadingControl.Message = $"Liking Message {message.Message.Text}";
-                    await message.Message.LikeMessage();
+                    loadingControl.Message = $"Liking Message {mcvm.Message.Text}";
+                    await mcvm.LikeMessageAsync();
                     await Task.Delay(this.LikeDelay);
                 }
             }
