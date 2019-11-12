@@ -26,6 +26,7 @@ namespace GroupMeClient.ViewModels
     public class ChatsViewModel : ViewModelBase, INotificationSink
     {
         private string groupChatFilter = string.Empty;
+        private bool miniBarModeEnabled = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatsViewModel"/> class.
@@ -89,6 +90,22 @@ namespace GroupMeClient.ViewModels
             {
                 this.Set(() => this.GroupChatFilter, ref this.groupChatFilter, value);
                 this.SortedFilteredGroupChats.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether minibar mode is enabled.
+        /// </summary>
+        public bool MiniBarModeEnabled
+        {
+            get
+            {
+                return this.miniBarModeEnabled;
+            }
+
+            set
+            {
+                this.Set(() => this.MiniBarModeEnabled, ref this.miniBarModeEnabled, value);
             }
         }
 
@@ -271,8 +288,12 @@ namespace GroupMeClient.ViewModels
                 this.PublishTotalUnreadCount();
             }
 
-            // limit to three multi-chats at a time
-            while (this.ActiveGroupsChats.Count > 3)
+            // Limit to three multi-chats at a time
+            // But, only close a single chat. Users will not expect multiple
+            // chats to close at once. This could occur if the user opened several chats in MiniBar mode,
+            // and then switched back to regular mode.
+            var maximumChats = this.MiniBarModeEnabled ? this.SettingsManager.UISettings.MaximumNumberOfMultiChatsMinibar : this.SettingsManager.UISettings.MaximumNumberOfMultiChatsNormal;
+            if (this.ActiveGroupsChats.Count > maximumChats)
             {
                 var removeGroup = this.ActiveGroupsChats.Last();
                 this.PushClient.Unsubscribe(group.MessageContainer);
