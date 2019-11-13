@@ -67,6 +67,7 @@
                 </Grid.RowDefinitions>
 
                 <ToggleButton Grid.Column="0"
+                              IsChecked="{Binding MiniBarModeEnabled, Mode=TwoWay}"
                               HorizontalAlignment="Left" VerticalAlignment="Center"
                               Margin="15,0,0,0"
                               Height="Auto" FontSize="17" FontWeight="SemiBold"

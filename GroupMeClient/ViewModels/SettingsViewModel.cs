@@ -56,6 +56,42 @@ namespace GroupMeClient.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating how many Multi-Chats are allowed in regular mode.
+        /// </summary>
+        public int MaximumNumberOfMultiChats
+        {
+            get
+            {
+                return this.SettingsManager.UISettings.MaximumNumberOfMultiChatsNormal;
+            }
+
+            set
+            {
+                this.SettingsManager.UISettings.MaximumNumberOfMultiChatsNormal = value;
+                this.RaisePropertyChanged(nameof(this.MaximumNumberOfMultiChats));
+                this.SettingsManager.SaveSettings();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating how many Multi-Chats are allowed in MiniBar mode.
+        /// </summary>
+        public int MaximumNumberOfMultiChatsMiniBar
+        {
+            get
+            {
+                return this.SettingsManager.UISettings.MaximumNumberOfMultiChatsMinibar;
+            }
+
+            set
+            {
+                this.SettingsManager.UISettings.MaximumNumberOfMultiChatsMinibar = value;
+                this.RaisePropertyChanged(nameof(this.MaximumNumberOfMultiChatsMiniBar));
+                this.SettingsManager.SaveSettings();
+            }
+        }
+
         private Settings.SettingsManager SettingsManager { get; }
 
         private void LoadPluginInfo()
