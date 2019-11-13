@@ -14,6 +14,7 @@
 
     <UserControl.Resources>
         <converters:IsZeroConverter x:Key="isZeroConverter"/>
+        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
     </UserControl.Resources>
 
     <Grid Background="{Binding MessageColor}">
@@ -26,12 +27,20 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="10"/>
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <controls:AvatarControl 
                 Grid.Column="0" Grid.Row="1"
                 Width="40" Height="40" VerticalAlignment="Top"
-                DataContext="{Binding Avatar}"/>
+                DataContext="{Binding Avatar}">
+            
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseRightButtonDown" >
+                    <i:InvokeCommandAction Command="{Binding Path=DataContext.ToggleMessageDetails, RelativeSource={RelativeSource AncestorType=controls:MessageControl}}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </controls:AvatarControl>
 
         <StackPanel Grid.Column="1" Grid.Row="1">
             <Label Content="{Binding Sender}" FontSize="12" Foreground="#637182" Padding="0" />
@@ -164,5 +173,20 @@
                 </Border>
             </Grid>
         </Canvas>
+
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+                    Orientation="Vertical"
+                    Background="LightGray"
+                    Height="45"
+                    Visibility="{Binding ShowDetails, Converter={StaticResource boolToVisibilityConverter}}">
+
+            <Label Content="{Binding SentTimeString}"
+                   ContentStringFormat="Sent: {0}"
+                   FontWeight="Regular"
+                   FontSize="11"
+                   Foreground="#637182"
+                   Padding="20,0,0,0"/>
+
+        </StackPanel>
     </Grid>
 </UserControl>
