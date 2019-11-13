@@ -152,6 +152,36 @@ namespace GroupMeClient.ViewModels.Controls
         public ObservableCollection<Inline> Inlines { get; }
 
         /// <summary>
+        /// Gets a string indicating which GroupMe Platform was used to send this <see cref="Message"/>.
+        /// </summary>
+        public string SenderPlatform
+        {
+            get
+            {
+                if (this.Message.SourceGuid.StartsWith("gmdc"))
+                {
+                    return "GroupMe Desktop Client";
+                }
+                else if (this.message.SourceGuid.StartsWith("android"))
+                {
+                    return "Android";
+                }
+                else if (this.message.SourceGuid.ToUpper() == this.Message.SourceGuid)
+                {
+                    return "iOS";
+                }
+                else if (!this.message.SourceGuid.Contains("-"))
+                {
+                    return "Web Client";
+                }
+                else
+                {
+                    return "GroupMe UWP";
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the background color to use when rendering this <see cref="Message"/>.
         /// </summary>
         public Brush MessageColor

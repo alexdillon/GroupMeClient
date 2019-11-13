@@ -187,6 +187,12 @@
                    Foreground="#637182"
                    Padding="20,0,0,0"/>
 
+            <Label Content="{Binding SenderPlatform}"
+                   ContentStringFormat="Client: {0}"
+                   FontWeight="Regular"
+                   FontSize="11"
+                   Foreground="#637182"
+                   Padding="20,0,0,0"/>
         </StackPanel>
     </Grid>
 </UserControl>
