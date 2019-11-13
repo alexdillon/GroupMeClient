@@ -36,7 +36,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.Inlines = new ObservableCollection<Inline>();
-            this.LikeAction = new RelayCommand(async () => { await this.LikeMessageActionAsync(); }, () => { return true; }, true);
+            this.LikeAction = new RelayCommand(async () => { await this.LikeMessageAsync(); }, () => { return true; }, true);
 
             this.ShowLikers = showLikers;
             this.ShowPreviewsOnlyForMultiImages = showPreviewsOnlyForMultiImages;
@@ -227,6 +227,41 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        /// <summary>
+        /// Likes a message and updates the Liker's Display area for the current <see cref="Message"/>.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task LikeMessageAsync()
+        {
+            var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
+            var alreadyLiked = this.Message.FavoritedBy.Contains(me.Id);
+
+            if (alreadyLiked)
+            {
+                var success = await this.Message.UnlikeMessage();
+                if (success)
+                {
+                    lock (this.messageLock)
+                    {
+                        this.Message.FavoritedBy.Remove(me.Id);
+                    }
+                }
+            }
+            else
+            {
+                var success = await this.Message.LikeMessage();
+                if (success)
+                {
+                    lock (this.messageLock)
+                    {
+                        this.Message.FavoritedBy.Add(me.Id);
+                    }
+                }
+            }
+
+            this.UpdateDisplay();
+        }
+
         private bool ShowLikers { get; }
 
         private string HiddenText { get; set; }
@@ -368,37 +403,6 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 this.HiddenText = vm.Url;
             }
-        }
-
-        private async Task LikeMessageActionAsync()
-        {
-            var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
-            var alreadyLiked = this.Message.FavoritedBy.Contains(me.Id);
-
-            if (alreadyLiked)
-            {
-                var success = await this.Message.UnlikeMessage();
-                if (success)
-                {
-                    lock (this.messageLock)
-                    {
-                        this.Message.FavoritedBy.Remove(me.Id);
-                    }
-                }
-            }
-            else
-            {
-                var success = await this.Message.LikeMessage();
-                if (success)
-                {
-                    lock (this.messageLock)
-                    {
-                        this.Message.FavoritedBy.Add(me.Id);
-                    }
-                }
-            }
-
-            this.UpdateDisplay();
         }
 
         private void LoadInlinesForMessageBody()
