@@ -72,6 +72,8 @@
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
     <Compile Include="Extensions\ModernScrolling\ModernScrollBase.cs" />
+    <Compile Include="Extensions\ModernScrolling\ModernListBoxExtension.cs" />
+    <Compile Include="Extensions\ModernScrolling\ModernScrollWindowExtension.cs" />
     <Compile Include="Extensions\ModernScrolling\ModernScrollViewer.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
     <Compile Include="Extensions\ZoomBorder.cs" />

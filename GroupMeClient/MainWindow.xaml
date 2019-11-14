@@ -9,7 +9,7 @@
                  xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
                  xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
                  xmlns:converters="clr-namespace:GroupMeClient.Converters"
-                 xmlns:wpftoast="clr-namespace:GroupMeClient.Notifications.Display.WpfToast"
+                 xmlns:ModernScrolling="clr-namespace:GroupMeClient.Extensions.ModernScrolling"
                  Title="GroupMe Desktop Client"
                  TitleCaps="False"
                  Width="1024"
@@ -17,6 +17,7 @@
                  WindowTitleBrush="#1873BA"
                  WindowStartupLocation="CenterScreen"
                  WindowTransitionsEnabled="False"
+                 ModernScrolling:ModernScrollWindowExtension.EnableDirectManipulation="True"
                  mc:Ignorable="d">   
 
     <Window.DataContext>

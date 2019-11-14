@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:modernscrolling="clr-namespace:GroupMeClient.Extensions.ModernScrolling"
              d:DesignHeight="1024"
              d:DesignWidth="768"
              mc:Ignorable="d">

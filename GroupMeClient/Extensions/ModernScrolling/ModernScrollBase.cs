@@ -14,7 +14,7 @@ namespace GroupMeClient.Extensions.ModernScrolling
         {
             if (!enabled)
             {
-                //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.DisableStylusAndTouchSupport", true);
+                // AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.DisableStylusAndTouchSupport", true);
                 AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
 
                 enabled = true;

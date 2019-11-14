@@ -62,26 +62,6 @@ namespace GroupMeClient.Utilities.DirectManipulation
 
         private IntPtr Window => this.hwndSource.Handle;
 
-        private void InitializeDirectManipulation()
-        {
-            this.manager = (IDirectManipulationManager)Activator.CreateInstance(typeof(DirectManipulationManagerClass));
-            var riidViewport = typeof(IDirectManipulationViewport).GUID;
-
-            this.viewport = this.manager.CreateViewport(null, this.Window, riidViewport) as IDirectManipulationViewport;
-
-            var configuration = DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_INTERACTION
-                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_X
-                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_Y
-                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_INERTIA
-                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_RAILS_X
-                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_RAILS_Y;
-
-            this.viewport.ActivateConfiguration(configuration);
-            this.viewportEventHandlerRegistration = this.viewport.AddEventHandler(this.Window, this);
-            this.viewport.SetViewportRect(ref defaultViewport);
-            this.viewport.Enable();
-        }
-
         public void Dispose()
         {
             this.viewport.RemoveEventHandler(this.viewportEventHandlerRegistration);
@@ -101,49 +81,6 @@ namespace GroupMeClient.Utilities.DirectManipulation
                 bottom = (int)size.Height,
             };
             this.viewport.SetViewportRect(ref rect);
-        }
-
-        // Our custom hook to process WM_POINTER event
-        private IntPtr WndProcHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            if (msg == MouseNative.WM_POINTERDOWN || msg == MouseNative.DM_POINTERHITTEST)
-            {
-                var pointerID = MouseNative.GetPointerId(wParam);
-                var pointerInfo = default(MouseNative.POINTER_INFO);
-                if (!MouseNative.GetPointerInfo(pointerID, ref pointerInfo))
-                {
-                    return IntPtr.Zero;
-                }
-
-                if (pointerInfo.pointerType != MouseNative.POINTER_INPUT_TYPE.PT_TOUCHPAD &&
-                    pointerInfo.pointerType != MouseNative.POINTER_INPUT_TYPE.PT_TOUCH)
-                {
-                    return IntPtr.Zero;
-                }
-
-                this.viewport.SetContact(pointerID);
-            }
-            else if (msg == MouseNative.WM_SIZE && this.manager != null)
-            {
-                if (wParam == MouseNative.SIZE_MAXHIDE
-                    || wParam == MouseNative.SIZE_MINIMIZED)
-                {
-                    this.manager.Deactivate(this.Window);
-                }
-                else
-                {
-                    this.manager.Activate(this.Window);
-                }
-            }
-
-            return IntPtr.Zero;
-        }
-
-        private void ResetViewport(IDirectManipulationViewport viewport)
-        {
-            viewport.ZoomToRect(0, 0, (float)this.viewportSize.Width, (float)this.viewportSize.Height, 0);
-            this.lastScale = 1.0f;
-            this.lastTranslationX = this.lastTranslationY = 0;
         }
 
         public void OnViewportStatusChanged([In, MarshalAs(UnmanagedType.Interface)] IDirectManipulationViewport viewport, [In] DIRECTMANIPULATION_STATUS current, [In] DIRECTMANIPULATION_STATUS previous)
@@ -196,6 +133,69 @@ namespace GroupMeClient.Utilities.DirectManipulation
             this.lastScale = scale;
             this.lastTranslationX = newX;
             this.lastTranslationY = newY;
+        }
+
+        private void InitializeDirectManipulation()
+        {
+            this.manager = (IDirectManipulationManager)Activator.CreateInstance(typeof(DirectManipulationManagerClass));
+            var riidViewport = typeof(IDirectManipulationViewport).GUID;
+
+            this.viewport = this.manager.CreateViewport(null, this.Window, riidViewport) as IDirectManipulationViewport;
+
+            var configuration = DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_INTERACTION
+                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_X
+                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_Y
+                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_INERTIA
+                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_RAILS_X
+                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_RAILS_Y;
+
+            this.viewport.ActivateConfiguration(configuration);
+            this.viewportEventHandlerRegistration = this.viewport.AddEventHandler(this.Window, this);
+            this.viewport.SetViewportRect(ref defaultViewport);
+            this.viewport.Enable();
+        }
+
+        // Our custom hook to process WM_POINTER event
+        private IntPtr WndProcHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == MouseNative.WM_POINTERDOWN || msg == MouseNative.DM_POINTERHITTEST)
+            {
+                var pointerID = MouseNative.GetPointerId(wParam);
+                var pointerInfo = default(MouseNative.POINTER_INFO);
+                if (!MouseNative.GetPointerInfo(pointerID, ref pointerInfo))
+                {
+                    return IntPtr.Zero;
+                }
+
+                if (pointerInfo.pointerType != MouseNative.POINTER_INPUT_TYPE.PT_TOUCHPAD &&
+                    pointerInfo.pointerType != MouseNative.POINTER_INPUT_TYPE.PT_TOUCH)
+                {
+                    return IntPtr.Zero;
+                }
+
+                this.viewport.SetContact(pointerID);
+            }
+            else if (msg == MouseNative.WM_SIZE && this.manager != null)
+            {
+                if (wParam == MouseNative.SIZE_MAXHIDE
+                    || wParam == MouseNative.SIZE_MINIMIZED)
+                {
+                    this.manager.Deactivate(this.Window);
+                }
+                else
+                {
+                    this.manager.Activate(this.Window);
+                }
+            }
+
+            return IntPtr.Zero;
+        }
+
+        private void ResetViewport(IDirectManipulationViewport viewport)
+        {
+            viewport.ZoomToRect(0, 0, (float)this.viewportSize.Width, (float)this.viewportSize.Height, 0);
+            this.lastScale = 1.0f;
+            this.lastTranslationX = this.lastTranslationY = 0;
         }
     }
 }
