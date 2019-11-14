@@ -24,6 +24,8 @@ namespace GroupMeClient.ViewModels.Controls
         private Message message;
         private AvatarControlViewModel avatar;
 
+        private bool showDetails;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageControlViewModel"/> class.
         /// </summary>
@@ -37,6 +39,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.Inlines = new ObservableCollection<Inline>();
             this.LikeAction = new RelayCommand(async () => { await this.LikeMessageAsync(); }, () => { return true; }, true);
+            this.ToggleMessageDetails = new RelayCommand(() => this.ShowDetails = !this.ShowDetails);
 
             this.ShowLikers = showLikers;
             this.ShowPreviewsOnlyForMultiImages = showPreviewsOnlyForMultiImages;
@@ -71,6 +74,11 @@ namespace GroupMeClient.ViewModels.Controls
         public ICommand LikeAction { get; }
 
         /// <summary>
+        /// Gets the command to be performed to toggle whether details are shwon for this <see cref="Message"/>.
+        /// </summary>
+        public ICommand ToggleMessageDetails { get; }
+
+        /// <summary>
         /// Gets the unique identifier for this <see cref="Message"/>.
         /// </summary>
         public override string Id => this.Message.Id;
@@ -79,6 +87,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets the sender of this <see cref="Message"/>.
         /// </summary>
         public string Sender => this.Message.Name;
+
+        /// <summary>
+        /// Gets a formatted string with the date and time this <see cref="Message"/> was sent.
+        /// </summary>
+        public string SentTimeString => this.Message.CreatedAtTime.ToString("MM/dd/yy h:mm:ss tt");
 
         /// <inheritdoc />
         public override bool IsSelectable => true;
@@ -118,9 +131,55 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether details should be shown for this message.
+        /// </summary>
+        public bool ShowDetails
+        {
+            get
+            {
+                return this.showDetails;
+            }
+
+            set
+            {
+                this.Set(() => this.ShowDetails, ref this.showDetails, value);
+            }
+        }
+
+        /// <summary>
         /// Gets a collection of inline text blocks to display for the message.
         /// </summary>
         public ObservableCollection<Inline> Inlines { get; }
+
+        /// <summary>
+        /// Gets a string indicating which GroupMe Platform was used to send this <see cref="Message"/>.
+        /// </summary>
+        public string SenderPlatform
+        {
+            get
+            {
+                if (this.Message.SourceGuid.StartsWith("gmdc"))
+                {
+                    return "GroupMe Desktop Client";
+                }
+                else if (this.message.SourceGuid.StartsWith("android"))
+                {
+                    return "Android";
+                }
+                else if (this.message.SourceGuid.ToUpper() == this.Message.SourceGuid)
+                {
+                    return "iOS";
+                }
+                else if (!this.message.SourceGuid.Contains("-"))
+                {
+                    return "Web Client";
+                }
+                else
+                {
+                    return "GroupMe UWP";
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the background color to use when rendering this <see cref="Message"/>.
@@ -227,6 +286,20 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        private bool ShowLikers { get; }
+
+        private string HiddenText { get; set; }
+
+        private bool ShowPreviewsOnlyForMultiImages { get; set; }
+
+        /// <summary>
+        /// Redraw the message immediately.
+        /// </summary>
+        public void UpdateDisplay()
+        {
+            this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
+        }
+
         /// <summary>
         /// Likes a message and updates the Liker's Display area for the current <see cref="Message"/>.
         /// </summary>
@@ -260,20 +333,6 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             this.UpdateDisplay();
-        }
-
-        private bool ShowLikers { get; }
-
-        private string HiddenText { get; set; }
-
-        private bool ShowPreviewsOnlyForMultiImages { get; set; }
-
-        /// <summary>
-        /// Redraw the message immediately.
-        /// </summary>
-        public void UpdateDisplay()
-        {
-            this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
         }
 
         /// <summary>

@@ -166,12 +166,13 @@ namespace GroupMeClientApi.Models
         /// </summary>
         /// <param name="body">The message contents.</param>
         /// <param name="attachments">A list of attachments to be included with the message.</param>
+        /// <param name="guidPrefix">An optional prefix to add to the message's GUID.</param>
         /// <returns>True if successful, false otherwise.</returns>
-        public static Message CreateMessage(string body, IEnumerable<Attachments.Attachment> attachments = null)
+        public static Message CreateMessage(string body, IEnumerable<Attachments.Attachment> attachments = null, string guidPrefix = "")
         {
             var msg = new Message()
             {
-                SourceGuid = Guid.NewGuid().ToString(),
+                SourceGuid = $"{guidPrefix}-{Guid.NewGuid().ToString()}",
                 Text = body,
                 Attachments = new List<Attachments.Attachment>(attachments ?? Enumerable.Empty<Attachments.Attachment>()),
                 FavoritedBy = new List<string>(),

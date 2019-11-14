@@ -457,7 +457,9 @@ namespace GroupMeClient.ViewModels.Controls
             if (!string.IsNullOrEmpty(this.TypedMessageContents))
             {
                 this.IsSending = true;
-                var newMessage = Message.CreateMessage(this.TypedMessageContents);
+                var newMessage = Message.CreateMessage(
+                    this.TypedMessageContents,
+                    guidPrefix: "gmdc");
                 await this.SendMessageAsync(newMessage);
             }
         }
@@ -507,7 +509,10 @@ namespace GroupMeClient.ViewModels.Controls
 
             var attachmentsList = new List<GroupMeClientApi.Models.Attachments.Attachment> { attachment };
 
-            var message = Message.CreateMessage(contents, attachmentsList);
+            var message = Message.CreateMessage(
+                contents,
+                attachmentsList,
+                "gmdc");
             bool success = await this.SendMessageAsync(message);
 
             if (success)
