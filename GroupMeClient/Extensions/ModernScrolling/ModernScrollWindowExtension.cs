@@ -161,7 +161,7 @@ namespace GroupMeClient.Extensions.ModernScrolling
                 var hoveredElement = this.window.InputHitTest(InputManager.Current.PrimaryMouseDevice.GetPosition(this.window));
                 var scrollableParent = FindSimpleVisualParent<ScrollViewer>(hoveredElement as DependencyObject);
 
-                if (hoveredElement != null)
+                if (scrollableParent != null)
                 {
                     var scrollViewer = scrollableParent as ScrollViewer;
                     scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset + arg1);

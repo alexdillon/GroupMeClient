@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -10,7 +11,7 @@ namespace GroupMeClient.Utilities.DirectManipulation
         private const int ContentMatrixSize = 6;
 
         // Actual values don't matter
-        private static tagRECT defaultViewport = new tagRECT { top = 0, left = 0, right = 1000, bottom = 1000 };
+        private static tagRECT defaultViewport = new tagRECT { top = 0, left = 0, right = 10, bottom = 10 };
 
         private readonly float[] matrix = new float[ContentMatrixSize];
         private readonly IntPtr matrixContent;
@@ -72,7 +73,7 @@ namespace GroupMeClient.Utilities.DirectManipulation
         public void SetSize(Size size)
         {
             this.viewportSize = size;
-            this.viewport.Stop();
+         //   this.viewport.Stop();
             var rect = new tagRECT
             {
                 left = 0,
@@ -80,11 +81,18 @@ namespace GroupMeClient.Utilities.DirectManipulation
                 right = (int)size.Width,
                 bottom = (int)size.Height,
             };
+
             this.viewport.SetViewportRect(ref rect);
+        }
+
+        public void OnViewportUpdated([In, MarshalAs(UnmanagedType.Interface)] IDirectManipulationViewport viewport)
+        {
+            Debug.WriteLine("Viewport Update");
         }
 
         public void OnViewportStatusChanged([In, MarshalAs(UnmanagedType.Interface)] IDirectManipulationViewport viewport, [In] DIRECTMANIPULATION_STATUS current, [In] DIRECTMANIPULATION_STATUS previous)
         {
+            Debug.WriteLine("State:" + current.ToString());
             if (previous == current)
             {
                 return;
@@ -96,12 +104,10 @@ namespace GroupMeClient.Utilities.DirectManipulation
             }
         }
 
-        public void OnViewportUpdated([In, MarshalAs(UnmanagedType.Interface)] IDirectManipulationViewport viewport)
-        {
-        }
-
         public void OnContentUpdated([In, MarshalAs(UnmanagedType.Interface)] IDirectManipulationViewport viewport, [In, MarshalAs(UnmanagedType.Interface)] IDirectManipulationContent content)
         {
+            Debug.WriteLine("Updated");
+
             content.GetContentTransform(this.matrixContent, ContentMatrixSize);
             Marshal.Copy(this.matrixContent, this.matrix, 0, ContentMatrixSize);
 
@@ -109,10 +115,10 @@ namespace GroupMeClient.Utilities.DirectManipulation
             float newX = this.matrix[4];
             float newY = this.matrix[5];
 
-            if (scale == 0.0f)
-            {
-                return;
-            }
+            //if (scale == 0.0f)
+            //{
+            //    return;
+            //}
 
             var deltaX = newX - this.lastTranslationX;
             var deltaY = newY - this.lastTranslationY;
@@ -147,12 +153,25 @@ namespace GroupMeClient.Utilities.DirectManipulation
                 | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_Y
                 | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_TRANSLATION_INERTIA
                 | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_RAILS_X
-                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_RAILS_Y;
+                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_RAILS_Y
+                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_SCALING
+                | DIRECTMANIPULATION_CONFIGURATION.DIRECTMANIPULATION_CONFIGURATION_SCALING_INERTIA;
 
             this.viewport.ActivateConfiguration(configuration);
+
             this.viewportEventHandlerRegistration = this.viewport.AddEventHandler(this.Window, this);
             this.viewport.SetViewportRect(ref defaultViewport);
+
+            //IDirectManipulationContent poo;
+            //var y = this.viewport.GetPrimaryContent(ref poo);
+
+            this.SetSize(new Size(1000, 10000));
+            //this.viewport.SetViewportOptions(DIRECTMANIPULATION_VIEWPORT_OPTIONS.DIRECTMANIPULATION_VIEWPORT_OPTIONS_EXPLICITHITTEST);
+
             this.viewport.Enable();
+
+            //var um = this.manager.GetUpdateManager(typeof(IDirectManipulationUpdateManager).GUID) as IDirectManipulationUpdateManager;
+            //um.Update(null);
         }
 
         // Our custom hook to process WM_POINTER event

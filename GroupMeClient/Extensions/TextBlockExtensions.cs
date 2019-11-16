@@ -57,6 +57,7 @@ namespace GroupMeClient.Extensions
 
             textBlock.Inlines.Clear();
             textBlock.Inlines.AddRange(list);
+            textBlock.IsHitTestVisible = false;
         }
 
         private static void InlineCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
