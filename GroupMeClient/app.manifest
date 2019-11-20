@@ -66,7 +66,11 @@
       2) System < Windows 10 Anniversary Update -->
       <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings"> PerMonitor</dpiAwareness>
       <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware>
+
+      <highResolutionScrollingAware xmlns="https://schemas.microsoft.com/SMI/2013/WindowsSettings">false</highResolutionScrollingAware>
+      <ultraHighResolutionScrollingAware xmlns="http://schemas.microsoft.com/SMI/2013/WindowsSettings">false</ultraHighResolutionScrollingAware >
     </windowsSettings>
   </application>
+
   
 </assembly>
