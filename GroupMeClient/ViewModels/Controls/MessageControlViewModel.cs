@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -475,8 +476,33 @@ namespace GroupMeClient.ViewModels.Controls
 
             var inlinesTemp = new List<Inline>();
             var inlinesResult = new List<Inline>();
-            inlinesTemp.Add(new Run(text));
 
+            // Process Mentions
+            var sortedMentions = this.Message.Attachments.OfType<MentionsAttachment>().FirstOrDefault()?.Mentions().ToList().OrderBy(m => m.startIndex) ?? null;
+            if (sortedMentions != null)
+            {
+                var remainingText = text;
+                var lastOffset = 0;
+                foreach (var mention in sortedMentions)
+                {
+                    var leadingText = new Run(remainingText.Substring(0, mention.startIndex - lastOffset));
+                    var mentionTag = new Bold(new Run(remainingText.Substring(mention.startIndex - lastOffset, mention.length)) { FontWeight = FontWeights.SemiBold });
+
+                    remainingText = remainingText.Substring(mention.startIndex + mention.length - lastOffset);
+                    lastOffset = mention.startIndex + mention.length;
+
+                    inlinesTemp.Add(leadingText);
+                    inlinesTemp.Add(mentionTag);
+                }
+
+                inlinesTemp.Add(new Run(remainingText));
+            }
+            else
+            {
+                inlinesTemp.Add(new Run(text));
+            }
+
+            // Process Hyperlinks
             foreach (var part in inlinesTemp)
             {
                 if (part is Run r)
