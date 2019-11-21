@@ -13,6 +13,7 @@ namespace GroupMeClientApi.Models.Attachments
     [JsonSubtypes.KnownSubType(typeof(VideoAttachment), "video")]
     [JsonSubtypes.KnownSubType(typeof(LocationAttachment), "location")]
     [JsonSubtypes.KnownSubType(typeof(SplitAttachment), "split")]
+    [JsonSubtypes.KnownSubType(typeof(MentionsAttachment), "mentions")]
     public class Attachment
     {
         /// <summary>
