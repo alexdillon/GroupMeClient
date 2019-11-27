@@ -167,6 +167,20 @@ namespace GroupMeClient.ViewModels
             this.PushClient = pushClient;
         }
 
+        /// <summary>
+        /// Refreshes all elements displayed in the Chats View Tab. This includes the sidebar,
+        /// and any opened Groups or Chats.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task RefreshEverything()
+        {
+            await this.LoadGroupsAndChats();
+            foreach (var container in this.ActiveGroupsChats)
+            {
+                await container.LoadNewMessages();
+            }
+        }
+
         private async Task Loaded()
         {
             this.AllGroupsChats.Clear();
