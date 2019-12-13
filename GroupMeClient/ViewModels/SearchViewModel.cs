@@ -10,6 +10,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
+using GroupMeClientApi.Models.Attachments;
 using GroupMeClientPlugin.GroupChat;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,12 @@ namespace GroupMeClient.ViewModels
         private ViewModelBase popupDialog;
         private string searchTerm = string.Empty;
         private string selectedGroupName = string.Empty;
+        private bool filterHasAttachedImage;
+        private bool filterHasAttachedLinkedImage;
+        private bool filterHasAttachedMentions;
+        private bool filterHasAttachedVideo;
+        private DateTime filterStartDate;
+        private DateTime filterEndDate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchViewModel"/> class.
@@ -137,16 +144,62 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public string SearchTerm
         {
-            get
-            {
-                return this.searchTerm;
-            }
+            get => this.searchTerm;
+            set => this.SetSearchProperty(() => this.SearchTerm, ref this.searchTerm, value);
+        }
 
-            set
-            {
-                this.Set(() => this.SearchTerm, ref this.searchTerm, value);
-                this.UpdateSearchResults();
-            }
+        /// <summary>
+        /// Gets or sets a value indicating whether only messages containing an image attachment should be shown.
+        /// </summary>
+        public bool FilterHasAttachedImage
+        {
+            get => this.filterHasAttachedImage;
+            set => this.SetSearchProperty(() => this.FilterHasAttachedImage, ref this.filterHasAttachedImage, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether only messages containing a linked image attachment should be shown.
+        /// </summary>
+        public bool FilterHasAttachedLinkedImage
+        {
+            get => this.filterHasAttachedLinkedImage;
+            set => this.SetSearchProperty(() => this.FilterHasAttachedLinkedImage, ref this.filterHasAttachedLinkedImage, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether only messages mentioning other users should be shown.
+        /// </summary>
+        public bool FilterHasAttachedMentions
+        {
+            get => this.filterHasAttachedMentions;
+            set => this.SetSearchProperty(() => this.FilterHasAttachedMentions, ref this.filterHasAttachedMentions, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether only messages containing a video attachment should be shown.
+        /// </summary>
+        public bool FilterHasAttachedVideo
+        {
+            get => this.filterHasAttachedVideo;
+            set => this.SetSearchProperty(() => this.FilterHasAttachedVideo, ref this.filterHasAttachedVideo, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the beginning date for the time period of messages to display.
+        /// </summary>
+        public DateTime FilterStartDate
+        {
+            get => this.filterStartDate;
+            set => this.SetSearchProperty(() => this.FilterStartDate, ref this.filterStartDate, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the ending date for the time period of messages to display.
+        /// </summary>
+        public DateTime FilterEndDate
+        {
+            get => this.filterEndDate;
+            set => this.SetSearchProperty(() => this.FilterEndDate, ref this.filterEndDate, value);
         }
 
         /// <summary>
@@ -173,6 +226,12 @@ namespace GroupMeClient.ViewModels
         {
             this.OpenNewGroupChat(container);
             this.UpdateContextView(message);
+        }
+
+        private void SetSearchProperty<T>(System.Linq.Expressions.Expression<Func<T>> propertyExpression, ref T field, T newValue)
+        {
+            this.Set(propertyExpression, ref field, newValue);
+            this.UpdateSearchResults();
         }
 
         private void StartIndexing()
@@ -298,6 +357,9 @@ namespace GroupMeClient.ViewModels
             this.SearchTerm = string.Empty;
             this.SelectedGroupName = group.Name;
             this.ContextView.Messages = null;
+
+            this.FilterStartDate = group.CreatedAtTime.AddDays(-1);
+            this.FilterEndDate = DateTime.Now.AddDays(1);
         }
 
         private void MessageSelected(MessageControlViewModelBase message)
@@ -339,12 +401,64 @@ namespace GroupMeClient.ViewModels
 
             var messagesForGroupChat = this.GetMessagesForGroup(this.SelectedGroupChat);
 
+            var startDate = this.FilterStartDate;
+            var endDate = (this.FilterEndDate == DateTime.MinValue) ? DateTime.MaxValue : this.FilterEndDate.AddDays(1);
+
             var results = messagesForGroupChat
                 .Where(m => m.Text.ToLower().Contains(this.SearchTerm.ToLower()))
+                .Where(m => m.CreatedAtTime >= startDate)
+                .Where(m => m.CreatedAtTime <= endDate);
+
+            var filteredMessages = Enumerable.Empty<Message>().AsQueryable();
+            var filtersApplied = false;
+
+            if (this.FilterHasAttachedImage)
+            {
+                var messagesWithImages = results
+                    .Where(m => m.Attachments.OfType<ImageAttachment>().Count() >= 1);
+
+                filteredMessages = filteredMessages.Union(messagesWithImages);
+                filtersApplied = true;
+            }
+
+            if (this.FilterHasAttachedLinkedImage)
+            {
+                var messagesWithLinkedImages = results
+                    .Where(m => m.Attachments.OfType<LinkedImageAttachment>().Count() >= 1);
+
+                filteredMessages = filteredMessages.Union(messagesWithLinkedImages);
+                filtersApplied = true;
+            }
+
+            if (this.FilterHasAttachedVideo)
+            {
+                var messagesWithVideos = results
+                    .Where(m => m.Attachments.OfType<VideoAttachment>().Count() >= 1);
+
+                filteredMessages = filteredMessages.Union(messagesWithVideos);
+                filtersApplied = true;
+            }
+
+            if (this.FilterHasAttachedMentions)
+            {
+                var messagesWithMentions = results
+                    .Where(m => m.Attachments.OfType<MentionsAttachment>().Count() >= 1);
+
+                filteredMessages = filteredMessages.Union(messagesWithMentions);
+                filtersApplied = true;
+            }
+
+            if (!filtersApplied)
+            {
+                // No attachment filters were selected, so show all messages
+                filteredMessages = results;
+            }
+
+            var orderedMessages = filteredMessages
                 .OrderByDescending(m => m.Id);
 
             this.ResultsView.AssociateWith = this.SelectedGroupChat;
-            this.ResultsView.Messages = results;
+            this.ResultsView.Messages = orderedMessages;
             this.ResultsView.ChangePage(0);
         }
 
