@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using System;
 using System.Runtime.InteropServices;
-using DesktopNotifications;
+using static Microsoft.Toolkit.Uwp.Notifications.NotificationActivator;
 
 namespace GroupMeClient.Notifications.Display.Win10
 {
