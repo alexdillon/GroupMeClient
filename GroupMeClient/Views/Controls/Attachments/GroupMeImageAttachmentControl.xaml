@@ -7,7 +7,6 @@
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
-             FontFamily="Segoe UI"
              d:DesignHeight="200" d:DesignWidth="200"
              Background="White">
 

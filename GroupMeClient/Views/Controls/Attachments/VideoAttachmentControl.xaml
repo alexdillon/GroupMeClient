@@ -6,7 +6,6 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
-             FontFamily="Segoe UI"
              d:DesignHeight="200" d:DesignWidth="200"
              Background="White">
 

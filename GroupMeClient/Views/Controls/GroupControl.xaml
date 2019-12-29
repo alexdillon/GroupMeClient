@@ -9,7 +9,6 @@
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
              mc:Ignorable="d" 
              Background="White"
-             FontFamily="Segoe UI"
              d:DesignHeight="150" d:DesignWidth="400">
 
     <i:Interaction.Triggers>

@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" 
-             FontFamily="Segoe UI"
              d:DesignHeight="100" d:DesignWidth="400"
              Background="White">
 

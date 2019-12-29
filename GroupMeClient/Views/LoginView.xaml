@@ -24,11 +24,10 @@
         </Grid.Background>
 
         <Label Grid.Row="0"
-                   FontFamily="Segoe UI"
-                   FontSize="18"
-                   FontWeight="SemiBold"
-                   HorizontalAlignment="Center"
-                   Content="Login to GroupMe" />
+               FontSize="18"
+               FontWeight="SemiBold"
+               HorizontalAlignment="Center"
+               Content="Login to GroupMe" />
 
         <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
             <Label Content="GroupMe's Login Process can be completed in your web browser. " />

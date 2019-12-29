@@ -9,7 +9,6 @@
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              mc:Ignorable="d" 
-             FontFamily="Segoe UI"
              d:DesignHeight="100" d:DesignWidth="400">
 
     <UserControl.Resources>
