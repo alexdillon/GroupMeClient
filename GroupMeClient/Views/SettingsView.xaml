@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             xmlns:settings="clr-namespace:GroupMeClient.Settings"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              d:DesignHeight="1024"
              d:DesignWidth="768"
@@ -60,6 +61,12 @@
                                                 Value="{Binding MaximumNumberOfMultiChatsMiniBar}"/>
                     </StackPanel>
 
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <Label Content="Theme: " />
+                        <ComboBox MinWidth="150"
+                                  ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type settings:ThemeOptions}}}"
+                                  SelectedValue="{Binding Theme}"/> 
+                    </StackPanel>
                 </StackPanel>
             </GroupBox>
 

@@ -72,6 +72,7 @@
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
     <Compile Include="Converters\ValueConverterGroup.cs" />
+    <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
     <Compile Include="Extensions\ZoomBorder.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />
@@ -81,6 +82,8 @@
       <DependentUpon>ToastHolder.xaml</DependentUpon>
     </Compile>
     <Compile Include="Notifications\Display\WpfToast\ToastHolderViewModel.cs" />
+    <Compile Include="Settings\ThemeOptions.cs" />
+    <Compile Include="Themes\ThemeManager.cs" />
     <Compile Include="Updates\UpdateAssist.cs" />
     <Compile Include="Utilities\RegexUtils.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />

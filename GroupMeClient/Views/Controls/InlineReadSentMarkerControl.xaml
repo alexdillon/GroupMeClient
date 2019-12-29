@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="20" d:DesignWidth="400">
 
-    <Grid Background="{Binding MessageColor, Mode=OneTime}">
+    <Grid Background="{Binding MessageColor}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
