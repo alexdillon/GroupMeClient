@@ -16,6 +16,7 @@
                  Width="1024"
                  Height="768"
                  WindowTitleBrush="{DynamicResource SidebarBrush}"
+                 FontFamily="{DynamicResource GroupMeFont}"
                  WindowStartupLocation="CenterScreen"
                  WindowTransitionsEnabled="False"
                  mc:Ignorable="d">
