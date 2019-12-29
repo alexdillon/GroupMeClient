@@ -1,0 +1,31 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <FontFamily x:Key="GroupMeFont">Segoe UI</FontFamily>
+
+    <Color x:Key="DividerLineColor">#637182</Color>
+    <Color x:Key="MessageFontColor">#637182</Color>
+    <Color x:Key="MessageDetailsColor">#FFD3D3D3</Color>
+    <Color x:Key="GroupsSidebarFontColor">#637182</Color>
+    <Color x:Key="ScrollToBottomButtonColor">#637182</Color>
+    <Color x:Key="SidebarColor">#1873BA</Color>
+    <Color x:Key="PluginButtonFontColor">#414A59</Color>
+    <Color x:Key="MessageISentBackdropColor">#DBF4FD</Color>
+    <Color x:Key="MessageTheySentBackdropColor">#F7F7F7</Color>
+    <Color x:Key="MessageILikedColor">#F77070</Color>
+    <Color x:Key="MessageTheyLikedColor">#FF808080</Color>
+    <Color x:Key="LikerAreaBackgroundColor">#F7F7F7</Color>
+
+
+    <SolidColorBrush x:Key="DividerLineBrush" Color="{DynamicResource DividerLineColor}"/>
+    <SolidColorBrush x:Key="MessageFontBrush" Color="{DynamicResource MessageFontColor}"/>
+    <SolidColorBrush x:Key="MessageDetailsBrush" Color="{DynamicResource MessageDetailsColor}"/>
+    <SolidColorBrush x:Key="GroupsSidebarFontBrush" Color="{DynamicResource GroupsSidebarFontColor}"/>
+    <SolidColorBrush x:Key="ScrollToBottomButtonBrush" Color="{DynamicResource ScrollToBottomButtonColor}"/>
+    <SolidColorBrush x:Key="SidebarBrush" Color="{DynamicResource SidebarColor}"/>
+    <SolidColorBrush x:Key="PluginButtonFontBrush" Color="{DynamicResource PluginButtonFontColor}"/>
+    <SolidColorBrush x:Key="MessageISentBackdropBrush" Color="{DynamicResource MessageISentBackdropColor}"/>
+    <SolidColorBrush x:Key="MessageTheySentBackdropBrush" Color="{DynamicResource MessageTheySentBackdropColor}"/>
+    <SolidColorBrush x:Key="MessageILikedBrush" Color="{DynamicResource MessageILikedColor}"/>
+    <SolidColorBrush x:Key="MessageTheyLikedBrush" Color="{DynamicResource MessageTheyLikedColor}"/>
+    <SolidColorBrush x:Key="LikerAreaBackgroundBrush" Color="{DynamicResource LikerAreaBackgroundColor}"/>
+</ResourceDictionary>

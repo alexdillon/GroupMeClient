@@ -5,9 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
-             FontFamily="Segoe UI"
              d:DesignHeight="100" d:DesignWidth="400"
-             Background="White">
+             Background="{DynamicResource ControlBackgroundBrush}">
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="MouseDown" >

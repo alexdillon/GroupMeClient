@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
              mc:Ignorable="d" 
-             FontFamily="Segoe UI"
              d:DesignHeight="200" d:DesignWidth="200"
              Background="Black">
     <Grid>
@@ -36,7 +35,6 @@
         <Button Grid.Row="2"
                 Content="Like Message Range"
                 Visibility="{Binding AnyMessagesSelected, Converter={StaticResource boolToVisibilityConverter}}"
-                Command="{Binding PerformMultiLikeCommand}"
-                />
+                Command="{Binding PerformMultiLikeCommand}"/>
     </Grid>
 </UserControl>

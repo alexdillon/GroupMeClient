@@ -8,8 +8,7 @@
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
              mc:Ignorable="d" 
-             Background="White"
-             FontFamily="Segoe UI"
+             Background="{DynamicResource ControlBackgroundBrush}"
              d:DesignHeight="150" d:DesignWidth="400">
 
     <i:Interaction.Triggers>
@@ -55,10 +54,10 @@
             </TextBlock.Style>
         </TextBlock>
 
-        <Label Content="{Binding LastUpdatedFriendlyTime}" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="14" Foreground="#637182"/>
+        <Label Content="{Binding LastUpdatedFriendlyTime}" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource GroupsSidebarFontBrush}"/>
 
         <TextBlock  Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="50" FontSize="13" Foreground="#637182"
+                Height="50" FontSize="13" Foreground="{DynamicResource GroupsSidebarFontBrush}"
                 TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
                 extensions:TextBlockExtensions.InlineList="{Binding QuickPreview}"/>
 

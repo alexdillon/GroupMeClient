@@ -11,7 +11,6 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
              mc:Ignorable="d"
-             Background="#F7F7F7"
              d:DesignHeight="700" d:DesignWidth="500">
     <UserControl.Resources>
         <Style TargetType="extensions:MultiLineSendBox" BasedOn="{StaticResource MetroTextBox}">
@@ -40,7 +39,7 @@
         </Grid.RowDefinitions>
 
         <!--Top Bar-->
-        <Grid Grid.Column="0" Grid.Row="0" Background="White">
+        <Grid Grid.Column="0" Grid.Row="0" Background="{DynamicResource ControlBackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -69,12 +68,12 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                    <Border HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="border" Background="White">
+                                    <Border HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="border" Background="{DynamicResource ControlBackgroundBrush}">
                                         <ContentPresenter Margin="5"/>
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsChecked" Value="true">
-                                            <Setter Property="Background" TargetName="border" Value="White"/>
+                                            <Setter Property="Background" TargetName="border" Value="{DynamicResource ControlBackgroundBrush}"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -146,7 +145,7 @@
             ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
             Grid.Row="2" Grid.Column="0"
             BorderThickness="0"
-            Background="#F7F7F7"
+            Background="{DynamicResource ControlBackgroundBrush}"
             UseLayoutRounding="True"
             SelectionMode="Multiple"
             ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -215,8 +214,8 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Margin="0,0,30,20"
-                Background="#637182"
-                BorderBrush="#637182"
+                Background="{DynamicResource ScrollToBottomButtonBrush}"
+                BorderBrush="{DynamicResource ScrollToBottomButtonBrush}"
                 Visibility="{Binding IsNotAtBottom, ElementName=messagesList, Converter={StaticResource boolToVisibilityConverter}}"
                 Command="{Binding ElementName=messagesList, Path=ScrollToEnd}">
             <Button.Content>
@@ -236,10 +235,10 @@
                 Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
                 VerticalAlignment="Top"
                 BorderThickness="20,10,20,30"
-                BorderBrush="White">
+                BorderBrush="{DynamicResource ControlBackgroundBrush}">
             <StackPanel Orientation="Vertical">
                 <!--Regular Plugins-->
-                <ItemsControl ItemsSource="{Binding GroupChatPlugins}" Background="White">
+                <ItemsControl ItemsSource="{Binding GroupChatPlugins}" Background="{DynamicResource ControlBackgroundBrush}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button 
@@ -248,7 +247,7 @@
                                          AncestorType={x:Type controls:GroupContentsControl}}, Path=DataContext.GroupChatPluginActivated}"
                                 CommandParameter="{Binding Path=.}"
                                 HorizontalContentAlignment="Left"
-                                Foreground="#414A59" 
+                                Foreground="{DynamicResource PluginButtonFontBrush}" 
                                 BorderThickness="0"
                                 FontSize="14"
                                 FontWeight="SemiBold"
@@ -266,7 +265,7 @@
                 </ItemsControl>
 
                 <!--Cache Plugins-->
-                <ItemsControl ItemsSource="{Binding GroupChatCachePlugins}" Background="White">
+                <ItemsControl ItemsSource="{Binding GroupChatCachePlugins}" Background="{DynamicResource ControlBackgroundBrush}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button 
@@ -275,7 +274,7 @@
                                          AncestorType={x:Type controls:GroupContentsControl}}, Path=DataContext.GroupChatCachePluginActivated}"
                                 CommandParameter="{Binding Path=.}"
                                 HorizontalContentAlignment="Left"
-                                Foreground="#414A59" 
+                                Foreground="{DynamicResource PluginButtonFontBrush}" 
                                 BorderThickness="0"
                                 FontSize="14"
                                 FontWeight="SemiBold"
@@ -296,7 +295,7 @@
 
         <!--Send Message Bar-->
         <Grid Grid.Row="3"
-              Background="White">
+              Background="{DynamicResource ControlBackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />
@@ -310,7 +309,7 @@
 
             <!--Send Bar Top Line-->
             <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"
-                    BorderBrush="#637182" BorderThickness="0,0,0,1"
+                    BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1"
                     Height="4"
                     Margin="0,0,0,0"
                     VerticalAlignment="Bottom"/>
@@ -320,7 +319,7 @@
                                         VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"
                                         Width="15" Height="15" 
-                                        Background="White"
+                                        Background="{DynamicResource ControlBackgroundBrush}"
                                         Foreground="#637182" 
                                         Kind="React"
                                         Margin="0">
@@ -361,8 +360,8 @@
                                         VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"
                                         Width="15" Height="15"
-                                        Background="White"
-                                        Foreground="#637182" 
+                                        Background="{DynamicResource ControlBackgroundBrush}"
+                                        Foreground="{DynamicResource DividerLineBrush}" 
                                         Kind="Plus"
                                         Margin="0,0,20,0">
                 <i:Interaction.Triggers>
@@ -376,7 +375,7 @@
             <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="3"
                                         VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"
-                                        Width="15" Height="15" Foreground="#637182" 
+                                        Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" 
                                         Kind="Send"
                                         Margin="0,0,30,0">
                 <i:Interaction.Triggers>

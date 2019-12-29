@@ -10,7 +10,6 @@
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
-             FontFamily="Segoe UI"
              d:DesignHeight="200" d:DesignWidth="200"
              Background="Transparent">
 

@@ -6,7 +6,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              mc:Ignorable="d"
-             Background="White"
+             Background="{DynamicResource ControlBackgroundBrush}"
              d:DesignHeight="700" d:DesignWidth="500">
 
     <Grid>
@@ -41,7 +41,7 @@
         <ListBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
                  ItemsSource="{Binding CurrentPage}"
                  BorderThickness="0"
-                 Background="White"
+                 Background="{DynamicResource ControlBackgroundBrush}"
                  ScrollViewer.VerticalScrollBarVisibility="Visible"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.CanContentScroll="True" 

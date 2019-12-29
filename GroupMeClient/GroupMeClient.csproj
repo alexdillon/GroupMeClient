@@ -72,6 +72,7 @@
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
     <Compile Include="Converters\ValueConverterGroup.cs" />
+    <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
     <Compile Include="Extensions\ZoomBorder.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />
@@ -81,6 +82,8 @@
       <DependentUpon>ToastHolder.xaml</DependentUpon>
     </Compile>
     <Compile Include="Notifications\Display\WpfToast\ToastHolderViewModel.cs" />
+    <Compile Include="Settings\ThemeOptions.cs" />
+    <Compile Include="Themes\ThemeManager.cs" />
     <Compile Include="Updates\UpdateAssist.cs" />
     <Compile Include="Utilities\RegexUtils.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />
@@ -211,6 +214,14 @@
     <Compile Include="Views\SearchView.xaml.cs">
       <DependentUpon>SearchView.xaml</DependentUpon>
     </Compile>
+    <Page Include="GroupMeDark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="GroupMeLight.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
