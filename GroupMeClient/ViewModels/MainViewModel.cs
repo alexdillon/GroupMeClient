@@ -26,6 +26,8 @@ namespace GroupMeClient.ViewModels
         private HamburgerMenuItem selectedItem;
         private ViewModelBase popupDialog;
         private int unreadCount;
+        private bool isReconnecting;
+        private bool isRefreshing;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainViewModel"/> class.
@@ -88,10 +90,33 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the application is currently reconnecting to GroupMe.
+        /// </summary>
+        public bool IsReconnecting
+        {
+            get { return this.isReconnecting; }
+            set { this.Set(() => this.IsReconnecting, ref this.isReconnecting, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the application is currently refreshing the displayed content.
+        /// </summary>
+        public bool IsRefreshing
+        {
+            get { return this.isRefreshing; }
+            set { this.Set(() => this.IsRefreshing, ref this.isRefreshing, value); }
+        }
+
+        /// <summary>
         /// Gets or sets the action to be be performed when the big popup has been closed indirectly.
         /// This typically is from the user clicking in the gray area around the popup to dismiss it.
         /// </summary>
         public ICommand EasyClosePopup { get; set; }
+
+        /// <summary>
+        /// Gets or sets the command to be performed to refresh all displayed messages and groups.
+        /// </summary>
+        public ICommand RefreshEverythingCommand { get; set; }
 
         /// <summary>
         /// Gets the Toast Holder Manager for this application.
@@ -126,7 +151,7 @@ namespace GroupMeClient.ViewModels
 
         private LoginViewModel LoginViewModel { get; set; }
 
-        private ProgressRing ReconnectingSpinner { get; } = new ProgressRing() { IsActive = false, Width = 20, Foreground = System.Windows.Media.Brushes.White };
+        private ProgressRing UpdatingSpinner { get; } = new ProgressRing() { IsActive = true, Width = 20, Foreground = System.Windows.Media.Brushes.White };
 
         private int DisconnectedComponentCount { get; set; }
 
@@ -175,6 +200,8 @@ namespace GroupMeClient.ViewModels
             this.ClosePopup = new RelayCommand(this.CloseBigPopup);
             this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
 
+            this.RefreshEverythingCommand = new RelayCommand(async () => await this.RefreshEverything(), true);
+
             this.UpdateAssist = new UpdateAssist();
             Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
         }
@@ -190,6 +217,7 @@ namespace GroupMeClient.ViewModels
 
         private void CreateMenuItemsRegular()
         {
+            // "Tabs" (Top Menu Items)
             var chatsTab = new HamburgerMenuIconItem()
             {
                 Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.MessageText },
@@ -206,6 +234,7 @@ namespace GroupMeClient.ViewModels
                 Tag = this.SearchViewModel,
             };
 
+            // Options (Bottom Menu Items)
             var settingsTab = new HamburgerMenuIconItem()
             {
                 Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.SettingsOutline },
@@ -214,22 +243,11 @@ namespace GroupMeClient.ViewModels
                 Tag = this.SettingsViewModel,
             };
 
-            var loadingSpinner = new HamburgerMenuIconItem()
-            {
-                Icon = this.ReconnectingSpinner,
-                Label = "Loading...",
-                ToolTip = "Loading...",
-                Tag = null,
-                IsEnabled = false,
-            };
-
-            // Add new Tabs
+            // Add Tabs
             this.MenuItems.Add(chatsTab);
             this.MenuItems.Add(secondTab);
 
-            this.MenuItems.Add(loadingSpinner);
-
-            // Add new Options
+            // Add Options
             this.MenuOptionItems.Add(settingsTab);
 
             // Set the section to the Chats tab
@@ -277,7 +295,7 @@ namespace GroupMeClient.ViewModels
 
                 var updatingTab = new HamburgerMenuIconItem()
                 {
-                    Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.Loading },
+                    Icon = this.UpdatingSpinner,
                     Label = "Updating",
                     ToolTip = "Updating",
                     Tag = new UpdatingViewModel(),
@@ -323,7 +341,7 @@ namespace GroupMeClient.ViewModels
             this.DisconnectedComponentCount = Math.Max(this.DisconnectedComponentCount, 0); // make sure it never goes negative
             Application.Current.Dispatcher.Invoke(() =>
             {
-                this.ReconnectingSpinner.IsActive = this.DisconnectedComponentCount > 0;
+                this.IsReconnecting = this.DisconnectedComponentCount > 0;
             });
         }
 
@@ -341,6 +359,13 @@ namespace GroupMeClient.ViewModels
                     break;
                 }
             }
+        }
+
+        private async Task RefreshEverything()
+        {
+            this.IsRefreshing = true;
+            await this.ChatsViewModel.RefreshEverything();
+            this.IsRefreshing = false;
         }
     }
 }
