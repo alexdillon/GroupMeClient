@@ -35,7 +35,7 @@
                                Height="Auto" FontSize="17" FontWeight="SemiBold"
                                Text="Settings" />
 
-                <Border Grid.Column="0" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+                <Border Grid.Column="0" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
             </Grid>
 
             <!--Settings Area-->

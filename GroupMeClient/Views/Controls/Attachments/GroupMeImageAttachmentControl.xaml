@@ -8,9 +8,9 @@
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
-             Background="White">
+             Background="{DynamicResource ControlBackgroundBrush}">
 
-    <Border BorderThickness="8" BorderBrush="White">
+    <Border BorderThickness="8" BorderBrush="{DynamicResource ControlBackgroundBrush}">
         <Grid>
             <Image MaxWidth="500" 
                MaxHeight="600"

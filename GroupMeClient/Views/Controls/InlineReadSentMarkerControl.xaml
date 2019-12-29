@@ -18,7 +18,7 @@
                HorizontalAlignment="Left"
                FontWeight="Regular"
                FontSize="11"
-               Foreground="#637182"
+               Foreground="{DynamicResource MessageFontBrush}"
                Padding="0,0,0,0"
                Margin="55,-15,0,0"/>
     </Grid>

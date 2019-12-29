@@ -50,21 +50,6 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// Gets the GroupMe Red Brush Color for showing messages liked by the user.
-        /// </summary>
-        public Brush GroupMeRedBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 112, 112));
-
-        /// <summary>
-        /// Gets the GroupMe Light Blue Brush Color for showing messages sent by the user.
-        /// </summary>
-        public Brush GroupMeLightBlueBrush { get; } = new SolidColorBrush(Color.FromRgb(219, 244, 253));
-
-        /// <summary>
-        /// Gets the GroupMe Light Gray Brush Color for showing messages liked by others.
-        /// </summary>
-        public Brush GroupMeLightGrayBrush { get; } = new SolidColorBrush(Color.FromRgb(247, 247, 247));
-
-        /// <summary>
         /// Gets or sets the attached items (Tweets, Web Links, Videos, etc.), if present.
         /// </summary>
         public ObservableCollection<LinkAttachmentBaseViewModel> AttachedItems { get; set; } = new ObservableCollection<LinkAttachmentBaseViewModel>();
@@ -197,11 +182,11 @@ namespace GroupMeClient.ViewModels.Controls
 
                 if (this.Message.UserId == me.UserId)
                 {
-                    return this.GroupMeLightBlueBrush;
+                    return (Brush)Application.Current.FindResource("MessageISentBackdropBrush");
                 }
                 else
                 {
-                    return this.GroupMeLightGrayBrush;
+                    return (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush");
                 }
             }
         }
@@ -239,11 +224,11 @@ namespace GroupMeClient.ViewModels.Controls
 
                 if (this.Message.FavoritedBy.Contains(me.Id))
                 {
-                    return this.GroupMeRedBrush;
+                    return (Brush)Application.Current.FindResource("MessageILikedBrush");
                 }
                 else
                 {
-                    return Brushes.Gray;
+                    return (Brush)Application.Current.FindResource("MessageTheyLikedBrush");
                 }
             }
         }

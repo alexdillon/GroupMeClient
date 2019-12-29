@@ -55,7 +55,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Background="White">
+            <Grid Grid.Row="0" Background="{DynamicResource ControlBackgroundBrush}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -72,7 +72,7 @@
                               Margin="15,0,0,0"
                               Height="Auto" FontSize="17" FontWeight="SemiBold"
                               BorderThickness="0"
-                              Background="White"
+                              Background="{DynamicResource ControlBackgroundBrush}"
                               Focusable="False"
                               Content="Chats" 
                               Style="{StaticResource FlatButtonNoCaps}"
@@ -117,12 +117,12 @@
                     
                     <Button.ContentTemplate>
                         <DataTemplate>
-                            <iconPacks:PackIconEntypo Width="15" Height="15" Foreground="#637182" Kind="Unread"/>
+                            <iconPacks:PackIconEntypo Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" Kind="Unread"/>
                         </DataTemplate>
                     </Button.ContentTemplate>
                 </Button>
 
-                <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+                <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
             </Grid>
 
             <!--All Groups and Chats List-->

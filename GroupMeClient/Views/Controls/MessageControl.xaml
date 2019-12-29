@@ -42,7 +42,7 @@
         </controls:AvatarControl>
 
         <StackPanel Grid.Column="1" Grid.Row="1">
-            <Label Content="{Binding Sender}" FontSize="12" Foreground="#637182" Padding="0" />
+            <Label Content="{Binding Sender}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" Padding="0" />
 
             <ItemsControl ItemsSource="{Binding AttachedItems}">
                 <ItemsControl.ItemTemplate>
@@ -97,7 +97,7 @@
                 Grid.Column="1"
                 Padding="0,17,0,0"
                 HorizontalAlignment="Center" 
-                Foreground="#637182" FontSize="10" FontWeight="Thin"
+                Foreground="{DynamicResource MessageFontBrush}" FontSize="10" FontWeight="Thin"
                 Content="{Binding LikeCount}" />
 
             <i:Interaction.Triggers>
@@ -136,7 +136,7 @@
 
             <Grid Width="{Binding ActualWidth, ElementName=likesCanvas}">
                 <Border BorderThickness="1" CornerRadius="5" 
-                            BorderBrush="#637182" Background="#F7F7F7"
+                            BorderBrush="{DynamicResource DividerLineBrush}" Background="{DynamicResource LikerAreaBackgroundBrush}"
                             Width="Auto" Height="65" HorizontalAlignment="Right">
 
                     <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
@@ -175,7 +175,7 @@
 
         <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
                     Orientation="Vertical"
-                    Background="LightGray"
+                    Background="{DynamicResource MessageDetailsBrush}"
                     Height="45"
                     Visibility="{Binding ShowDetails, Converter={StaticResource boolToVisibilityConverter}}">
 
@@ -183,14 +183,14 @@
                    ContentStringFormat="Sent: {0}"
                    FontWeight="Regular"
                    FontSize="11"
-                   Foreground="#637182"
+                   Foreground="{DynamicResource MessageFontBrush}"
                    Padding="20,0,0,0"/>
 
             <Label Content="{Binding SenderPlatform}"
                    ContentStringFormat="Client: {0}"
                    FontWeight="Regular"
                    FontSize="11"
-                   Foreground="#637182"
+                   Foreground="{DynamicResource MessageFontBrush}"
                    Padding="20,0,0,0"/>
         </StackPanel>
     </Grid>

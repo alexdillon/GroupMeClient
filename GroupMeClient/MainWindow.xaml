@@ -15,10 +15,10 @@
                  TitleCaps="False"
                  Width="1024"
                  Height="768"
-                 WindowTitleBrush="#1873BA"
+                 WindowTitleBrush="{DynamicResource SidebarBrush}"
                  WindowStartupLocation="CenterScreen"
                  WindowTransitionsEnabled="False"
-                 mc:Ignorable="d">   
+                 mc:Ignorable="d">
 
     <Window.DataContext>
         <viewModels:MainViewModel />
@@ -88,7 +88,7 @@
                            OptionsItemTemplate="{StaticResource MenuItemTemplate}"
                            OptionsItemsSource="{Binding MenuOptionItems}"
                            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-                           PaneBackground="#1873BA">
+                           PaneBackground="{DynamicResource SidebarBrush}">
 
             <!--  select the tag (ViewModel) of the selected item (options item)  -->
             <mah:HamburgerMenu.Content>
