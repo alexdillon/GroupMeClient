@@ -138,7 +138,7 @@
         </Grid>
 
         <DockPanel Grid.Column="1" Grid.Row="1"
-                    VerticalAlignment="Stretch">
+                   VerticalAlignment="Stretch">
             <TextBox DockPanel.Dock="Top"
                      Margin="15,5,25,0"
                      Controls:TextBoxHelper.Watermark="Search..."
@@ -158,8 +158,39 @@
                 </TextBox.Style>
             </TextBox>
 
+            <Expander Header="Seach Options"
+                      DockPanel.Dock="Top"
+                      Margin="15,5,25,0"
+                      Controls:ControlsHelper.ContentCharacterCasing="Normal"
+                      Background="White"
+                      BorderBrush="Transparent"
+                      HorizontalAlignment="Stretch">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        
+                        <Label Content="Starting Date" Grid.Row="0" Grid.Column="0"/>
+                        <DatePicker SelectedDate="{Binding FilterStartDate, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" />
+                        <Label Content="Ending Date" Grid.Row="1" Grid.Column="0" />
+                        <DatePicker SelectedDate="{Binding FilterEndDate, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" />
+                    </Grid>
+                    
+                    <CheckBox Content="Has Image Attachment" IsChecked="{Binding FilterHasAttachedImage, Mode=TwoWay}" />
+                    <CheckBox Content="Has Linked Attachment" IsChecked="{Binding FilterHasAttachedLinkedImage, Mode=TwoWay}" />
+                    <CheckBox Content="Has Video Attachment" IsChecked="{Binding FilterHasAttachedVideo, Mode=TwoWay}" />
+                    <CheckBox Content="Mentions Other Group Members" IsChecked="{Binding FilterHasAttachedMentions, Mode=TwoWay}" />
+                </StackPanel>
+            </Expander>
+
             <controls:PaginatedMessagesControl 
-                Content="{Binding ResultsView}" />
+                Content="{Binding ResultsView}"/>
         </DockPanel>
 
         <!--Context Area-->
