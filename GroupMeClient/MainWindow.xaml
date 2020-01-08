@@ -48,6 +48,7 @@
         <Grid.Resources>
             <local:SelectedItemToContentConverter x:Key="SelectedItemToContentConverter" />
             <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+            <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
 
             <converters:ValueConverterGroup x:Key="inverseBooleanToVisibilityConverter">
                 <converters:InverseBoolConverter />
@@ -120,7 +121,8 @@
                 VerticalAlignment="Bottom"
                 Margin="0,0,0,55"
                 BorderThickness="0"
-                Command="{Binding RefreshEverythingCommand}">
+                Command="{Binding RefreshEverythingCommand}"
+                Visibility="{Binding Path=IsEnabled, RelativeSource={RelativeSource Self}, Mode=OneWay, Converter={StaticResource booleanToVisibilityConverter}}" >
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background" Value="Transparent"/>

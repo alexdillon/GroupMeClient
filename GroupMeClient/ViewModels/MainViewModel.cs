@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Notifications.Display;
 using GroupMeClient.Notifications.Display.WpfToast;
@@ -200,8 +200,6 @@ namespace GroupMeClient.ViewModels
             this.ClosePopup = new RelayCommand(this.CloseBigPopup);
             this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
 
-            this.RefreshEverythingCommand = new RelayCommand(async () => await this.RefreshEverything(), true);
-
             this.UpdateAssist = new UpdateAssist();
             Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
         }
@@ -250,6 +248,9 @@ namespace GroupMeClient.ViewModels
             // Add Options
             this.MenuOptionItems.Add(settingsTab);
 
+            // Enable the refresh button
+            this.RefreshEverythingCommand = new RelayCommand(async () => await this.RefreshEverything(), true);
+
             // Set the section to the Chats tab
             this.SelectedItem = chatsTab;
 
@@ -282,6 +283,9 @@ namespace GroupMeClient.ViewModels
             };
 
             this.MenuOptionItems = new HamburgerMenuItemCollection();
+
+            // Disable Refresh button by marking CanExecute as false
+            this.RefreshEverythingCommand = new RelayCommand(() => { }, canExecute: () => false);
 
             this.SelectedItem = this.MenuItems[0];
         }
