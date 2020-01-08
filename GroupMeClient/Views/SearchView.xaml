@@ -10,8 +10,8 @@
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
-             d:DesignHeight="300"
-             d:DesignWidth="300"
+             d:DesignHeight="500"
+             d:DesignWidth="700"
              mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -186,6 +186,15 @@
                     <CheckBox Content="Has Linked Attachment" IsChecked="{Binding FilterHasAttachedLinkedImage, Mode=TwoWay}" />
                     <CheckBox Content="Has Video Attachment" IsChecked="{Binding FilterHasAttachedVideo, Mode=TwoWay}" />
                     <CheckBox Content="Mentions Other Group Members" IsChecked="{Binding FilterHasAttachedMentions, Mode=TwoWay}" />
+
+                    <Button Margin="0,5,0,0" Command="{Binding ResetFilters}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Reset  " />
+                                <iconPacks:PackIconFontAwesome Kind="EraserSolid" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
                 </StackPanel>
             </Expander>
 

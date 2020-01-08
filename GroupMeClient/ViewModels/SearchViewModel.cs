@@ -29,7 +29,7 @@ namespace GroupMeClient.ViewModels
         private bool filterHasAttachedMentions;
         private bool filterHasAttachedVideo;
         private DateTime filterStartDate;
-        private DateTime filterEndDate;
+        private DateTime filterEndDate = DateTime.Now.AddDays(1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchViewModel"/> class.
@@ -60,6 +60,7 @@ namespace GroupMeClient.ViewModels
 
             this.ClosePopup = new RelayCommand(this.CloseLittlePopup);
             this.EasyClosePopup = new RelayCommand(this.CloseLittlePopup);
+            this.ResetFilters = new RelayCommand<bool>(this.ResetFilterFields);
 
             this.GroupChatCachePlugins = new ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin>();
             this.GroupChatCachePluginActivated =
@@ -95,6 +96,11 @@ namespace GroupMeClient.ViewModels
         public ICommand EasyClosePopup { get; }
 
         /// <summary>
+        /// Gets the action to be be performed to reset the search filters.
+        /// </summary>
+        public ICommand ResetFilters { get; }
+
+        /// <summary>
         /// Gets the ViewModel for the paginated search results.
         /// </summary>
         public PaginatedMessagesControlViewModel ResultsView { get; }
@@ -107,7 +113,7 @@ namespace GroupMeClient.ViewModels
         /// <summary>
         /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
         /// </summary>
-        public ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin> GroupChatCachePlugins { get; }
+        public ObservableCollection<IGroupChatCachePlugin> GroupChatCachePlugins { get; }
 
         /// <summary>
         /// Gets the action to be performed when a Plugin in the
@@ -220,6 +226,8 @@ namespace GroupMeClient.ViewModels
         private Task IndexingTask { get; set; }
 
         private CancellationTokenSource CancellationTokenSource { get; set; }
+
+        private bool DeferSearchUpdating { get; set; }
 
         /// <inheritdoc/>
         void ICachePluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
@@ -353,13 +361,31 @@ namespace GroupMeClient.ViewModels
 
         private void OpenNewGroupChat(IMessageContainer group)
         {
-            this.FilterStartDate = group.CreatedAtTime.AddDays(-1);
-            this.FilterEndDate = DateTime.Now.AddDays(1);
-
             this.SelectedGroupChat = group;
+
+            this.ResetFilterFields(skipUpdating: true);
+
             this.SearchTerm = string.Empty;
             this.SelectedGroupName = group.Name;
             this.ContextView.Messages = null;
+        }
+
+        private void ResetFilterFields(bool skipUpdating = false)
+        {
+            this.DeferSearchUpdating = true;
+
+            this.FilterStartDate = this.SelectedGroupChat?.CreatedAtTime.AddDays(-1) ?? DateTime.MinValue;
+            this.FilterEndDate = DateTime.Now.AddDays(1);
+            this.FilterHasAttachedImage = false;
+            this.FilterHasAttachedLinkedImage = false;
+            this.FilterHasAttachedMentions = false;
+            this.FilterHasAttachedVideo = false;
+
+            this.DeferSearchUpdating = false;
+            if (!skipUpdating)
+            {
+                this.UpdateSearchResults();
+            }
         }
 
         private void MessageSelected(MessageControlViewModelBase message)
@@ -397,6 +423,11 @@ namespace GroupMeClient.ViewModels
 
         private void UpdateSearchResults()
         {
+            if (this.DeferSearchUpdating)
+            {
+                return;
+            }
+
             this.ResultsView.Messages = null;
 
             var messagesForGroupChat = this.GetMessagesForGroup(this.SelectedGroupChat);
