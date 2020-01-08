@@ -353,13 +353,13 @@ namespace GroupMeClient.ViewModels
 
         private void OpenNewGroupChat(IMessageContainer group)
         {
+            this.FilterStartDate = group.CreatedAtTime.AddDays(-1);
+            this.FilterEndDate = DateTime.Now.AddDays(1);
+
             this.SelectedGroupChat = group;
             this.SearchTerm = string.Empty;
             this.SelectedGroupName = group.Name;
             this.ContextView.Messages = null;
-
-            this.FilterStartDate = group.CreatedAtTime.AddDays(-1);
-            this.FilterEndDate = DateTime.Now.AddDays(1);
         }
 
         private void MessageSelected(MessageControlViewModelBase message)
@@ -402,12 +402,15 @@ namespace GroupMeClient.ViewModels
             var messagesForGroupChat = this.GetMessagesForGroup(this.SelectedGroupChat);
 
             var startDate = this.FilterStartDate;
-            var endDate = (this.FilterEndDate == DateTime.MinValue) ? DateTime.MaxValue : this.FilterEndDate.AddDays(1);
+            var endDate = (this.FilterEndDate == DateTime.MinValue) ? DateTime.Now : this.FilterEndDate.AddDays(1);
+
+            var startDateUnix = ((DateTimeOffset)startDate).ToUnixTimeSeconds();
+            var endDateUnix = ((DateTimeOffset)endDate).ToUnixTimeSeconds();
 
             var results = messagesForGroupChat
                 .Where(m => m.Text.ToLower().Contains(this.SearchTerm.ToLower()))
-                .Where(m => m.CreatedAtTime >= startDate)
-                .Where(m => m.CreatedAtTime <= endDate);
+                .Where(m => m.CreatedAtUnixTime >= startDateUnix)
+                .Where(m => m.CreatedAtUnixTime <= endDateUnix);
 
             var filteredMessages = Enumerable.Empty<Message>().AsQueryable();
             var filtersApplied = false;
