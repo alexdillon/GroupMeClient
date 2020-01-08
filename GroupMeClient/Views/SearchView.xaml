@@ -262,8 +262,8 @@
                 Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
                 VerticalAlignment="Top"
                 BorderThickness="20,10,20,30"
-                BorderBrush="{DynamicResource ControlBackgroundBrush}">
-            <ItemsControl ItemsSource="{Binding GroupChatCachePlugins}" Background="{DynamicResource ControlBackgroundBrush}">
+                BorderBrush="{DynamicResource PluginMenuBrush}">
+            <ItemsControl ItemsSource="{Binding GroupChatCachePlugins}" Background="{DynamicResource PluginMenuBrush}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Button 

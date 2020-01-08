@@ -6,7 +6,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400"
-             Background="{DynamicResource ControlBackgroundBrush}">
+             Background="{DynamicResource TweetBackgroundBrush}">
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="MouseDown" >

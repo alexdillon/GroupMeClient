@@ -14,7 +14,9 @@
     <Color x:Key="MessageILikedColor">#F77070</Color>
     <Color x:Key="MessageTheyLikedColor">#999999</Color>
     <Color x:Key="LikerAreaBackgroundColor">#000000</Color>
-
+    <Color x:Key="TweetBackgroundColor">#000000</Color>
+    <Color x:Key="NotificationBackgroundColor">#000000</Color>
+    <Color x:Key="PluginMenuColor">#000000</Color>
 
     <SolidColorBrush x:Key="DividerLineBrush" Color="{DynamicResource DividerLineColor}"/>
     <SolidColorBrush x:Key="MessageFontBrush" Color="{DynamicResource MessageFontColor}"/>
@@ -28,4 +30,7 @@
     <SolidColorBrush x:Key="MessageILikedBrush" Color="{DynamicResource MessageILikedColor}"/>
     <SolidColorBrush x:Key="MessageTheyLikedBrush" Color="{DynamicResource MessageTheyLikedColor}"/>
     <SolidColorBrush x:Key="LikerAreaBackgroundBrush" Color="{DynamicResource LikerAreaBackgroundColor}"/>
+    <SolidColorBrush x:Key="TweetBackgroundBrush" Color="{DynamicResource TweetBackgroundColor}"/>
+    <SolidColorBrush x:Key="NotificationBackgroundBrush" Color="{DynamicResource NotificationBackgroundColor}"/>
+    <SolidColorBrush x:Key="PluginMenuBrush" Color="{DynamicResource PluginMenuColor}" />
 </ResourceDictionary>
