@@ -18,13 +18,13 @@ namespace GroupMeClient.ViewModels.Controls
         /// <param name="timestamp">The timestamp to display.</param>
         /// <param name="showRead">Indicates whether this control displays a Read or Sent messge.</param>
         /// <param name="id">The message ID to show the timestamp near.</param>
-        /// <param name="messageColor">The color to render the timestamp with.</param>
-        public InlineReadSentMarkerControlViewModel(DateTime timestamp, bool showRead, string id, Brush messageColor)
+        /// <param name="didISendIt">Whether the timestamp corresponds to a message sent by the current user.</param>
+        public InlineReadSentMarkerControlViewModel(DateTime timestamp, bool showRead, string id, bool didISendIt)
         {
             this.Timestamp = timestamp;
             this.ShowRead = showRead;
             this.Id = id;
-            this.MessageColor = messageColor;
+            this.DidISendIt = didISendIt;
         }
 
         /// <inheritdoc/>
@@ -38,9 +38,9 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// Gets the background color to render the timestamp with.
+        /// Gets a value indicating whether the current user sent this <see cref="Message"/>.
         /// </summary>
-        public Brush MessageColor { get; private set; }
+        public bool DidISendIt { get; private set; }
 
         /// <inheritdoc />
         public override bool IsSelectable => false;

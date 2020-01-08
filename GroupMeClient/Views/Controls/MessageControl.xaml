@@ -16,7 +16,7 @@
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
     </UserControl.Resources>
 
-    <Grid Background="{Binding MessageColor}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="55" />
             <ColumnDefinition Width="*"/>
@@ -28,6 +28,19 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
+        <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DidISendIt}" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource MessageISentBackdropBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding DidISendIt}" Value="False">
+                        <Setter Property="Background" Value="{DynamicResource MessageTheySentBackdropBrush}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
 
         <controls:AvatarControl 
                 Grid.Column="0" Grid.Row="1"

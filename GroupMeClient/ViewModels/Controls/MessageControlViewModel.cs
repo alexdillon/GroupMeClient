@@ -172,22 +172,14 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// Gets the background color to use when rendering this <see cref="Message"/>.
+        /// Gets a value indicating whether the current user sent this <see cref="Message"/>.
         /// </summary>
-        public Brush MessageColor
+        public bool DidISendIt
         {
             get
             {
                 var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
-
-                if (this.Message.UserId == me.UserId)
-                {
-                    return (Brush)Application.Current.FindResource("MessageISentBackdropBrush");
-                }
-                else
-                {
-                    return (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush");
-                }
+                return this.Message.UserId == me.UserId;
             }
         }
 

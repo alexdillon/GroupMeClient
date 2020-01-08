@@ -6,13 +6,26 @@
              mc:Ignorable="d" 
              d:DesignHeight="20" d:DesignWidth="400">
 
-    <Grid Background="{Binding MessageColor}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+
+        <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DidISendIt}" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource MessageISentBackdropBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding DidISendIt}" Value="False">
+                        <Setter Property="Background" Value="{DynamicResource MessageTheySentBackdropBrush}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
 
         <Label Content="{Binding LabelString, Mode=OneTime}"
                HorizontalAlignment="Left"
