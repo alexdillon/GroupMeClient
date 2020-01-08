@@ -115,7 +115,7 @@
                                Foreground="White" />
 
         <!--Refresh Button-->
-        <Button Width="48" Height="48"
+        <Button Height="48"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 Margin="0,0,0,55"
@@ -124,11 +124,12 @@
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Width" Value="48"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type Button}">
-                                <Border Background="{TemplateBinding Background}" Padding="2,0,0,0">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Border Background="{TemplateBinding Background}">
+                                    <ContentPresenter />
                                 </Border>
                             </ControlTemplate>
                         </Setter.Value>
@@ -137,20 +138,39 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="#1584C7"/>
                         </Trigger>
+
+                        <DataTrigger Binding="{Binding IsPaneOpen, ElementName=HamburgerMenuControl}" Value="True">
+                            <Setter Property="Width" Value="240"/>
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Button.Style>
          
             <Button.Content>
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="48" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
                     <iconPacks:PackIconMaterial Kind="Refresh"
+                                                Grid.Column="0"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
                                                 Foreground="White"
                                                 Width="16" Height="16"
                                                 Visibility="{Binding IsRefreshing, Converter={StaticResource inverseBooleanToVisibilityConverter}}" />
 
                     <Controls:ProgressRing Width="16" Height="16"
+                                           Grid.Column="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
                                            Foreground="White"
                                            IsActive="{Binding IsRefreshing}" />
+
+                    <TextBlock Text="Refresh" 
+                               Grid.Column="1"
+                               VerticalAlignment="Center"
+                               FontSize="16"/>
                 </Grid>
             </Button.Content>
         </Button>
