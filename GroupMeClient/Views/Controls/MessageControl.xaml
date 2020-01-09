@@ -170,7 +170,10 @@
 
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <controls:AvatarControl Content="{Binding Path=.}" Width="35" Height="35" Margin="3,0,3,0" />
+                                <ContentControl Content="{Binding Avatar}" 
+                                                Width="35" Height="35" 
+                                                Margin="3,0,3,0" 
+                                                ToolTip="{Binding Name}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
 

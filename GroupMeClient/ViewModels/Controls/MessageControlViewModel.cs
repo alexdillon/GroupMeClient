@@ -244,9 +244,9 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// Gets the avatars of the people who have liked this <see cref="Message"/>.
+        /// Gets the people who have liked this <see cref="Message"/>.
         /// </summary>
-        public IEnumerable<AvatarControlViewModel> LikedByAvatars
+        public IEnumerable<Liker> LikedByAvatars
         {
             get
             {
@@ -262,7 +262,7 @@ namespace GroupMeClient.ViewModels.Controls
                             ((this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI()).Id == memberId ? (this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI()) : null);
 
                         var liker = new AvatarControlViewModel(member, this.Message.ImageDownloader);
-                        yield return liker;
+                        yield return new Liker { Avatar = liker, Name = member.Name };
                     }
                 }
             }
@@ -555,6 +555,22 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// <see cref="Liker"/> represents an avatar/name pair for a person who has liked a <see cref="Message"/>.
+        /// </summary>
+        public class Liker
+        {
+            /// <summary>
+            /// Gets or sets the liker's avatar.
+            /// </summary>
+            public AvatarControlViewModel Avatar { get; set; }
+
+            /// <summary>
+            /// Gets or sets the name of the liker.
+            /// </summary>
+            public string Name { get; set; }
         }
     }
 }
