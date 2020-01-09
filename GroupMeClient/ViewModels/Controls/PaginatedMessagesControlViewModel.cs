@@ -222,7 +222,7 @@ namespace GroupMeClient.ViewModels.Controls
                 if ((this.NewestAtBottom && msg.CreatedAtTime.Subtract(this.LastMarkerTime) > this.maxMarkerDistanceTime) ||
                     (!this.NewestAtBottom && this.LastMarkerTime.Subtract(msg.CreatedAtTime) > this.maxMarkerDistanceTime))
                 {
-                    this.CurrentPage.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, "id-not-used", msgVm.MessageColor));
+                    this.CurrentPage.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, "id-not-used", msgVm.DidISendIt));
                     this.LastMarkerTime = msg.CreatedAtTime;
                 }
 
