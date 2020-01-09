@@ -170,6 +170,7 @@
                                            IsActive="{Binding IsRefreshing}" />
 
                     <TextBlock Text="Refresh" 
+                               Foreground="White"
                                Grid.Column="1"
                                VerticalAlignment="Center"
                                FontSize="16"/>
