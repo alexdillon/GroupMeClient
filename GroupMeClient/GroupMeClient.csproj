@@ -78,6 +78,7 @@
     <Compile Include="GlobalAssemblyInfo.cs" />
     <Compile Include="Messaging\IndexAndRunPluginRequestMessage.cs" />
     <Compile Include="Messaging\DisconnectedRequestMessage.cs" />
+    <Compile Include="Native\WindowsThemeUtils.cs" />
     <Compile Include="Notifications\Display\WpfToast\ToastHolder.xaml.cs">
       <DependentUpon>ToastHolder.xaml</DependentUpon>
     </Compile>

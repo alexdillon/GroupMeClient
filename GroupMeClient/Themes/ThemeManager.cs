@@ -74,5 +74,28 @@ namespace GroupMeClient.Themes
 
             CurrentGroupMeTheme = GroupMeDarkTheme;
         }
+
+        /// <summary>
+        /// Applies the system prefered theme.
+        /// </summary>
+        public static void SetSystemTheme()
+        {
+            if (Native.WindowsThemeUtils.IsAppLightThemePreferred())
+            {
+                SetLightTheme();
+            }
+            else
+            {
+                SetDarkTheme();
+            }
+
+            Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent -= Windows_ThemeChangedEvent;
+            Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent += Windows_ThemeChangedEvent;
+        }
+
+        private static void Windows_ThemeChangedEvent()
+        {
+            SetSystemTheme();
+        }
     }
 }
