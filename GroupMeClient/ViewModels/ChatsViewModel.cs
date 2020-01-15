@@ -185,6 +185,7 @@ namespace GroupMeClient.ViewModels
         {
             this.AllGroupsChats.Clear();
             await this.LoadGroupsAndChats();
+            this.CheckForRestore();
         }
 
         private async Task LoadGroupsAndChats()
@@ -293,12 +294,11 @@ namespace GroupMeClient.ViewModels
 
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
 
-                _ = this.PushClient.SubscribeAsync(group.MessageContainer);
+                Task.Run(async() => await this.PushClient.SubscribeAsync(group.MessageContainer));
 
                 // mark all messages as read
                 this.MarkGroupChatAsRead(group);
 
-                this.SettingsManager.SaveSettings();
                 this.PublishTotalUnreadCount();
             }
 
@@ -314,6 +314,12 @@ namespace GroupMeClient.ViewModels
 
                 this.ActiveGroupsChats.Remove(removeGroup);
             }
+
+            this.SettingsManager.ChatsSettings.OpenChats.Clear();
+            this.SettingsManager.ChatsSettings.OpenChats.AddRange(this.ActiveGroupsChats.Select(x => x.Id));
+
+            // Save both the updated read status and the currently opened list
+            this.SettingsManager.SaveSettings();
         }
 
         private void CloseChat(GroupContentsControlViewModel groupContentsControlViewModel)
@@ -322,6 +328,10 @@ namespace GroupMeClient.ViewModels
             this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
 
             ((IDisposable)groupContentsControlViewModel).Dispose();
+
+            this.SettingsManager.ChatsSettings.OpenChats.Clear();
+            this.SettingsManager.ChatsSettings.OpenChats.AddRange(this.ActiveGroupsChats.Select(x => x.Id));
+            this.SettingsManager.SaveSettings();
         }
 
         private void MarkAllGroupsChatsRead()
@@ -356,6 +366,21 @@ namespace GroupMeClient.ViewModels
 
             var updateRequest = new Messaging.UnreadRequestMessage(count);
             Messenger.Default.Send(updateRequest);
+        }
+
+        private void CheckForRestore()
+        {
+            if (Environment.GetCommandLineArgs().Contains(Native.RecoveryManager.RestartCommandLine))
+            {
+                var openChats = this.SettingsManager.ChatsSettings.OpenChats.ToList();
+                openChats.Reverse();
+
+                foreach (var chatId in openChats)
+                {
+                    var chat = this.AllGroupsChats.First(c => c.Id == chatId);
+                    this.OpenNewGroupChat(chat);
+                }
+            }
         }
     }
 }

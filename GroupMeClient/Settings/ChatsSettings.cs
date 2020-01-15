@@ -18,6 +18,11 @@ namespace GroupMeClient.Settings
         public List<GroupOrChatState> GroupChatStates { get; set; } = new List<GroupOrChatState>();
 
         /// <summary>
+        /// Gets or sets a list of the Group or Chat IDs for all currently opened chats.
+        /// </summary>
+        public List<string> OpenChats { get; set; } = new List<string>();
+
+        /// <summary>
         /// <see cref="GroupOrChatState"/> saves the state of a specific <see cref="GroupMeClientApi.Models.Group"/>
         /// or <see cref="GroupMeClientApi.Models.Chat"/>.
         /// </summary>

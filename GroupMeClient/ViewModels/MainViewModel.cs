@@ -202,6 +202,9 @@ namespace GroupMeClient.ViewModels
 
             this.UpdateAssist = new UpdateAssist();
             Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
+
+            Native.RecoveryManager.RegisterForRecovery();
+            Native.RecoveryManager.RegisterForRestart();
         }
 
         private void RegisterNotifications()
