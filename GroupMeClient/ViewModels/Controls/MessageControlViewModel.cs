@@ -450,11 +450,6 @@ namespace GroupMeClient.ViewModels.Controls
         {
             var text = this.Message.Text ?? string.Empty;
 
-            if (!string.IsNullOrEmpty(this.HiddenText))
-            {
-                text = text.Replace(this.HiddenText, string.Empty);
-            }
-
             var inlinesTemp = new List<Inline>();
             var inlinesResult = new List<Inline>();
 
@@ -482,6 +477,19 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 inlinesTemp.Add(new Run(text));
             }
+
+            // Remove any hidden text
+            inlinesTemp.RemoveAll(x =>
+            {
+                if (x is Run r)
+                {
+                    return r.Text.Trim() == this.HiddenText;
+                }
+                else
+                {
+                    return false;
+                }
+            });
 
             // Process Hyperlinks
             foreach (var part in inlinesTemp)
