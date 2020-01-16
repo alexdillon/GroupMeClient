@@ -478,6 +478,7 @@ namespace GroupMeClient.ViewModels.Controls
                 inlinesTemp.Add(new Run(text));
             }
 
+            // Remove any hidden text
             inlinesTemp.RemoveAll(x =>
             {
                 if (x is Run r)
