@@ -294,7 +294,7 @@ namespace GroupMeClient.ViewModels
 
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
 
-                Task.Run(async() => await this.PushClient.SubscribeAsync(group.MessageContainer));
+                Task.Run(async () => await this.PushClient.SubscribeAsync(group.MessageContainer));
 
                 // mark all messages as read
                 this.MarkGroupChatAsRead(group);
