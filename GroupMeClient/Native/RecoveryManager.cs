@@ -25,21 +25,6 @@ namespace GroupMeClient.Native
         /// </summary>
         public static string RestartCommandLine => "/restart";
 
-        [DllImport("kernel32.dll")]
-        private static extern int RegisterApplicationRecoveryCallback(
-                RecoveryDelegate recoveryCallback,
-                IntPtr parameter,
-                uint pingInterval,
-                uint flags);
-
-        [DllImport("kernel32.dll")]
-        private static extern void ApplicationRecoveryFinished(bool success);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern int RegisterApplicationRestart(
-            [MarshalAs(UnmanagedType.LPWStr)] string commandLineArgs, 
-            int flags);
-
         /// <summary>
         /// Enables Windows Error Recovery automatic recovery.
         /// Recovery allows for immediately resuming an application after a crash or hang occurs.
@@ -68,5 +53,20 @@ namespace GroupMeClient.Native
         {
             RegisterApplicationRestart(RestartCommandLine, 0);
         }
+
+        [DllImport("kernel32.dll")]
+        private static extern int RegisterApplicationRecoveryCallback(
+              RecoveryDelegate recoveryCallback,
+              IntPtr parameter,
+              uint pingInterval,
+              uint flags);
+
+        [DllImport("kernel32.dll")]
+        private static extern void ApplicationRecoveryFinished(bool success);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern int RegisterApplicationRestart(
+            [MarshalAs(UnmanagedType.LPWStr)] string commandLineArgs,
+            int flags);
     }
 }
