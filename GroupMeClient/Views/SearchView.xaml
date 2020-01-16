@@ -79,6 +79,7 @@
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.CanContentScroll="True" 
                  ScrollViewer.PanningMode="VerticalOnly" 
+                 VirtualizingPanel.ScrollUnit="Pixel"
                  Background="{DynamicResource ControlBackgroundBrush}">
 
             <ListBox.ItemContainerStyle>
