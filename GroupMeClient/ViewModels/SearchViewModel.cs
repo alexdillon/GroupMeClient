@@ -488,7 +488,7 @@ namespace GroupMeClient.ViewModels
 
             if (this.FilterHasAttachedDocument)
             {
-                var messagesWithDocuments = results
+                var messagesWithDocuments = results.AsEnumerable()
                     .Where(m => m.Attachments.OfType<FileAttachment>().Count() >= 1);
 
                 filteredMessages = filteredMessages.Union(messagesWithDocuments);
