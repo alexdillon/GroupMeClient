@@ -92,9 +92,15 @@
             <DataTemplate DataType="{x:Type attachvm:GroupMeImageAttachmentControlViewModel}">
                 <attachviews:GroupMeImageAttachmentControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:FileAttachmentControlViewModel}">
+                <attachviews:FileAttachmentControl />
+            </DataTemplate>
 
             <DataTemplate DataType="{x:Type ctrlvm:SendImageControlViewModel}">
                 <ctrlviews:SendImageControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:SendFileControlViewModel}">
+                <ctrlviews:SendFileControl />
             </DataTemplate>
             <DataTemplate DataType="{x:Type ctrlvm:ViewImageControlViewModel}">
                 <ctrlviews:ViewImageControl />
