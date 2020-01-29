@@ -270,13 +270,19 @@ namespace GroupMeClient.ViewModels.Controls
         /// <inheritdoc />
         void FileDragDropHelper.IDragDropTarget.OnFileDrop(string[] filepaths)
         {
-            string[] supportedExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".bmp" };
+            var supportedImageExtensions = GroupMeClientApi.Models.Attachments.ImageAttachment.SupportedExtensions.ToList();
+            var supportedFileExtensions = GroupMeClientApi.Models.Attachments.FileAttachment.GroupMeDocumentMimeTypeMapper.SupportedExtensions.ToList();
 
             foreach (var file in filepaths)
             {
-                if (supportedExtensions.Contains(Path.GetExtension(file).ToLower()))
+                if (supportedImageExtensions.Contains(Path.GetExtension(file).ToLower()))
                 {
                     this.ShowImageSendDialog(File.OpenRead(file));
+                    break;
+                }
+                else if (supportedFileExtensions.Contains(Path.GetExtension(file).ToLower()))
+                {
+                    this.ShowFileSendDialog(file);
                     break;
                 }
             }
@@ -466,47 +472,54 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void SendFileImageAttachment()
         {
+            var supportedImages = GroupMeClientApi.Models.Attachments.ImageAttachment.SupportedExtensions.ToList();
+            var supportedFiles = GroupMeClientApi.Models.Attachments.FileAttachment.GroupMeDocumentMimeTypeMapper.SupportedExtensions.ToList();
+
+            var imageExtensions = string.Join(";", supportedImages.Select(x => "*" + x));
+            var imageExtensionsDisplay = string.Join(", ", supportedImages.Select(x => "*" + x));
+            var fileExtensions = string.Join(";", supportedFiles.Select(x => "*" + x));
+            var fileExtensionsDisplay = string.Join(", ", supportedFiles.Select(x => "*" + x));
+
+            var imageFilter = $"Images ({imageExtensionsDisplay})|{imageExtensions}";
+            var fileFilter = $"Documents ({fileExtensionsDisplay})|{fileExtensions}";
+
             var openFileDialog = new OpenFileDialog
             {
-                Filter = $"Images (*.bmp; *.jpg; *.jpeg; *.png; *.gif)|*.bmp; *.jpg; *.jpeg; *.png; *.gif",
+                Filter = $"{imageFilter}|{fileFilter}",
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
-                this.ShowImageSendDialog(File.OpenRead(openFileDialog.FileName));
+                var extension = Path.GetExtension(openFileDialog.FileName);
+                if (supportedImages.Contains(extension))
+                {
+                    this.ShowImageSendDialog(File.OpenRead(openFileDialog.FileName));
+                }
+                else if (supportedFiles.Contains(extension))
+                {
+                    this.ShowFileSendDialog(openFileDialog.FileName);
+                }
             }
         }
 
-        private async Task SendImageMessageAsync()
+        private async Task SendContentMessageAsync(GroupMeClientApi.Models.Attachments.Attachment attachment)
         {
-            if (!(this.SmallDialog is SendImageControlViewModel))
+            if (!(this.SmallDialog is SendContentControlViewModelBase))
             {
                 return;
             }
 
-            var imageSendDialog = this.SmallDialog as SendImageControlViewModel;
+            var contentSendDialog = this.SmallDialog as SendContentControlViewModelBase;
 
-            if (imageSendDialog.ImageStream == null)
+            if (contentSendDialog.ContentStream == null)
             {
                 return;
             }
 
-            imageSendDialog.IsSending = true;
+            contentSendDialog.IsSending = true;
             this.IsSending = true;
 
-            var contents = imageSendDialog.TypedMessageContents;
-            byte[] image;
-
-            using (var ms = new MemoryStream())
-            {
-                imageSendDialog.ImageStream.Seek(0, SeekOrigin.Begin);
-                await imageSendDialog.ImageStream.CopyToAsync(ms);
-                image = ms.ToArray();
-            }
-
-            GroupMeClientApi.Models.Attachments.ImageAttachment attachment;
-            attachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(image, this.MessageContainer);
-
+            var contents = contentSendDialog.TypedMessageContents;
             var attachmentsList = new List<GroupMeClientApi.Models.Attachments.Attachment> { attachment };
 
             var message = Message.CreateMessage(
@@ -521,7 +534,7 @@ namespace GroupMeClient.ViewModels.Controls
             }
             else
             {
-                imageSendDialog.IsSending = false;
+                contentSendDialog.IsSending = false;
             }
         }
 
@@ -555,9 +568,24 @@ namespace GroupMeClient.ViewModels.Controls
         {
             var dialog = new SendImageControlViewModel()
             {
-                ImageStream = image,
+                ContentStream = image,
+                MessageContainer = this.MessageContainer,
                 TypedMessageContents = this.TypedMessageContents,
-                SendMessage = new RelayCommand(async () => await this.SendImageMessageAsync(), () => !this.IsSending, true),
+                SendMessage = new RelayCommand<GroupMeClientApi.Models.Attachments.Attachment>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
+            };
+
+            this.SmallDialog = dialog;
+        }
+
+        private void ShowFileSendDialog(string fileName)
+        {
+            var dialog = new SendFileControlViewModel()
+            {
+                ContentStream = File.OpenRead(fileName),
+                FileName = System.IO.Path.GetFileName(fileName),
+                MessageContainer = this.MessageContainer,
+                TypedMessageContents = this.TypedMessageContents,
+                SendMessage = new RelayCommand<GroupMeClientApi.Models.Attachments.Attachment>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
             };
 
             this.SmallDialog = dialog;

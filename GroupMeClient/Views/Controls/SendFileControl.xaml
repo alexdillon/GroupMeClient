@@ -1,9 +1,8 @@
-﻿<UserControl x:Class="GroupMeClient.Views.Controls.SendImageControl"
+﻿<UserControl x:Class="GroupMeClient.Views.Controls.SendFileControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
@@ -11,7 +10,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
              Background="Black"
-             FocusManager.FocusedElement="{Binding ElementName=ImageMessageCaption}">
+             FocusManager.FocusedElement="{Binding ElementName=FileMessageCaption}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -21,17 +20,31 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0"
-               MaxWidth="900" 
-               Stretch="Uniform"
-               StretchDirection="DownOnly"
-               HorizontalAlignment="Center"
-               gif:AnimationBehavior.SourceStream="{Binding ContentStream}" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="55" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <iconPacks:PackIconOcticons Kind="File"
+                                        Foreground="White"
+                                        Background="Transparent"
+                                        VerticalAlignment="Center"
+                                        Margin="5"
+                                        Width="45" Height="45"/>
+
+            <TextBlock Grid.Column="1" 
+                       Padding="0" 
+                       VerticalAlignment="Center" 
+                       FontSize="14" 
+                       TextWrapping="Wrap" 
+                       Foreground="White"
+                       Text="{Binding FileName}" />
+        </Grid>
 
         <Controls:ProgressRing IsActive="{Binding IsSending}" 
                                Width="60" Height="60"
                                HorizontalAlignment="Center"/>
-        
 
         <Grid Grid.Column="0" Grid.Row="3"
               Background="{DynamicResource ControlBackgroundBrush}">
@@ -52,7 +65,7 @@
                     VerticalAlignment="Bottom"/>
 
             <extensions:MultiLineSendBox
-                x:Name="ImageMessageCaption"
+                x:Name="FileMessageCaption"
                 Grid.Row="1" Grid.Column="1"
                 BorderBrush="Transparent"
                 BorderThickness="0"

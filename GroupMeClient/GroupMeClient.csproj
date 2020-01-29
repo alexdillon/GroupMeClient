@@ -125,6 +125,7 @@
     <Compile Include="ViewModels\ChatsViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\GroupMeImageAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\ImageLinkAttachmentControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Attachments\FileAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\VideoAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\AvatarControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\InlineReadSentMarkerControlViewModel.cs" />
@@ -138,6 +139,8 @@
     <Compile Include="ViewModels\Controls\MessageEffectsControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\LoadingControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MultiLikeControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\SendContentControlViewModelBase.cs" />
+    <Compile Include="ViewModels\Controls\SendFileControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\ViewImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
@@ -149,6 +152,9 @@
     </Compile>
     <Compile Include="Views\Controls\Attachments\ImageLinkAttachmentControl.xaml.cs">
       <DependentUpon>ImageLinkAttachmentControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Attachments\FileAttachmentControl.xaml.cs">
+      <DependentUpon>FileAttachmentControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Attachments\VideoAttachmentControl.xaml.cs">
       <DependentUpon>VideoAttachmentControl.xaml</DependentUpon>
@@ -185,6 +191,9 @@
     </Compile>
     <Compile Include="Views\Controls\MultiLikeControl.xaml.cs">
       <DependentUpon>MultiLikeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\SendFileControl.xaml.cs">
+      <DependentUpon>SendFileControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\ViewImageControl.xaml.cs">
       <DependentUpon>ViewImageControl.xaml</DependentUpon>
@@ -252,6 +261,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Controls\Attachments\FileAttachmentControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Controls\Attachments\VideoAttachmentControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -297,6 +310,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\MultiLikeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\SendFileControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -377,7 +394,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="GroupMeClientApi">
-      <Version>1.0.0</Version>
+      <Version>1.0.2</Version>
     </PackageReference>
     <PackageReference Include="GroupMeClientPlugin">
       <Version>1.0.4</Version>
@@ -417,7 +434,6 @@
       <Version>1.2.2</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">

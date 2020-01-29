@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.ViewModels.Controls.Attachments;
 using GroupMeClientApi.Models;
@@ -52,7 +53,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Gets or sets the attached items (Tweets, Web Links, Videos, etc.), if present.
         /// </summary>
-        public ObservableCollection<LinkAttachmentBaseViewModel> AttachedItems { get; set; } = new ObservableCollection<LinkAttachmentBaseViewModel>();
+        public ObservableCollection<ViewModelBase> AttachedItems { get; set; } = new ObservableCollection<ViewModelBase>();
 
         /// <summary>
         /// Gets the command to be performed when this <see cref="Message"/> is 'Liked'.
@@ -270,7 +271,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private bool ShowLikers { get; }
 
-        private string HiddenText { get; set; }
+        private string HiddenText { get; set; } = string.Empty;
 
         private bool ShowPreviewsOnlyForMultiImages { get; set; }
 
@@ -390,6 +391,25 @@ namespace GroupMeClient.ViewModels.Controls
                     // Don't allow any other attachment types to be included if a video is.
                     return;
                 }
+                else if (attachment is FileAttachment fileAttach)
+                {
+                    var container = (IMessageContainer)this.Message.Group ?? (IMessageContainer)this.Message.Chat;
+                    var documentVm = new FileAttachmentControlViewModel(fileAttach, container);
+                    this.AttachedItems.Add(documentVm);
+
+                    // Videos can have captions, so only exclude the share url from the body
+                    if (this.Message.Text.Contains(" - Shared a document"))
+                    {
+                        this.HiddenText = this.Message.Text.Substring(this.Message.Text.LastIndexOf(" - Shared a document"));
+                    }
+                    else
+                    {
+                        this.HiddenText = this.Message.Text.Substring(this.Message.Text.LastIndexOf("Shared a document"));
+                    }
+
+                    // Don't allow any other attachment types to be included if a video is.
+                    return;
+                }
             }
 
             // Load Link-Based Attachments (Tweets, Web Images, Websites, etc.)
@@ -479,37 +499,61 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             // Remove any hidden text
-            inlinesTemp.RemoveAll(x =>
+            inlinesResult.Clear();
+            foreach (var inline in inlinesTemp)
             {
-                if (x is Run r)
+                if (!string.IsNullOrEmpty(this.HiddenText) &&
+                    inline is Run r &&
+                    r.Text.Contains(this.HiddenText))
                 {
-                    return r.Text.Trim() == this.HiddenText;
+                    // split or remove the inline to eliminate the hidden text
+                    if (r.Text.Trim() == this.HiddenText)
+                    {
+                        // eliminate the entire run
+                    }
+                    else
+                    {
+                        var index = r.Text.IndexOf(this.HiddenText);
+                        if (index != 0)
+                        {
+                            var before = new Run(r.Text.Substring(0, index));
+                            inlinesResult.Add(before);
+                        }
+
+                        if (index + this.HiddenText.Length != r.Text.Length)
+                        {
+                            var after = new Run(r.Text.Substring(index + r.Text.Length));
+                            inlinesResult.Add(after);
+                        }
+                    }
                 }
                 else
                 {
-                    return false;
+                    inlinesResult.Add(inline);
                 }
-            });
+            }
+
+            inlinesTemp.Clear();
 
             // Process Hyperlinks
-            foreach (var part in inlinesTemp)
+            foreach (var part in inlinesResult)
             {
                 if (part is Run r)
                 {
                     // scan this portion of the message for hyperlinks
-                    inlinesResult.AddRange(this.ProcessHyperlinks(r));
+                    inlinesTemp.AddRange(this.ProcessHyperlinks(r));
                 }
                 else
                 {
                     // this part of the message has already been processed, pass it through
-                    inlinesResult.Add(part);
+                    inlinesTemp.Add(part);
                 }
             }
 
             /* TODO: Swap inlinesTemp and inlinesResult and repeat for addition special content types */
 
             this.Inlines.Clear();
-            foreach (var result in inlinesResult)
+            foreach (var result in inlinesTemp)
             {
                 this.Inlines.Add(result);
             }

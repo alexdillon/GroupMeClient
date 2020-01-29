@@ -17,6 +17,7 @@
     <Color x:Key="TweetBackgroundColor">#000000</Color>
     <Color x:Key="NotificationBackgroundColor">#000000</Color>
     <Color x:Key="PluginMenuColor">#000000</Color>
+    <Color x:Key="FileIconColor">#FFFFFF</Color>
 
     <SolidColorBrush x:Key="DividerLineBrush" Color="{DynamicResource DividerLineColor}"/>
     <SolidColorBrush x:Key="MessageFontBrush" Color="{DynamicResource MessageFontColor}"/>
@@ -33,4 +34,5 @@
     <SolidColorBrush x:Key="TweetBackgroundBrush" Color="{DynamicResource TweetBackgroundColor}"/>
     <SolidColorBrush x:Key="NotificationBackgroundBrush" Color="{DynamicResource NotificationBackgroundColor}"/>
     <SolidColorBrush x:Key="PluginMenuBrush" Color="{DynamicResource PluginMenuColor}" />
+    <SolidColorBrush x:Key="FileIconBrush" Color="{DynamicResource FileIconColor}" />
 </ResourceDictionary>

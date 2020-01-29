@@ -28,6 +28,7 @@ namespace GroupMeClient.ViewModels
         private bool filterHasAttachedLinkedImage;
         private bool filterHasAttachedMentions;
         private bool filterHasAttachedVideo;
+        private bool filterHasAttachedDocument;
         private DateTime filterStartDate;
         private DateTime filterEndDate = DateTime.Now.AddDays(1);
 
@@ -188,6 +189,15 @@ namespace GroupMeClient.ViewModels
         {
             get => this.filterHasAttachedVideo;
             set => this.SetSearchProperty(() => this.FilterHasAttachedVideo, ref this.filterHasAttachedVideo, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether only messages containing a document attachment should be shown.
+        /// </summary>
+        public bool FilterHasAttachedDocument
+        {
+            get => this.filterHasAttachedDocument;
+            set => this.SetSearchProperty(() => this.FilterHasAttachedDocument, ref this.filterHasAttachedDocument, value);
         }
 
         /// <summary>
@@ -380,6 +390,7 @@ namespace GroupMeClient.ViewModels
             this.FilterHasAttachedLinkedImage = false;
             this.FilterHasAttachedMentions = false;
             this.FilterHasAttachedVideo = false;
+            this.FilterHasAttachedDocument = false;
 
             this.DeferSearchUpdating = false;
             if (!skipUpdating)
@@ -472,6 +483,15 @@ namespace GroupMeClient.ViewModels
                     .Where(m => m.Attachments.OfType<VideoAttachment>().Count() >= 1);
 
                 filteredMessages = filteredMessages.Union(messagesWithVideos);
+                filtersApplied = true;
+            }
+
+            if (this.FilterHasAttachedDocument)
+            {
+                var messagesWithDocuments = results
+                    .Where(m => m.Attachments.OfType<FileAttachment>().Count() >= 1);
+
+                filteredMessages = filteredMessages.Union(messagesWithDocuments);
                 filtersApplied = true;
             }
 

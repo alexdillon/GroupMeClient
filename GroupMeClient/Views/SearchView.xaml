@@ -186,6 +186,7 @@
                     <CheckBox Content="Has Image Attachment" IsChecked="{Binding FilterHasAttachedImage, Mode=TwoWay}" />
                     <CheckBox Content="Has Linked Attachment" IsChecked="{Binding FilterHasAttachedLinkedImage, Mode=TwoWay}" />
                     <CheckBox Content="Has Video Attachment" IsChecked="{Binding FilterHasAttachedVideo, Mode=TwoWay}" />
+                    <CheckBox Content="Has Document Attachment" IsChecked="{Binding FilterHasAttachedDocument, Mode=TwoWay}" />
                     <CheckBox Content="Mentions Other Group Members" IsChecked="{Binding FilterHasAttachedMentions, Mode=TwoWay}" />
 
                     <Button Margin="0,5,0,0" Command="{Binding ResetFilters}">
