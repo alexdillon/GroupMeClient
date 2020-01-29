@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
@@ -113,11 +113,11 @@
                 Controls:TextBoxHelper.Watermark="Send a Message..."
                 Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="Send">
-                        <i:InvokeCommandAction Command="{Binding Path=UpdateMessage}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+                <behaviors:Interaction.Triggers>
+                    <behaviors:EventTrigger EventName="Send">
+                        <behaviors:InvokeCommandAction Command="{Binding Path=UpdateMessage}"/>
+                    </behaviors:EventTrigger>
+                </behaviors:Interaction.Triggers>
 
             </extensions:MultiLineSendBox>
 

@@ -3,21 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
-             xmlns:cmd="http://www.galasoft.ch/mvvmlight"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400"
              Background="Transparent">
 
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="MouseDown" >
-            <cmd:EventToCommand Command="{Binding Mode=OneWay, Path=Clicked}"
-                            PassEventArgsToCommand="True" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="MouseDown" >
+            <behaviors:InvokeCommandAction Command="{Binding Mode=OneWay, Path=Clicked}"
+                                           PassEventArgsToCommand="True" />
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
 
     <Grid Margin="10"
             ForceCursor="true" Cursor="Hand">

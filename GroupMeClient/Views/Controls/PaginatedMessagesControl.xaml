@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              mc:Ignorable="d"
              Background="{DynamicResource ControlBackgroundBrush}"
@@ -88,15 +88,15 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
 
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectionChanged">
-                    <i:InvokeCommandAction Command="{Binding MessageSelectedCommand}"  CommandParameter="{Binding ElementName=messagesListbox, Path=SelectedItem}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+            <behaviors:Interaction.Triggers>
+                <behaviors:EventTrigger EventName="SelectionChanged">
+                    <behaviors:InvokeCommandAction Command="{Binding MessageSelectedCommand}"  CommandParameter="{Binding ElementName=messagesListbox, Path=SelectedItem}"/>
+                </behaviors:EventTrigger>
+            </behaviors:Interaction.Triggers>
 
-            <i:Interaction.Behaviors>
+            <behaviors:Interaction.Behaviors>
                 <extensions:ScrollIntoViewForListBox />
-            </i:Interaction.Behaviors>
+            </behaviors:Interaction.Behaviors>
         </ListBox>
     </Grid>
 </UserControl>

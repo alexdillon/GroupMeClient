@@ -8,7 +8,7 @@
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="500">
@@ -200,12 +200,12 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
 
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectionChanged">
-                    <i:InvokeCommandAction Command="{Binding DataContext.SelectionChangedCommand, RelativeSource={RelativeSource AncestorType=controls:GroupContentsControl}}"
-                                           CommandParameter="{Binding SelectedItems, ElementName=messagesList}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+            <behaviors:Interaction.Triggers>
+                <behaviors:EventTrigger EventName="SelectionChanged">
+                    <behaviors:InvokeCommandAction Command="{Binding DataContext.SelectionChangedCommand, RelativeSource={RelativeSource AncestorType=controls:GroupContentsControl}}"
+                                                   CommandParameter="{Binding SelectedItems, ElementName=messagesList}" />
+                </behaviors:EventTrigger>
+            </behaviors:Interaction.Triggers>
         </extensions:ListBoxWithPosition>
 
         <!--Scroll-To-Bottom Button-->
@@ -323,11 +323,11 @@
                                         Foreground="#637182" 
                                         Kind="React"
                                         Margin="0">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDown" >
-                        <i:InvokeCommandAction Command="{Binding OpenMessageSuggestions}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+                <behaviors:Interaction.Triggers>
+                    <behaviors:EventTrigger EventName="MouseDown" >
+                        <behaviors:InvokeCommandAction Command="{Binding OpenMessageSuggestions}" />
+                    </behaviors:EventTrigger>
+                </behaviors:Interaction.Triggers>
             </iconPacks:PackIconMaterial>
 
             <!--Message Text Box-->
@@ -348,11 +348,11 @@
                 extensions:FileDragDropHelper.FileDragDropTarget="{Binding}"
                 SpellCheck.IsEnabled="True">
 
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="Send">
-                        <i:InvokeCommandAction Command="{Binding Path=SendMessage}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+                <behaviors:Interaction.Triggers>
+                    <behaviors:EventTrigger EventName="Send">
+                        <behaviors:InvokeCommandAction Command="{Binding Path=SendMessage}"/>
+                    </behaviors:EventTrigger>
+                </behaviors:Interaction.Triggers>
             </extensions:MultiLineSendBox>
 
             <!--Plus Button-->
@@ -364,11 +364,11 @@
                                         Foreground="{DynamicResource DividerLineBrush}" 
                                         Kind="Plus"
                                         Margin="0,0,20,0">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDown" >
-                        <i:InvokeCommandAction Command="{Binding SendAttachment}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+                <behaviors:Interaction.Triggers>
+                    <behaviors:EventTrigger EventName="MouseDown" >
+                        <behaviors:InvokeCommandAction Command="{Binding SendAttachment}" />
+                    </behaviors:EventTrigger>
+                </behaviors:Interaction.Triggers>
             </iconPacks:PackIconMaterial>
 
             <!--Send Message Button-->
@@ -378,11 +378,11 @@
                                         Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" 
                                         Kind="Send"
                                         Margin="0,0,30,0">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDown" >
-                        <i:InvokeCommandAction Command="{Binding SendMessage}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+                <behaviors:Interaction.Triggers>
+                    <behaviors:EventTrigger EventName="MouseDown" >
+                        <behaviors:InvokeCommandAction Command="{Binding SendMessage}" />
+                    </behaviors:EventTrigger>
+                </behaviors:Interaction.Triggers>
             </iconPacks:PackIconMaterial>
         </Grid>
 

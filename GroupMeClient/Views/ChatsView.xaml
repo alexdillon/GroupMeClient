@@ -4,8 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:ic="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
@@ -133,16 +132,16 @@
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel>
-                                <i:Interaction.Behaviors>
-                                    <ic:FluidMoveBehavior AppliesTo="Children" Duration="0:0:00.5" Tag="DataContext">
-                                        <ic:FluidMoveBehavior.EaseX>
+                                <behaviors:Interaction.Behaviors>
+                                    <behaviors:FluidMoveBehavior AppliesTo="Children" Duration="0:0:00.5" Tag="DataContext">
+                                        <behaviors:FluidMoveBehavior.EaseX>
                                             <BackEase EasingMode="EaseInOut" Amplitude="0.5"/>
-                                        </ic:FluidMoveBehavior.EaseX>
-                                        <ic:FluidMoveBehavior.EaseY>
+                                        </behaviors:FluidMoveBehavior.EaseX>
+                                        <behaviors:FluidMoveBehavior.EaseY>
                                             <BackEase EasingMode="EaseInOut" Amplitude="0.5"/>
-                                        </ic:FluidMoveBehavior.EaseY>
-                                    </ic:FluidMoveBehavior>
-                                </i:Interaction.Behaviors>
+                                        </behaviors:FluidMoveBehavior.EaseY>
+                                    </behaviors:FluidMoveBehavior>
+                                </behaviors:Interaction.Behaviors>
                             </StackPanel>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>

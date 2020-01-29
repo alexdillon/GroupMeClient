@@ -4,17 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
              Background="{DynamicResource ControlBackgroundBrush}">
 
     <Grid ForceCursor="true" Cursor="Hand">
-        <i:Interaction.Triggers>
-            <i:EventTrigger EventName="MouseDown" >
-                <i:InvokeCommandAction Command="{Binding Clicked}" />
-            </i:EventTrigger>
-        </i:Interaction.Triggers>
+        <behaviors:Interaction.Triggers>
+            <behaviors:EventTrigger EventName="MouseDown" >
+                <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
+            </behaviors:EventTrigger>
+        </behaviors:Interaction.Triggers>
         
         <Image Grid.Row="0"
                Grid.RowSpan="2"

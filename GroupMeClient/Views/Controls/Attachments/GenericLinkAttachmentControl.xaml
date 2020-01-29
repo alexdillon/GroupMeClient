@@ -3,16 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400"
              Background="White">
 
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="MouseDown" >
-            <i:InvokeCommandAction Command="{Binding Clicked}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="MouseDown" >
+            <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
 
     <Grid ForceCursor="true" Cursor="Hand">
         <Grid.ColumnDefinitions>

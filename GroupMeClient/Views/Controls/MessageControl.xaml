@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
-             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              mc:Ignorable="d" 
@@ -47,11 +47,11 @@
                 Width="40" Height="40" VerticalAlignment="Top"
                 DataContext="{Binding Avatar}">
             
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseRightButtonDown" >
-                    <i:InvokeCommandAction Command="{Binding Path=DataContext.ToggleMessageDetails, RelativeSource={RelativeSource AncestorType=controls:MessageControl}}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+            <behaviors:Interaction.Triggers>
+                <behaviors:EventTrigger EventName="MouseRightButtonDown" >
+                    <behaviors:InvokeCommandAction Command="{Binding Path=DataContext.ToggleMessageDetails, RelativeSource={RelativeSource AncestorType=controls:MessageControl}}" />
+                </behaviors:EventTrigger>
+            </behaviors:Interaction.Triggers>
         </controls:AvatarControl>
 
         <StackPanel Grid.Column="1" Grid.Row="1">
@@ -113,11 +113,11 @@
                 Foreground="{DynamicResource MessageFontBrush}" FontSize="10" FontWeight="Thin"
                 Content="{Binding LikeCount}" />
 
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDown" >
-                    <i:InvokeCommandAction Command="{Binding LikeAction}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+            <behaviors:Interaction.Triggers>
+                <behaviors:EventTrigger EventName="MouseDown" >
+                    <behaviors:InvokeCommandAction Command="{Binding LikeAction}" />
+                </behaviors:EventTrigger>
+            </behaviors:Interaction.Triggers>
         </Grid>
 
         <Canvas x:Name="likesCanvas"
