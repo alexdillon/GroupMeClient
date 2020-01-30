@@ -141,6 +141,7 @@
     <Compile Include="ViewModels\Controls\MultiLikeControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\SendContentControlViewModelBase.cs" />
     <Compile Include="ViewModels\Controls\SendFileControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\GroupInfoControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\ViewImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
@@ -194,6 +195,9 @@
     </Compile>
     <Compile Include="Views\Controls\SendFileControl.xaml.cs">
       <DependentUpon>SendFileControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\GroupInfoControl.xaml.cs">
+      <DependentUpon>GroupInfoControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\ViewImageControl.xaml.cs">
       <DependentUpon>ViewImageControl.xaml</DependentUpon>
@@ -314,6 +318,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\SendFileControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\GroupInfoControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

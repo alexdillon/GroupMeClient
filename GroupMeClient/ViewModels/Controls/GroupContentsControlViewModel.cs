@@ -62,8 +62,6 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 this.GroupChatCachePlugins.Add(plugin);
             }
-
-            this.GroupChatPlugins.Add(new MultiLikeControlViewModel.MultiLikePseudoPlugin(this));
         }
 
         /// <summary>
@@ -77,6 +75,14 @@ namespace GroupMeClient.ViewModels.Controls
             this.MessageContainer = messageContainer;
             this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
+
+            // Install Pseduo-Plugins
+            if (this.MessageContainer is Group g)
+            {
+                this.GroupChatPlugins.Add(new GroupInfoControlViewModel.GroupInfoPseudoPlugin(g));
+            }
+
+            this.GroupChatPlugins.Add(new MultiLikeControlViewModel.MultiLikePseudoPlugin(this));
 
             _ = this.LoadMoreAsync();
         }
