@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
@@ -20,11 +20,11 @@
                UseLayoutRounding="True" 
                SnapsToDevicePixels="True"
                gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDown" >
-                        <i:InvokeCommandAction Command="{Binding Clicked}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+                <behaviors:Interaction.Triggers>
+                    <behaviors:EventTrigger EventName="MouseDown" >
+                        <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
+                    </behaviors:EventTrigger>
+                </behaviors:Interaction.Triggers>
             </Image>
 
             <Controls:ProgressRing IsActive="{Binding IsLoading}" 
