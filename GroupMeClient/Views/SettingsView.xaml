@@ -79,7 +79,7 @@
                 <TextBlock TextWrapping="Wrap">
                     <Run FontWeight="SemiBold">GroupMe Desktop Client is a modular client for accessing GroupMe on Windows.</Run>
                     <LineBreak />
-                    By Alex Dillon, 2019
+                    By Alex Dillon, 2020
                     <LineBreak />
                     <LineBreak />
                     Version: <Run Text="{Binding ApplicationVersion, Mode=OneWay}"/>
@@ -104,7 +104,8 @@
                 </GroupBox.Resources>
 
                 <ListView
-                    ItemsSource="{Binding Source={StaticResource ListBoxItems}}">
+                    ItemsSource="{Binding Source={StaticResource ListBoxItems}}"
+                    IsHitTestVisible="False">
                     <ListView.View>
                         <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
                             <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Name}" />
@@ -114,21 +115,9 @@
                     
                     <ListView.Template>
                         <ControlTemplate>
-                            <ItemsPresenter></ItemsPresenter>
+                            <ItemsPresenter/>
                         </ControlTemplate>
                     </ListView.Template>
-                    
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="Focusable" Value="False"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="Transparent" />
-                                    <Setter Property="BorderBrush" Value="Transparent" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListView.ItemContainerStyle>
 
                     <ListView.GroupStyle>
                         <GroupStyle>
