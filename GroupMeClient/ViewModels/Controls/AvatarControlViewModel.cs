@@ -19,10 +19,12 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         /// <param name="avatarSource">The avatar that should be displayed.</param>
         /// <param name="imageDownloader">The downloader used to retreive the avatar.</param>
-        public AvatarControlViewModel(IAvatarSource avatarSource, ImageDownloader imageDownloader)
+        /// <param name="fullQuality">Whether the full resolution avatar should be downloaded and rendered at full quality.</param>
+        public AvatarControlViewModel(IAvatarSource avatarSource, ImageDownloader imageDownloader, bool fullQuality = false)
         {
             this.AvatarSource = avatarSource;
             this.ImageDownloader = imageDownloader;
+            this.IsFullQuality = fullQuality;
 
             _ = this.LoadAvatarAsync();
         }
@@ -36,6 +38,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets the <see cref="ImageDownloader"/> that should be used to retreive avatars.
         /// </summary>
         public ImageDownloader ImageDownloader { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this avatar is rendered at full quality.
+        /// </summary>
+        public bool IsFullQuality { get; } = false;
 
         /// <summary>
         /// Gets the image that should be used for rounded avatars.
@@ -64,7 +71,16 @@ namespace GroupMeClient.ViewModels.Controls
         public async Task LoadAvatarAsync()
         {
             var isGroup = !this.AvatarSource.IsRoundedAvatar;
-            byte[] image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl, isGroup);
+            byte[] image;
+
+            if (this.IsFullQuality)
+            {
+                image = await this.ImageDownloader.DownloadPostImageAsync(this.AvatarSource.ImageOrAvatarUrl);
+            }
+            else
+            {
+                image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl, isGroup);
+            }
 
             var bitmapImage = Utilities.ImageUtils.BytesToImageSource(image);
 

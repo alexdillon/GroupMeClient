@@ -114,6 +114,9 @@
             <DataTemplate DataType="{x:Type ctrlvm:MultiLikeControlViewModel}">
                 <ctrlviews:MultiLikeControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:GroupInfoControlViewModel}">
+                <ctrlviews:GroupInfoControl />
+            </DataTemplate>
 
             <DataTemplate DataType="{x:Type toast:ToastNotificationViewModel}">
                 <toast:ToastNotification />
