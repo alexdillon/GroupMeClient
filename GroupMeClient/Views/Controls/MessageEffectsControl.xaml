@@ -104,6 +104,8 @@
                 BorderBrush="Transparent"
                 BorderThickness="0"
                 FontSize="15"
+                RegularTextBrush="{DynamicResource TextBrush}"
+                ErrorTextBrush="Red"
                 MinHeight="49"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
