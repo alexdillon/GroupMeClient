@@ -216,7 +216,13 @@ namespace GroupMeClient.ViewModels
             {
                 foreach (var file in Directory.EnumerateFiles(tempFolder))
                 {
-                    File.Delete(file);
+                    try
+                    {
+                        File.Delete(file);
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
             }
 
