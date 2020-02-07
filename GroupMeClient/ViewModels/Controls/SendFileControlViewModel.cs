@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
@@ -29,22 +30,48 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public string FileName { get; set; }
 
+        private CancellationTokenSource UploadCancellationSource { get; set; }
+
+        /// <inheritdoc />
+        public override void Dispose()
+        {
+            this.UploadCancellationSource?.Cancel();
+        }
+
         private async Task Send()
         {
-            byte[] file;
-
-            using (var ms = new MemoryStream())
+            try
             {
-                this.ContentStream.Seek(0, SeekOrigin.Begin);
-                await this.ContentStream.CopyToAsync(ms);
-                file = ms.ToArray();
+                byte[] file;
+
+                using (var ms = new MemoryStream())
+                {
+                    this.ContentStream.Seek(0, SeekOrigin.Begin);
+                    await this.ContentStream.CopyToAsync(ms);
+                    file = ms.ToArray();
+                }
+
+                this.IsSending = true;
+
+                this.UploadCancellationSource = new CancellationTokenSource();
+
+                var attachment = await GroupMeClientApi.Models.Attachments.FileAttachment.CreateFileAttachment(
+                    this.FileName,
+                    file,
+                    this.MessageContainer,
+                    this.UploadCancellationSource);
+
+                if (this.SendMessage.CanExecute(attachment))
+                {
+                    this.SendMessage.Execute(attachment);
+                }
             }
-
-            var attachment = await GroupMeClientApi.Models.Attachments.FileAttachment.CreateFileAttachment(this.FileName, file, this.MessageContainer);
-
-            if (this.SendMessage.CanExecute(attachment))
+            catch (TaskCanceledException)
             {
-                this.SendMessage.Execute(attachment);
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }

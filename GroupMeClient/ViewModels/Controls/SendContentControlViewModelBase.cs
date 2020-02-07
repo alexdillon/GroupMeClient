@@ -47,7 +47,7 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <inheritdoc/>
-        public void Dispose()
+        public virtual void Dispose()
         {
             this.ContentStream?.Close();
             this.ContentStream?.Dispose();
