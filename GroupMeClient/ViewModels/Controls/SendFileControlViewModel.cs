@@ -17,7 +17,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public SendFileControlViewModel()
         {
-            this.SendButtonClicked = new RelayCommand(async () => await this.Send());
+            this.SendButtonClicked = new RelayCommand(async () => await this.Send(), () => !this.IsSending);
         }
 
         /// <summary>
