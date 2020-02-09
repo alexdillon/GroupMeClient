@@ -15,7 +15,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public SendImageControlViewModel()
         {
-            this.SendButtonClicked = new RelayCommand(async () => await this.Send());
+            this.SendButtonClicked = new RelayCommand(async () => await this.Send(), () => !this.IsSending);
         }
 
         /// <summary>
@@ -33,6 +33,8 @@ namespace GroupMeClient.ViewModels.Controls
                 await this.ContentStream.CopyToAsync(ms);
                 image = ms.ToArray();
             }
+
+            this.IsSending = true;
 
             var attachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(image, this.MessageContainer);
 
