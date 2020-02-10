@@ -75,7 +75,16 @@ namespace GroupMeClient.ViewModels.Controls
 
             if (this.IsFullQuality)
             {
-                image = await this.ImageDownloader.DownloadPostImageAsync(this.AvatarSource.ImageOrAvatarUrl);
+                if (string.IsNullOrEmpty(this.AvatarSource.ImageOrAvatarUrl))
+                {
+                    image = isGroup ?
+                        this.ImageDownloader.GetDefaultGroupAvatar() :
+                        this.ImageDownloader.GetDefaultPersonAvatar();
+                }
+                else
+                {
+                    image = await this.ImageDownloader.DownloadPostImageAsync(this.AvatarSource.ImageOrAvatarUrl);
+                }
             }
             else
             {

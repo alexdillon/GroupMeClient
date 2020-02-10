@@ -3,68 +3,197 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:converters="clr-namespace:GroupMeClient.Converters"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="400"
-             Width="475" Height="250"
+             Width="480" Height="260"
              Background="Black"
              Foreground="White">
-    <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1.5*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0"
-                   Grid.Column="0"
-                   Text="Members"
+    <UserControl.Resources>
+        <Style x:Key="tabStyle" 
+               BasedOn="{StaticResource MetroTabItem}" 
+               TargetType="{x:Type TabItem}">
+            <Setter Property="Controls:ControlsHelper.HeaderFontSize" Value="15" />
+            <Setter Property="Background" Value="Black" />
+        </Style>
+
+        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
+        <converters:ValueConverterGroup x:Key="inverseBooleanToVisibilityConverter">
+            <converters:InverseBoolConverter />
+            <BooleanToVisibilityConverter />
+        </converters:ValueConverterGroup>
+    </UserControl.Resources>
+    
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <TextBlock Text="{Binding GroupName}"
+                   Grid.Row="0"
                    HorizontalAlignment="Center"
                    FontSize="18"/>
-      
-        <ScrollViewer VerticalScrollBarVisibility="Auto"
-                      Grid.Row="1"
-                      Grid.RowSpan="1">
-            <ItemsControl ItemsSource="{Binding GroupMembers}"
+        
+        <TabControl Grid.Row="1" Background="Black">
+            <TabItem Header="Group Info" 
+                     Style="{StaticResource tabStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!--<TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Members"
+                               HorizontalAlignment="Center"
+                               FontSize="14"/>-->
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  Grid.Row="0"
+                                  Grid.RowSpan="2">
+                        <ItemsControl ItemsSource="{Binding GroupMembers}"
                             VerticalAlignment="Stretch">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Margin="3">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="3">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <ContentControl Grid.Column="0" Content="{Binding Avatar}" Width="35" Height="35" />
+                                        <Label Grid.Column="1" Content="{Binding MemberInfo.Name}" Foreground="White" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <StackPanel Grid.Row="0"
+                                Grid.Column="1"
+                                Grid.RowSpan="2">
+                        <ContentControl Width="150"
+                                        Height="150"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Top"
+                                        Content="{Binding GroupAvatar}" />
+
+                        <TextBlock Text="{Binding GroupDescription}"
+                                   HorizontalAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   FontWeight="Thin"
+                                   FontSize="14"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="My Profile" Style="{StaticResource tabStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Vertical"
+                                Grid.Column="0"
+                                Margin="0,7,0,0">
+                        <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <ContentControl Grid.Column="0" Content="{Binding Avatar}" Width="35" Height="35" />
-                            <Label Grid.Column="1" Content="{Binding MemberInfo.Name}" Foreground="White" />
+                            <TextBlock Text="Nickname: "
+                                       FontSize="14"
+                                       VerticalAlignment="Center"/>
+                            
+                            <TextBox Text="{Binding MemberNickname, Mode=TwoWay}"
+                                     Visibility="{Binding IsEditingNickname, Converter={StaticResource boolToVisibilityConverter}}"
+                                     Grid.Column="1"
+                                     FontSize="14"/>
+
+                            <TextBlock Text="{Binding MemberNickname}"
+                                       Visibility="{Binding IsEditingNickname, Converter={StaticResource inverseBooleanToVisibilityConverter}}"
+                                       VerticalAlignment="Center"
+                                       Padding="6,4,2,4"
+                                       Grid.Column="1"
+                                       FontSize="14"/>
+
+                            <Button Grid.Column="2"
+                                    Command="{Binding EditNicknameCommand}"
+                                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                    Visibility="{Binding IsEditingNickname, Converter={StaticResource inverseBooleanToVisibilityConverter}}">
+                                <iconPacks:PackIconEntypo Kind="Edit" Foreground="White" />
+                            </Button>
+
+                            <Button Grid.Column="2"
+                                    Command="{Binding EditNicknameCommand}"
+                                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                    Visibility="{Binding IsEditingNickname, Converter={StaticResource boolToVisibilityConverter}}">
+                                <iconPacks:PackIconMaterial Kind="Check" />
+                            </Button>
                         </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
+                        
+                    </StackPanel>
 
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </ScrollViewer>
+                    <Grid x:Name="MemberAvatarControl"
+                          Grid.Row="0"
+                          Background="Transparent"
+                          Grid.Column="1"
+                          Grid.RowSpan="2">
+                        <ContentControl Width="150"
+                                        Height="150"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Top"
+                                        Content="{Binding MemberAvatar}" />
 
-        <StackPanel Grid.Row="0"
-                    Grid.Column="1"
-                    Grid.RowSpan="2">
-            <ContentControl Width="150"
-                            Height="150"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Content="{Binding GroupAvatar}" />
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <Button Width="120"
+                                    Opacity="0.8"
+                                    FontSize="12"
+                                    Visibility="{Binding Path=IsMouseOver, ElementName=MemberAvatarControl, Converter={StaticResource boolToVisibilityConverter}}"
+                                    Command="{Binding ChangeAvatarCommand}"
+                                    Content="Change Avatar" />
 
-            <TextBlock Text="{Binding GroupDescription}"
-                       HorizontalAlignment="Center"
-                       TextWrapping="Wrap"
-                       FontWeight="Thin"
-                       FontSize="14"/>
-        </StackPanel>
+                            <Grid Visibility="{Binding IsCustomAvatarSet, Converter={StaticResource boolToVisibilityConverter}}">
+                                <Button Width="120"
+                                        Opacity="0.8"
+                                        FontSize="12"
+                                        Margin="0,10,0,0"
+                                        Visibility="{Binding Path=IsMouseOver, ElementName=MemberAvatarControl, Converter={StaticResource boolToVisibilityConverter}}"
+                                        Command="{Binding ResetAvatarToProfileCommand}"
+                                        Content="Use Profile Avatar" />
+                            </Grid>
+                       
+                        </StackPanel>
+                    </Grid>
+                  
+                    
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
+    
+   
 </UserControl>
+    
