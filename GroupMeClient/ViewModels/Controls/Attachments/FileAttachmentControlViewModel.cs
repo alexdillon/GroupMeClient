@@ -77,7 +77,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             {
                 this.IsLoading = true;
                 var data = await this.FileAttachment.DownloadFileAsync(this.MessageContainer.Messages.First());
-                var extension = FileAttachment.GroupMeDocumentMimeTypeMapper.MimeTypeToExtension(this.FileData.MimeType);
+                var extension = System.IO.Path.GetExtension(this.FileData.FileName);
                 var tempFileName = Path.GetFileNameWithoutExtension(Path.GetTempFileName());
                 var tempFile = Path.Combine(Path.GetTempPath(), "GroupMeDesktopClient", tempFileName + extension);
                 File.WriteAllBytes(tempFile, data);
