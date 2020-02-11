@@ -291,6 +291,12 @@ namespace GroupMeClient.ViewModels.Controls
                     this.ShowFileSendDialog(file);
                     break;
                 }
+                else
+                {
+                    // Allow sending unsupported files anyway if they drag-drop them
+                    this.ShowFileSendDialog(file);
+                    break;
+                }
             }
         }
 
