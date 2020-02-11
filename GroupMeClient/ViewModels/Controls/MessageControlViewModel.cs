@@ -522,7 +522,7 @@ namespace GroupMeClient.ViewModels.Controls
 
                         if (index + this.HiddenText.Length != r.Text.Length)
                         {
-                            var after = new Run(r.Text.Substring(index + r.Text.Length));
+                            var after = new Run(r.Text.Substring(index + this.HiddenText.Length));
                             inlinesResult.Add(after);
                         }
                     }
