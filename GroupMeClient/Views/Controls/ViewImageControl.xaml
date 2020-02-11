@@ -8,7 +8,6 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
-             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
              Background="Transparent">

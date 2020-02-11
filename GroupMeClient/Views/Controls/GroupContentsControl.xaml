@@ -340,6 +340,8 @@
                 BorderBrush="Transparent"
                 BorderThickness="0"
                 FontSize="15"
+                RegularTextBrush="{DynamicResource TextBrush}"
+                ErrorTextBrush="Red"
                 AcceptsReturn="True"
                 TextWrapping="Wrap"
                 Controls:TextBoxHelper.Watermark="Send a Message..."
