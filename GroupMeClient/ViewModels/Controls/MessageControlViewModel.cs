@@ -414,8 +414,9 @@ namespace GroupMeClient.ViewModels.Controls
 
             // Load Link-Based Attachments (Tweets, Web Images, Websites, etc.)
             var text = this.Message.Text ?? string.Empty;
-            if (text.Contains(" "))
+            if (text.IndexOf(" ") > 0)
             {
+                // Use IndexOf instead of Contains to prevent issues with strange unicode characters.
                 // only look to see if the first chunk is a URL
                 text = text.Substring(0, text.IndexOf(" "));
             }
