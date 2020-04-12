@@ -36,6 +36,7 @@ namespace GroupMeClient.ViewModels.Controls
         public override void Dispose()
         {
             this.UploadCancellationSource?.Cancel();
+            base.Dispose();
         }
 
         private async Task Send()
