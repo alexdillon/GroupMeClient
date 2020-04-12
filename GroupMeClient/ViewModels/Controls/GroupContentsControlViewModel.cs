@@ -593,7 +593,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             var dialog = new SendFileControlViewModel()
             {
-                ContentStream = File.OpenRead(fileName),
+                ContentStream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite),
                 FileName = System.IO.Path.GetFileName(fileName),
                 MessageContainer = this.MessageContainer,
                 TypedMessageContents = this.TypedMessageContents,
