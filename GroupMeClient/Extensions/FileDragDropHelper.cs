@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace GroupMeClient.Extensions
 {
@@ -133,7 +135,33 @@ namespace GroupMeClient.Extensions
         {
             if (e.Command == ApplicationCommands.Paste)
             {
-                if (Clipboard.ContainsImage())
+                byte[] imageBytes = null;
+
+                // First check to see if "PNG" data is on the clipboard to preserve transparency
+                if (Clipboard.ContainsData("PNG"))
+                {
+                    var pngData = Clipboard.GetData("PNG");
+                    if (pngData is MemoryStream pngDataMs)
+                    {
+                        imageBytes = pngDataMs.ToArray();
+                    }
+                }
+                else if (Clipboard.ContainsData("DeviceIndependentBitmap"))
+                {
+                    var dibData = Clipboard.GetData("DeviceIndependentBitmap");
+                    if (dibData is MemoryStream dibDataMs)
+                    {
+                        var image = Utilities.ImageUtils.ImageFromClipboardDib(dibDataMs);
+                        imageBytes = Utilities.ImageUtils.BitmapSourceToBytes(image as BitmapSource);
+                    }
+                }
+                else if (Clipboard.ContainsImage())
+                {
+                    var image = Clipboard.GetImage();
+                    imageBytes = Utilities.ImageUtils.BitmapSourceToBytes(image);
+                }
+
+                if (imageBytes != null)
                 {
                     if (!(sender is DependencyObject d))
                     {
@@ -141,19 +169,12 @@ namespace GroupMeClient.Extensions
                     }
 
                     var target = d.GetValue(FileDragDropTargetProperty);
-
-                    if (target is IDragDropTarget fileTarget)
-                    {
-                        var image = Clipboard.GetImage();
-                        var imageBytes = Utilities.ImageUtils.BitmapSourceToBytes(image);
-
-                        fileTarget.OnImageDrop(imageBytes);
-                    }
-                    else
+                    if (!(target is IDragDropTarget fileTarget))
                     {
                         throw new Exception("FileDragDropTarget object must be of type IFileDragDropTarget");
                     }
 
+                    fileTarget.OnImageDrop(imageBytes);
                     e.Handled = true;
                 }
             }

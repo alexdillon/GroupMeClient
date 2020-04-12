@@ -112,9 +112,14 @@ namespace GroupMeClient.ViewModels.Controls
             this.ImageStream.Seek(0, SeekOrigin.Begin);
             this.ImageStream.CopyTo(ms);
 
-            var image = Utilities.ImageUtils.BytesToImageSource(ms.ToArray());
+            var imageClipObject = new System.Windows.DataObject();
+            imageClipObject.SetData("PNG", ms);
+            imageClipObject.SetData(ms);
+            imageClipObject.SetImage(Utilities.ImageUtils.BytesToImageSource(ms.ToArray()) as BitmapSource);
 
-            System.Windows.Clipboard.SetImage(image as BitmapSource);
+            System.Windows.Clipboard.SetDataObject(imageClipObject, true);
+
+            ms.Dispose();
         }
     }
 }
