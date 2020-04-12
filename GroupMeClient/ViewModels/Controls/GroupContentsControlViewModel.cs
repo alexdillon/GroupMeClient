@@ -283,7 +283,7 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 if (supportedImageExtensions.Contains(Path.GetExtension(file).ToLower()))
                 {
-                    this.ShowImageSendDialog(File.OpenRead(file));
+                    this.ShowImageSendDialog(file);
                     break;
                 }
                 else if (supportedFileExtensions.Contains(Path.GetExtension(file).ToLower()))
@@ -505,7 +505,7 @@ namespace GroupMeClient.ViewModels.Controls
                 var extension = Path.GetExtension(openFileDialog.FileName);
                 if (supportedImages.Contains(extension))
                 {
-                    this.ShowImageSendDialog(File.OpenRead(openFileDialog.FileName));
+                    this.ShowImageSendDialog(openFileDialog.FileName);
                 }
                 else if (supportedFiles.Contains(extension))
                 {
@@ -576,11 +576,16 @@ namespace GroupMeClient.ViewModels.Controls
             return success;
         }
 
-        private void ShowImageSendDialog(Stream image)
+        private void ShowImageSendDialog(string imageFileName)
+        {
+            this.ShowImageSendDialog(System.IO.File.OpenRead(imageFileName));
+        }
+
+        private void ShowImageSendDialog(Stream imageData)
         {
             var dialog = new SendImageControlViewModel()
             {
-                ContentStream = image,
+                ContentStream = imageData,
                 MessageContainer = this.MessageContainer,
                 TypedMessageContents = this.TypedMessageContents,
                 SendMessage = new RelayCommand<GroupMeClientApi.Models.Attachments.Attachment>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
