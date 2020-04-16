@@ -74,13 +74,21 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
 
-            <Label Padding="0"
-                   Margin="0,0,0,20">
-                <extensions:SelectableTextBlock 
-                    FontSize="15" 
-                    TextWrapping="Wrap" 
-                    extensions:TextBlockExtensions.InlineList="{Binding Inlines}"/>
-            </Label>
+            <extensions:SelectableTextBlock 
+                Padding="0"
+                Margin="0,0,0,20"
+                FontSize="15" 
+                TextWrapping="Wrap" 
+                extensions:TextBlockExtensions.InlineList="{Binding Inlines}">
+
+                <extensions:SelectableTextBlock.ContextMenu>
+                    <ContextMenu>
+                        <ContextMenu.Items>
+                            <MenuItem Command="ApplicationCommands.Copy" />
+                        </ContextMenu.Items>
+                    </ContextMenu>
+                </extensions:SelectableTextBlock.ContextMenu>
+            </extensions:SelectableTextBlock>
         </StackPanel>
 
         <Grid Grid.Column="2" Grid.Row="1" 
