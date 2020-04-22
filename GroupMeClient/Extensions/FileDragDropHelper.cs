@@ -137,6 +137,13 @@ namespace GroupMeClient.Extensions
             {
                 byte[] imageBytes = null;
 
+                if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                {
+                    // If Shift key is held, paste as plain-text, not an image.
+                    e.Handled = false;
+                    return;
+                }
+
                 // First check to see if "PNG" data is on the clipboard to preserve transparency
                 if (Clipboard.ContainsData("PNG"))
                 {
