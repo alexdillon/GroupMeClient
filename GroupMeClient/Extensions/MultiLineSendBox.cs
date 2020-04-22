@@ -50,6 +50,10 @@ namespace GroupMeClient.Extensions
             this.KeyDown += this.TextBoxKeyDown;
             this.TextChanged += this.MultiLineSendBox_TextChanged;
             this.PreviewKeyDown += this.TextBoxPreviewKeyDown;
+
+            var gesture = new KeyGesture(Key.V, ModifierKeys.Shift | ModifierKeys.Control);
+            var customPaste = new InputBinding(ApplicationCommands.Paste, gesture);
+            this.InputBindings.Add(customPaste);
         }
 
         /// <summary>

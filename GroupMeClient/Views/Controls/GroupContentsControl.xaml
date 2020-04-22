@@ -158,8 +158,8 @@
             extensions:ListBoxExtensions.AutoScrollToEnd="True"
             extensions:ListBoxExtensions.ScrollToTop="{Binding ReloadView}"
             AllowDrop="True"
-            extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
-            extensions:FileDragDropHelper.FileDragDropTarget="{Binding}"
+            extensions:FileDragDropPasteHelper.IsFileDragDropPasteEnabled="True"
+            extensions:FileDragDropPasteHelper.FileDragDropPasteTarget="{Binding}"
             x:Name="messagesList">
 
             <ListBox.ItemContainerStyle>
@@ -346,8 +346,8 @@
                 TextWrapping="Wrap"
                 Controls:TextBoxHelper.Watermark="Send a Message..."
                 Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
-                extensions:FileDragDropHelper.FileDragDropTarget="{Binding}"
+                extensions:FileDragDropPasteHelper.IsFileDragDropPasteEnabled="True"
+                extensions:FileDragDropPasteHelper.FileDragDropPasteTarget="{Binding}"
                 SpellCheck.IsEnabled="True">
 
                 <behaviors:Interaction.Triggers>

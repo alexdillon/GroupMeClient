@@ -22,7 +22,7 @@ namespace GroupMeClient.ViewModels.Controls
     /// <see cref="GroupContentsControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.GroupContentsControl"/> control that displays the contents (messages) of a Group or Chat.
     /// Controls for sending messages are also included.
     /// </summary>
-    public class GroupContentsControlViewModel : ViewModelBase, FileDragDropHelper.IDragDropTarget, IDisposable
+    public class GroupContentsControlViewModel : ViewModelBase, FileDragDropPasteHelper.IDragDropPasteTarget, IDisposable
     {
         private IMessageContainer messageContainer;
         private AvatarControlViewModel topBarAvatar;
@@ -274,7 +274,7 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <inheritdoc />
-        void FileDragDropHelper.IDragDropTarget.OnFileDrop(string[] filepaths)
+        void FileDragDropPasteHelper.IDragDropPasteTarget.OnFileDrop(string[] filepaths)
         {
             var supportedImageExtensions = GroupMeClientApi.Models.Attachments.ImageAttachment.SupportedExtensions.ToList();
             var supportedFileExtensions = GroupMeClientApi.Models.Attachments.FileAttachment.GroupMeDocumentMimeTypeMapper.SupportedExtensions.ToList();
@@ -301,7 +301,7 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <inheritdoc />
-        void FileDragDropHelper.IDragDropTarget.OnImageDrop(byte[] image)
+        void FileDragDropPasteHelper.IDragDropPasteTarget.OnImageDrop(byte[] image)
         {
             var memoryStream = new MemoryStream(image);
             this.ShowImageSendDialog(memoryStream);
