@@ -596,9 +596,31 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void ShowFileSendDialog(string fileName)
         {
+            FileStream fileStream = null;
+            try
+            {
+                fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    // When many files hosted on OneDrive are opened, they are hardlocked
+                    // and cannot be opened for reading. Copying them to tmp typically is allowed though.
+                    var tempFile = Utilities.TempFileUtils.GetTempFileName(fileName);
+                    File.Copy(fileName, tempFile, true);
+                    fileStream = File.Open(tempFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+                    // The copied file will automatically be cleaned up by the temporary storage system.
+                }
+                catch (Exception)
+                {
+                }
+            }
+
             var dialog = new SendFileControlViewModel()
             {
-                ContentStream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite),
+                ContentStream = fileStream,
                 FileName = System.IO.Path.GetFileName(fileName),
                 MessageContainer = this.MessageContainer,
                 TypedMessageContents = this.TypedMessageContents,
