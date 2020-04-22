@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -168,21 +169,27 @@ namespace GroupMeClient.Extensions
                     imageBytes = Utilities.ImageUtils.BitmapSourceToBytes(image);
                 }
 
+                if (!(sender is DependencyObject d))
+                {
+                    return;
+                }
+
+                var target = d.GetValue(FileDragDropTargetProperty);
+                if (!(target is IDragDropTarget fileTarget))
+                {
+                    throw new Exception("FileDragDropTarget object must be of type IFileDragDropTarget");
+                }
+
                 if (imageBytes != null)
                 {
-                    if (!(sender is DependencyObject d))
-                    {
-                        return;
-                    }
-
-                    var target = d.GetValue(FileDragDropTargetProperty);
-                    if (!(target is IDragDropTarget fileTarget))
-                    {
-                        throw new Exception("FileDragDropTarget object must be of type IFileDragDropTarget");
-                    }
-
+                    // Handle pasting of all image data
                     fileTarget.OnImageDrop(imageBytes);
                     e.Handled = true;
+                }
+                else if (Clipboard.ContainsFileDropList())
+                {
+                    // Handle pasting of all file data
+                    fileTarget.OnFileDrop(Clipboard.GetFileDropList().Cast<string>().ToArray());
                 }
             }
         }
