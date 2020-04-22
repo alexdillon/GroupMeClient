@@ -159,7 +159,7 @@ namespace GroupMeClient.ViewModels
         {
             Directory.CreateDirectory(this.DataRoot);
 
-            this.ClearTempFiles();
+            Utilities.TempFileUtils.InitializeTempStorage();
 
             this.SettingsManager = new Settings.SettingsManager(this.SettingsPath);
             this.SettingsManager.LoadSettings();
@@ -207,26 +207,6 @@ namespace GroupMeClient.ViewModels
 
             Native.RecoveryManager.RegisterForRecovery();
             Native.RecoveryManager.RegisterForRestart();
-        }
-
-        private void ClearTempFiles()
-        {
-            var tempFolder = Path.Combine(Path.GetTempPath(), "GroupMeDesktopClient");
-            if (Directory.Exists(tempFolder))
-            {
-                foreach (var file in Directory.EnumerateFiles(tempFolder))
-                {
-                    try
-                    {
-                        File.Delete(file);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-            }
-
-            Directory.CreateDirectory(tempFolder);
         }
 
         private void RegisterNotifications()

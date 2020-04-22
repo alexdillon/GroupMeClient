@@ -122,6 +122,7 @@
     <Compile Include="Settings\SettingsManager.cs" />
     <Compile Include="Settings\UISettings.cs" />
     <Compile Include="Utilities\ReliabilityStateMachine.cs" />
+    <Compile Include="Utilities\TempFileUtils.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\GroupMeImageAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\ImageLinkAttachmentControlViewModel.cs" />
