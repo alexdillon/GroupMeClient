@@ -91,7 +91,7 @@
     <Compile Include="Extensions\SelectableTextBlock.cs" />
     <Compile Include="Extensions\TextBlockExtensions.cs" />
     <Compile Include="Extensions\EventFocusAttachment.cs" />
-    <Compile Include="Extensions\FileDragDropHelper.cs" />
+    <Compile Include="Extensions\FileDragDropPasteHelper.cs" />
     <Compile Include="Utilities\ImageUtils.cs" />
     <Compile Include="Converters\InverseBoolConverter.cs" />
     <Compile Include="Converters\IsZeroConverter.cs" />

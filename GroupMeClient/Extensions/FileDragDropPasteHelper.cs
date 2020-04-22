@@ -9,29 +9,29 @@ using System.Windows.Media.Imaging;
 namespace GroupMeClient.Extensions
 {
     /// <summary>
-    /// FileDragDropHelper.
+    /// <see cref="FileDragDropPasteHelper"/> provides support for dragging and pasting files and images onto controls.
     /// </summary>
-    public class FileDragDropHelper
+    public class FileDragDropPasteHelper
     {
         /// <summary>
         /// Gets a property indicating if FileDragDrop is supported.
         /// </summary>
-        public static readonly DependencyProperty IsFileDragDropEnabledProperty =
-              DependencyProperty.RegisterAttached("IsFileDragDropEnabled", typeof(bool), typeof(FileDragDropHelper), new PropertyMetadata(OnFileDragDropEnabled));
+        public static readonly DependencyProperty IsFileDragDropPasteEnabledProperty =
+              DependencyProperty.RegisterAttached("IsFileDragDropPasteEnabled", typeof(bool), typeof(FileDragDropPasteHelper), new PropertyMetadata(OnFileDragDropPasteEnabled));
 
         /// <summary>
         /// Gets a property containing the File Drag Drop handler target.
         /// </summary>
-        public static readonly DependencyProperty FileDragDropTargetProperty =
-                DependencyProperty.RegisterAttached("FileDragDropTarget", typeof(object), typeof(FileDragDropHelper), null);
+        public static readonly DependencyProperty FileDragDropPasteTargetProperty =
+                DependencyProperty.RegisterAttached("FileDragDropPasteTarget", typeof(object), typeof(FileDragDropPasteHelper), null);
 
         /// <summary>
-        /// <see cref="IDragDropTarget"/> enables receiving updates when data is dropped onto a control.
+        /// <see cref="IDragDropPasteTarget"/> enables receiving updates when data is dropped onto a control.
         /// </summary>
         /// <remarks>
         /// Adapted from https://stackoverflow.com/a/37608994.
         /// </remarks>
-        public interface IDragDropTarget
+        public interface IDragDropPasteTarget
         {
             /// <summary>
             /// Executed when a file has been dragged onto the target.
@@ -47,46 +47,46 @@ namespace GroupMeClient.Extensions
         }
 
         /// <summary>
-        /// Gets a value indicating whether File Drag Drop is supported.
+        /// Gets a value indicating whether File Drag Drop and Enhanced Object Pasting are supported.
         /// </summary>
         /// <param name="obj">The dependency object to retreive the property from.</param>
         /// <returns>A boolean indicating whether enabled.</returns>
-        public static bool GetIsFileDragDropEnabled(DependencyObject obj)
+        public static bool GetIsFileDragDropPasteEnabled(DependencyObject obj)
         {
-            return (bool)obj.GetValue(IsFileDragDropEnabledProperty);
+            return (bool)obj.GetValue(IsFileDragDropPasteEnabledProperty);
         }
 
         /// <summary>
-        /// Sets a value indicating whether File Drag Drop is supported.
+        /// Sets a value indicating whether File Drag Drop and Enhanced Object Pasting are supported.
         /// </summary>
         /// <param name="obj">The dependency object to retreive the property from.</param>
-        /// <param name="value">Whether drag drop is supported.</param>
-        public static void SetIsFileDragDropEnabled(DependencyObject obj, bool value)
+        /// <param name="value">Whether drag drop and paste are supported.</param>
+        public static void SetIsFileDragDropPasteEnabled(DependencyObject obj, bool value)
         {
-            obj.SetValue(IsFileDragDropEnabledProperty, value);
+            obj.SetValue(IsFileDragDropPasteEnabledProperty, value);
         }
 
         /// <summary>
-        /// Gets a value containing the Drag Drop target.
+        /// Gets a value containing the Drag Drop Paste target.
         /// </summary>
         /// <param name="obj">The dependency object to retreive the property from.</param>
-        /// <returns>The drag drop target.</returns>
-        public static bool GetFileDragDropTarget(DependencyObject obj)
+        /// <returns>The drag drop paste target.</returns>
+        public static bool GetFileDragDropPasteTarget(DependencyObject obj)
         {
-            return (bool)obj.GetValue(FileDragDropTargetProperty);
+            return (bool)obj.GetValue(FileDragDropPasteTargetProperty);
         }
 
         /// <summary>
-        /// Sets the drag drop target.
+        /// Sets the drag drop paste target.
         /// </summary>
         /// <param name="obj">The dependency object to retreive the property from.</param>
         /// <param name="value">The target to assign.</param>
-        public static void SetFileDragDropTarget(DependencyObject obj, bool value)
+        public static void SetFileDragDropPasteTarget(DependencyObject obj, bool value)
         {
-            obj.SetValue(FileDragDropTargetProperty, value);
+            obj.SetValue(FileDragDropPasteTargetProperty, value);
         }
 
-        private static void OnFileDragDropEnabled(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnFileDragDropPasteEnabled(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue == e.OldValue)
             {
@@ -109,8 +109,8 @@ namespace GroupMeClient.Extensions
                 return;
             }
 
-            var target = d.GetValue(FileDragDropTargetProperty);
-            if (target is IDragDropTarget fileTarget)
+            var target = d.GetValue(FileDragDropPasteTargetProperty);
+            if (target is IDragDropPasteTarget fileTarget)
             {
                 if (dragEventArgs.Data.GetDataPresent(DataFormats.FileDrop))
                 {
@@ -174,8 +174,8 @@ namespace GroupMeClient.Extensions
                     return;
                 }
 
-                var target = d.GetValue(FileDragDropTargetProperty);
-                if (!(target is IDragDropTarget fileTarget))
+                var target = d.GetValue(FileDragDropPasteTargetProperty);
+                if (!(target is IDragDropPasteTarget fileTarget))
                 {
                     throw new Exception("FileDragDropTarget object must be of type IFileDragDropTarget");
                 }
