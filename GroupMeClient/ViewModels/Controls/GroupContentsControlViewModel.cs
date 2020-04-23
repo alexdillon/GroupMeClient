@@ -11,6 +11,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using GroupMeClient.Caching;
 using GroupMeClient.Extensions;
 using GroupMeClient.Utilities;
 using GroupMeClientApi.Models;
@@ -68,11 +69,13 @@ namespace GroupMeClient.ViewModels.Controls
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
         /// </summary>
         /// <param name="messageContainer">The Group or Chat to bind to.</param>
+        /// <param name="cacheContext">The caching context in which messages are archived.</param>
         /// <param name="settings">The settings instance to use.</param>
-        public GroupContentsControlViewModel(IMessageContainer messageContainer, Settings.SettingsManager settings)
+        public GroupContentsControlViewModel(IMessageContainer messageContainer, CacheContext cacheContext, Settings.SettingsManager settings)
             : this()
         {
             this.MessageContainer = messageContainer;
+            this.CacheContext = cacheContext;
             this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
 
@@ -216,6 +219,8 @@ namespace GroupMeClient.ViewModels.Controls
             get { return this.isSelectionAllowed; }
             set { this.Set(() => this.IsSelectionAllowed, ref this.isSelectionAllowed, value); }
         }
+
+        private CacheContext CacheContext { get; }
 
         private SemaphoreSlim ReloadSem { get; }
 
@@ -375,6 +380,7 @@ namespace GroupMeClient.ViewModels.Controls
                         // add new message
                         var msgVm = new MessageControlViewModel(
                             msg,
+                            this.CacheContext,
                             showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages);
                         this.Messages.Add(msgVm);
 

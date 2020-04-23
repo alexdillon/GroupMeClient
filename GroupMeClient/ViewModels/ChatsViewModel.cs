@@ -10,6 +10,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using GroupMeClient.Caching;
 using GroupMeClient.Notifications;
 using GroupMeClient.Settings;
 using GroupMeClient.Utilities;
@@ -33,10 +34,12 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         /// <param name="groupMeClient">The API client that should be used.</param>
         /// <param name="settingsManager">The application settings manager.</param>
-        public ChatsViewModel(GroupMeClientApi.GroupMeClient groupMeClient, SettingsManager settingsManager)
+        /// <param name="cacheContext">The caching context for messages that should be used.</param>
+        public ChatsViewModel(GroupMeClientApi.GroupMeClient groupMeClient, SettingsManager settingsManager, CacheContext cacheContext)
         {
             this.GroupMeClient = groupMeClient;
             this.SettingsManager = settingsManager;
+            this.CacheContext = cacheContext;
 
             this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<GroupContentsControlViewModel>();
@@ -114,6 +117,8 @@ namespace GroupMeClient.ViewModels
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
 
         private SettingsManager SettingsManager { get; }
+
+        private CacheContext CacheContext { get; }
 
         private PushClient PushClient { get; set; }
 
@@ -287,7 +292,7 @@ namespace GroupMeClient.ViewModels
             else
             {
                 // open a new group or chat
-                var groupContentsDisplay = new GroupContentsControlViewModel(group.MessageContainer, this.SettingsManager)
+                var groupContentsDisplay = new GroupContentsControlViewModel(group.MessageContainer, this.CacheContext, this.SettingsManager)
                 {
                     CloseGroup = new RelayCommand<GroupContentsControlViewModel>(this.CloseChat),
                 };
