@@ -8,112 +8,122 @@
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400">
 
     <UserControl.Resources>
         <converters:IsZeroConverter x:Key="isZeroConverter"/>
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
-    </UserControl.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="55" />
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
+        <converters:ValueConverterGroup x:Key="isDeeplyNestedConverter">
+            <converters:IsGreaterThanConverter />
+            <converters:InverseBoolConverter />
+        </converters:ValueConverterGroup>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+        <converters:IsGreaterThanConverter x:Key="isGreaterThanConverter" />
 
-        <Grid.Style>
-            <Style TargetType="{x:Type Grid}">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding DidISendIt}" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource MessageISentBackdropBrush}" />
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding DidISendIt}" Value="False">
-                        <Setter Property="Background" Value="{DynamicResource MessageTheySentBackdropBrush}" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Grid.Style>
+        <sys:Int32 x:Key="collapseNestLevel">1</sys:Int32>
 
-        <controls:AvatarControl 
+        <DataTemplate x:Key="MessageBody">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="55" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DidISendItColoring}" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource MessageISentBackdropBrush}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding DidISendItColoring}" Value="False">
+                                <Setter Property="Background" Value="{DynamicResource MessageTheySentBackdropBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+                <controls:AvatarControl 
                 Grid.Column="0" Grid.Row="1"
                 Width="40" Height="40" VerticalAlignment="Top"
                 DataContext="{Binding Avatar}">
-            
-            <behaviors:Interaction.Triggers>
-                <behaviors:EventTrigger EventName="MouseRightButtonDown" >
-                    <behaviors:InvokeCommandAction Command="{Binding Path=DataContext.ToggleMessageDetails, RelativeSource={RelativeSource AncestorType=controls:MessageControl}}" />
-                </behaviors:EventTrigger>
-            </behaviors:Interaction.Triggers>
-        </controls:AvatarControl>
 
-        <StackPanel Grid.Column="1" Grid.Row="1">
-            <Label Content="{Binding Sender}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" Padding="0" />
+                    <behaviors:Interaction.Triggers>
+                        <behaviors:EventTrigger EventName="MouseRightButtonDown" >
+                            <behaviors:InvokeCommandAction Command="{Binding Path=DataContext.ToggleMessageDetails, RelativeSource={RelativeSource AncestorType=controls:MessageControl}}" />
+                        </behaviors:EventTrigger>
+                    </behaviors:Interaction.Triggers>
+                </controls:AvatarControl>
 
-            <ItemsControl ItemsSource="{Binding AttachedItems}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <UserControl
+                <StackPanel Grid.Column="1" Grid.Row="1">
+                    <Label Content="{Binding Sender}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" Padding="0" />
+
+                    <ItemsControl ItemsSource="{Binding AttachedItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <UserControl
                             MaxWidth="700"
                             HorizontalAlignment="Left"
                             Content="{Binding Path=.}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
 
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
 
-            <extensions:SelectableTextBlock 
+                    <extensions:SelectableTextBlock 
                 Padding="0"
                 Margin="0,0,0,20"
                 FontSize="15" 
                 TextWrapping="Wrap" 
                 extensions:TextBlockExtensions.InlineList="{Binding Inlines}">
 
-                <extensions:SelectableTextBlock.ContextMenu>
-                    <ContextMenu>
-                        <ContextMenu.Items>
-                            <MenuItem Command="ApplicationCommands.Copy" />
-                        </ContextMenu.Items>
-                    </ContextMenu>
-                </extensions:SelectableTextBlock.ContextMenu>
-            </extensions:SelectableTextBlock>
-        </StackPanel>
+                        <extensions:SelectableTextBlock.ContextMenu>
+                            <ContextMenu>
+                                <ContextMenu.Items>
+                                    <MenuItem Command="ApplicationCommands.Copy" />
+                                </ContextMenu.Items>
+                            </ContextMenu>
+                        </extensions:SelectableTextBlock.ContextMenu>
+                    </extensions:SelectableTextBlock>
+                </StackPanel>
 
-        <Grid Grid.Column="2" Grid.Row="1" 
+                <Grid Grid.Column="2" Grid.Row="1" 
               MaxHeight="60"
               VerticalAlignment="Top"
               Background="Transparent"
               x:Name="likeButtonArea">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="15" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="10" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3"/>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="12"/>
-            </Grid.ColumnDefinitions>
-            <iconPacks:PackIconFontAwesome Width="17" Height="17"
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="15" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3"/>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="12"/>
+                    </Grid.ColumnDefinitions>
+                    <iconPacks:PackIconFontAwesome Width="17" Height="17"
                                            Grid.Row="1"
                                            Grid.Column="1"
                                            HorizontalAlignment="Center"
                                            Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}"
                                            Background="Transparent" />
 
-            <Label
+                    <Label
                 Grid.Row="1"
                 Grid.Column="1"
                 Padding="0,17,0,0"
@@ -121,101 +131,138 @@
                 Foreground="{DynamicResource MessageFontBrush}" FontSize="10" FontWeight="Thin"
                 Content="{Binding LikeCount}" />
 
-            <behaviors:Interaction.Triggers>
-                <behaviors:EventTrigger EventName="MouseDown" >
-                    <behaviors:InvokeCommandAction Command="{Binding LikeAction}" />
-                </behaviors:EventTrigger>
-            </behaviors:Interaction.Triggers>
-        </Grid>
+                    <behaviors:Interaction.Triggers>
+                        <behaviors:EventTrigger EventName="MouseDown" >
+                            <behaviors:InvokeCommandAction Command="{Binding LikeAction}" />
+                        </behaviors:EventTrigger>
+                    </behaviors:Interaction.Triggers>
+                </Grid>
 
-        <Canvas x:Name="likesCanvas"
+                <Canvas x:Name="likesCanvas"
                 Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-45,16,0"
                 Background="Transparent">
 
-            <!--Use a trigger to change the visibility of the liker's popup area-->
-            <Canvas.Style>
-                <Style TargetType="{x:Type Canvas}">
-                    <Setter Property="Visibility" Value="Visible" />
-                    <Style.Triggers>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding Path=LikeCount, Converter={StaticResource isZeroConverter}}" Value="True" />
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </MultiDataTrigger>
-                        
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsMouseOver, ElementName=likeButtonArea}" Value="False" />
-                                <Condition Binding="{Binding IsMouseOver, ElementName=likesCanvas}" Value="False" />
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Visibility" Value="Hidden" />
-                        </MultiDataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Canvas.Style>
+                    <!--Use a trigger to change the visibility of the liker's popup area-->
+                    <Canvas.Style>
+                        <Style TargetType="{x:Type Canvas}">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding Path=LikeCount, Converter={StaticResource isZeroConverter}}" Value="True" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </MultiDataTrigger>
 
-            <Grid Width="{Binding ActualWidth, ElementName=likesCanvas}">
-                <Border BorderThickness="1" CornerRadius="5" 
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsMouseOver, ElementName=likeButtonArea}" Value="False" />
+                                        <Condition Binding="{Binding IsMouseOver, ElementName=likesCanvas}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Canvas.Style>
+
+                    <Grid Width="{Binding ActualWidth, ElementName=likesCanvas}">
+                        <Border BorderThickness="1" CornerRadius="5" 
                             BorderBrush="{DynamicResource DividerLineBrush}" Background="{DynamicResource LikerAreaBackgroundBrush}"
                             Width="Auto" Height="65" HorizontalAlignment="Right">
 
-                    <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                            <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                                   Margin="7"
                                   VirtualizingStackPanel.IsVirtualizing="True"
                                   VirtualizingStackPanel.ScrollUnit="Pixel"
                                   ScrollViewer.CanContentScroll="True">
 
-                        <ItemsControl.Style>
-                            <Style TargetType="{x:Type ItemsControl}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Visibility, ElementName=likesCanvas}" Value="Visible">
-                                        <Setter Property="ItemsSource" Value="{Binding Path=LikedByAvatars}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ItemsControl.Style>
+                                <ItemsControl.Style>
+                                    <Style TargetType="{x:Type ItemsControl}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Visibility, ElementName=likesCanvas}" Value="Visible">
+                                                <Setter Property="ItemsSource" Value="{Binding Path=LikedByAvatars}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ItemsControl.Style>
 
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <ContentControl Content="{Binding Avatar}" 
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <ContentControl Content="{Binding Avatar}" 
                                                 Width="35" Height="35" 
                                                 Margin="3,0,3,0" 
                                                 ToolTip="{Binding Name}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
 
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel 
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel 
                                     Orientation="Horizontal"
                                     VirtualizationMode="Recycling" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </Border>
-            </Grid>
-        </Canvas>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </Border>
+                    </Grid>
+                </Canvas>
 
-        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+                <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
                     Orientation="Vertical"
                     Background="{DynamicResource MessageDetailsBrush}"
                     Height="45"
                     Visibility="{Binding ShowDetails, Converter={StaticResource boolToVisibilityConverter}}">
 
-            <Label Content="{Binding SentTimeString}"
+                    <Label Content="{Binding SentTimeString}"
                    ContentStringFormat="Sent: {0}"
                    FontWeight="Regular"
                    FontSize="11"
                    Foreground="{DynamicResource MessageFontBrush}"
                    Padding="20,0,0,0"/>
 
-            <Label Content="{Binding SenderPlatform}"
+                    <Label Content="{Binding SenderPlatform}"
                    ContentStringFormat="Client: {0}"
                    FontWeight="Regular"
                    FontSize="11"
                    Foreground="{DynamicResource MessageFontBrush}"
                    Padding="20,0,0,0"/>
-        </StackPanel>
-    </Grid>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="NestedWithDropDown" >
+            <Expander IsExpanded="{Binding NestLevel, Mode=OneWay, FallbackValue=True, Converter={StaticResource isDeeplyNestedConverter}, ConverterParameter={StaticResource collapseNestLevel}}"
+                      Content="{Binding}"
+                      ContentTemplate="{StaticResource MessageBody}">
+
+                <Expander.Style>
+                    <Style TargetType="Expander">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=Name}" Value="{x:Null}">
+                                <Setter Property="Header" Value="..." />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Expander.Style>
+            </Expander>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TopLevelNoDropDown">
+            <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource MessageBody}"/>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <UserControl.Style>
+        <Style TargetType="{x:Type controls:MessageControl}">
+            <Setter Property="ContentTemplate" Value="{StaticResource MessageBody}" />
+            <Setter Property="Content" Value="{Binding .}" />
+            
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding NestLevel, Converter={StaticResource isGreaterThanConverter}, ConverterParameter={StaticResource collapseNestLevel}}"  Value="True">
+                    <Setter Property="ContentTemplate" Value="{StaticResource NestedWithDropDown}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
+        
 </UserControl>

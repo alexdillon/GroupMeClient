@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GroupMeClient.Caching;
 using GroupMeClient.ViewModels.Controls.Attachments;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
@@ -32,11 +33,14 @@ namespace GroupMeClient.ViewModels.Controls
         /// Initializes a new instance of the <see cref="MessageControlViewModel"/> class.
         /// </summary>
         /// <param name="message">The message to bind to this control.</param>
+        /// <param name="cacheContext">The cache context in which this message is archived.</param>
         /// <param name="showLikers">Indicates whether the like status for a message should be displayed.</param>
         /// <param name="showPreviewsOnlyForMultiImages">Indicates whether only previews, or full images, should be shown for multi-images.</param>
-        public MessageControlViewModel(Message message, bool showLikers = true, bool showPreviewsOnlyForMultiImages = false)
+        /// <param name="nestLevel">The number of <see cref="MessageControlViewModel"/>s deeply nested this is. Top level messages are 0.</param>
+        public MessageControlViewModel(Message message, CacheContext cacheContext, bool showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0)
         {
             this.Message = message;
+            this.CacheContext = cacheContext;
 
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.Inlines = new ObservableCollection<Inline>();
@@ -45,6 +49,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             this.ShowLikers = showLikers;
             this.ShowPreviewsOnlyForMultiImages = showPreviewsOnlyForMultiImages;
+            this.NestLevel = nestLevel;
 
             this.LoadAttachments();
             this.LoadInlinesForMessageBody();
@@ -64,6 +69,12 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets the command to be performed to toggle whether details are shwon for this <see cref="Message"/>.
         /// </summary>
         public ICommand ToggleMessageDetails { get; }
+
+        /// <summary>
+        /// Gets a value indicating the number of <see cref="MessageControlViewModel"/>s deep this <see cref="MessageControlViewModel"/> is nested. Top-level messages that
+        /// are not included as attachments have a <see cref="NestLevel"/> of 0.
+        /// </summary>
+        public int NestLevel { get; }
 
         /// <summary>
         /// Gets the unique identifier for this <see cref="Message"/>.
@@ -173,6 +184,24 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
+        /// Gets a value indicating whether the current user sent this <see cref="Message"/> for the purposes of styling the message.
+        /// </summary>
+        public bool? DidISendItColoring
+        {
+            get
+            {
+                if (this.NestLevel > 0)
+                {
+                    return null;
+                }
+                else
+                {
+                    return this.DidISendIt;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether the current user sent this <see cref="Message"/>.
         /// </summary>
         public bool DidISendIt
@@ -269,11 +298,13 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        private CacheContext CacheContext { get; }
+
         private bool ShowLikers { get; }
 
         private string HiddenText { get; set; } = string.Empty;
 
-        private bool ShowPreviewsOnlyForMultiImages { get; set; }
+        private bool ShowPreviewsOnlyForMultiImages { get; }
 
         /// <summary>
         /// Redraw the message immediately.
@@ -393,7 +424,7 @@ namespace GroupMeClient.ViewModels.Controls
                 }
                 else if (attachment is FileAttachment fileAttach)
                 {
-                    var container = (IMessageContainer)this.Message.Group ?? (IMessageContainer)this.Message.Chat;
+                    var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
                     var documentVm = new FileAttachmentControlViewModel(fileAttach, container);
                     this.AttachedItems.Add(documentVm);
 
@@ -419,6 +450,19 @@ namespace GroupMeClient.ViewModels.Controls
                 // Use IndexOf instead of Contains to prevent issues with strange unicode characters.
                 // only look to see if the first chunk is a URL
                 text = text.Substring(0, text.IndexOf(" "));
+            }
+
+            // Check if this is a GroupMe Desktop Client Reply-extension message
+            if (!string.IsNullOrEmpty(this.Message.Text) && Regex.IsMatch(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex))
+            {
+                var token = Regex.Match(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex).Value;
+                var originalMessageId = token.Replace("/rmid:", string.Empty);
+
+                this.HiddenText = token;
+
+                var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
+                var repliedMessageAttachment = new RepliedMessageControlViewModel(originalMessageId, container, this.CacheContext, this.NestLevel);
+                this.AttachedItems.Add(repliedMessageAttachment);
             }
 
             const string TwitterPrefixHttps = "https://twitter.com/";
