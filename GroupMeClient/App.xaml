@@ -95,6 +95,9 @@
             <DataTemplate DataType="{x:Type attachvm:FileAttachmentControlViewModel}">
                 <attachviews:FileAttachmentControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:RepliedMessageControlViewModel}">
+                <attachviews:RepliedMessageControl />
+            </DataTemplate>
 
             <DataTemplate DataType="{x:Type ctrlvm:SendImageControlViewModel}">
                 <ctrlviews:SendImageControl />
