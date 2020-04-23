@@ -53,9 +53,9 @@
                 </Grid.Style>
 
                 <controls:AvatarControl 
-                Grid.Column="0" Grid.Row="1"
-                Width="40" Height="40" VerticalAlignment="Top"
-                DataContext="{Binding Avatar}">
+                    Grid.Column="0" Grid.Row="1"
+                    Width="40" Height="40" VerticalAlignment="Top"
+                    DataContext="{Binding Avatar}">
 
                     <behaviors:Interaction.Triggers>
                         <behaviors:EventTrigger EventName="MouseRightButtonDown" >
@@ -71,9 +71,9 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <UserControl
-                            MaxWidth="700"
-                            HorizontalAlignment="Left"
-                            Content="{Binding Path=.}"/>
+                                    MaxWidth="700"
+                                    HorizontalAlignment="Left"
+                                    Content="{Binding Path=.}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
 
@@ -85,11 +85,11 @@
                     </ItemsControl>
 
                     <extensions:SelectableTextBlock 
-                Padding="0"
-                Margin="0,0,0,20"
-                FontSize="15" 
-                TextWrapping="Wrap" 
-                extensions:TextBlockExtensions.InlineList="{Binding Inlines}">
+                        Padding="0"
+                        Margin="0,0,0,20"
+                        FontSize="15" 
+                        TextWrapping="Wrap" 
+                        extensions:TextBlockExtensions.InlineList="{Binding Inlines}">
 
                         <extensions:SelectableTextBlock.ContextMenu>
                             <ContextMenu>
@@ -102,10 +102,10 @@
                 </StackPanel>
 
                 <Grid Grid.Column="2" Grid.Row="1" 
-              MaxHeight="60"
-              VerticalAlignment="Top"
-              Background="Transparent"
-              x:Name="likeButtonArea">
+                      MaxHeight="60"
+                      VerticalAlignment="Top"
+                      Background="Transparent"
+                      x:Name="likeButtonArea">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="15" />
                         <RowDefinition Height="Auto" />
@@ -117,19 +117,19 @@
                         <ColumnDefinition Width="12"/>
                     </Grid.ColumnDefinitions>
                     <iconPacks:PackIconFontAwesome Width="17" Height="17"
-                                           Grid.Row="1"
-                                           Grid.Column="1"
-                                           HorizontalAlignment="Center"
-                                           Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}"
-                                           Background="Transparent" />
+                                                   Grid.Row="1"
+                                                   Grid.Column="1"
+                                                   HorizontalAlignment="Center"
+                                                   Kind="{Binding LikeStatus}" Foreground="{Binding LikeColor}"
+                                                   Background="Transparent" />
 
                     <Label
-                Grid.Row="1"
-                Grid.Column="1"
-                Padding="0,17,0,0"
-                HorizontalAlignment="Center" 
-                Foreground="{DynamicResource MessageFontBrush}" FontSize="10" FontWeight="Thin"
-                Content="{Binding LikeCount}" />
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Padding="0,17,0,0"
+                        HorizontalAlignment="Center" 
+                        Foreground="{DynamicResource MessageFontBrush}" FontSize="10" FontWeight="Thin"
+                        Content="{Binding LikeCount}" />
 
                     <behaviors:Interaction.Triggers>
                         <behaviors:EventTrigger EventName="MouseDown" >
@@ -139,8 +139,8 @@
                 </Grid>
 
                 <Canvas x:Name="likesCanvas"
-                Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-45,16,0"
-                Background="Transparent">
+                        Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-45,16,0"
+                        Background="Transparent">
 
                     <!--Use a trigger to change the visibility of the liker's popup area-->
                     <Canvas.Style>
@@ -167,14 +167,14 @@
 
                     <Grid Width="{Binding ActualWidth, ElementName=likesCanvas}">
                         <Border BorderThickness="1" CornerRadius="5" 
-                            BorderBrush="{DynamicResource DividerLineBrush}" Background="{DynamicResource LikerAreaBackgroundBrush}"
-                            Width="Auto" Height="65" HorizontalAlignment="Right">
+                                BorderBrush="{DynamicResource DividerLineBrush}" Background="{DynamicResource LikerAreaBackgroundBrush}"
+                                Width="Auto" Height="65" HorizontalAlignment="Right">
 
                             <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-                                  Margin="7"
-                                  VirtualizingStackPanel.IsVirtualizing="True"
-                                  VirtualizingStackPanel.ScrollUnit="Pixel"
-                                  ScrollViewer.CanContentScroll="True">
+                                          Margin="7"
+                                          VirtualizingStackPanel.IsVirtualizing="True"
+                                          VirtualizingStackPanel.ScrollUnit="Pixel"
+                                          ScrollViewer.CanContentScroll="True">
 
                                 <ItemsControl.Style>
                                     <Style TargetType="{x:Type ItemsControl}">
@@ -189,17 +189,17 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <ContentControl Content="{Binding Avatar}" 
-                                                Width="35" Height="35" 
-                                                Margin="3,0,3,0" 
-                                                ToolTip="{Binding Name}" />
+                                                        Width="35" Height="35" 
+                                                        Margin="3,0,3,0" 
+                                                        ToolTip="{Binding Name}" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
 
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <VirtualizingStackPanel 
-                                    Orientation="Horizontal"
-                                    VirtualizationMode="Recycling" />
+                                            Orientation="Horizontal"
+                                            VirtualizationMode="Recycling" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>
@@ -208,24 +208,24 @@
                 </Canvas>
 
                 <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
-                    Orientation="Vertical"
-                    Background="{DynamicResource MessageDetailsBrush}"
-                    Height="45"
-                    Visibility="{Binding ShowDetails, Converter={StaticResource boolToVisibilityConverter}}">
+                            Orientation="Vertical"
+                            Background="{DynamicResource MessageDetailsBrush}"
+                            Height="45"
+                            Visibility="{Binding ShowDetails, Converter={StaticResource boolToVisibilityConverter}}">
 
                     <Label Content="{Binding SentTimeString}"
-                   ContentStringFormat="Sent: {0}"
-                   FontWeight="Regular"
-                   FontSize="11"
-                   Foreground="{DynamicResource MessageFontBrush}"
-                   Padding="20,0,0,0"/>
+                           ContentStringFormat="Sent: {0}"
+                           FontWeight="Regular"
+                           FontSize="11"
+                           Foreground="{DynamicResource MessageFontBrush}"
+                           Padding="20,0,0,0"/>
 
                     <Label Content="{Binding SenderPlatform}"
-                   ContentStringFormat="Client: {0}"
-                   FontWeight="Regular"
-                   FontSize="11"
-                   Foreground="{DynamicResource MessageFontBrush}"
-                   Padding="20,0,0,0"/>
+                           ContentStringFormat="Client: {0}"
+                           FontWeight="Regular"
+                           FontSize="11"
+                           Foreground="{DynamicResource MessageFontBrush}"
+                           Padding="20,0,0,0"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
