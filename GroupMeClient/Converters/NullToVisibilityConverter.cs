@@ -13,7 +13,13 @@ namespace GroupMeClient.Converters
         /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? Visibility.Hidden : Visibility.Visible;
+            var collapseOrHide = Visibility.Hidden;
+            if (parameter is bool collapseParam && collapseParam)
+            {
+                collapseOrHide = Visibility.Collapsed;
+            }
+
+            return value == null ? collapseOrHide : Visibility.Visible;
         }
 
         /// <inheritdoc />

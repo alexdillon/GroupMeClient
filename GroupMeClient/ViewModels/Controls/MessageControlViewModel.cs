@@ -383,6 +383,7 @@ namespace GroupMeClient.ViewModels.Controls
         private void LoadAttachments()
         {
             bool hasMultipleImages = this.Message.Attachments.OfType<ImageAttachment>().Count() > 1;
+            bool doneWithAttachments = false;
 
             // Load GroupMe Image and Video Attachments
             foreach (var attachment in this.Message.Attachments)
@@ -409,7 +410,8 @@ namespace GroupMeClient.ViewModels.Controls
                     this.HiddenText = this.Message.Text;
 
                     // Don't allow any other attachment types to be included if a linked_image is.
-                    return;
+                    doneWithAttachments = true;
+                    break;
                 }
                 else if (attachment is VideoAttachment videoAttach)
                 {
@@ -420,7 +422,8 @@ namespace GroupMeClient.ViewModels.Controls
                     this.HiddenText = videoAttach.Url;
 
                     // Don't allow any other attachment types to be included if a video is.
-                    return;
+                    doneWithAttachments = true;
+                    break;
                 }
                 else if (attachment is FileAttachment fileAttach)
                 {
@@ -428,7 +431,7 @@ namespace GroupMeClient.ViewModels.Controls
                     var documentVm = new FileAttachmentControlViewModel(fileAttach, container);
                     this.AttachedItems.Add(documentVm);
 
-                    // Videos can have captions, so only exclude the share url from the body
+                    // Files can have captions, so only exclude the share url from the body
                     if (this.Message.Text.Contains(" - Shared a document"))
                     {
                         this.HiddenText = this.Message.Text.Substring(this.Message.Text.LastIndexOf(" - Shared a document"));
@@ -439,8 +442,46 @@ namespace GroupMeClient.ViewModels.Controls
                     }
 
                     // Don't allow any other attachment types to be included if a video is.
-                    return;
+                    doneWithAttachments = true;
+                    break;
                 }
+            }
+
+            // Check if this is a GroupMe Desktop Client Reply-extension message
+            if (!string.IsNullOrEmpty(this.Message.Text) && Regex.IsMatch(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex))
+            {
+                var token = Regex.Match(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex).Value;
+                var originalMessageId = token.Replace("\n/rmid:", string.Empty);
+
+                this.HiddenText = token;
+
+                var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
+                var repliedMessageAttachment = new RepliedMessageControlViewModel(originalMessageId, container, this.CacheContext, this.NestLevel);
+
+                // Replace the photo of the original message that is included for non-GMDC clients with the real message
+                if (this.AttachedItems.Count > 0)
+                {
+                    var lastIndexOfPhoto = -1;
+                    for (int i = 0; i < this.AttachedItems.Count; i++)
+                    {
+                        if (this.AttachedItems[i] is GroupMeImageAttachmentControlViewModel)
+                        {
+                            lastIndexOfPhoto = i;
+                        }
+                    }
+
+                    if (lastIndexOfPhoto >= 0)
+                    {
+                        this.AttachedItems.RemoveAt(lastIndexOfPhoto);
+                    }
+                }
+
+                this.AttachedItems.Insert(0, repliedMessageAttachment);
+            }
+
+            if (doneWithAttachments)
+            {
+                return;
             }
 
             // Load Link-Based Attachments (Tweets, Web Images, Websites, etc.)
@@ -450,19 +491,6 @@ namespace GroupMeClient.ViewModels.Controls
                 // Use IndexOf instead of Contains to prevent issues with strange unicode characters.
                 // only look to see if the first chunk is a URL
                 text = text.Substring(0, text.IndexOf(" "));
-            }
-
-            // Check if this is a GroupMe Desktop Client Reply-extension message
-            if (!string.IsNullOrEmpty(this.Message.Text) && Regex.IsMatch(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex))
-            {
-                var token = Regex.Match(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex).Value;
-                var originalMessageId = token.Replace("/rmid:", string.Empty);
-
-                this.HiddenText = token;
-
-                var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
-                var repliedMessageAttachment = new RepliedMessageControlViewModel(originalMessageId, container, this.CacheContext, this.NestLevel);
-                this.AttachedItems.Add(repliedMessageAttachment);
             }
 
             const string TwitterPrefixHttps = "https://twitter.com/";

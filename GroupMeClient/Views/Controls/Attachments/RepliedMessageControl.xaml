@@ -6,6 +6,7 @@
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400"
+             Padding="0,0,0,0"
              Background="{DynamicResource TweetBackgroundBrush}">
 
     <behaviors:Interaction.Triggers>

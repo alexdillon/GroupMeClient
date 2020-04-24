@@ -24,6 +24,7 @@
         <converters:IsGreaterThanConverter x:Key="isGreaterThanConverter" />
 
         <sys:Int32 x:Key="collapseNestLevel">1</sys:Int32>
+        <sys:Boolean x:Key="True">True</sys:Boolean>
 
         <DataTemplate x:Key="MessageBody">
             <Grid>
@@ -57,8 +58,12 @@
                     Width="40" Height="40" VerticalAlignment="Top"
                     DataContext="{Binding Avatar}">
 
+                    <controls:AvatarControl.ContextMenu>
+                        <ContextMenu />
+                    </controls:AvatarControl.ContextMenu>
+
                     <behaviors:Interaction.Triggers>
-                        <behaviors:EventTrigger EventName="MouseRightButtonDown" >
+                        <behaviors:EventTrigger EventName="MouseRightButtonUp" >
                             <behaviors:InvokeCommandAction Command="{Binding Path=DataContext.ToggleMessageDetails, RelativeSource={RelativeSource AncestorType=controls:MessageControl}}" />
                         </behaviors:EventTrigger>
                     </behaviors:Interaction.Triggers>
@@ -231,7 +236,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="NestedWithDropDown" >
-            <Expander IsExpanded="{Binding NestLevel, Mode=OneWay, FallbackValue=True, Converter={StaticResource isDeeplyNestedConverter}, ConverterParameter={StaticResource collapseNestLevel}}"
+            <Expander IsExpanded="{Binding NestLevel, Mode=OneWay, FallbackValue={StaticResource True}, Converter={StaticResource isDeeplyNestedConverter}, ConverterParameter={StaticResource collapseNestLevel}}"
                       Content="{Binding}"
                       ContentTemplate="{StaticResource MessageBody}">
 
@@ -253,7 +258,7 @@
     </UserControl.Resources>
 
     <UserControl.Style>
-        <Style TargetType="{x:Type controls:MessageControl}">
+        <Style TargetType="{x:Type UserControl}">
             <Setter Property="ContentTemplate" Value="{StaticResource MessageBody}" />
             <Setter Property="Content" Value="{Binding .}" />
             

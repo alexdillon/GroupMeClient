@@ -8,12 +8,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Caching;
 using GroupMeClient.Extensions;
 using GroupMeClient.Utilities;
+using GroupMeClient.Views.Controls;
 using GroupMeClientApi.Models;
 using Microsoft.Win32;
 
@@ -30,6 +33,7 @@ namespace GroupMeClient.ViewModels.Controls
         private string typedMessageContents = string.Empty;
         private ViewModelBase smallDialog;
         private bool isSelectionAllowed = false;
+        private MessageControlViewModel messageBeingRepliedTo;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -49,6 +53,8 @@ namespace GroupMeClient.ViewModels.Controls
             this.GroupChatPluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>(this.ActivateGroupPlugin);
             this.GroupChatCachePluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin>(this.ActivateGroupCachePlugin);
             this.SelectionChangedCommand = new RelayCommand<object>(this.SelectionChangedHandler);
+            this.InitiateReply = new RelayCommand<MessageControlViewModel>(m => this.InitiateReplyCommand(m));
+            this.TerminateReply = new RelayCommand(() => this.MessageBeingRepliedTo = null, true);
 
             this.ReliabilityStateMachine = new ReliabilityStateMachine();
 
@@ -121,10 +127,20 @@ namespace GroupMeClient.ViewModels.Controls
         public ICommand ClosePopup { get; }
 
         /// <summary>
-        /// Gets the action to be be performed when the big popup has been closed indirectly.
+        /// Gets the action to be performed when the big popup has been closed indirectly.
         /// This typically is from the user clicking in the gray area around the popup to dismiss it.
         /// </summary>
         public ICommand EasyClosePopup { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when initiating a reply on a message.
+        /// </summary>
+        public ICommand InitiateReply { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when terminating a reply to a message.
+        /// </summary>
+        public ICommand TerminateReply { get; }
 
         /// <summary>
         /// Gets the action to be be performed when the selected messages have changed.
@@ -218,6 +234,16 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get { return this.isSelectionAllowed; }
             set { this.Set(() => this.IsSelectionAllowed, ref this.isSelectionAllowed, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets a displayable copy of a <see cref="Message"/> that is currently having a response composed for sending.
+        /// If the currently composed message is not a reply, this property will be null.
+        /// </summary>
+        public MessageControlViewModel MessageBeingRepliedTo
+        {
+            get { return this.messageBeingRepliedTo; }
+            set { this.Set(() => this.MessageBeingRepliedTo, ref this.messageBeingRepliedTo, value); }
         }
 
         private CacheContext CacheContext { get; }
@@ -556,9 +582,61 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
+        private byte[] RenderMessageToPngImage(Message message)
+        {
+            var messageControl = new MessageControl()
+            {
+                DataContext = new MessageControlViewModel(message, this.CacheContext, false, true, 1),
+                Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
+                Foreground = (Brush)Application.Current.FindResource("IdealForegroundColorBrush"),
+            };
+
+            messageControl.Measure(new Size(500, double.PositiveInfinity));
+            messageControl.ApplyTemplate();
+            messageControl.UpdateLayout();
+            var desiredSize = messageControl.DesiredSize;
+            desiredSize.Width = Math.Max(300, desiredSize.Width);
+            desiredSize.Height = Math.Min(250, desiredSize.Height);
+            messageControl.Arrange(new Rect(new Point(0, 0), desiredSize));
+
+            var bmp = new RenderTargetBitmap((int)messageControl.RenderSize.Width, (int)messageControl.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
+            bmp.Render(messageControl);
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmp));
+
+            using (var quotedMessageRenderPng = new MemoryStream())
+            {
+                encoder.Save(quotedMessageRenderPng);
+                return quotedMessageRenderPng.ToArray();
+            }
+        }
+
+        private async Task<Message> InjectReplyData(Message responseMessage)
+        {
+            var suffix = $"\n/rmid:{this.MessageBeingRepliedTo.Message.Id}";
+
+            var renderedOriginalMessage = this.RenderMessageToPngImage(this.MessageBeingRepliedTo.Message);
+            var renderedImageAttachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(renderedOriginalMessage, this.MessageContainer);
+
+            var attachments = responseMessage.Attachments.ToList();
+            attachments.Add(renderedImageAttachment);
+
+            var amendedMessage = Message.CreateMessage(
+                responseMessage.Text + suffix,
+                attachments,
+                "gmdc");
+
+            return amendedMessage;
+        }
+
         private async Task<bool> SendMessageAsync(Message newMessage)
         {
             bool success;
+
+            if (this.messageBeingRepliedTo != null)
+            {
+                newMessage = await this.InjectReplyData(newMessage);
+            }
 
             success = await this.MessageContainer.SendMessage(newMessage);
             if (success)
@@ -578,6 +656,7 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             this.IsSending = false;
+            this.MessageBeingRepliedTo = null;
 
             return success;
         }
@@ -681,6 +760,11 @@ namespace GroupMeClient.ViewModels.Controls
         private void SelectionChangedHandler(object data)
         {
             this.CurrentlySelectedMessages = data;
+        }
+
+        private void InitiateReplyCommand(MessageControlViewModel message)
+        {
+            this.MessageBeingRepliedTo = new MessageControlViewModel(message.Message, this.CacheContext, false, true, 1);
         }
     }
 }

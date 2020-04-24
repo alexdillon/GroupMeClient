@@ -53,10 +53,14 @@ namespace GroupMeClient.Extensions
         {
             TextBlock textBlock = sender as TextBlock;
             ObservableCollection<Inline> list = e.NewValue as ObservableCollection<Inline>;
-            list.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(InlineCollectionChanged);
 
-            textBlock.Inlines.Clear();
-            textBlock.Inlines.AddRange(list);
+            if (list != null)
+            {
+                list.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(InlineCollectionChanged);
+
+                textBlock.Inlines.Clear();
+                textBlock.Inlines.AddRange(list);
+            }
         }
 
         private static void InlineCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

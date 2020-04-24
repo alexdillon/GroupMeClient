@@ -20,6 +20,6 @@ namespace GroupMeClient.Utilities
         /// <summary>
         /// Regular Expression to match a message as being one containing a GMDC Reply Extension attachment.
         /// </summary>
-        public const string RepliedMessageRegex = @"\/rmid:[0-9]*";
+        public const string RepliedMessageRegex = @"\n\/rmid:[0-9]*";
     }
 }

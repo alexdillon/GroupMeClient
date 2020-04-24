@@ -10,6 +10,7 @@
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="500">
     <UserControl.Resources>
@@ -25,6 +26,8 @@
 
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
         <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+
+        <sys:Boolean x:Key="True">True</sys:Boolean>
     </UserControl.Resources>
 
     <Grid>
@@ -122,18 +125,13 @@
 
             <!--Close Group Button-->
             <Button Grid.Column="2"
-                    Content="X"
                     HorizontalAlignment="Right"
                     Width="35" Height="35"
                     BorderThickness="0"
                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                     Command="{Binding Path=CloseGroup}"
                     CommandParameter="{Binding Path=.}">
-                <Button.ContentTemplate>
-                    <DataTemplate>
-                        <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
-                    </DataTemplate>
-                </Button.ContentTemplate>
+                <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
             </Button>
 
             <!--Top Bar Underline-->
@@ -196,7 +194,17 @@
                 <DataTemplate>
                     <UserControl
                         Content="{Binding Path=.}" 
-                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                        Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:GroupContentsControl}}}" >
+
+                        <UserControl.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Reply To Message" 
+                                          Command="{Binding PlacementTarget.Tag.DataContext.InitiateReply, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
+                                          CommandParameter="{Binding .}"/>
+                            </ContextMenu>
+                        </UserControl.ContextMenu>
+                    </UserControl>
                 </DataTemplate>
             </ListBox.ItemTemplate>
 
@@ -314,13 +322,37 @@
                     Margin="0,0,0,0"
                     VerticalAlignment="Bottom"/>
 
+            <!--Box showing the message that is being replied to-->
+            <Grid Grid.Column="1" 
+                  HorizontalAlignment="Stretch" 
+                  MaxHeight="100" 
+                  Visibility="{Binding MessageBeingRepliedTo, Converter={StaticResource nullToVisibilityConverter}, ConverterParameter={StaticResource True}}"
+                  Background="{DynamicResource ControlBackgroundBrush}">
+          
+                <Border CornerRadius="2" BorderBrush="#637182" BorderThickness="2,2,2,0">
+                    <Border CornerRadius="3" BorderBrush="{DynamicResource InProgressReplyBrush}" Margin="5,5,5,3" BorderThickness="2,2,2,2">
+                        <UserControl Content="{Binding MessageBeingRepliedTo}"
+                                         Background="{DynamicResource InProgressReplyBrush}"/>
+                    </Border>
+                </Border>
+
+                <Button HorizontalAlignment="Right"
+                        Width="35" Height="35"
+                        BorderThickness="0"
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Command="{Binding TerminateReply}"
+                        CommandParameter="{Binding Path=.}">
+                    <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
+                </Button>
+            </Grid>
+
             <!--Message Effects Button-->
             <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="0"
                                         VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"
                                         Width="15" Height="15" 
                                         Background="{DynamicResource ControlBackgroundBrush}"
-                                        Foreground="#637182" 
+                                        Foreground="#637182"
                                         Kind="React"
                                         Margin="0">
                 <behaviors:Interaction.Triggers>
