@@ -175,7 +175,16 @@
                                 <Border BorderThickness="0"
                                         x:Name="highlightBorder"
                                         Margin="0" >
-                                    <ContentPresenter />
+                                    <ContentPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                                      Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:GroupContentsControl}}}">
+                                        <ContentPresenter.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Reply To Message" 
+                                                          Command="{Binding PlacementTarget.Tag.DataContext.InitiateReply, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
+                                                          CommandParameter="{Binding .}"/>
+                                            </ContextMenu>
+                                        </ContentPresenter.ContextMenu>
+                                    </ContentPresenter>
                                 </Border>
 
                                 <ControlTemplate.Triggers>
@@ -189,24 +198,6 @@
                     </Setter>
                 </Style>
             </ListBox.ItemContainerStyle>
-            
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <UserControl
-                        Content="{Binding Path=.}" 
-                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
-                        Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:GroupContentsControl}}}" >
-
-                        <UserControl.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Reply To Message" 
-                                          Command="{Binding PlacementTarget.Tag.DataContext.InitiateReply, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
-                                          CommandParameter="{Binding .}"/>
-                            </ContextMenu>
-                        </UserControl.ContextMenu>
-                    </UserControl>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
 
             <behaviors:Interaction.Triggers>
                 <behaviors:EventTrigger EventName="SelectionChanged">

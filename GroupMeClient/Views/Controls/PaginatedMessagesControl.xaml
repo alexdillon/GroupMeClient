@@ -65,6 +65,7 @@
                                         x:Name="highlightBorder"
                                         Margin="0" >
                                     <ContentPresenter 
+                                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" 
                                         IsHitTestVisible="{Binding IsSelectable}"/>
                                 </Border>
 
@@ -80,14 +81,6 @@
                 </Style>
             </ListBox.ItemContainerStyle>
             
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <UserControl
-                        Content="{Binding Path=.}" 
-                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-
             <behaviors:Interaction.Triggers>
                 <behaviors:EventTrigger EventName="SelectionChanged">
                     <behaviors:InvokeCommandAction Command="{Binding MessageSelectedCommand}"  CommandParameter="{Binding ElementName=messagesListbox, Path=SelectedItem}"/>
