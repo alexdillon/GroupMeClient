@@ -26,6 +26,8 @@
         <sys:Int32 x:Key="collapseNestLevel">1</sys:Int32>
         <sys:Boolean x:Key="True">True</sys:Boolean>
 
+        <ContextMenu x:Key="emptyContextMenu" Width="0" Height="0" IsEnabled="False"/>
+
         <DataTemplate x:Key="MessageBody">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -56,12 +58,8 @@
                 <controls:AvatarControl 
                     Grid.Column="0" Grid.Row="1"
                     Width="40" Height="40" VerticalAlignment="Top"
-                    DataContext="{Binding Avatar}">
-
-                    <controls:AvatarControl.ContextMenu>
-                        <!--Hide the context menu here-->
-                        <ContextMenu />
-                    </controls:AvatarControl.ContextMenu>
+                    DataContext="{Binding Avatar}"
+                    ContextMenu="{StaticResource emptyContextMenu}">
 
                     <behaviors:Interaction.Triggers>
                         <behaviors:EventTrigger EventName="MouseRightButtonUp" >

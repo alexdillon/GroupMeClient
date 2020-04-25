@@ -6,7 +6,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="20" d:DesignWidth="400">
 
-    <Grid>
+    <UserControl.Resources>
+        <ContextMenu x:Key="emptyContextMenu" Width="0" Height="0" IsEnabled="False"/>
+    </UserControl.Resources>
+
+    <Grid ContextMenu="{StaticResource emptyContextMenu}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
