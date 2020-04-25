@@ -59,6 +59,7 @@
                     DataContext="{Binding Avatar}">
 
                     <controls:AvatarControl.ContextMenu>
+                        <!--Hide the context menu here-->
                         <ContextMenu />
                     </controls:AvatarControl.ContextMenu>
 
@@ -73,12 +74,38 @@
                     <Label Content="{Binding Sender}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" Padding="0" />
 
                     <ItemsControl ItemsSource="{Binding AttachedItems}">
-                        <ItemsControl.ItemTemplate>
+                       <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <UserControl
-                                    MaxWidth="700"
-                                    HorizontalAlignment="Left"
-                                    Content="{Binding Path=.}"/>
+                                <UserControl HorizontalAlignment="Left"
+                                             Content="{Binding .}" >
+
+                                    <UserControl.Resources>
+                                        <DataTemplate x:Key="NonShrinkable">
+                                            <StackPanel Orientation="Horizontal">
+                                                <ContentPresenter Content="{Binding}"
+                                                              Margin="0,0,0,10"/>
+                                                <TextBlock Text="" Width="10000" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                        
+                                        <DataTemplate x:Key="Shrinkable">
+                                            <ContentPresenter Content="{Binding}"
+                                                              MaxWidth="700"/>
+                                        </DataTemplate>
+                                    </UserControl.Resources>
+
+                                    <UserControl.Style>
+                                        <Style TargetType="{x:Type UserControl}">
+                                            <Setter Property="ContentTemplate" Value="{StaticResource Shrinkable}" />
+
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Shrinkable}"  Value="False">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource NonShrinkable}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </UserControl.Style>
+                                </UserControl>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
 

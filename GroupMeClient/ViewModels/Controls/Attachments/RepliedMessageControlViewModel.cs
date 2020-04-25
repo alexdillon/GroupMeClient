@@ -7,7 +7,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
     /// <summary>
     /// <see cref="RepliedMessageControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.RepliedMessageControl"/> control.
     /// </summary>
-    public class RepliedMessageControlViewModel : ViewModelBase
+    public class RepliedMessageControlViewModel : AttachmentViewModelBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RepliedMessageControlViewModel"/> class.
@@ -37,6 +37,9 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
                 this.Message = new MessageControlViewModel(originalMessage, cacheContext, false, true, nestLevel + 1);
             }
         }
+
+        /// <inheritdoc/>
+        public override bool Shrinkable => false;
 
         /// <summary>
         /// Gets the original <see cref="MessageControlViewModel"/> containing the <see cref="Message"/> that is being replied to.

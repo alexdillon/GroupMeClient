@@ -12,7 +12,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
     /// <see cref="LinkAttachmentBaseViewModel"/> provides a base for controls that display Web Content.
     /// Access to GroupMe's Inline Downloader Service is provided.
     /// </summary>
-    public abstract class LinkAttachmentBaseViewModel : ViewModelBase, IDisposable
+    public abstract class LinkAttachmentBaseViewModel : AttachmentViewModelBase, IDisposable
     {
         private string url;
         private ImageSource renderedImage;

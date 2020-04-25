@@ -3,20 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400"
-             Padding="0,0,0,0"
-             Background="{DynamicResource TweetBackgroundBrush}">
-
-    <behaviors:Interaction.Triggers>
-        <behaviors:EventTrigger EventName="MouseDown" >
-            <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
-        </behaviors:EventTrigger>
-    </behaviors:Interaction.Triggers>
-
+             Padding="0,0,0,0">
+    
     <Border BorderBrush="LightGray" BorderThickness="1,1,1,1" CornerRadius="3">
         <UserControl Content="{Binding Message}" 
-                     Background="{DynamicResource TweetBackgroundBrush}"/>
+                        HorizontalAlignment="Left"
+                        MinWidth="300"
+                        Background="{DynamicResource TweetBackgroundBrush}"/>
     </Border>
 </UserControl>
