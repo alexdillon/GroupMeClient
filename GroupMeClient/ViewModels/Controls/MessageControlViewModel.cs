@@ -453,7 +453,7 @@ namespace GroupMeClient.ViewModels.Controls
                 var token = Regex.Match(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex).Value;
                 var originalMessageId = token.Replace("\n/rmid:", string.Empty);
 
-                this.HiddenText = token;
+                this.HiddenText = token + this.HiddenText ;
 
                 var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
                 var repliedMessageAttachment = new RepliedMessageControlViewModel(originalMessageId, container, this.CacheContext, this.NestLevel);
