@@ -588,7 +588,7 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 DataContext = new MessageControlViewModel(message, this.CacheContext, false, true, 1),
                 Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
-                Foreground = (Brush)Application.Current.FindResource("IdealForegroundColorBrush"),
+                Foreground = (Brush)Application.Current.FindResource("BlackBrush"),
             };
 
             messageControl.Measure(new Size(500, double.PositiveInfinity));
