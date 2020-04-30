@@ -44,14 +44,14 @@ namespace GroupMeClient.ViewModels
 
             this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
 
-            this.ResultsView = new PaginatedMessagesControlViewModel()
+            this.ResultsView = new PaginatedMessagesControlViewModel(this.CacheContext)
             {
                 MessageSelectedCommand = new RelayCommand<MessageControlViewModelBase>(this.MessageSelected),
                 ShowLikers = false,
                 NewestAtBottom = false,
             };
 
-            this.ContextView = new PaginatedMessagesControlViewModel()
+            this.ContextView = new PaginatedMessagesControlViewModel(this.CacheContext)
             {
                 ShowTitle = false,
                 ShowLikers = true,

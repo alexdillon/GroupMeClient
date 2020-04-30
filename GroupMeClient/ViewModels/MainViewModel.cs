@@ -189,7 +189,7 @@ namespace GroupMeClient.ViewModels
 
                 this.NotificationRouter = new NotificationRouter(this.GroupMeClient);
 
-                this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient, this.SettingsManager);
+                this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient, this.SettingsManager, this.CacheContext);
                 this.SearchViewModel = new SearchViewModel(this.GroupMeClient, this.CacheContext);
                 this.SettingsViewModel = new SettingsViewModel(this.SettingsManager);
 

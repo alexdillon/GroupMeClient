@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GroupMeClient.Caching;
 using GroupMeClientApi.Models;
 
 namespace GroupMeClient.ViewModels.Controls
@@ -24,8 +25,10 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="PaginatedMessagesControlViewModel"/> class.
         /// </summary>
-        public PaginatedMessagesControlViewModel()
+        /// <param name="cacheContext">The caching context in which displayed messages are stored.</param>
+        public PaginatedMessagesControlViewModel(CacheContext cacheContext)
         {
+            this.CacheContext = cacheContext;
             this.CurrentPage = new ObservableCollection<MessageControlViewModelBase>();
             this.MessagesPerPage = 50;
 
@@ -165,6 +168,8 @@ namespace GroupMeClient.ViewModels.Controls
             set { this.Set(() => this.SelectedMessage, ref this.selectedMessage, value); }
         }
 
+        private CacheContext CacheContext { get; }
+
         private DateTime LastMarkerTime { get; set; }
 
         /// <summary>
@@ -216,6 +221,7 @@ namespace GroupMeClient.ViewModels.Controls
 
                 var msgVm = new MessageControlViewModel(
                     msg,
+                    this.CacheContext,
                     showLikers: this.ShowLikers);
 
                 // add an inline timestamp if needed

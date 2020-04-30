@@ -71,6 +71,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Caching\CacheContext.cs" />
+    <Compile Include="Converters\IsGreaterThanConverter.cs" />
     <Compile Include="Converters\ValueConverterGroup.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
@@ -124,9 +125,11 @@
     <Compile Include="Utilities\ReliabilityStateMachine.cs" />
     <Compile Include="Utilities\TempFileUtils.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Attachments\AttachmentViewModelBase.cs" />
     <Compile Include="ViewModels\Controls\Attachments\GroupMeImageAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\ImageLinkAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\FileAttachmentControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Attachments\RepliedMessageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\VideoAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\AvatarControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\InlineReadSentMarkerControlViewModel.cs" />
@@ -157,6 +160,9 @@
     </Compile>
     <Compile Include="Views\Controls\Attachments\FileAttachmentControl.xaml.cs">
       <DependentUpon>FileAttachmentControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Attachments\RepliedMessageControl.xaml.cs">
+      <DependentUpon>RepliedMessageControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Attachments\VideoAttachmentControl.xaml.cs">
       <DependentUpon>VideoAttachmentControl.xaml</DependentUpon>
@@ -267,6 +273,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Attachments\FileAttachmentControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Attachments\RepliedMessageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
