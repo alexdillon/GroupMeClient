@@ -17,7 +17,7 @@ namespace GroupMeClient.Messaging
         /// </summary>
         /// <param name="messageContainer">The Group or Chat to execute the plugin with.</param>
         /// <param name="plugin">The plugin to execute upon index completion.</param>
-        public IndexAndRunPluginRequestMessage(IMessageContainer messageContainer, IGroupChatCachePlugin plugin)
+        public IndexAndRunPluginRequestMessage(IMessageContainer messageContainer, IGroupChatPlugin plugin)
         {
             this.MessageContainer = messageContainer;
             this.Plugin = plugin;
@@ -31,6 +31,6 @@ namespace GroupMeClient.Messaging
         /// <summary>
         /// Gets the plugin that should be executed upon index completion.
         /// </summary>
-        public IGroupChatCachePlugin Plugin { get; }
+        public IGroupChatPlugin Plugin { get; }
     }
 }

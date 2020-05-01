@@ -51,7 +51,6 @@ namespace GroupMeClient.ViewModels.Controls
             this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
             this.EasyClosePopup = null; // EasyClose makes it too easy to accidently close the send dialog.
             this.GroupChatPluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>(this.ActivateGroupPlugin);
-            this.GroupChatCachePluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin>(this.ActivateGroupCachePlugin);
             this.SelectionChangedCommand = new RelayCommand<object>(this.SelectionChangedHandler);
             this.InitiateReply = new RelayCommand<MessageControlViewModel>(m => this.InitiateReplyCommand(m));
             this.TerminateReply = new RelayCommand(() => this.MessageBeingRepliedTo = null, true);
@@ -62,12 +61,6 @@ namespace GroupMeClient.ViewModels.Controls
             foreach (var plugin in Plugins.PluginManager.Instance.GroupChatPlugins)
             {
                 this.GroupChatPlugins.Add(plugin);
-            }
-
-            this.GroupChatCachePlugins = new ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin>();
-            foreach (var plugin in Plugins.PluginManager.Instance.GroupChatCachePlugins)
-            {
-                this.GroupChatCachePlugins.Add(plugin);
             }
         }
 
@@ -159,21 +152,10 @@ namespace GroupMeClient.ViewModels.Controls
         public ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatPlugin> GroupChatPlugins { get; }
 
         /// <summary>
-        /// Gets the collection of available Group/Chat Cache UI Plugins to display.
-        /// </summary>
-        public ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin> GroupChatCachePlugins { get; }
-
-        /// <summary>
         /// Gets the action to be performed when a Plugin in the
         /// Options Menu is activated.
         /// </summary>
         public ICommand GroupChatPluginActivated { get; }
-
-        /// <summary>
-        /// Gets the action to be performed when a Cache-type Plugin in the
-        /// Options Menu is activated.
-        /// </summary>
-        public ICommand GroupChatCachePluginActivated { get; }
 
         /// <summary>
         /// Gets the title of the <see cref="Group"/> or <see cref="Chat"/>.
@@ -724,11 +706,6 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
-        {
-            _ = plugin.Activated(this.MessageContainer);
-        }
-
-        private void ActivateGroupCachePlugin(GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin plugin)
         {
             var command = new Messaging.IndexAndRunPluginRequestMessage(this.MessageContainer, plugin);
             Messenger.Default.Send(command);

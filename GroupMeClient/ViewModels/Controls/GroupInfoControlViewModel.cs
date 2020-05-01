@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClientApi.Models;
+using GroupMeClientPlugin.GroupChat;
 using Microsoft.Win32;
 
 namespace GroupMeClient.ViewModels.Controls
@@ -217,10 +219,13 @@ namespace GroupMeClient.ViewModels.Controls
             /// <inheritdoc/>
             public string PluginName => this.PluginDisplayName;
 
+            /// <inheritdoc/>
+            public override Version ApiVersion => new Version(2, 0, 0);
+
             private Group Group { get; }
 
             /// <inheritdoc/>
-            public Task Activated(IMessageContainer groupOrChat)
+            public Task Activated(IMessageContainer groupOrChat, IQueryable<Message> cacheForGroupOrChat, IQueryable<Message> globalCache, IPluginUIIntegration integration)
             {
                 var request = new Messaging.DialogRequestMessage(new GroupInfoControlViewModel(this.Group));
                 Messenger.Default.Send(request);

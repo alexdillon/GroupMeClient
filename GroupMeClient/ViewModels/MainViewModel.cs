@@ -380,18 +380,7 @@ namespace GroupMeClient.ViewModels
 
         private void IndexAndRunCommand(Messaging.IndexAndRunPluginRequestMessage cmd)
         {
-            this.SearchViewModel.ActivatePluginOnLoad = cmd.Plugin;
-            this.SearchViewModel.ActivatePluginForGroupOnLoad = cmd.MessageContainer;
-
-            // Find Search Tab entry and set as active
-            foreach (var menuItem in this.MenuItems)
-            {
-                if (menuItem.Tag == this.SearchViewModel)
-                {
-                    this.SelectedItem = menuItem;
-                    break;
-                }
-            }
+            this.SearchViewModel.RunPlugin(cmd.MessageContainer, cmd.Plugin);
         }
 
         private async Task RefreshEverything()

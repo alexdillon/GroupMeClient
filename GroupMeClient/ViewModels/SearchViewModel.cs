@@ -19,7 +19,7 @@ namespace GroupMeClient.ViewModels
     /// <summary>
     /// <see cref="SearchViewModel"/> provides a ViewModel for the <see cref="Controls.SearchView"/> view.
     /// </summary>
-    public class SearchViewModel : ViewModelBase, ICachePluginUIIntegration
+    public class SearchViewModel : ViewModelBase, IPluginUIIntegration
     {
         private ViewModelBase popupDialog;
         private string searchTerm = string.Empty;
@@ -63,15 +63,6 @@ namespace GroupMeClient.ViewModels
             this.EasyClosePopup = new RelayCommand(this.CloseLittlePopup);
             this.ResetFilters = new RelayCommand<bool>(this.ResetFilterFields);
 
-            this.GroupChatCachePlugins = new ObservableCollection<IGroupChatCachePlugin>();
-            this.GroupChatCachePluginActivated =
-                new RelayCommand<IGroupChatCachePlugin>(this.ActivateGroupPlugin);
-
-            foreach (var plugin in Plugins.PluginManager.Instance.GroupChatCachePlugins)
-            {
-                this.GroupChatCachePlugins.Add(plugin);
-            }
-
             this.Loaded = new RelayCommand(async () => await this.LoadIndexedGroups(), true);
         }
 
@@ -110,31 +101,6 @@ namespace GroupMeClient.ViewModels
         /// Gets the ViewModel for the in-context message view.
         /// </summary>
         public PaginatedMessagesControlViewModel ContextView { get; }
-
-        /// <summary>
-        /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
-        /// </summary>
-        public ObservableCollection<IGroupChatCachePlugin> GroupChatCachePlugins { get; }
-
-        /// <summary>
-        /// Gets the action to be performed when a Plugin in the
-        /// Options Menu is activated.
-        /// </summary>
-        public ICommand GroupChatCachePluginActivated { get; }
-
-        /// <summary>
-        /// Gets or sets the plugin that should be automatically executed when indexing is complete.
-        /// This property is only used for UI-automation tasks. If null, the UI will be displayed normally
-        /// when loading is complete. If a plugin is specified, the group specified in <see cref="ActivatePluginForGroupOnLoad"/>
-        /// will be used as a parameter.
-        /// </summary>
-        public IGroupChatCachePlugin ActivatePluginOnLoad { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating which group should be passed as a parameter to an automatically executed
-        /// plugin. See <see cref="ActivatePluginOnLoad"/> for more information.
-        /// </summary>
-        public IMessageContainer ActivatePluginForGroupOnLoad { get; set; }
 
         /// <summary>
         /// Gets the Big Dialog that should be displayed as a popup.
@@ -241,8 +207,17 @@ namespace GroupMeClient.ViewModels
 
         private bool DeferSearchUpdating { get; set; }
 
+        public void RunPlugin(IMessageContainer group, IGroupChatPlugin plugin)
+        {
+            var cache = this.GetMessagesForGroup(group);
+
+            var allMessages = this.CurrentlyDisplayedContext.Messages.AsNoTracking();
+
+            _ = plugin.Activated(group, cache, allMessages, this);
+        }
+
         /// <inheritdoc/>
-        void ICachePluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
+        void IPluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
         {
             this.OpenNewGroupChat(container);
             this.UpdateContextView(message);
@@ -273,16 +248,6 @@ namespace GroupMeClient.ViewModels
                     GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s.MessageContainer), (g) => true, true),
                 };
                 this.AllGroupsChats.Add(vm);
-            }
-
-            // Check to see if a plugin should be automatically executed.
-            if (this.ActivatePluginForGroupOnLoad != null && this.ActivatePluginOnLoad != null)
-            {
-                var cache = this.GetMessagesForGroup(this.ActivatePluginForGroupOnLoad);
-                _ = this.ActivatePluginOnLoad.Activated(this.ActivatePluginForGroupOnLoad, cache, this);
-
-                this.ActivatePluginForGroupOnLoad = null;
-                this.ActivatePluginOnLoad = null;
             }
         }
 
@@ -447,12 +412,6 @@ namespace GroupMeClient.ViewModels
             this.ContextView.AssociateWith = this.SelectedGroupChat;
             this.ContextView.Messages = messagesForGroupChat;
             this.ContextView.EnsureVisible(message);
-        }
-
-        private void ActivateGroupPlugin(IGroupChatCachePlugin plugin)
-        {
-            var cache = this.GetMessagesForGroup(this.SelectedGroupChat);
-            _ = plugin.Activated(this.SelectedGroupChat, cache, this);
         }
 
         private void CloseLittlePopup()
