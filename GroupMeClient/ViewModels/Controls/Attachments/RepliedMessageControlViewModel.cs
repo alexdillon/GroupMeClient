@@ -14,27 +14,30 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// </summary>
         /// <param name="originalMessageId">The message id of the original message that is being replied to.</param>
         /// <param name="messageContainer">The message container in which the original message is contained.</param>
-        /// <param name="cacheContext">The caching context in which messages are stored.</param>
+        /// <param name="cacheManager">The caching context in which messages are stored.</param>
         /// <param name="nestLevel">The number of attachment deeply nested this <see cref="Message"/> is.</param>
-        public RepliedMessageControlViewModel(string originalMessageId, IMessageContainer messageContainer, CacheContext cacheContext, int nestLevel)
+        public RepliedMessageControlViewModel(string originalMessageId, IMessageContainer messageContainer, CacheManager cacheManager, int nestLevel)
         {
-            var originalMessage = cacheContext.Messages.Find(originalMessageId);
-            if (originalMessage == null)
+            using (var context = cacheManager.OpenNewContext())
             {
-                // problem
-            }
-            else
-            {
-                if (messageContainer is Group g)
+                var originalMessage = context.Messages.Find(originalMessageId);
+                if (originalMessage == null)
                 {
-                    originalMessage.AssociateWithGroup(g);
+                    // problem
                 }
-                else if (messageContainer is Chat c)
+                else
                 {
-                    originalMessage.AssociateWithChat(c);
-                }
+                    if (messageContainer is Group g)
+                    {
+                        originalMessage.AssociateWithGroup(g);
+                    }
+                    else if (messageContainer is Chat c)
+                    {
+                        originalMessage.AssociateWithChat(c);
+                    }
 
-                this.Message = new MessageControlViewModel(originalMessage, cacheContext, false, true, nestLevel + 1);
+                    this.Message = new MessageControlViewModel(originalMessage, cacheManager, false, true, nestLevel + 1);
+                }
             }
         }
 

@@ -112,12 +112,97 @@
         </mah:HamburgerMenu>
 
         <!--Reconnecting Spinner-->
-        <Controls:ProgressRing IsActive="{Binding IsReconnecting}"
-                               Width="20" Height="20"
-                               HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Margin="15,170,0,0"
-                               Foreground="White" />
+        <ToggleButton Height="48"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Top"
+                      Margin="0,170,0,0"
+                      BorderThickness="0"
+                      BorderBrush="Transparent"
+                      Focusable="False" 
+                      IsHitTestVisible="{Binding IsReconnecting}"
+                      x:Name="loadingSpinnerButton">
+
+            <ToggleButton.Style>
+                <Style TargetType="{x:Type ToggleButton}">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Width" Value="48"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                <Border Background="{TemplateBinding Background}">
+                                    <ContentPresenter />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#1584C7"/>
+                        </Trigger>
+
+                        <DataTrigger Binding="{Binding IsPaneOpen, ElementName=HamburgerMenuControl}" Value="True">
+                            <Setter Property="Width" Value="240"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ToggleButton.Style>
+
+            <Controls:ProgressRing IsActive="{Binding IsReconnecting}" 
+                                   Width="20" Height="20"
+                                   Margin="14,0,0,0"
+                                   HorizontalAlignment="Left"
+                                   Foreground="White" />
+        </ToggleButton>
+
+        <ListBox Visibility="{Binding IsMouseOver, ElementName=loadingSpinnerButton, Converter={StaticResource booleanToVisibilityConverter}}"
+                 ItemsSource="{Binding TaskManager.RunningTasks}"
+                 Width="230"
+                 Height="300"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Top"
+                 Margin="48,170,0,0"
+                 Background="Transparent"
+                 Opacity="0.80"
+                 BorderThickness="0">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="#252525" BorderThickness="2">
+                        <Grid Height="50" Background="Black">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="175" />
+                            </Grid.ColumnDefinitions>
+
+                            <Controls:ProgressRing Grid.Column="0"
+                                               IsActive="True"
+                                               Margin="10,0,10,0"
+                                               Width="20" Height="20"
+                                               Foreground="White" />
+
+                            <TextBlock Grid.Column="1"
+                                       Foreground="White"
+                                       TextTrimming="CharacterEllipsis"
+                                       Text="{Binding Name}"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                 <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
 
         <!--Refresh Button-->
         <Button Height="48"

@@ -34,6 +34,21 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public MainViewModel()
         {
+            Directory.CreateDirectory(this.DataRoot);
+
+            Utilities.TempFileUtils.InitializeTempStorage();
+
+            this.TaskManager = new Tasks.TaskManager();
+            this.CacheManager = new Caching.CacheManager(this.CachePath, this.TaskManager);
+
+            this.TaskManager.TaskCountChanged += this.TaskManager_TaskCountChanged;
+
+            // Create a throw-away DbContext to allow EF Core to begin allocating resouces
+            // in the background, allowing for faster access later.
+            Task.Run(() => this.CacheManager.OpenNewContext());
+
+            // Perform additional startup procedures that are dependent on the values
+            // configured in the settings file.
             this.InitializeClient();
         }
 
@@ -123,6 +138,11 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public ToastHolderViewModel ToastHolderManager { get; private set; }
 
+        /// <summary>
+        /// Gets the Task Manager for this application.
+        /// </summary>
+        public Tasks.TaskManager TaskManager { get; }
+
         private string DataRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicroCube", "GroupMe Desktop Client");
 
         private string SettingsPath => Path.Combine(this.DataRoot, "settings.json");
@@ -135,7 +155,7 @@ namespace GroupMeClient.ViewModels
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
-        private Caching.CacheContext CacheContext { get; set; }
+        private Caching.CacheManager CacheManager { get; }
 
         private Settings.SettingsManager SettingsManager { get; set; }
 
@@ -157,10 +177,6 @@ namespace GroupMeClient.ViewModels
 
         private void InitializeClient()
         {
-            Directory.CreateDirectory(this.DataRoot);
-
-            Utilities.TempFileUtils.InitializeTempStorage();
-
             this.SettingsManager = new Settings.SettingsManager(this.SettingsPath);
             this.SettingsManager.LoadSettings();
 
@@ -184,13 +200,12 @@ namespace GroupMeClient.ViewModels
             {
                 // Startup Regularly
                 this.GroupMeClient = new GroupMeClientApi.GroupMeClient(this.SettingsManager.CoreSettings.AuthToken);
-                this.CacheContext = new Caching.CacheContext(this.CachePath);
                 this.GroupMeClient.ImageDownloader = new GroupMeClientApi.CachedImageDownloader(this.ImageCachePath);
 
                 this.NotificationRouter = new NotificationRouter(this.GroupMeClient);
 
-                this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient, this.SettingsManager, this.CacheContext);
-                this.SearchViewModel = new SearchViewModel(this.GroupMeClient, this.CacheContext);
+                this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient, this.SettingsManager, this.CacheManager);
+                this.SearchViewModel = new SearchViewModel(this.GroupMeClient, this.CacheManager);
                 this.SettingsViewModel = new SettingsViewModel(this.SettingsManager);
 
                 this.RegisterNotifications();
@@ -348,26 +363,24 @@ namespace GroupMeClient.ViewModels
         {
             this.DisconnectedComponentCount += update.Disconnected ? 1 : -1;
             this.DisconnectedComponentCount = Math.Max(this.DisconnectedComponentCount, 0); // make sure it never goes negative
+            this.TaskManager.UpdateNumberOfBackgroundLoads(this.DisconnectedComponentCount);
             Application.Current.Dispatcher.Invoke(() =>
             {
-                this.IsReconnecting = this.DisconnectedComponentCount > 0;
+                this.IsReconnecting = this.DisconnectedComponentCount > 0 || this.TaskManager.RunningTasks.Count > 0;
+            });
+        }
+
+        private void TaskManager_TaskCountChanged(object sender, EventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.IsReconnecting = this.DisconnectedComponentCount > 0 || this.TaskManager.RunningTasks.Count > 0;
             });
         }
 
         private void IndexAndRunCommand(Messaging.IndexAndRunPluginRequestMessage cmd)
         {
-            this.SearchViewModel.ActivatePluginOnLoad = cmd.Plugin;
-            this.SearchViewModel.ActivatePluginForGroupOnLoad = cmd.MessageContainer;
-
-            // Find Search Tab entry and set as active
-            foreach (var menuItem in this.MenuItems)
-            {
-                if (menuItem.Tag == this.SearchViewModel)
-                {
-                    this.SelectedItem = menuItem;
-                    break;
-                }
-            }
+            this.SearchViewModel.RunPlugin(cmd.MessageContainer, cmd.Plugin);
         }
 
         private async Task RefreshEverything()

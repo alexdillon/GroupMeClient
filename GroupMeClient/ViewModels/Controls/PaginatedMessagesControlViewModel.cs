@@ -25,10 +25,10 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="PaginatedMessagesControlViewModel"/> class.
         /// </summary>
-        /// <param name="cacheContext">The caching context in which displayed messages are stored.</param>
-        public PaginatedMessagesControlViewModel(CacheContext cacheContext)
+        /// <param name="cacheManager">The caching context in which displayed messages are stored.</param>
+        public PaginatedMessagesControlViewModel(CacheManager cacheManager)
         {
-            this.CacheContext = cacheContext;
+            this.CacheManager = cacheManager;
             this.CurrentPage = new ObservableCollection<MessageControlViewModelBase>();
             this.MessagesPerPage = 50;
 
@@ -168,7 +168,7 @@ namespace GroupMeClient.ViewModels.Controls
             set { this.Set(() => this.SelectedMessage, ref this.selectedMessage, value); }
         }
 
-        private CacheContext CacheContext { get; }
+        private CacheManager CacheManager { get; }
 
         private DateTime LastMarkerTime { get; set; }
 
@@ -221,7 +221,7 @@ namespace GroupMeClient.ViewModels.Controls
 
                 var msgVm = new MessageControlViewModel(
                     msg,
-                    this.CacheContext,
+                    this.CacheManager,
                     showLikers: this.ShowLikers);
 
                 // add an inline timestamp if needed

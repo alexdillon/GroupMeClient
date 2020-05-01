@@ -19,7 +19,7 @@ namespace GroupMeClient.ViewModels
     /// <summary>
     /// <see cref="SearchViewModel"/> provides a ViewModel for the <see cref="Controls.SearchView"/> view.
     /// </summary>
-    public class SearchViewModel : ViewModelBase, GroupMeClientPlugin.GroupChat.ICachePluginUIIntegration
+    public class SearchViewModel : ViewModelBase, IPluginUIIntegration
     {
         private ViewModelBase popupDialog;
         private string searchTerm = string.Empty;
@@ -36,22 +36,22 @@ namespace GroupMeClient.ViewModels
         /// Initializes a new instance of the <see cref="SearchViewModel"/> class.
         /// </summary>
         /// <param name="groupMeClient">The client to use.</param>
-        /// <param name="cacheContext">The cache database to use.</param>
-        public SearchViewModel(GroupMeClientApi.GroupMeClient groupMeClient, Caching.CacheContext cacheContext)
+        /// <param name="cacheManager">The cache database to use.</param>
+        public SearchViewModel(GroupMeClientApi.GroupMeClient groupMeClient, Caching.CacheManager cacheManager)
         {
-            this.GroupMeClient = groupMeClient ?? throw new System.ArgumentNullException(nameof(groupMeClient));
-            this.CacheContext = cacheContext ?? throw new ArgumentNullException(nameof(cacheContext));
+            this.GroupMeClient = groupMeClient ?? throw new ArgumentNullException(nameof(groupMeClient));
+            this.CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
 
             this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
 
-            this.ResultsView = new PaginatedMessagesControlViewModel(this.CacheContext)
+            this.ResultsView = new PaginatedMessagesControlViewModel(this.CacheManager)
             {
                 MessageSelectedCommand = new RelayCommand<MessageControlViewModelBase>(this.MessageSelected),
                 ShowLikers = false,
                 NewestAtBottom = false,
             };
 
-            this.ContextView = new PaginatedMessagesControlViewModel(this.CacheContext)
+            this.ContextView = new PaginatedMessagesControlViewModel(this.CacheManager)
             {
                 ShowTitle = false,
                 ShowLikers = true,
@@ -63,16 +63,7 @@ namespace GroupMeClient.ViewModels
             this.EasyClosePopup = new RelayCommand(this.CloseLittlePopup);
             this.ResetFilters = new RelayCommand<bool>(this.ResetFilterFields);
 
-            this.GroupChatCachePlugins = new ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin>();
-            this.GroupChatCachePluginActivated =
-                new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatCachePlugin>(this.ActivateGroupPlugin);
-
-            foreach (var plugin in Plugins.PluginManager.Instance.GroupChatCachePlugins)
-            {
-                this.GroupChatCachePlugins.Add(plugin);
-            }
-
-            this.Loaded = new RelayCommand(this.StartIndexing);
+            this.Loaded = new RelayCommand(async () => await this.LoadIndexedGroups(), true);
         }
 
         /// <summary>
@@ -110,31 +101,6 @@ namespace GroupMeClient.ViewModels
         /// Gets the ViewModel for the in-context message view.
         /// </summary>
         public PaginatedMessagesControlViewModel ContextView { get; }
-
-        /// <summary>
-        /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
-        /// </summary>
-        public ObservableCollection<IGroupChatCachePlugin> GroupChatCachePlugins { get; }
-
-        /// <summary>
-        /// Gets the action to be performed when a Plugin in the
-        /// Options Menu is activated.
-        /// </summary>
-        public ICommand GroupChatCachePluginActivated { get; }
-
-        /// <summary>
-        /// Gets or sets the plugin that should be automatically executed when indexing is complete.
-        /// This property is only used for UI-automation tasks. If null, the UI will be displayed normally
-        /// when loading is complete. If a plugin is specified, the group specified in <see cref="ActivatePluginForGroupOnLoad"/>
-        /// will be used as a parameter.
-        /// </summary>
-        public IGroupChatCachePlugin ActivatePluginOnLoad { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating which group should be passed as a parameter to an automatically executed
-        /// plugin. See <see cref="ActivatePluginOnLoad"/> for more information.
-        /// </summary>
-        public IMessageContainer ActivatePluginForGroupOnLoad { get; set; }
 
         /// <summary>
         /// Gets the Big Dialog that should be displayed as a popup.
@@ -229,7 +195,9 @@ namespace GroupMeClient.ViewModels
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
 
-        private Caching.CacheContext CacheContext { get; }
+        private Caching.CacheManager CacheManager { get; }
+
+        private Caching.CacheManager.CacheContext CurrentlyDisplayedContext { get; set; }
 
         private IMessageContainer SelectedGroupChat { get; set; }
 
@@ -239,8 +207,17 @@ namespace GroupMeClient.ViewModels
 
         private bool DeferSearchUpdating { get; set; }
 
+        public void RunPlugin(IMessageContainer group, IGroupChatPlugin plugin)
+        {
+            var cache = this.GetMessagesForGroup(group);
+
+            var allMessages = this.CurrentlyDisplayedContext.Messages.AsNoTracking();
+
+            _ = plugin.Activated(group, cache, allMessages, this);
+        }
+
         /// <inheritdoc/>
-        void ICachePluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
+        void IPluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
         {
             this.OpenNewGroupChat(container);
             this.UpdateContextView(message);
@@ -252,51 +229,19 @@ namespace GroupMeClient.ViewModels
             this.UpdateSearchResults();
         }
 
-        private void StartIndexing()
+        private async Task LoadIndexedGroups()
         {
-            if (this.IndexingTask != null && !(this.IndexingTask.IsCompleted || this.IndexingTask.IsCanceled))
-            {
-                // handle cancellation and restart
-                this.CancellationTokenSource.Cancel();
-                this.IndexingTask.ContinueWith(async (l) =>
-                {
-                    await Application.Current.Dispatcher.InvokeAsync(() => this.StartIndexing());
-                });
-                return;
-            }
+            await this.GroupMeClient.GetGroupsAsync();
+            await this.GroupMeClient.GetChatsAsync();
+            var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
 
-            this.CancellationTokenSource = new CancellationTokenSource();
-            this.IndexingTask = this.IndexGroups();
-        }
-
-        private async Task IndexGroups()
-        {
-            var loadingDialog = new LoadingControlViewModel();
-            this.PopupDialog = loadingDialog;
-
-            var groups = await this.GroupMeClient.GetGroupsAsync();
-            var chats = await this.GroupMeClient.GetChatsAsync();
-            var groupsAndChats = Enumerable.Concat<IMessageContainer>(groups, chats);
+            this.CacheManager.SuperIndexer.BeginAsyncTransaction(groupsAndChats);
+            this.CacheManager.SuperIndexer.EndTransaction();
 
             this.AllGroupsChats.Clear();
 
             foreach (var group in groupsAndChats)
             {
-                this.CancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                if (this.ActivatePluginForGroupOnLoad != null && this.ActivatePluginOnLoad != null)
-                {
-                    // if a plugin is set to automatically execute for only a single group,
-                    // index only that group to improve performance
-                    if (this.ActivatePluginForGroupOnLoad.Id != group.Id)
-                    {
-                        continue;
-                    }
-                }
-
-                loadingDialog.Message = $"Indexing {group.Name}";
-                await this.IndexGroup(group);
-
                 // Add Group/Chat to the list
                 var vm = new GroupControlViewModel(group)
                 {
@@ -304,69 +249,6 @@ namespace GroupMeClient.ViewModels
                 };
                 this.AllGroupsChats.Add(vm);
             }
-
-            this.PopupDialog = null;
-
-            // Check to see if a plugin should be automatically executed.
-            if (this.ActivatePluginForGroupOnLoad != null && this.ActivatePluginOnLoad != null)
-            {
-                var cache = this.GetMessagesForGroup(this.ActivatePluginForGroupOnLoad);
-                _ = this.ActivatePluginOnLoad.Activated(this.ActivatePluginForGroupOnLoad, cache, this);
-
-                this.ActivatePluginForGroupOnLoad = null;
-                this.ActivatePluginOnLoad = null;
-            }
-        }
-
-        private async Task IndexGroup(IMessageContainer container)
-        {
-            var groupState = this.CacheContext.IndexStatus.Find(container.Id);
-
-            if (groupState == null)
-            {
-                groupState = new Caching.CacheContext.GroupIndexStatus()
-                {
-                    Id = container.Id,
-                };
-                this.CacheContext.IndexStatus.Add(groupState);
-            }
-
-            async Task<ICollection<Message>> InitialDownloadAction()
-            {
-                return await container.GetMessagesAsync();
-            }
-
-            var newestMessages = await Utilities.ReliabilityStateMachine.TryUntilSuccess(InitialDownloadAction, this.CancellationTokenSource.Token);
-
-            this.CacheContext.AddMessages(newestMessages);
-
-            long.TryParse(groupState.LastIndexedId, out var lastIndexId);
-            long.TryParse(newestMessages.Last().Id, out var retreiveFrom);
-
-            while (lastIndexId < retreiveFrom && !this.CancellationTokenSource.IsCancellationRequested)
-            {
-                // not up-to-date, we need to retreive the delta
-                async Task<ICollection<Message>> DownloadDeltaAction()
-                {
-                    return await container.GetMaxMessagesAsync(GroupMeClientApi.MessageRetreiveMode.BeforeId, retreiveFrom.ToString());
-                }
-
-                var results = await Utilities.ReliabilityStateMachine.TryUntilSuccess(DownloadDeltaAction, this.CancellationTokenSource.Token);
-
-                this.CacheContext.AddMessages(results);
-
-                if (results.Count == 0)
-                {
-                    // we've hit the top.
-                    break;
-                }
-
-                long.TryParse(results.Last().Id, out var latestRetreivedOldestId);
-                retreiveFrom = latestRetreivedOldestId;
-            }
-
-            groupState.LastIndexedId = newestMessages.First().Id; // everything is downloaded
-            await this.CacheContext.SaveChangesAsync(this.CancellationTokenSource.Token);
         }
 
         private void OpenNewGroupChat(IMessageContainer group)
@@ -409,9 +291,11 @@ namespace GroupMeClient.ViewModels
 
         private IQueryable<Message> GetMessagesForGroup(IMessageContainer group)
         {
+            this.CurrentlyDisplayedContext?.Dispose();
+            this.CurrentlyDisplayedContext = this.CacheManager.OpenNewContext();
             if (group is Group g)
             {
-                return this.CacheContext.Messages
+                return this.CurrentlyDisplayedContext.Messages
                     .AsNoTracking()
                     .Where(m => m.GroupId == g.Id);
             }
@@ -420,11 +304,11 @@ namespace GroupMeClient.ViewModels
                 // Chat.Id returns the Id of the other user
                 // However, GroupMe messages are natively returned with a Conversation Id instead
                 // Conversation IDs are user1+user2.
-                var sampleMessage = c.Messages.FirstOrDefault();
+                var conversatonId = c.LatestMessage.ConversationId;
 
-                return this.CacheContext.Messages
+                return this.CurrentlyDisplayedContext.Messages
                     .AsNoTracking()
-                    .Where(m => m.ConversationId == sampleMessage.ConversationId);
+                    .Where(m => m.ConversationId == conversatonId);
             }
             else
             {
@@ -528,12 +412,6 @@ namespace GroupMeClient.ViewModels
             this.ContextView.AssociateWith = this.SelectedGroupChat;
             this.ContextView.Messages = messagesForGroupChat;
             this.ContextView.EnsureVisible(message);
-        }
-
-        private void ActivateGroupPlugin(IGroupChatCachePlugin plugin)
-        {
-            var cache = this.GetMessagesForGroup(this.SelectedGroupChat);
-            _ = plugin.Activated(this.SelectedGroupChat, cache, this);
         }
 
         private void CloseLittlePopup()

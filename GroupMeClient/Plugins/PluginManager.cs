@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using GroupMeClientPlugin;
@@ -34,11 +35,6 @@ namespace GroupMeClient.Plugins
         public ICollection<IGroupChatPlugin> GroupChatPlugins { get; } = new List<IGroupChatPlugin>();
 
         /// <summary>
-        /// Gets the available <see cref="IGroupChatCachePlugin"/> plugins.
-        /// </summary>
-        public ICollection<IGroupChatCachePlugin> GroupChatCachePlugins { get; } = new List<IGroupChatCachePlugin>();
-
-        /// <summary>
         /// Gets the available <see cref="IMessageComposePlugin"/> plugins.
         /// </summary>
         public ICollection<IMessageComposePlugin> MessageComposePlugins { get; } = new List<IMessageComposePlugin>();
@@ -70,20 +66,27 @@ namespace GroupMeClient.Plugins
             {
                 if (assembly != null)
                 {
-                    Type[] types = assembly.GetTypes();
-                    foreach (Type type in types)
+                    try
                     {
-                        if (type.IsInterface || type.IsAbstract)
+                        Type[] types = assembly.GetTypes();
+                        foreach (Type type in types)
                         {
-                            continue;
-                        }
-                        else
-                        {
-                            if (type.IsSubclassOf(pluginType))
+                            if (type.IsInterface || type.IsAbstract)
                             {
-                                pluginTypes.Add(type);
+                                continue;
+                            }
+                            else
+                            {
+                                if (type.IsSubclassOf(pluginType))
+                                {
+                                    pluginTypes.Add(type);
+                                }
                             }
                         }
+                    }
+                    catch (Exception)
+                    {
+                        Debug.WriteLine($"Failed to load plugin {assembly.FullName}");
                     }
                 }
             }
@@ -102,10 +105,6 @@ namespace GroupMeClient.Plugins
                 else if (plugin is IGroupChatPlugin groupChatPlugin)
                 {
                     this.GroupChatPlugins.Add(groupChatPlugin);
-                }
-                else if (plugin is IGroupChatCachePlugin groupChatCachePlugin)
-                {
-                    this.GroupChatCachePlugins.Add(groupChatCachePlugin);
                 }
             }
         }

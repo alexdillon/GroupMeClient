@@ -64,8 +64,7 @@
 
             <TextBlock Grid.Column="0"
                         HorizontalAlignment="Left" VerticalAlignment="Center"
-                        Padding="15,0,0,0"
-                        Height="Auto" FontSize="17" FontWeight="SemiBold"
+                        Margin="20,0,0,0"                        Height="Auto" FontSize="17" FontWeight="SemiBold"
                         Text="Chats" />
 
             <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
@@ -90,11 +89,14 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}" x:Name="chatsListControlTemplate">
-                                <Border BorderThickness="1"
+
+                                <Grid>
+                                    <ContentPresenter/>
+
+                                    <Border BorderThickness="3"
                                         x:Name="highlightBorder"
-                                        Margin="0" >      
-                                    <ContentPresenter />
-                                </Border>
+                                        Margin="0" />
+                                </Grid>
 
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="true">
@@ -222,82 +224,12 @@
                        Height="Auto" FontSize="17" FontWeight="SemiBold"
                        Text="{Binding SelectedGroupName}" />
 
-            <!--Plugins Drop Down Menu Button-->
-            <ToggleButton Grid.Column="1"
-                            Width="25" Height="25"
-                            BorderThickness="0"
-                            HorizontalAlignment="Left"
-                            x:Name="toggleGroupOptionsButton">
-                <ToggleButton.Resources>
-                    <iconPacks:Octicons x:Key="ArrowUp" Width="15" Height="15" Kind="TriangleUp"></iconPacks:Octicons>
-                    <iconPacks:Octicons x:Key="ArrowDown" Width="15" Height="15" Kind="TriangleDown"></iconPacks:Octicons>
-                </ToggleButton.Resources>
-
-                <ToggleButton.Style>
-                    <Style TargetType="{x:Type ToggleButton}">
-                        <Setter Property="Content" Value="{StaticResource ArrowDown}" />
-
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                    <Border HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="border" Background="{DynamicResource ControlBackgroundBrush}">
-                                        <ContentPresenter Margin="5"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsChecked" Value="true">
-                                            <Setter Property="Background" TargetName="border" Value="{DynamicResource ControlBackgroundBrush}"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-
-                        <Style.Triggers>
-                            <Trigger Property="IsChecked" Value="true">
-                                <Setter Property="Content" Value="{StaticResource ArrowUp}" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </ToggleButton.Style>
-            </ToggleButton>
-
             <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
         </Grid>
 
         <controls:PaginatedMessagesControl 
             Grid.Column="2" Grid.Row="1"
             Content="{Binding ContextView}" />
-
-        <!--Plugins Dropdown List-->
-        <Border Grid.Column="2" Grid.Row="1"
-                Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
-                VerticalAlignment="Top"
-                BorderThickness="20,10,20,30"
-                BorderBrush="{DynamicResource PluginMenuBrush}">
-            <ItemsControl ItemsSource="{Binding GroupChatCachePlugins}" Background="{DynamicResource PluginMenuBrush}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button 
-                            Content="{Binding PluginName}"
-                            Command="{Binding RelativeSource={RelativeSource FindAncestor, 
-                                     AncestorType={x:Type views:SearchView}}, Path=DataContext.GroupChatCachePluginActivated}"
-                            CommandParameter="{Binding Path=.}"
-                            HorizontalContentAlignment="Left"
-                            Foreground="{DynamicResource PluginButtonFontBrush}" 
-                            BorderThickness="0"
-                            FontSize="14"
-                            FontWeight="SemiBold"
-                            Margin="5" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </Border>
 
         <controls:Popup Grid.Column="0" Grid.Row="0"
                         Grid.ColumnSpan="3"

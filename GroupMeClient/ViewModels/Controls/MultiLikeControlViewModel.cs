@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
+using GroupMeClientPlugin.GroupChat;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -158,7 +159,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <see cref="MultiLikePseudoPlugin"/> defines a plugin-style object that can be used to integrate
         /// Multi-Like functionality into a <see cref="GroupContentsControlViewModel"/>.
         /// </summary>
-        public class MultiLikePseudoPlugin : GroupMeClientPlugin.PluginBase, GroupMeClientPlugin.GroupChat.IGroupChatPlugin
+        public class MultiLikePseudoPlugin : GroupMeClientPlugin.PluginBase, IGroupChatPlugin
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="MultiLikePseudoPlugin"/> class.
@@ -177,6 +178,9 @@ namespace GroupMeClient.ViewModels.Controls
             public override string PluginVersion => ThisAssembly.SimpleVersion;
 
             /// <inheritdoc/>
+            public override Version ApiVersion => new Version(2, 0, 0);
+
+            /// <inheritdoc/>
             public string PluginName => this.PluginDisplayName;
 
             private GroupContentsControlViewModel GroupContentsControlViewModel { get; }
@@ -184,7 +188,7 @@ namespace GroupMeClient.ViewModels.Controls
             private MultiLikeControlViewModel MultiLikeControlViewModel { get; }
 
             /// <inheritdoc/>
-            public Task Activated(IMessageContainer groupOrChat)
+            public Task Activated(IMessageContainer groupOrChat, IQueryable<Message> cacheForGroupOrChat, IQueryable<Message> globalCache, IPluginUIIntegration integration)
             {
                 this.GroupContentsControlViewModel.SmallDialog = this.MultiLikeControlViewModel;
                 return Task.CompletedTask;
