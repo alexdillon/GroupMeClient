@@ -64,8 +64,7 @@
 
             <TextBlock Grid.Column="0"
                         HorizontalAlignment="Left" VerticalAlignment="Center"
-                        Padding="15,0,0,0"
-                        Height="Auto" FontSize="17" FontWeight="SemiBold"
+                        Margin="20,0,0,0"                        Height="Auto" FontSize="17" FontWeight="SemiBold"
                         Text="Chats" />
 
             <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
@@ -90,11 +89,14 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}" x:Name="chatsListControlTemplate">
-                                <Border BorderThickness="1"
+
+                                <Grid>
+                                    <ContentPresenter/>
+
+                                    <Border BorderThickness="3"
                                         x:Name="highlightBorder"
-                                        Margin="0" >      
-                                    <ContentPresenter />
-                                </Border>
+                                        Margin="0" />
+                                </Grid>
 
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="true">
