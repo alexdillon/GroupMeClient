@@ -75,13 +75,13 @@ namespace GroupMeClient.ViewModels.Controls
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
         /// </summary>
         /// <param name="messageContainer">The Group or Chat to bind to.</param>
-        /// <param name="cacheContext">The caching context in which messages are archived.</param>
+        /// <param name="cacheManager">The caching context in which messages are archived.</param>
         /// <param name="settings">The settings instance to use.</param>
-        public GroupContentsControlViewModel(IMessageContainer messageContainer, CacheContext cacheContext, Settings.SettingsManager settings)
+        public GroupContentsControlViewModel(IMessageContainer messageContainer, CacheManager cacheManager, Settings.SettingsManager settings)
             : this()
         {
             this.MessageContainer = messageContainer;
-            this.CacheContext = cacheContext;
+            this.CacheManager = cacheManager;
             this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
 
@@ -246,7 +246,7 @@ namespace GroupMeClient.ViewModels.Controls
             set { this.Set(() => this.MessageBeingRepliedTo, ref this.messageBeingRepliedTo, value); }
         }
 
-        private CacheContext CacheContext { get; }
+        private CacheManager CacheManager { get; }
 
         private SemaphoreSlim ReloadSem { get; }
 
@@ -350,6 +350,8 @@ namespace GroupMeClient.ViewModels.Controls
                 {
                     // load the most recent messages
                     results = await this.MessageContainer.GetMessagesAsync();
+
+                    this.CacheManager.SuperIndexer.SubmitGroupUpdate(this.MessageContainer, results);
                 }
                 else
                 {
@@ -406,7 +408,7 @@ namespace GroupMeClient.ViewModels.Controls
                         // add new message
                         var msgVm = new MessageControlViewModel(
                             msg,
-                            this.CacheContext,
+                            this.CacheManager,
                             showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages);
                         this.Messages.Add(msgVm);
 
@@ -586,7 +588,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             var messageControl = new MessageControl()
             {
-                DataContext = new MessageControlViewModel(message, this.CacheContext, false, true, 1),
+                DataContext = new MessageControlViewModel(message, this.CacheManager, false, true, 1),
                 Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
                 Foreground = (Brush)Application.Current.FindResource("BlackBrush"),
             };
@@ -764,7 +766,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void InitiateReplyCommand(MessageControlViewModel message)
         {
-            this.MessageBeingRepliedTo = new MessageControlViewModel(message.Message, this.CacheContext, false, true, 1);
+            this.MessageBeingRepliedTo = new MessageControlViewModel(message.Message, this.CacheManager, false, true, 1);
         }
     }
 }

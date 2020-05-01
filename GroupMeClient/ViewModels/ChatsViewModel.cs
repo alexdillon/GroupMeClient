@@ -34,12 +34,12 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         /// <param name="groupMeClient">The API client that should be used.</param>
         /// <param name="settingsManager">The application settings manager.</param>
-        /// <param name="cacheContext">The caching context for messages that should be used.</param>
-        public ChatsViewModel(GroupMeClientApi.GroupMeClient groupMeClient, SettingsManager settingsManager, CacheContext cacheContext)
+        /// <param name="cacheManager">The caching context for messages that should be used.</param>
+        public ChatsViewModel(GroupMeClientApi.GroupMeClient groupMeClient, SettingsManager settingsManager, CacheManager cacheManager)
         {
             this.GroupMeClient = groupMeClient;
             this.SettingsManager = settingsManager;
-            this.CacheContext = cacheContext;
+            this.CacheManager = cacheManager;
 
             this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<GroupContentsControlViewModel>();
@@ -118,7 +118,7 @@ namespace GroupMeClient.ViewModels
 
         private SettingsManager SettingsManager { get; }
 
-        private CacheContext CacheContext { get; }
+        private CacheManager CacheManager { get; }
 
         private PushClient PushClient { get; set; }
 
@@ -131,24 +131,30 @@ namespace GroupMeClient.ViewModels
         /// <inheritdoc/>
         async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification, IMessageContainer container)
         {
-            _ = this.LoadGroupsAndChats();
+            this.CacheManager.SuperIndexer.BeginAsyncTransaction();
+
+            _ = this.LoadGroupsAndChats(true);
 
             var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
             if (groupVm != null)
             {
                 await groupVm.LoadNewMessages();
             }
+
+            this.CacheManager.SuperIndexer.EndTransaction();
         }
 
         /// <inheritdoc/>
         async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
         {
-            _ = this.LoadGroupsAndChats();
+            _ = this.LoadGroupsAndChats(true);
             var chatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
             if (chatVm != null)
             {
                 await chatVm.LoadNewMessages();
             }
+
+            this.CacheManager.SuperIndexer.EndTransaction();
         }
 
         /// <inheritdoc/>
@@ -179,21 +185,24 @@ namespace GroupMeClient.ViewModels
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task RefreshEverything()
         {
-            await this.LoadGroupsAndChats();
+            await this.LoadGroupsAndChats(true);
             foreach (var container in this.ActiveGroupsChats)
             {
                 await container.LoadNewMessages();
             }
+
+            this.CacheManager.SuperIndexer.EndTransaction();
         }
 
         private async Task Loaded()
         {
             this.AllGroupsChats.Clear();
-            await this.LoadGroupsAndChats();
+            await this.LoadGroupsAndChats(true);
+            this.CacheManager.SuperIndexer.EndTransaction();
             this.CheckForRestore();
         }
 
-        private async Task LoadGroupsAndChats()
+        private async Task LoadGroupsAndChats(bool updateSuperIndexer = false)
         {
             await this.ReloadGroupsSem.WaitAsync();
 
@@ -203,6 +212,12 @@ namespace GroupMeClient.ViewModels
                 await this.GroupMeClient.GetChatsAsync();
 
                 var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
+
+                if (updateSuperIndexer)
+                {
+                    // Submit new Group and Chat listings to SuperIndexer to allow for background indexing if needed.
+                    this.CacheManager.SuperIndexer.BeginAsyncTransaction(groupsAndChats);
+                }
 
                 foreach (var group in groupsAndChats)
                 {
@@ -292,7 +307,7 @@ namespace GroupMeClient.ViewModels
             else
             {
                 // open a new group or chat
-                var groupContentsDisplay = new GroupContentsControlViewModel(group.MessageContainer, this.CacheContext, this.SettingsManager)
+                var groupContentsDisplay = new GroupContentsControlViewModel(group.MessageContainer, this.CacheManager, this.SettingsManager)
                 {
                     CloseGroup = new RelayCommand<GroupContentsControlViewModel>(this.CloseChat),
                 };

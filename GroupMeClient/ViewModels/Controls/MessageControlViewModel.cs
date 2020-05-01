@@ -33,14 +33,14 @@ namespace GroupMeClient.ViewModels.Controls
         /// Initializes a new instance of the <see cref="MessageControlViewModel"/> class.
         /// </summary>
         /// <param name="message">The message to bind to this control.</param>
-        /// <param name="cacheContext">The cache context in which this message is archived.</param>
+        /// <param name="cacheManager">The cache context in which this message is archived.</param>
         /// <param name="showLikers">Indicates whether the like status for a message should be displayed.</param>
         /// <param name="showPreviewsOnlyForMultiImages">Indicates whether only previews, or full images, should be shown for multi-images.</param>
         /// <param name="nestLevel">The number of <see cref="MessageControlViewModel"/>s deeply nested this is. Top level messages are 0.</param>
-        public MessageControlViewModel(Message message, CacheContext cacheContext, bool showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0)
+        public MessageControlViewModel(Message message, CacheManager cacheManager, bool showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0)
         {
             this.Message = message;
-            this.CacheContext = cacheContext;
+            this.CacheManager = cacheManager;
 
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.Inlines = new ObservableCollection<Inline>();
@@ -298,7 +298,7 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
-        private CacheContext CacheContext { get; }
+        private CacheManager CacheManager { get; }
 
         private bool ShowLikers { get; }
 
@@ -456,7 +456,7 @@ namespace GroupMeClient.ViewModels.Controls
                 this.HiddenText = token + this.HiddenText;
 
                 var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
-                var repliedMessageAttachment = new RepliedMessageControlViewModel(originalMessageId, container, this.CacheContext, this.NestLevel);
+                var repliedMessageAttachment = new RepliedMessageControlViewModel(originalMessageId, container, this.CacheManager, this.NestLevel);
 
                 // Replace the photo of the original message that is included for non-GMDC clients with the real message
                 if (this.AttachedItems.Count > 0)

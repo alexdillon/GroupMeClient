@@ -70,7 +70,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Caching\CacheContext.cs" />
+    <Compile Include="Caching\CacheManager.cs" />
+    <Compile Include="Caching\SuperIndexer.cs" />
     <Compile Include="Converters\IsGreaterThanConverter.cs" />
     <Compile Include="Converters\ValueConverterGroup.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
@@ -86,6 +87,7 @@
     </Compile>
     <Compile Include="Notifications\Display\WpfToast\ToastHolderViewModel.cs" />
     <Compile Include="Settings\ThemeOptions.cs" />
+    <Compile Include="Tasks\TaskManager.cs" />
     <Compile Include="Themes\ThemeManager.cs" />
     <Compile Include="Updates\UpdateAssist.cs" />
     <Compile Include="Utilities\RegexUtils.cs" />
@@ -409,9 +411,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="GroupMeClientApi">
-      <Version>1.0.3</Version>
-    </PackageReference>
     <PackageReference Include="GroupMeClientPlugin">
       <Version>1.0.4</Version>
     </PackageReference>
@@ -452,6 +451,12 @@
     <PackageReference Include="XamlAnimatedGif">
       <Version>1.2.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GroupMeClientApi\GroupMeClientApi\GroupMeClientApi.csproj">
+      <Project>{ebbf4520-3878-4086-bdc1-c194f429f23d}</Project>
+      <Name>GroupMeClientApi</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
