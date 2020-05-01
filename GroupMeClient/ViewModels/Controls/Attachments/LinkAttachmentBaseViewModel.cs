@@ -2,7 +2,6 @@
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using GalaSoft.MvvmLight;
 using GroupMeClientApi;
 using Newtonsoft.Json;
 
