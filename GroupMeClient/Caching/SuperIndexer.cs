@@ -129,7 +129,7 @@ namespace GroupMeClient.Caching
                         {
                             // No cache status exists for this group. Force a full re-index.
                         }
-                        else
+                        else if (this.OutdatedGroupIdList.Contains(id))
                         {
                             var availableMessageIds = messages.Select(m => long.Parse(m.Id)).ToList();
                             var messageContainer = this.GroupsAndChats.FirstOrDefault(c => c.Id == id);
@@ -138,11 +138,23 @@ namespace GroupMeClient.Caching
                             if (availableMessageIds.Contains(lastIndexId))
                             {
                                 // All new messages have already been loaded and are ready to index.
-                                // TODO: Sort and only index new messages.
-                                // Just index everything that has been submitted, even if it overlaps with the current contents.
-                                // Duplicate messages will just be ignored.
-                                context.AddMessages(messages);
-                                groupState.LastIndexedId = availableMessageIds.Max().ToString();
+                                var newMessages = new List<Message>();
+                                var newLastIndexId = lastIndexId;
+                                foreach (var msg in messages)
+                                {
+                                    if (long.TryParse(msg.Id, out var messageId) && messageId > lastIndexId)
+                                    {
+                                        newMessages.Add(msg);
+
+                                        if (messageId > newLastIndexId)
+                                        {
+                                            newLastIndexId = messageId;
+                                        }
+                                    }
+                                }
+
+                                context.AddMessages(newMessages);
+                                groupState.LastIndexedId = newLastIndexId.ToString();
                                 context.SaveChanges();
                                 fullyUpdatedGroupIds.Add(id);
                             }
@@ -162,11 +174,16 @@ namespace GroupMeClient.Caching
 
                             Debug.WriteLine("Full index scan required for " + container.Name);
 
-                            this.TaskManager.AddTask(
-                                $"Indexing {container.Name}",
-                                id,
-                                this.IndexGroup(container, cts),
-                                cts);
+                            // Don't start multiple overlapping indexing tasks.
+                            var existingScan = this.TaskManager.RunningTasks.FirstOrDefault(t => t.Tag == id);
+                            if (existingScan == null)
+                            {
+                                this.TaskManager.AddTask(
+                                    $"Indexing {container.Name}",
+                                    id,
+                                    this.IndexGroup(container, cts),
+                                    cts);
+                            }
                         }
                     }
                 }
