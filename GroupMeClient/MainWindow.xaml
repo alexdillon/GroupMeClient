@@ -19,6 +19,8 @@
                  FontFamily="{DynamicResource GroupMeFont}"
                  WindowStartupLocation="CenterScreen"
                  WindowTransitionsEnabled="False"
+                 BorderThickness="0"
+                 GlowBrush="Black"
                  mc:Ignorable="d">
 
     <Window.DataContext>
@@ -42,6 +44,8 @@
                     FontSize="10"/>
             </Grid>
         </DataTemplate>
+
+       
     </Window.Resources>
 
     <Grid>
