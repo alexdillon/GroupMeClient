@@ -255,7 +255,7 @@ namespace GroupMeClient.ViewModels
             // Options (Bottom Menu Items)
             var settingsTab = new HamburgerMenuIconItem()
             {
-                Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.SettingsOutline },
+                Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.CogOutline },
                 Label = "Settings",
                 ToolTip = "GroupMe Settings",
                 Tag = this.SettingsViewModel,
