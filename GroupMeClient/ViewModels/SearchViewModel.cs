@@ -72,7 +72,7 @@ namespace GroupMeClient.ViewModels
                 this.GroupChatCachePlugins.Add(plugin);
             }
 
-            this.Loaded = null; // new RelayCommand(this.StartIndexing);
+            this.Loaded = new RelayCommand(async () => await this.LoadIndexedGroups(), true);
         }
 
         /// <summary>
@@ -254,71 +254,37 @@ namespace GroupMeClient.ViewModels
             this.UpdateSearchResults();
         }
 
-        //private void StartIndexing()
-        //{
-        //    if (this.IndexingTask != null && !(this.IndexingTask.IsCompleted || this.IndexingTask.IsCanceled))
-        //    {
-        //        // handle cancellation and restart
-        //        this.CancellationTokenSource.Cancel();
-        //        this.IndexingTask.ContinueWith(async (l) =>
-        //        {
-        //            await Application.Current.Dispatcher.InvokeAsync(() => this.StartIndexing());
-        //        });
-        //        return;
-        //    }
+        private async Task LoadIndexedGroups()
+        {
+            await this.GroupMeClient.GetGroupsAsync();
+            await this.GroupMeClient.GetChatsAsync();
+            var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
 
-        //    this.CancellationTokenSource = new CancellationTokenSource();
-        //    this.IndexingTask = this.IndexGroups();
-        //}
+            this.CacheManager.SuperIndexer.BeginAsyncTransaction(groupsAndChats);
+            this.CacheManager.SuperIndexer.EndTransaction();
 
-        //private async Task IndexGroups()
-        //{
-        //    var loadingDialog = new LoadingControlViewModel();
-        //    this.PopupDialog = loadingDialog;
+            this.AllGroupsChats.Clear();
 
-        //    var groups = await this.GroupMeClient.GetGroupsAsync();
-        //    var chats = await this.GroupMeClient.GetChatsAsync();
-        //    var groupsAndChats = Enumerable.Concat<IMessageContainer>(groups, chats);
+            foreach (var group in groupsAndChats)
+            {
+                // Add Group/Chat to the list
+                var vm = new GroupControlViewModel(group)
+                {
+                    GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s.MessageContainer), (g) => true, true),
+                };
+                this.AllGroupsChats.Add(vm);
+            }
 
-        //    this.AllGroupsChats.Clear();
+            // Check to see if a plugin should be automatically executed.
+            if (this.ActivatePluginForGroupOnLoad != null && this.ActivatePluginOnLoad != null)
+            {
+                var cache = this.GetMessagesForGroup(this.ActivatePluginForGroupOnLoad);
+                _ = this.ActivatePluginOnLoad.Activated(this.ActivatePluginForGroupOnLoad, cache, this);
 
-        //    foreach (var group in groupsAndChats)
-        //    {
-        //        this.CancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-        //        if (this.ActivatePluginForGroupOnLoad != null && this.ActivatePluginOnLoad != null)
-        //        {
-        //            // if a plugin is set to automatically execute for only a single group,
-        //            // index only that group to improve performance
-        //            if (this.ActivatePluginForGroupOnLoad.Id != group.Id)
-        //            {
-        //                continue;
-        //            }
-        //        }
-
-        //        loadingDialog.Message = $"Indexing {group.Name}";
-        //        await this.IndexGroup(group);
-
-        //        // Add Group/Chat to the list
-        //        var vm = new GroupControlViewModel(group)
-        //        {
-        //            GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s.MessageContainer), (g) => true, true),
-        //        };
-        //        this.AllGroupsChats.Add(vm);
-        //    }
-
-        //    this.PopupDialog = null;
-
-        //    // Check to see if a plugin should be automatically executed.
-        //    if (this.ActivatePluginForGroupOnLoad != null && this.ActivatePluginOnLoad != null)
-        //    {
-        //        var cache = this.GetMessagesForGroup(this.ActivatePluginForGroupOnLoad);
-        //        _ = this.ActivatePluginOnLoad.Activated(this.ActivatePluginForGroupOnLoad, cache, this);
-
-        //        this.ActivatePluginForGroupOnLoad = null;
-        //        this.ActivatePluginOnLoad = null;
-        //    }
-        //}
+                this.ActivatePluginForGroupOnLoad = null;
+                this.ActivatePluginOnLoad = null;
+            }
+        }
 
         private void OpenNewGroupChat(IMessageContainer group)
         {
@@ -373,11 +339,11 @@ namespace GroupMeClient.ViewModels
                 // Chat.Id returns the Id of the other user
                 // However, GroupMe messages are natively returned with a Conversation Id instead
                 // Conversation IDs are user1+user2.
-                var sampleMessage = c.Messages.FirstOrDefault();
+                var conversatonId = c.LatestMessage.ConversationId;
 
                 return this.CurrentlyDisplayedContext.Messages
                     .AsNoTracking()
-                    .Where(m => m.ConversationId == sampleMessage.ConversationId);
+                    .Where(m => m.ConversationId == conversatonId);
             }
             else
             {
