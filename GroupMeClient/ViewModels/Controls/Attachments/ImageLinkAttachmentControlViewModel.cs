@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Windows;
+using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi;
 
@@ -22,12 +23,18 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             this.NavigateToUrl = navigateToUrl;
 
             this.Clicked = new RelayCommand(this.ClickedAction);
+            this.CopyLink = new RelayCommand(this.CopyLinkAction);
         }
 
         /// <summary>
         /// Gets the command to be performed when the image is clicked.
         /// </summary>
         public ICommand Clicked { get; }
+
+        /// <summary>
+        /// Gets the action to occur to copy the website link URL.
+        /// </summary>
+        public ICommand CopyLink { get; }
 
         private string NavigateToUrl { get; }
 
@@ -46,6 +53,12 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         {
             var navigateUrl = !string.IsNullOrEmpty(this.NavigateToUrl) ? this.NavigateToUrl : this.Url;
             Extensions.WebBrowserHelper.OpenUrl(navigateUrl);
+        }
+
+        private void CopyLinkAction()
+        {
+            var navigateUrl = !string.IsNullOrEmpty(this.NavigateToUrl) ? this.NavigateToUrl : this.Url;
+            Clipboard.SetText(navigateUrl);
         }
     }
 }

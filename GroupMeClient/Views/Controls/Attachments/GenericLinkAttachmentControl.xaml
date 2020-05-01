@@ -5,16 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
-             d:DesignHeight="100" d:DesignWidth="400"
-             Background="White">
+             d:DesignHeight="100" d:DesignWidth="400">
 
     <behaviors:Interaction.Triggers>
-        <behaviors:EventTrigger EventName="MouseDown" >
+        <behaviors:EventTrigger EventName="MouseLeftButtonDown" >
             <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
         </behaviors:EventTrigger>
     </behaviors:Interaction.Triggers>
 
-    <Grid ForceCursor="true" Cursor="Hand">
+    <Grid ForceCursor="true" Cursor="Hand" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
@@ -22,6 +21,12 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Copy Link" Command="{Binding CopyLink}" CommandParameter="{x:Null}" />
+            </ContextMenu>
+        </Grid.ContextMenu>
 
         <Image Grid.Row="0"
                Grid.RowSpan="2"

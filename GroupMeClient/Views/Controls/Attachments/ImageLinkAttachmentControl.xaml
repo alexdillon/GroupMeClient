@@ -6,16 +6,21 @@
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="200"
-             Background="{DynamicResource ControlBackgroundBrush}">
+             d:DesignHeight="200" d:DesignWidth="200">
 
-    <Grid ForceCursor="true" Cursor="Hand">
+    <Grid ForceCursor="true" Cursor="Hand" Background="{DynamicResource ControlBackgroundBrush}">
         <behaviors:Interaction.Triggers>
-            <behaviors:EventTrigger EventName="MouseDown" >
+            <behaviors:EventTrigger EventName="MouseLeftButtonDown" >
                 <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
             </behaviors:EventTrigger>
         </behaviors:Interaction.Triggers>
-        
+
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Copy Image Link" Command="{Binding CopyLink}" CommandParameter="{x:Null}" />
+            </ContextMenu>
+        </Grid.ContextMenu>
+
         <Image Grid.Row="0"
                Grid.RowSpan="2"
                MaxWidth="500" 
