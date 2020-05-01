@@ -200,7 +200,6 @@ namespace GroupMeClient.ViewModels
             {
                 // Startup Regularly
                 this.GroupMeClient = new GroupMeClientApi.GroupMeClient(this.SettingsManager.CoreSettings.AuthToken);
-
                 this.GroupMeClient.ImageDownloader = new GroupMeClientApi.CachedImageDownloader(this.ImageCachePath);
 
                 this.NotificationRouter = new NotificationRouter(this.GroupMeClient);

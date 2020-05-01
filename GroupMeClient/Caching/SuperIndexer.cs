@@ -61,18 +61,6 @@ namespace GroupMeClient.Caching
             }
         }
 
-        ///// <summary>
-        ///// Updates the background scan with an up-to-date
-        ///// listing of all the <see cref="Group"/> and <see cref="Chat"/> returned by the GroupMe API.
-        ///// </summary>
-        ///// <param name="groupsAndChats">An up to date listing of all <see cref="Group"/> and <see cref="Chat"/> from GroupMe, if available.</param>
-        //public void UpdateGroupsAndChatsList(IEnumerable<IMessageContainer> groupsAndChats = null)
-        //{
-        //    Debug.WriteLine("Updated ChatsList in UpdateGroupsAndChatsList()");
-        //    this.GroupsAndChats = groupsAndChats;
-        //    this.WaitingOnGroupAndChatListings.Set();
-        //}
-
         /// <summary>
         /// Submits the most recent set of messages from a group or chat that has been loaded in the user interface
         /// to the <see cref="SuperIndexer"/> for processing and indexing if necessary.
