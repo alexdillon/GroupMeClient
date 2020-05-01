@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using GalaSoft.MvvmLight.Command;
@@ -24,6 +24,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             : base(url, imageDownloader)
         {
             this.Clicked = new RelayCommand(this.ClickedAction);
+            this.CopyLink = new RelayCommand(this.CopyLinkAction);
         }
 
         /// <summary>
@@ -40,6 +41,11 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// Gets the action to occur when the website is clicked.
         /// </summary>
         public ICommand Clicked { get; }
+
+        /// <summary>
+        /// Gets the action to occur to copy the website link URL.
+        /// </summary>
+        public ICommand CopyLink { get; }
 
         /// <summary>
         /// Gets the favicon image.
@@ -83,6 +89,11 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         private void ClickedAction()
         {
             Extensions.WebBrowserHelper.OpenUrl(this.Url);
+        }
+
+        private void CopyLinkAction()
+        {
+            Clipboard.SetText(this.Url);
         }
     }
 }
