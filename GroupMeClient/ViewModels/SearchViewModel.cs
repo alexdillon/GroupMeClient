@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -227,7 +226,7 @@ namespace GroupMeClient.ViewModels
             var cacheContext = this.CacheManager.OpenNewContext();
 
             var cacheSession = new CacheSession(
-                 GetMessagesForGroup(group, cacheContext),
+                 Caching.CacheManager.GetMessagesForGroup(group, cacheContext),
                  cacheContext.Messages.AsNoTracking(),
                  cacheContext);
 
@@ -239,31 +238,6 @@ namespace GroupMeClient.ViewModels
         {
             this.OpenNewGroupChat(container);
             this.UpdateContextView(message);
-        }
-
-        private static IQueryable<Message> GetMessagesForGroup(IMessageContainer group, Caching.CacheManager.CacheContext cacheContext)
-        {
-            if (group is Group g)
-            {
-                return cacheContext.Messages
-                    .AsNoTracking()
-                    .Where(m => m.GroupId == g.Id);
-            }
-            else if (group is Chat c)
-            {
-                // Chat.Id returns the Id of the other user
-                // However, GroupMe messages are natively returned with a Conversation Id instead
-                // Conversation IDs are user1+user2.
-                var conversatonId = c.LatestMessage.ConversationId;
-
-                return cacheContext.Messages
-                    .AsNoTracking()
-                    .Where(m => m.ConversationId == conversatonId);
-            }
-            else
-            {
-                return Enumerable.Empty<Message>().AsQueryable();
-            }
         }
 
         private void SetSearchProperty<T>(System.Linq.Expressions.Expression<Func<T>> propertyExpression, ref T field, T newValue)
@@ -343,7 +317,7 @@ namespace GroupMeClient.ViewModels
 
             this.CurrentlyDisplayedContext?.Dispose();
             this.CurrentlyDisplayedContext = this.CacheManager.OpenNewContext();
-            var messagesForGroupChat = GetMessagesForGroup(this.SelectedGroupChat, this.CurrentlyDisplayedContext);
+            var messagesForGroupChat = Caching.CacheManager.GetMessagesForGroup(this.SelectedGroupChat, this.CurrentlyDisplayedContext);
 
             var startDate = this.FilterStartDate;
             var endDate = (this.FilterEndDate == DateTime.MinValue) ? DateTime.Now : this.FilterEndDate.AddDays(1);
@@ -427,7 +401,7 @@ namespace GroupMeClient.ViewModels
             this.CurrentlyDisplayedContext?.Dispose();
             this.CurrentlyDisplayedContext = this.CacheManager.OpenNewContext();
 
-            var messagesForGroupChat = GetMessagesForGroup(this.SelectedGroupChat, this.CurrentlyDisplayedContext)
+            var messagesForGroupChat = Caching.CacheManager.GetMessagesForGroup(this.SelectedGroupChat, this.CurrentlyDisplayedContext)
                 .OrderBy(m => m.Id);
 
             this.ContextView.AssociateWith = this.SelectedGroupChat;
