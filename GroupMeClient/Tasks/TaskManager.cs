@@ -61,7 +61,7 @@ namespace GroupMeClient.Tasks
                 this.RunningTasks.Remove(currentBackgroundTask);
             }
 
-            if (loadCount >= 0)
+            if (loadCount > 0)
             {
                 var newBackgroundTask = new GroupMeTask(
                     $"{loadCount} Group Updates",
