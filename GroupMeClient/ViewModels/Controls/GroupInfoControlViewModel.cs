@@ -8,6 +8,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClientApi.Models;
+using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
 using Microsoft.Win32;
 
@@ -199,7 +200,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <see cref="GroupInfoPseudoPlugin"/> defines a plugin-style object that can be used to integrate
         /// Group Information functionality into a <see cref="GroupContentsControlViewModel"/>.
         /// </summary>
-        public class GroupInfoPseudoPlugin : GroupMeClientPlugin.PluginBase, GroupMeClientPlugin.GroupChat.IGroupChatPlugin
+        public class GroupInfoPseudoPlugin : GroupMeClientPlugin.PluginBase, IGroupChatPlugin
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="GroupInfoPseudoPlugin"/> class.
@@ -225,7 +226,7 @@ namespace GroupMeClient.ViewModels.Controls
             private Group Group { get; }
 
             /// <inheritdoc/>
-            public Task Activated(IMessageContainer groupOrChat, IQueryable<Message> cacheForGroupOrChat, IQueryable<Message> globalCache, IPluginUIIntegration integration)
+            public Task Activated(IMessageContainer groupOrChat, CacheSession cacheSession, IPluginUIIntegration integration, Action<CacheSession> cleanup)
             {
                 var request = new Messaging.DialogRequestMessage(new GroupInfoControlViewModel(this.Group));
                 Messenger.Default.Send(request);

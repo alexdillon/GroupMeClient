@@ -11,6 +11,7 @@ using GalaSoft.MvvmLight.Command;
 using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
+using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
 using Microsoft.EntityFrameworkCore;
 
@@ -207,13 +208,30 @@ namespace GroupMeClient.ViewModels
 
         private bool DeferSearchUpdating { get; set; }
 
+        /// <summary>
+        /// Provides cleanup services after a plugin terminates with a specific <see cref="CacheSession"/>.
+        /// </summary>
+        /// <param name="cacheSession">The session used by the terminated plugin.</param>
+        public static void CleanupPlugin(CacheSession cacheSession)
+        {
+            (cacheSession.Tag as Caching.CacheManager.CacheContext).Dispose();
+        }
+
+        /// <summary>
+        /// Begins execution of a GroupMe plugin (<see cref="IGroupChatPlugin"/>) for a specific <see cref="IMessageContainer"/>.
+        /// </summary>
+        /// <param name="group">The <see cref="IMessageContainer"/> to execute the plugin on.</param>
+        /// <param name="plugin">The plugin that should be executed.</param>
         public void RunPlugin(IMessageContainer group, IGroupChatPlugin plugin)
         {
-            var cache = this.GetMessagesForGroup(group);
+            var cacheContext = this.CacheManager.OpenNewContext();
 
-            var allMessages = this.CurrentlyDisplayedContext.Messages.AsNoTracking();
+            var cacheSession = new CacheSession(
+                 GetMessagesForGroup(group, cacheContext),
+                 cacheContext.Messages.AsNoTracking(),
+                 cacheContext);
 
-            _ = plugin.Activated(group, cache, allMessages, this);
+            _ = plugin.Activated(group, cacheSession, this, CleanupPlugin);
         }
 
         /// <inheritdoc/>
@@ -221,6 +239,31 @@ namespace GroupMeClient.ViewModels
         {
             this.OpenNewGroupChat(container);
             this.UpdateContextView(message);
+        }
+
+        private static IQueryable<Message> GetMessagesForGroup(IMessageContainer group, Caching.CacheManager.CacheContext cacheContext)
+        {
+            if (group is Group g)
+            {
+                return cacheContext.Messages
+                    .AsNoTracking()
+                    .Where(m => m.GroupId == g.Id);
+            }
+            else if (group is Chat c)
+            {
+                // Chat.Id returns the Id of the other user
+                // However, GroupMe messages are natively returned with a Conversation Id instead
+                // Conversation IDs are user1+user2.
+                var conversatonId = c.LatestMessage.ConversationId;
+
+                return cacheContext.Messages
+                    .AsNoTracking()
+                    .Where(m => m.ConversationId == conversatonId);
+            }
+            else
+            {
+                return Enumerable.Empty<Message>().AsQueryable();
+            }
         }
 
         private void SetSearchProperty<T>(System.Linq.Expressions.Expression<Func<T>> propertyExpression, ref T field, T newValue)
@@ -289,33 +332,6 @@ namespace GroupMeClient.ViewModels
             }
         }
 
-        private IQueryable<Message> GetMessagesForGroup(IMessageContainer group)
-        {
-            this.CurrentlyDisplayedContext?.Dispose();
-            this.CurrentlyDisplayedContext = this.CacheManager.OpenNewContext();
-            if (group is Group g)
-            {
-                return this.CurrentlyDisplayedContext.Messages
-                    .AsNoTracking()
-                    .Where(m => m.GroupId == g.Id);
-            }
-            else if (group is Chat c)
-            {
-                // Chat.Id returns the Id of the other user
-                // However, GroupMe messages are natively returned with a Conversation Id instead
-                // Conversation IDs are user1+user2.
-                var conversatonId = c.LatestMessage.ConversationId;
-
-                return this.CurrentlyDisplayedContext.Messages
-                    .AsNoTracking()
-                    .Where(m => m.ConversationId == conversatonId);
-            }
-            else
-            {
-                return Enumerable.Empty<Message>().AsQueryable();
-            }
-        }
-
         private void UpdateSearchResults()
         {
             if (this.DeferSearchUpdating)
@@ -325,7 +341,9 @@ namespace GroupMeClient.ViewModels
 
             this.ResultsView.Messages = null;
 
-            var messagesForGroupChat = this.GetMessagesForGroup(this.SelectedGroupChat);
+            this.CurrentlyDisplayedContext?.Dispose();
+            this.CurrentlyDisplayedContext = this.CacheManager.OpenNewContext();
+            var messagesForGroupChat = GetMessagesForGroup(this.SelectedGroupChat, this.CurrentlyDisplayedContext);
 
             var startDate = this.FilterStartDate;
             var endDate = (this.FilterEndDate == DateTime.MinValue) ? DateTime.Now : this.FilterEndDate.AddDays(1);
@@ -406,7 +424,10 @@ namespace GroupMeClient.ViewModels
         {
             this.ContextView.Messages = null;
 
-            var messagesForGroupChat = this.GetMessagesForGroup(this.SelectedGroupChat)
+            this.CurrentlyDisplayedContext?.Dispose();
+            this.CurrentlyDisplayedContext = this.CacheManager.OpenNewContext();
+
+            var messagesForGroupChat = GetMessagesForGroup(this.SelectedGroupChat, this.CurrentlyDisplayedContext)
                 .OrderBy(m => m.Id);
 
             this.ContextView.AssociateWith = this.SelectedGroupChat;
