@@ -197,8 +197,6 @@ namespace GroupMeClient.ViewModels
 
         private Caching.CacheManager CacheManager { get; }
 
-        private Caching.CacheManager.CacheContext CurrentlyDisplayedContext { get; set; }
-
         private IMessageContainer SelectedGroupChat { get; set; }
 
         private Task IndexingTask { get; set; }
@@ -276,7 +274,7 @@ namespace GroupMeClient.ViewModels
 
             this.SearchTerm = string.Empty;
             this.SelectedGroupName = group.Name;
-            this.ContextView.Messages = null;
+            this.ContextView.DisplayMessages(null, null);
         }
 
         private void ResetFilterFields(bool skipUpdating = false)
@@ -313,11 +311,10 @@ namespace GroupMeClient.ViewModels
                 return;
             }
 
-            this.ResultsView.Messages = null;
+            this.ResultsView.DisplayMessages(null, null);
 
-            this.CurrentlyDisplayedContext?.Dispose();
-            this.CurrentlyDisplayedContext = this.CacheManager.OpenNewContext();
-            var messagesForGroupChat = Caching.CacheManager.GetMessagesForGroup(this.SelectedGroupChat, this.CurrentlyDisplayedContext);
+            var cacheContext = this.CacheManager.OpenNewContext();
+            var messagesForGroupChat = Caching.CacheManager.GetMessagesForGroup(this.SelectedGroupChat, cacheContext);
 
             var startDate = this.FilterStartDate;
             var endDate = (this.FilterEndDate == DateTime.MinValue) ? DateTime.Now : this.FilterEndDate.AddDays(1);
@@ -390,22 +387,21 @@ namespace GroupMeClient.ViewModels
                 .OrderByDescending(m => m.Id);
 
             this.ResultsView.AssociateWith = this.SelectedGroupChat;
-            this.ResultsView.Messages = orderedMessages;
+            this.ResultsView.DisplayMessages(orderedMessages, cacheContext);
             this.ResultsView.ChangePage(0);
         }
 
         private void UpdateContextView(Message message)
         {
-            this.ContextView.Messages = null;
+            this.ContextView.DisplayMessages(null, null);
 
-            this.CurrentlyDisplayedContext?.Dispose();
-            this.CurrentlyDisplayedContext = this.CacheManager.OpenNewContext();
+            var cacheContext = this.CacheManager.OpenNewContext();
 
-            var messagesForGroupChat = Caching.CacheManager.GetMessagesForGroup(this.SelectedGroupChat, this.CurrentlyDisplayedContext)
+            var messagesForGroupChat = Caching.CacheManager.GetMessagesForGroup(this.SelectedGroupChat, cacheContext)
                 .OrderBy(m => m.Id);
 
             this.ContextView.AssociateWith = this.SelectedGroupChat;
-            this.ContextView.Messages = messagesForGroupChat;
+            this.ContextView.DisplayMessages(messagesForGroupChat, cacheContext);
             this.ContextView.EnsureVisible(message);
         }
 

@@ -137,26 +137,12 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// Gets or sets the complete set of <see cref="Message"/>s to paginate and display.
+        /// Gets the complete set of <see cref="Message"/>s to paginate and display.
         /// </summary>
         public IQueryable<Message> Messages
         {
-            get
-            {
-                return this.messages;
-            }
-
-            set
-            {
-                this.DisposeClearPage();
-
-                this.Set(() => this.Messages, ref this.messages, value);
-
-                this.TotalMessagesCount = this.Messages?.Count() ?? 0;
-
-                // Reset timestamp ordering
-                this.NewestAtBottom = this.NewestAtBottom;
-            }
+            get => this.messages;
+            private set => this.Set(() => this.Messages, ref this.messages, value);
         }
 
         /// <summary>
@@ -164,13 +150,34 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public MessageControlViewModelBase SelectedMessage
         {
-            get { return this.selectedMessage; }
-            set { this.Set(() => this.SelectedMessage, ref this.selectedMessage, value); }
+            get => this.selectedMessage;
+            set => this.Set(() => this.SelectedMessage, ref this.selectedMessage, value);
         }
 
         private CacheManager CacheManager { get; }
 
         private DateTime LastMarkerTime { get; set; }
+
+        private CacheManager.CacheContext CurrentlyDisplayedCacheContext { get; set; }
+
+        /// <summary>
+        /// Displays a collection of messages in the control.
+        /// </summary>
+        /// <param name="messages">The <see cref="Message"/>s to display.</param>
+        /// <param name="cacheContext">The cache context the displayed messages belong to.</param>
+        public void DisplayMessages(IQueryable<Message> messages, CacheManager.CacheContext cacheContext)
+        {
+            this.DisposeClearPage();
+            this.CurrentlyDisplayedCacheContext?.Dispose();
+
+            this.Messages = messages;
+            this.CurrentlyDisplayedCacheContext = cacheContext;
+
+            this.TotalMessagesCount = this.Messages?.Count() ?? 0;
+
+            // Reset timestamp ordering
+            this.NewestAtBottom = this.NewestAtBottom;
+        }
 
         /// <summary>
         /// Ensures the page containing a specific <see cref="Message"/> is displayed.
