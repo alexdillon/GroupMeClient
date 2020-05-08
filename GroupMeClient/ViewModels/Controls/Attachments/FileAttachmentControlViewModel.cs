@@ -21,10 +21,12 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// </summary>
         /// <param name="file">The file to display.</param>
         /// <param name="messageContainer">The group that the file is contained within.</param>
-        public FileAttachmentControlViewModel(FileAttachment file, IMessageContainer messageContainer)
+        /// <param name="message">The <see cref="Message"/> containing this attachment.</param>
+        public FileAttachmentControlViewModel(FileAttachment file, IMessageContainer messageContainer, Message message)
         {
             this.FileAttachment = file;
             this.MessageContainer = messageContainer;
+            this.Message = message;
 
             this.Clicked = new RelayCommand<MouseButtonEventArgs>(async (x) => await this.ClickedAction(x), true);
             this.SaveAs = new RelayCommand(async () => await this.SaveAction(), true);
@@ -62,9 +64,11 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
         private IMessageContainer MessageContainer { get; set; }
 
+        private Message Message { get; }
+
         private async Task LoadFileInfo()
         {
-            this.FileData = await this.FileAttachment.GetFileData(this.MessageContainer.Messages.First());
+            this.FileData = await this.FileAttachment.GetFileData(this.Message);
             this.RaisePropertyChanged(string.Empty);
         }
 

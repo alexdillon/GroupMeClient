@@ -428,7 +428,7 @@ namespace GroupMeClient.ViewModels.Controls
                 else if (attachment is FileAttachment fileAttach)
                 {
                     var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
-                    var documentVm = new FileAttachmentControlViewModel(fileAttach, container);
+                    var documentVm = new FileAttachmentControlViewModel(fileAttach, container, this.Message);
                     this.AttachedItems.Add(documentVm);
 
                     // Files can have captions, so only exclude the share url from the body

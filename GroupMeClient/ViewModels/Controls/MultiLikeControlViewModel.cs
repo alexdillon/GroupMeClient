@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
+using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
 
 namespace GroupMeClient.ViewModels.Controls
@@ -188,7 +189,7 @@ namespace GroupMeClient.ViewModels.Controls
             private MultiLikeControlViewModel MultiLikeControlViewModel { get; }
 
             /// <inheritdoc/>
-            public Task Activated(IMessageContainer groupOrChat, IQueryable<Message> cacheForGroupOrChat, IQueryable<Message> globalCache, IPluginUIIntegration integration)
+            public Task Activated(IMessageContainer groupOrChat, CacheSession cacheSession, IPluginUIIntegration integration, Action<CacheSession> cleanup)
             {
                 this.GroupContentsControlViewModel.SmallDialog = this.MultiLikeControlViewModel;
                 return Task.CompletedTask;
