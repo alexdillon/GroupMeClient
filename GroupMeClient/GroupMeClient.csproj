@@ -414,6 +414,9 @@
     <PackageReference Include="GroupMeClientApi">
       <Version>1.0.4</Version>
     </PackageReference>
+    <PackageReference Include="GroupMeClientPlugin">
+      <Version>2.0.1</Version>
+    </PackageReference>
     <PackageReference Include="MahApps.Metro">
       <Version>1.6.5</Version>
     </PackageReference>
@@ -451,12 +454,6 @@
     <PackageReference Include="XamlAnimatedGif">
       <Version>1.2.2</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\GroupMeClientPluginApi\GroupMeClientPluginApi\GroupMeClientPlugin.csproj">
-      <Project>{2d5b5f3f-c1ec-46f1-bafa-681fec1d35a7}</Project>
-      <Name>GroupMeClientPlugin</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
