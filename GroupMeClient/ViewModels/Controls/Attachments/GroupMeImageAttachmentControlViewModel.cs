@@ -129,7 +129,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
 
         private void ClickedAction()
         {
-            var vm = new ViewImageControlViewModel(this.ImageAttachment, this.ImageDownloader);
+            var vm = new ViewImageControlViewModel(this.ImageAttachment.Url, this.ImageDownloader);
 
             var request = new Messaging.DialogRequestMessage(vm);
             Messenger.Default.Send(request);
