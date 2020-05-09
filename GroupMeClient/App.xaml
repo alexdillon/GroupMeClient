@@ -10,6 +10,8 @@
              xmlns:ctrlvm="clr-namespace:GroupMeClient.ViewModels.Controls"
              xmlns:attachviews="clr-namespace:GroupMeClient.Views.Controls.Attachments"
              xmlns:attachvm="clr-namespace:GroupMeClient.ViewModels.Controls.Attachments"
+             xmlns:pluginviews="clr-namespace:GroupMeClient.Plugins.Views"
+             xmlns:pluginvm="clr-namespace:GroupMeClient.Plugins.ViewModels"
              xmlns:toast="clr-namespace:GroupMeClient.Notifications.Display.WpfToast"
              StartupUri="MainWindow.xaml"
              mc:Ignorable="d">
@@ -114,12 +116,6 @@
             <DataTemplate DataType="{x:Type ctrlvm:LoadingControlViewModel}">
                 <ctrlviews:LoadingControl />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type ctrlvm:MultiLikeControlViewModel}">
-                <ctrlviews:MultiLikeControl />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type ctrlvm:GroupInfoControlViewModel}">
-                <ctrlviews:GroupInfoControl />
-            </DataTemplate>
 
             <DataTemplate DataType="{x:Type toast:ToastNotificationViewModel}">
                 <toast:ToastNotification />
@@ -128,6 +124,12 @@
                 <toast:ToastHolder />
             </DataTemplate>
 
+            <DataTemplate DataType="{x:Type pluginvm:MultiLikeControlViewModel}">
+                <pluginviews:MultiLikeControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type pluginvm:GroupInfoControlViewModel}">
+                <pluginviews:GroupInfoControl />
+            </DataTemplate>
             <!-- Adapted from https://stackoverflow.com/questions/10969292/apple-style-scrollbar-wpf-->
             <!--Scrollbar Thumbs-->
             <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">

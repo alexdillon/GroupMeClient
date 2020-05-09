@@ -144,11 +144,11 @@
     <Compile Include="ViewModels\Controls\MessageControlViewModelBase.cs" />
     <Compile Include="ViewModels\Controls\MessageEffectsControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\LoadingControlViewModel.cs" />
-    <Compile Include="ViewModels\Controls\MultiLikeControlViewModel.cs" />
+    <Compile Include="Plugins\ViewModels\MultiLikeControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\PopupViewModel.cs" />
     <Compile Include="ViewModels\Controls\SendContentControlViewModelBase.cs" />
     <Compile Include="ViewModels\Controls\SendFileControlViewModel.cs" />
-    <Compile Include="ViewModels\Controls\GroupInfoControlViewModel.cs" />
+    <Compile Include="Plugins\ViewModels\GroupInfoControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\ViewImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
@@ -200,13 +200,13 @@
     <Compile Include="Views\Controls\LoadingControl.xaml.cs">
       <DependentUpon>LoadingControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\MultiLikeControl.xaml.cs">
+    <Compile Include="Plugins\Views\MultiLikeControl.xaml.cs">
       <DependentUpon>MultiLikeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\SendFileControl.xaml.cs">
       <DependentUpon>SendFileControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\GroupInfoControl.xaml.cs">
+    <Compile Include="Plugins\Views\GroupInfoControl.xaml.cs">
       <DependentUpon>GroupInfoControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\ViewImageControl.xaml.cs">
@@ -327,7 +327,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\MultiLikeControl.xaml">
+    <Page Include="Plugins\Views\MultiLikeControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -335,7 +335,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\GroupInfoControl.xaml">
+    <Page Include="Plugins\Views\GroupInfoControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

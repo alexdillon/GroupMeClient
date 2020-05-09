@@ -15,6 +15,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Caching;
 using GroupMeClient.Extensions;
+using GroupMeClient.Plugins.ViewModels;
 using GroupMeClient.Utilities;
 using GroupMeClient.Views.Controls;
 using GroupMeClientApi.Models;
