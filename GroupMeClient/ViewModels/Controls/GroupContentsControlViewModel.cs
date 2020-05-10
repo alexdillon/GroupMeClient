@@ -556,9 +556,20 @@ namespace GroupMeClient.ViewModels.Controls
 
         private byte[] RenderMessageToPngImage(Message message)
         {
+            var messageDataContext = new MessageControlViewModel(message, this.CacheManager, false, true, 1);
+
+            // Copy the attachments from the version of the message that is already rendered and displayed.
+            // These attachments already have previews downloaded and ready-to-render.
+            messageDataContext.AttachedItems.Clear();
+            var displayedMessage = this.Messages.First(m => m.Id == message.Id);
+            foreach (var attachment in (displayedMessage as MessageControlViewModel).AttachedItems)
+            {
+                messageDataContext.AttachedItems.Add(attachment);
+            }
+
             var messageControl = new MessageControl()
             {
-                DataContext = new MessageControlViewModel(message, this.CacheManager, false, true, 1),
+                DataContext = displayedMessage,
                 Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
                 Foreground = (Brush)Application.Current.FindResource("BlackBrush"),
             };
