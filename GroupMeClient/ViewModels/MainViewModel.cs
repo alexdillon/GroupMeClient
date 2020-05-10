@@ -108,7 +108,7 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
-        /// Gets the manager for the dialog that should be displayed as a large popup.
+        /// Gets or sets the manager for the dialog that should be displayed as a large popup.
         /// </summary>
         public PopupViewModel DialogManager { get; set; }
 

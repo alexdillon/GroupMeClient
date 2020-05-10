@@ -230,14 +230,6 @@
         <controls:PaginatedMessagesControl 
             Grid.Column="2" Grid.Row="1"
             Content="{Binding ContextView}" />
-
-        <controls:Popup Grid.Column="0" Grid.Row="0"
-                        Grid.ColumnSpan="3"
-                        Grid.RowSpan="2"
-                        DataContext="{Binding Path=.}"
-                        Visibility="{Binding PopupDialog, Converter={StaticResource nullToVisibilityConverter}}">
-            <UserControl Content="{Binding PopupDialog}" />
-        </controls:Popup>
     </Grid>
 </UserControl>
 

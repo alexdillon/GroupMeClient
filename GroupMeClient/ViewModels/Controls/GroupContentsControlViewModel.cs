@@ -57,7 +57,7 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 ClosePopup = new RelayCommand(this.ClosePopupHandler),
                 EasyClosePopup = null,  // EasyClose makes it too easy to accidently close the send dialog.
-                PopupDialog = null
+                PopupDialog = null,
             };
 
             this.ReliabilityStateMachine = new ReliabilityStateMachine();
