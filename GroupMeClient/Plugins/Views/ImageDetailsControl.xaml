@@ -3,79 +3,96 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:converters="clr-namespace:GroupMeClient.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="400"
-             Width="900" Height="650"
              Background="Black"
              Foreground="White">
 
     <UserControl.Resources>
-     
+        <converters:PercentageConverter x:Key="percentageConverter" />
     </UserControl.Resources>
+    
+    <Grid
+         Width="{Binding Converter={StaticResource percentageConverter}, RelativeSource={RelativeSource AncestorType={x:Type controls:Popup}, Mode=FindAncestor}, Path=ActualWidth, ConverterParameter=0.8}"
+         Height="{Binding Converter={StaticResource percentageConverter}, RelativeSource={RelativeSource AncestorType={x:Type controls:Popup}, Mode=FindAncestor}, Path=ActualHeight, ConverterParameter=0.8}">
+        
+        <Border BorderThickness="2"
+                BorderBrush="#555555">
+            <Border.Effect>
+                <DropShadowEffect Opacity="0.5" ShadowDepth="10" BlurRadius="20" />
+            </Border.Effect>
+        </Border>
 
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="0.7*" />
+                <ColumnDefinition Width="1.5*" />
+                <ColumnDefinition Width="0.3*" />
+            </Grid.ColumnDefinitions>
+        
+            <ContentControl Content="{Binding SenderAvatar}"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Grid.RowSpan="2"
+                            Width="40"
+                            Height="40"
+                            Margin="10,0,10,10"/>
 
-        <ContentControl Content="{Binding SenderAvatar}"
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Grid.RowSpan="2"
-                        Width="40"
-                        Height="40"
-                        Margin="10"/>
+            <TextBlock Text="{Binding Message.Name}"
+                       Grid.Row="0"
+                       Grid.Column="1"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       TextWrapping="Wrap"
+                       FontSize="14"/>
 
-        <TextBlock Text="{Binding Message.Name}"
-                   Grid.Row="0"
-                   Grid.Column="1"
-                   HorizontalAlignment="Left"
-                   TextWrapping="Wrap"
-                   FontSize="14"/>
+            <TextBlock Text="{Binding Message.CreatedAtTime}"
+                       Grid.Row="1"
+                       Grid.Column="1"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Margin="0,-5,0,0"
+                       FontSize="14"/>
 
-        <TextBlock Text="{Binding Message.CreatedAtTime}"
-                   Grid.Row="1"
-                   Grid.Column="1"
-                   HorizontalAlignment="Left"
-                   FontSize="14"/>
+            <TextBlock Text="{Binding Message.Text}"
+                       Grid.Row="0"
+                       Grid.Column="2"
+                       Grid.RowSpan="2"
+                       HorizontalAlignment="Center"
+                       TextWrapping="Wrap"
+                       Margin="15,0,15,0"
+                       FontSize="14"/>
 
-        <TextBlock Text="{Binding Message.Text}"
-                   Grid.Row="0"
-                   Grid.Column="2"
-                   Grid.RowSpan="2"
+            <TextBlock Text="Test"
+                       Grid.Row="0"
+                       Grid.Column="3"
+                       HorizontalAlignment="Center"
+                       FontSize="14"/>
+
+            <Image gif:AnimationBehavior.SourceStream="{Binding ImageData}"
+                   Grid.Row="2"
+                   Grid.ColumnSpan="4"
                    HorizontalAlignment="Center"
-                   TextWrapping="Wrap"
-                   FontSize="14"/>
+                   VerticalAlignment="Center">
+                <behaviors:Interaction.Triggers>
+                    <behaviors:EventTrigger EventName="MouseDown" >
+                        <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
+                    </behaviors:EventTrigger>
+                </behaviors:Interaction.Triggers>
+            </Image>
 
-        <TextBlock Text="{Binding GroupName}"
-                   Grid.Row="0"
-                   Grid.Column="3"
-                   HorizontalAlignment="Center"
-                   FontSize="18"/>
-
-        <Image gif:AnimationBehavior.SourceStream="{Binding ImageData}"
-               Grid.Row="2"
-               Grid.ColumnSpan="4"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Center">
-            <behaviors:Interaction.Triggers>
-                <behaviors:EventTrigger EventName="MouseDown" >
-                    <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
-                </behaviors:EventTrigger>
-            </behaviors:Interaction.Triggers>
-        </Image>
-
+        </Grid>
 
     </Grid>
 </UserControl>

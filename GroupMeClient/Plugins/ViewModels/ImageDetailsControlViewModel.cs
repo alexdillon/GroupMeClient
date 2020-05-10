@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
@@ -29,11 +26,13 @@ namespace GroupMeClient.Plugins.ViewModels
         /// <param name="message">The <see cref="Message"/> containing the image to be shown.</param>
         /// <param name="imageIndex">The index of this image attachment to display.</param>
         /// <param name="downloader">The <see cref="GroupMeClientApi.ImageDownloader"/> that should be used to download images.</param>
-        public ImageDetailsControlViewModel(Message message, int imageIndex, ImageDownloader downloader)
+        /// <param name="showPopupAction">The <see cref="Action"/> used to open popups to display the image viewer.</param>
+        public ImageDetailsControlViewModel(Message message, int imageIndex, ImageDownloader downloader, Action<ViewModelBase> showPopupAction)
         {
             this.Message = message;
             this.ImageDownloader = downloader;
             this.ImageIndex = imageIndex;
+            this.ShowPopupAction = showPopupAction;
 
             this.Clicked = new RelayCommand(this.ClickedAction);
 
@@ -82,6 +81,8 @@ namespace GroupMeClient.Plugins.ViewModels
 
         private string ImageUrl { get; }
 
+        private Action<ViewModelBase> ShowPopupAction { get; }
+
         private async Task LoadImage()
         {
             this.IsLoading = true;
@@ -101,9 +102,7 @@ namespace GroupMeClient.Plugins.ViewModels
         private void ClickedAction()
         {
             var vm = new ViewImageControlViewModel(this.ImageUrl, this.ImageDownloader);
-
-            var request = new Messaging.DialogRequestMessage(vm);
-            Messenger.Default.Send(request);
+            this.ShowPopupAction(vm);
         }
     }
 }

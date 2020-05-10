@@ -83,10 +83,12 @@
         </extensions:ListBoxWithPosition>
 
         <!--Popup Dialog-->
-        <controls1:Popup Grid.RowSpan="2"
-                         DataContext="{Binding}"
-                         Visibility="{Binding Dialog, Converter={StaticResource nullToVisibilityConverter}}">
-            <UserControl Content="{Binding Dialog}" />
-        </controls1:Popup>
+        <controls1:Popup Grid.RowSpan="4"
+                        Grid.ColumnSpan="1"
+                        DataContext="{Binding SmallDialogManager}" />
+        <!--Popup Dialog-->
+        <controls1:Popup Grid.RowSpan="4"
+                        Grid.ColumnSpan="1"
+                        DataContext="{Binding BigDialogManager}" />
     </Grid>
 </Window>

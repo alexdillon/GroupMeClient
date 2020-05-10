@@ -73,6 +73,7 @@
     <Compile Include="Caching\CacheManager.cs" />
     <Compile Include="Caching\SuperIndexer.cs" />
     <Compile Include="Converters\IsGreaterThanConverter.cs" />
+    <Compile Include="Converters\PercentageConverter.cs" />
     <Compile Include="Converters\ValueConverterGroup.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />

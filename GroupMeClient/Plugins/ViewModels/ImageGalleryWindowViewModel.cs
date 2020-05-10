@@ -9,6 +9,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Plugins.Views;
+using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
@@ -22,8 +23,6 @@ namespace GroupMeClient.Plugins.ViewModels
     /// </summary>
     public class ImageGalleryWindowViewModel : ViewModelBase
     {
-        private ViewModelBase dialog;
-
         private ImageGalleryWindowViewModel(IMessageContainer groupChat, CacheSession cacheSession, IPluginUIIntegration uiIntegration)
         {
             this.GroupChat = groupChat;
@@ -33,8 +32,18 @@ namespace GroupMeClient.Plugins.ViewModels
             this.GroupName = this.GroupChat.Name;
 
             this.ShowImageDetailsCommand = new RelayCommand<AttachmentImageItem>(this.ShowImageDetails);
-            this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
-            this.EasyClosePopup = null; // EasyClose makes it too easy to accidently close the send dialog.
+
+            this.SmallDialogManager = new PopupViewModel()
+            {
+                ClosePopup = new RelayCommand(this.CloseSmallPopupHandler),
+                EasyClosePopup = null,
+            };
+
+            this.BigDialogManager = new PopupViewModel()
+            {
+                ClosePopup = new RelayCommand(this.CloseBigPopupHandler),
+                EasyClosePopup = new RelayCommand(this.CloseBigPopupHandler),
+            };
 
             this.MessagesWithAttachments =
                this.CacheSession.CacheForGroupOrChat
@@ -62,25 +71,14 @@ namespace GroupMeClient.Plugins.ViewModels
         public ICommand ShowImageDetailsCommand { get; }
 
         /// <summary>
-        /// Gets the action to be be performed when a little popup has been closed.
+        /// Gets a manager for showing large, top-level popup dialogs.
         /// </summary>
-        public ICommand ClosePopup { get; }
+        public PopupViewModel BigDialogManager { get; }
 
         /// <summary>
-        /// Gets the action to be performed when the big popup has been closed indirectly.
-        /// This typically is from the user clicking in the gray area around the popup to dismiss it.
+        /// Gets a manager for showing smaller, non-top-level popup dialogs.
         /// </summary>
-        public ICommand EasyClosePopup { get; }
-
-        /// <summary>
-        /// Gets or sets the Dialog that should be displayed as a popup.
-        /// Gets null if no dialog should be displayed.
-        /// </summary>
-        public ViewModelBase Dialog
-        {
-            get { return this.dialog; }
-            set { this.Set(() => this.Dialog, ref this.dialog, value); }
-        }
+        public PopupViewModel SmallDialogManager { get; }
 
         private IMessageContainer GroupChat { get; }
 
@@ -154,14 +152,25 @@ namespace GroupMeClient.Plugins.ViewModels
                 return;
             }
 
-            var dialog = new ImageDetailsControlViewModel(message, item.ImageIndex, this.GroupChat.Client.ImageDownloader);
-            this.Dialog = dialog;
+            var dialog = new ImageDetailsControlViewModel(message, item.ImageIndex, this.GroupChat.Client.ImageDownloader, this.ShowLargePopup);
+            this.SmallDialogManager.PopupDialog = dialog;
         }
 
-        private void ClosePopupHandler()
+        private void ShowLargePopup(ViewModelBase dialog)
         {
-            (this.Dialog as IDisposable)?.Dispose();
-            this.Dialog = null;
+            this.BigDialogManager.PopupDialog = dialog;
+        }
+
+        private void CloseSmallPopupHandler()
+        {
+            (this.SmallDialogManager.PopupDialog as IDisposable)?.Dispose();
+            this.SmallDialogManager.PopupDialog = null;
+        }
+
+        private void CloseBigPopupHandler()
+        {
+            (this.BigDialogManager.PopupDialog as IDisposable)?.Dispose();
+            this.BigDialogManager.PopupDialog = null;
         }
 
         /// <summary>
@@ -260,9 +269,11 @@ namespace GroupMeClient.Plugins.ViewModels
             public Task Activated(IMessageContainer groupOrChat, CacheSession cacheSession, IPluginUIIntegration integration, Action<CacheSession> cleanup)
             {
                 var dataContext = new ImageGalleryWindowViewModel(groupOrChat, cacheSession, integration);
-                var window = new ImageGalleryWindow();
+                var window = new ImageGalleryWindow
+                {
+                    DataContext = dataContext,
+                };
 
-                window.DataContext = dataContext;
                 window.Closing += (s, e) =>
                 {
                     cleanup(cacheSession);
