@@ -11,6 +11,7 @@ using GroupMeClient.Notifications.Display;
 using GroupMeClient.Notifications.Display.WpfToast;
 using GroupMeClient.Plugins;
 using GroupMeClient.Updates;
+using GroupMeClient.ViewModels.Controls;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 
@@ -24,7 +25,6 @@ namespace GroupMeClient.ViewModels
         private HamburgerMenuItemCollection menuItems = new HamburgerMenuItemCollection();
         private HamburgerMenuItemCollection menuOptionItems = new HamburgerMenuItemCollection();
         private HamburgerMenuItem selectedItem;
-        private ViewModelBase popupDialog;
         private int unreadCount;
         private bool isReconnecting;
         private bool isRefreshing;
@@ -80,21 +80,6 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets the Popup Dialog that should be displayed.
-        /// Null specifies that no popup is shown.
-        /// </summary>
-        public ViewModelBase PopupDialog
-        {
-            get { return this.popupDialog; }
-            set { this.Set(() => this.PopupDialog, ref this.popupDialog, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the action to be be performed when the big popup has been closed.
-        /// </summary>
-        public ICommand ClosePopup { get; set; }
-
-        /// <summary>
         /// Gets or sets the number of unread notifications that should be displayed in the
         /// taskbar badge.
         /// </summary>
@@ -123,10 +108,9 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets the action to be be performed when the big popup has been closed indirectly.
-        /// This typically is from the user clicking in the gray area around the popup to dismiss it.
+        /// Gets the manager for the dialog that should be displayed as a large popup.
         /// </summary>
-        public ICommand EasyClosePopup { get; set; }
+        public PopupViewModel DialogManager { get; set; }
 
         /// <summary>
         /// Gets or sets the command to be performed to refresh all displayed messages and groups.
@@ -214,8 +198,13 @@ namespace GroupMeClient.ViewModels
             }
 
             Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
-            this.ClosePopup = new RelayCommand(this.CloseBigPopup);
-            this.EasyClosePopup = new RelayCommand(this.CloseBigPopup);
+
+            this.DialogManager = new PopupViewModel()
+            {
+                EasyClosePopup = new RelayCommand(this.CloseBigPopup),
+                ClosePopup = new RelayCommand(this.CloseBigPopup),
+                PopupDialog = null,
+            };
 
             this.UpdateAssist = new UpdateAssist();
             Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
@@ -341,17 +330,17 @@ namespace GroupMeClient.ViewModels
 
         private void OpenBigPopup(Messaging.DialogRequestMessage dialog)
         {
-            this.PopupDialog = dialog.Dialog;
+            this.DialogManager.PopupDialog = dialog.Dialog;
         }
 
         private void CloseBigPopup()
         {
-            if (this.PopupDialog is IDisposable d)
+            if (this.DialogManager.PopupDialog is IDisposable d)
             {
                 d.Dispose();
             }
 
-            this.PopupDialog = null;
+            this.DialogManager.PopupDialog = null;
         }
 
         private void UpdateNotificationCount(Messaging.UnreadRequestMessage update)

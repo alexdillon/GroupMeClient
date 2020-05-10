@@ -110,7 +110,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.IsEnabled = true;
             this.GroupContentsControlViewModel.IsSelectionAllowed = true;
 
-            this.GroupContentsControlViewModel.SmallDialog = null;
+            this.GroupContentsControlViewModel.SmallDialogManager.PopupDialog = null;
         }
 
         private void DisableMultiLike()
@@ -121,7 +121,7 @@ namespace GroupMeClient.ViewModels.Controls
             var itemList = this.GroupContentsControlViewModel.CurrentlySelectedMessages as ObservableCollection<object>;
             itemList?.Clear();
 
-            this.GroupContentsControlViewModel.SmallDialog = null;
+            this.GroupContentsControlViewModel.SmallDialogManager.PopupDialog = null;
         }
 
         private async Task DoMultiLike()
@@ -138,7 +138,7 @@ namespace GroupMeClient.ViewModels.Controls
             var newestId = itemList.Max(m => long.Parse(m.Id));
 
             var loadingControl = new LoadingControlViewModel();
-            this.GroupContentsControlViewModel.SmallDialog = loadingControl;
+            this.GroupContentsControlViewModel.SmallDialogManager.PopupDialog = loadingControl;
 
             foreach (var message in this.GroupContentsControlViewModel.Messages)
             {
@@ -153,7 +153,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             this.DisableMultiLike();
 
-            this.GroupContentsControlViewModel.SmallDialog = null;
+            this.GroupContentsControlViewModel.SmallDialogManager.PopupDialog = null;
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace GroupMeClient.ViewModels.Controls
             /// <inheritdoc/>
             public Task Activated(IMessageContainer groupOrChat, CacheSession cacheSession, IPluginUIIntegration integration, Action<CacheSession> cleanup)
             {
-                this.GroupContentsControlViewModel.SmallDialog = this.MultiLikeControlViewModel;
+                this.GroupContentsControlViewModel.SmallDialogManager.PopupDialog = this.MultiLikeControlViewModel;
                 return Task.CompletedTask;
             }
         }
