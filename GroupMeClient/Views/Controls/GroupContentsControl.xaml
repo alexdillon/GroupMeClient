@@ -384,9 +384,6 @@
         <!--Popup Dialog-->
         <controls:Popup Grid.RowSpan="4"
                         Grid.ColumnSpan="1"
-                        DataContext="{Binding Path=.}"
-                        Visibility="{Binding SmallDialog, Converter={StaticResource nullToVisibilityConverter}}">
-            <UserControl Content="{Binding SmallDialog}" />
-        </controls:Popup>
+                        DataContext="{Binding SmallDialogManager}" />
     </Grid>
 </UserControl>

@@ -31,7 +31,6 @@ namespace GroupMeClient.ViewModels.Controls
         private IMessageContainer messageContainer;
         private AvatarControlViewModel topBarAvatar;
         private string typedMessageContents = string.Empty;
-        private ViewModelBase smallDialog;
         private bool isSelectionAllowed = false;
         private MessageControlViewModel messageBeingRepliedTo;
 
@@ -48,12 +47,17 @@ namespace GroupMeClient.ViewModels.Controls
             this.SendAttachment = new RelayCommand(this.SendFileImageAttachment);
             this.OpenMessageSuggestions = new RelayCommand(this.OpenMessageSuggestionsDialog);
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await this.LoadMoreAsync(s), true);
-            this.ClosePopup = new RelayCommand(this.ClosePopupHandler);
-            this.EasyClosePopup = null; // EasyClose makes it too easy to accidently close the send dialog.
             this.GroupChatPluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>(this.ActivateGroupPlugin);
             this.SelectionChangedCommand = new RelayCommand<object>(this.SelectionChangedHandler);
             this.InitiateReply = new RelayCommand<MessageControlViewModel>(m => this.InitiateReplyCommand(m));
             this.TerminateReply = new RelayCommand(() => this.MessageBeingRepliedTo = null, true);
+
+            this.SmallDialogManager = new PopupViewModel()
+            {
+                ClosePopup = new RelayCommand(this.ClosePopupHandler),
+                EasyClosePopup = null,  // EasyClose makes it too easy to accidently close the send dialog.
+                PopupDialog = null
+            };
 
             this.ReliabilityStateMachine = new ReliabilityStateMachine();
 
@@ -115,17 +119,6 @@ namespace GroupMeClient.ViewModels.Controls
         public ICommand ReloadView { get; private set; }
 
         /// <summary>
-        /// Gets the action to be be performed when a little popup has been closed.
-        /// </summary>
-        public ICommand ClosePopup { get; }
-
-        /// <summary>
-        /// Gets the action to be performed when the big popup has been closed indirectly.
-        /// This typically is from the user clicking in the gray area around the popup to dismiss it.
-        /// </summary>
-        public ICommand EasyClosePopup { get; }
-
-        /// <summary>
         /// Gets the action to be performed when initiating a reply on a message.
         /// </summary>
         public ICommand InitiateReply { get; }
@@ -173,6 +166,11 @@ namespace GroupMeClient.ViewModels.Controls
         public object CurrentlySelectedMessages { get; private set; }
 
         /// <summary>
+        /// Gets the manager for the dialog that should be displayed as a small popup.
+        /// </summary>
+        public PopupViewModel SmallDialogManager { get; }
+
+        /// <summary>
         /// Gets or sets the <see cref="IMessageContainer"/> being displayed.
         /// </summary>
         public IMessageContainer MessageContainer
@@ -197,16 +195,6 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get { return this.typedMessageContents; }
             set { this.Set(() => this.TypedMessageContents, ref this.typedMessageContents, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the Small Dialog that should be displayed as a popup.
-        /// Gets null if no dialog should be displayed.
-        /// </summary>
-        public ViewModelBase SmallDialog
-        {
-            get { return this.smallDialog; }
-            set { this.Set(() => this.SmallDialog, ref this.smallDialog, value); }
         }
 
         /// <summary>
@@ -532,12 +520,12 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task SendContentMessageAsync(GroupMeClientApi.Models.Attachments.Attachment attachment)
         {
-            if (!(this.SmallDialog is SendContentControlViewModelBase))
+            if (!(this.SmallDialogManager.PopupDialog is SendContentControlViewModelBase))
             {
                 return;
             }
 
-            var contentSendDialog = this.SmallDialog as SendContentControlViewModelBase;
+            var contentSendDialog = this.SmallDialogManager.PopupDialog as SendContentControlViewModelBase;
 
             if (contentSendDialog.ContentStream == null)
             {
@@ -660,7 +648,7 @@ namespace GroupMeClient.ViewModels.Controls
                 SendMessage = new RelayCommand<GroupMeClientApi.Models.Attachments.Attachment>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
             };
 
-            this.SmallDialog = dialog;
+            this.SmallDialogManager.PopupDialog = dialog;
         }
 
         private void ShowFileSendDialog(string fileName)
@@ -696,13 +684,13 @@ namespace GroupMeClient.ViewModels.Controls
                 SendMessage = new RelayCommand<GroupMeClientApi.Models.Attachments.Attachment>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
             };
 
-            this.SmallDialog = dialog;
+            this.SmallDialogManager.PopupDialog = dialog;
         }
 
         private void ClosePopupHandler()
         {
-            (this.SmallDialog as IDisposable)?.Dispose();
-            this.SmallDialog = null;
+            (this.SmallDialogManager.PopupDialog as IDisposable)?.Dispose();
+            this.SmallDialogManager.PopupDialog = null;
         }
 
         private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
@@ -719,17 +707,17 @@ namespace GroupMeClient.ViewModels.Controls
                 UpdateMessage = new RelayCommand(this.UseMessageEffectSuggestion),
             };
 
-            this.SmallDialog = dialog;
+            this.SmallDialogManager.PopupDialog = dialog;
         }
 
         private void UseMessageEffectSuggestion()
         {
-            if (!(this.SmallDialog is MessageEffectsControlViewModel))
+            if (!(this.SmallDialogManager.PopupDialog is MessageEffectsControlViewModel))
             {
                 return;
             }
 
-            var messageEffectsDialog = this.SmallDialog as MessageEffectsControlViewModel;
+            var messageEffectsDialog = this.SmallDialogManager.PopupDialog as MessageEffectsControlViewModel;
 
             this.TypedMessageContents = messageEffectsDialog.SelectedMessageContents;
 
