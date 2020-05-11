@@ -564,12 +564,37 @@ namespace GroupMeClient.ViewModels.Controls
             var displayedMessage = this.Messages.First(m => m.Id == message.Id);
             foreach (var attachment in (displayedMessage as MessageControlViewModel).AttachedItems)
             {
-                messageDataContext.AttachedItems.Add(attachment);
+                // Images don't render correctly as-is due to the usage of the GIF attached property.
+                if (attachment is Attachments.GroupMeImageAttachmentControlViewModel gmImage)
+                {
+                    byte[] imageBytes = null;
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        gmImage.ImageAttachmentStream.Seek(0, SeekOrigin.Begin);
+                        gmImage.ImageAttachmentStream.CopyTo(memoryStream);
+                        imageBytes = memoryStream.ToArray();
+                    }
+
+                    messageDataContext.AttachedItems.Add(new Image()
+                    {
+                        Source = ImageUtils.BytesToImageSource(imageBytes),
+                    });
+                }
+                else if (attachment is Attachments.ImageLinkAttachmentControlViewModel linkedImage)
+                {
+                    // Linked Images aren't downloaded on the ViewModel side
+                    // Just include the URL of the image
+                    messageDataContext.AttachedItems.Add($"Image: {linkedImage.Url}");
+                }
+                else
+                {
+                    messageDataContext.AttachedItems.Add(attachment);
+                }
             }
 
             var messageControl = new MessageControl()
             {
-                DataContext = displayedMessage,
+                DataContext = messageDataContext,
                 Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
                 Foreground = (Brush)Application.Current.FindResource("BlackBrush"),
             };

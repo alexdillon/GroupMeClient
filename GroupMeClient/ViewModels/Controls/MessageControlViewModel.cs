@@ -58,7 +58,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Gets or sets the attached items (Tweets, Web Links, Videos, etc.), if present.
         /// </summary>
-        public ObservableCollection<ViewModelBase> AttachedItems { get; set; } = new ObservableCollection<ViewModelBase>();
+        public ObservableCollection<object> AttachedItems { get; set; } = new ObservableCollection<object>();
 
         /// <summary>
         /// Gets the command to be performed when this <see cref="Message"/> is 'Liked'.
