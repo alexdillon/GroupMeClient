@@ -58,7 +58,10 @@ namespace GroupMeClient.Tasks
             GroupMeTask currentBackgroundTask = this.RunningTasks.FirstOrDefault(t => t.Tag == "backgroundcount");
             if (currentBackgroundTask != null)
             {
-                this.RunningTasks.Remove(currentBackgroundTask);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    this.RunningTasks.Remove(currentBackgroundTask);
+                });
             }
 
             if (loadCount > 0)
