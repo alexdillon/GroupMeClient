@@ -7,15 +7,22 @@
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="400"
              Background="Black"
-             Foreground="White">
+             Foreground="White"
+             FocusManager.FocusedElement="{Binding ElementName=NextImageButton}">
 
     <UserControl.Resources>
         <converters:PercentageConverter x:Key="percentageConverter" />
     </UserControl.Resources>
-    
+
+    <UserControl.InputBindings>
+        <KeyBinding Key="Left" Command="{Binding ShowPreviousImage}" />
+        <KeyBinding Key="Right" Command="{Binding ShowNextImage}" />
+    </UserControl.InputBindings>
+
     <Grid
          Width="{Binding Converter={StaticResource percentageConverter}, RelativeSource={RelativeSource AncestorType={x:Type controls:Popup}, Mode=FindAncestor}, Path=ActualWidth, ConverterParameter=0.8}"
          Height="{Binding Converter={StaticResource percentageConverter}, RelativeSource={RelativeSource AncestorType={x:Type controls:Popup}, Mode=FindAncestor}, Path=ActualHeight, ConverterParameter=0.8}">
@@ -36,9 +43,9 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="0.7*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="1.5*" />
-                <ColumnDefinition Width="0.3*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
         
             <ContentControl Content="{Binding SenderAvatar}"
@@ -62,7 +69,7 @@
                        Grid.Column="1"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Top"
-                       Margin="0,-5,0,0"
+                       Margin="0,-10,0,0"
                        FontSize="14"/>
 
             <TextBlock Text="{Binding Message.Text}"
@@ -78,6 +85,7 @@
                        Grid.Row="0"
                        Grid.Column="3"
                        HorizontalAlignment="Center"
+                       Padding="0,0,50,0"
                        FontSize="14"/>
 
             <Image gif:AnimationBehavior.SourceStream="{Binding ImageData}"
@@ -91,6 +99,69 @@
                     </behaviors:EventTrigger>
                 </behaviors:Interaction.Triggers>
             </Image>
+
+            <Button Grid.Row="2"
+                    Grid.Column="0"
+                    Foreground="White"
+                    Command="{Binding ShowPreviousImage}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Black"/>
+                        <Setter Property="Opacity" Value="0.1" />
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#121212"/>
+                                <Setter Property="Opacity" Value="0.80" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                
+                <iconPacks:PackIconMaterial Kind="ChevronLeft" />
+            </Button>
+
+            <Button Grid.Row="2"
+                    Grid.Column="3"
+                    Foreground="White"
+                    Command="{Binding ShowNextImage}"
+                    x:Name="NextImageButton">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Black"/>
+                        <Setter Property="Opacity" Value="0.1" />
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#121212"/>
+                                <Setter Property="Opacity" Value="0.80" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                
+                <iconPacks:PackIconMaterial Kind="ChevronRight" />
+            </Button>
 
         </Grid>
 

@@ -145,6 +145,11 @@ namespace GroupMeClient.Plugins.ViewModels
 
         private void ShowImageDetails(AttachmentImageItem item)
         {
+            if (item == null)
+            {
+                return;
+            }
+
             var message = this.MessagesWithAttachments.FirstOrDefault(m => m.Id == item.MessageId);
 
             if (message == null)
@@ -152,7 +157,19 @@ namespace GroupMeClient.Plugins.ViewModels
                 return;
             }
 
-            var dialog = new ImageDetailsControlViewModel(message, item.ImageIndex, this.GroupChat.Client.ImageDownloader, this.ShowLargePopup);
+            var currentItem = this.Images.First(x => x.MessageId == item.MessageId);
+            var currentIndex = this.Images.IndexOf(currentItem);
+            var previousItem = currentIndex > 0 ? this.Images[currentIndex - 1] : null;
+            var nextItem = currentIndex < this.Images.Count ? this.Images[currentIndex + 1] : null;
+
+            var dialog = new ImageDetailsControlViewModel(
+                message: message,
+                imageIndex: item.ImageIndex,
+                downloader: this.GroupChat.Client.ImageDownloader,
+                showPopupAction: this.ShowLargePopup,
+                showNext: () => this.ShowImageDetails(nextItem),
+                showPrevious: () => this.ShowImageDetails(previousItem));
+
             this.SmallDialogManager.PopupDialog = dialog;
         }
 

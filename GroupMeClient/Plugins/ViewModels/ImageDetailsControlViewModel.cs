@@ -27,7 +27,7 @@ namespace GroupMeClient.Plugins.ViewModels
         /// <param name="imageIndex">The index of this image attachment to display.</param>
         /// <param name="downloader">The <see cref="GroupMeClientApi.ImageDownloader"/> that should be used to download images.</param>
         /// <param name="showPopupAction">The <see cref="Action"/> used to open popups to display the image viewer.</param>
-        public ImageDetailsControlViewModel(Message message, int imageIndex, ImageDownloader downloader, Action<ViewModelBase> showPopupAction)
+        public ImageDetailsControlViewModel(Message message, int imageIndex, ImageDownloader downloader, Action<ViewModelBase> showPopupAction, Action showNext, Action showPrevious)
         {
             this.Message = message;
             this.ImageDownloader = downloader;
@@ -35,6 +35,8 @@ namespace GroupMeClient.Plugins.ViewModels
             this.ShowPopupAction = showPopupAction;
 
             this.Clicked = new RelayCommand(this.ClickedAction);
+            this.ShowNextImage = new RelayCommand(showNext, true);
+            this.ShowPreviousImage = new RelayCommand(showPrevious, true);
 
             this.SenderAvatar = new AvatarControlViewModel(this.Message, this.ImageDownloader);
             this.ImageUrl = ImageGalleryWindowViewModel.GetAttachmentContentUrls(this.Message.Attachments)[this.ImageIndex];
@@ -56,6 +58,16 @@ namespace GroupMeClient.Plugins.ViewModels
         /// Gets the command to be performed when the image is clicked.
         /// </summary>
         public ICommand Clicked { get; }
+
+        /// <summary>
+        /// Gets the command to show the next image in the gallery.
+        /// </summary>
+        public ICommand ShowNextImage { get; }
+
+        /// <summary>
+        /// Gets the command to show the previous image in the gallery.
+        /// </summary>
+        public ICommand ShowPreviousImage { get; }
 
         /// <summary>
         /// Gets a stream containing the image data to display.
