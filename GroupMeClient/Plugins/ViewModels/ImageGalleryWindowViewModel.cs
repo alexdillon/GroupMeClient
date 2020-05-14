@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -32,6 +33,7 @@ namespace GroupMeClient.Plugins.ViewModels
             this.GroupName = this.GroupChat.Name;
 
             this.ShowImageDetailsCommand = new RelayCommand<AttachmentImageItem>(this.ShowImageDetails);
+            this.LoadMoreCommand = new RelayCommand<ScrollViewer>(async (s) => await this.LoadNextPage(s), true);
 
             this.SmallDialogManager = new PopupViewModel()
             {
@@ -52,7 +54,8 @@ namespace GroupMeClient.Plugins.ViewModels
                    .OrderByDescending(m => m.CreatedAtTime);
 
             this.Images = new ObservableCollection<AttachmentImageItem>();
-            this.LoadPage(0);
+            this.LastPageIndex = -1;
+            _ = this.LoadNextPage();
         }
 
         /// <summary>
@@ -69,6 +72,11 @@ namespace GroupMeClient.Plugins.ViewModels
         /// Gets the command to execute to show a detailed view for a particular attached image.
         /// </summary>
         public ICommand ShowImageDetailsCommand { get; }
+
+        /// <summary>
+        /// Gets the command to execute to load more images into the gallery.
+        /// </summary>
+        public ICommand LoadMoreCommand { get; }
 
         /// <summary>
         /// Gets a manager for showing large, top-level popup dialogs.
@@ -89,6 +97,8 @@ namespace GroupMeClient.Plugins.ViewModels
         private IEnumerable<Message> MessagesWithAttachments { get; }
 
         private int ImagesPerPage { get; } = 100;
+
+        private int LastPageIndex { get; set; }
 
         /// <summary>
         /// <see cref="GetAttachmentContentUrls(IEnumerable{Attachment})"/> returns a listing of the
@@ -118,29 +128,53 @@ namespace GroupMeClient.Plugins.ViewModels
             return results.ToArray();
         }
 
-        private void LoadPage(int friendlyPageNumber)
+        private async Task LoadNextPage(ScrollViewer scrollViewer = null)
         {
             if (this.MessagesWithAttachments == null)
             {
                 return;
             }
 
-            var pageNumber = friendlyPageNumber - 1;
+            double originalOffset = scrollViewer?.VerticalOffset ?? 0.0;
 
-            var range = this.MessagesWithAttachments.Skip(pageNumber * this.ImagesPerPage).Take(this.ImagesPerPage);
-
-            foreach (var msg in range)
+            await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                var imageUrls = GetAttachmentContentUrls(msg.Attachments);
-                for (int i = 0; i < imageUrls.Length; i++)
+                this.LastPageIndex += 1;
+
+                var range = this.MessagesWithAttachments.Skip(this.LastPageIndex * this.ImagesPerPage).Take(this.ImagesPerPage);
+
+                foreach (var msg in range)
                 {
-                    if (!string.IsNullOrEmpty(imageUrls[i]))
+                    var imageUrls = GetAttachmentContentUrls(msg.Attachments);
+                    for (int i = 0; i < imageUrls.Length; i++)
                     {
-                        var entry = new AttachmentImageItem($"{imageUrls[i]}.preview", msg.Id, i, this.GroupChat.Client.ImageDownloader);
-                        this.Images.Add(entry);
+                        if (!string.IsNullOrEmpty(imageUrls[i]))
+                        {
+                            var entry = new AttachmentImageItem($"{imageUrls[i]}.preview", msg, i, this.GroupChat.Client.ImageDownloader);
+                            this.Images.Add(entry);
+                        }
                     }
                 }
-            }
+
+                if (originalOffset != 0)
+                {
+                    ScrollChangedEventHandler delayedUpdateHandler = null;
+                    int skip = 0;
+                    delayedUpdateHandler = (s, e) =>
+                    {
+                        scrollViewer.ScrollToVerticalOffset(originalOffset);
+
+                        if ((int)e.VerticalOffset == (int)originalOffset && skip > 1)
+                        {
+                            scrollViewer.ScrollChanged -= delayedUpdateHandler;
+                        }
+
+                        skip++;
+                    };
+
+                    scrollViewer.ScrollChanged += delayedUpdateHandler;
+                }
+            });
         }
 
         private void ShowImageDetails(AttachmentImageItem item)
@@ -150,20 +184,13 @@ namespace GroupMeClient.Plugins.ViewModels
                 return;
             }
 
-            var message = this.MessagesWithAttachments.FirstOrDefault(m => m.Id == item.MessageId);
-
-            if (message == null)
-            {
-                return;
-            }
-
-            var currentItem = this.Images.First(x => x.MessageId == item.MessageId);
+            var currentItem = this.Images.First(x => x.Message.Id == item.Message.Id);
             var currentIndex = this.Images.IndexOf(currentItem);
             var previousItem = currentIndex > 0 ? this.Images[currentIndex - 1] : null;
-            var nextItem = currentIndex < this.Images.Count ? this.Images[currentIndex + 1] : null;
+            var nextItem = currentIndex < this.Images.Count - 1 ? this.Images[currentIndex + 1] : null;
 
             var dialog = new ImageDetailsControlViewModel(
-                message: message,
+                message: item.Message,
                 imageIndex: item.ImageIndex,
                 downloader: this.GroupChat.Client.ImageDownloader,
                 showPopupAction: this.ShowLargePopup,
@@ -202,12 +229,12 @@ namespace GroupMeClient.Plugins.ViewModels
             /// Initializes a new instance of the <see cref="AttachmentImageItem"/> class.
             /// </summary>
             /// <param name="url">The URL of the image.</param>
-            /// <param name="messageId">The ID of the <see cref="Message"/> this image was sent with.</param>
+            /// <param name="message">The <see cref="Message"/> this image was sent with.</param>
             /// <param name="imageIndex">The index of this image out of all the images attached to the same <see cref="Message"/>.</param>
             /// <param name="downloader">The <see cref="GroupMeClientApi.ImageDownloader"/> that should be used to download images.</param>
-            public AttachmentImageItem(string url, string messageId, int imageIndex, ImageDownloader downloader)
+            public AttachmentImageItem(string url, Message message, int imageIndex, ImageDownloader downloader)
             {
-                this.MessageId = messageId;
+                this.Message = message;
                 this.Url = url;
                 this.ImageIndex = imageIndex;
                 this.ImageDownloader = downloader;
@@ -234,12 +261,12 @@ namespace GroupMeClient.Plugins.ViewModels
             }
 
             /// <summary>
-            /// Gets the unique identifier of the <see cref="Message"/> this image was attached to.
+            /// Gets the <see cref="GroupMeClientApi.Models.Message"/> this image was attached to.
             /// </summary>
-            public string MessageId { get; }
+            public Message Message { get; }
 
             /// <summary>
-            /// Gets the index number of this image out of the collection of all images attached to a given <see cref="Message"/>.
+            /// Gets the index number of this image out of the collection of all images attached to a given <see cref="GroupMeClientApi.Models.Message"/>.
             /// </summary>
             public int ImageIndex { get; }
 

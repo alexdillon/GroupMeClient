@@ -27,6 +27,8 @@ namespace GroupMeClient.Plugins.ViewModels
         /// <param name="imageIndex">The index of this image attachment to display.</param>
         /// <param name="downloader">The <see cref="GroupMeClientApi.ImageDownloader"/> that should be used to download images.</param>
         /// <param name="showPopupAction">The <see cref="Action"/> used to open popups to display the image viewer.</param>
+        /// <param name="showNext">The <see cref="Action"/> used to navigate to the next image in the gallery.</param>
+        /// <param name="showPrevious">The <see cref="Action"/> used to navigate to the previous image in the gallery.</param>
         public ImageDetailsControlViewModel(Message message, int imageIndex, ImageDownloader downloader, Action<ViewModelBase> showPopupAction, Action showNext, Action showPrevious)
         {
             this.Message = message;

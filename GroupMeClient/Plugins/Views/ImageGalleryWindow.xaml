@@ -10,6 +10,7 @@
         xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
         xmlns:controls1="clr-namespace:GroupMeClient.Views.Controls"
         xmlns:converters="clr-namespace:GroupMeClient.Converters"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Title="ImageGalleryView" Height="600" Width="920">
     <Grid>
@@ -37,12 +38,13 @@
             ScrollViewer.VerticalScrollBarVisibility="Visible"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" 
-            ScrollViewer.PanningMode="VerticalOnly" 
-            VirtualizingPanel.VirtualizationMode="Recycling"
+            ScrollViewer.PanningMode="VerticalOnly"
+            VirtualizingPanel.VirtualizationMode="Standard"
             VirtualizingPanel.ScrollUnit="Pixel"
-            VirtualizingPanel.CacheLength="20,20"
+            VirtualizingPanel.CacheLength="40,40"
             VirtualizingPanel.CacheLengthUnit="Item"
-            extensions:ListBoxExtensions.ScrollToTop="{Binding ReloadView}">
+            extensions:ListBoxExtensions.AutoScrollToEnd="False"
+            extensions:ListBoxExtensions.ScrollToBottom="{Binding LoadMoreCommand}">
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
