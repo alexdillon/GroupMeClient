@@ -272,7 +272,7 @@ namespace GroupMeClient.Plugins.ViewModels
             this.LastPageIndex += 1;
             var range = this.MessagesWithAttachments.Skip(this.LastPageIndex * this.ImagesPerPage).Take(this.ImagesPerPage);
 
-            if ((this.LastPageIndex * this.ImagesPerPage) + this.ImagesPerPage > this.MessagesWithAttachmentsCount)
+            if (this.LastPageIndex * this.ImagesPerPage > this.MessagesWithAttachmentsCount)
             {
               return;
             }
@@ -329,6 +329,7 @@ namespace GroupMeClient.Plugins.ViewModels
                 message: item.Message,
                 imageIndex: item.ImageIndex,
                 downloader: this.GroupChat.Client.ImageDownloader,
+                gotoContextAction: () => this.UIIntegration.GotoContextView(item.Message, this.GroupChat),
                 showPopupAction: this.ShowLargePopup,
                 showNext: () => this.ShowImageDetails(nextItem),
                 showPrevious: () => this.ShowImageDetails(previousItem));

@@ -26,10 +26,11 @@ namespace GroupMeClient.Plugins.ViewModels
         /// <param name="message">The <see cref="Message"/> containing the image to be shown.</param>
         /// <param name="imageIndex">The index of this image attachment to display.</param>
         /// <param name="downloader">The <see cref="GroupMeClientApi.ImageDownloader"/> that should be used to download images.</param>
+        /// <param name="gotoContextAction">The <see cref="Action"/> used to display this <see cref="Message"/> in-context in GMDC.</param>
         /// <param name="showPopupAction">The <see cref="Action"/> used to open popups to display the image viewer.</param>
         /// <param name="showNext">The <see cref="Action"/> used to navigate to the next image in the gallery.</param>
         /// <param name="showPrevious">The <see cref="Action"/> used to navigate to the previous image in the gallery.</param>
-        public ImageDetailsControlViewModel(Message message, int imageIndex, ImageDownloader downloader, Action<ViewModelBase> showPopupAction, Action showNext, Action showPrevious)
+        public ImageDetailsControlViewModel(Message message, int imageIndex, ImageDownloader downloader, Action gotoContextAction, Action<ViewModelBase> showPopupAction, Action showNext, Action showPrevious)
         {
             this.Message = message;
             this.ImageDownloader = downloader;
@@ -39,6 +40,7 @@ namespace GroupMeClient.Plugins.ViewModels
             this.Clicked = new RelayCommand(this.ClickedAction);
             this.ShowNextImage = new RelayCommand(showNext, true);
             this.ShowPreviousImage = new RelayCommand(showPrevious, true);
+            this.GotoContext = new RelayCommand(gotoContextAction);
 
             this.SenderAvatar = new AvatarControlViewModel(this.Message, this.ImageDownloader);
             this.ImageUrl = ImageGalleryWindowViewModel.GetAttachmentContentUrls(this.Message.Attachments)[this.ImageIndex];
@@ -70,6 +72,11 @@ namespace GroupMeClient.Plugins.ViewModels
         /// Gets the command to show the previous image in the gallery.
         /// </summary>
         public ICommand ShowPreviousImage { get; }
+
+        /// <summary>
+        /// Gets the command to show the message in context in GroupMe Desktop Client.
+        /// </summary>
+        public ICommand GotoContext { get; }
 
         /// <summary>
         /// Gets a stream containing the image data to display.
