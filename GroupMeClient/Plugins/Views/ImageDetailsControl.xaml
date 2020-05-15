@@ -46,6 +46,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="1.5*" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="60" />
             </Grid.ColumnDefinitions>
         
             <ContentControl Content="{Binding SenderAvatar}"
@@ -81,16 +82,40 @@
                        Margin="15,0,15,0"
                        FontSize="14"/>
 
-            <TextBlock Text="Test"
-                       Grid.Row="0"
-                       Grid.Column="3"
-                       HorizontalAlignment="Center"
-                       Padding="0,0,50,0"
-                       FontSize="14"/>
+            <Button Content="Goto Message"
+                    Grid.Row="0"
+                    Grid.Column="3"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,50,0"
+                    Command="{Binding GotoContext}"
+                    Background="Black"
+                    BorderThickness="0"
+                    FontSize="14">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Foreground" Value="#CCCCCC"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
 
             <Image gif:AnimationBehavior.SourceStream="{Binding ImageData}"
                    Grid.Row="2"
-                   Grid.ColumnSpan="4"
+                   Grid.ColumnSpan="5"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center">
                 <behaviors:Interaction.Triggers>
@@ -132,7 +157,7 @@
             </Button>
 
             <Button Grid.Row="2"
-                    Grid.Column="3"
+                    Grid.Column="4"
                     Foreground="White"
                     Command="{Binding ShowNextImage}"
                     x:Name="NextImageButton">

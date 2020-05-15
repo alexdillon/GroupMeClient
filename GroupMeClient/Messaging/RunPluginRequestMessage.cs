@@ -1,23 +1,23 @@
-﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Messaging;
+﻿using GalaSoft.MvvmLight.Messaging;
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin.GroupChat;
 
 namespace GroupMeClient.Messaging
 {
     /// <summary>
-    /// <see cref="IndexAndRunPluginRequestMessage"/> specifies a message commanding the application to switch to the Search Tab,
-    /// begin indexing, and then execute a plugin.
+    /// <see cref="RunPluginRequestMessage"/> specifies a message commanding the application
+    /// execute a plugin for a specific <see cref="Group"/> or <see cref="Chat"/> with support
+    /// for providing cache access to the <see cref="IGroupChatPlugin"/>.
     /// This request can be sent through <see cref="Messenger"/>.
     /// </summary>
-    internal class IndexAndRunPluginRequestMessage : MessageBase
+    internal class RunPluginRequestMessage : MessageBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="IndexAndRunPluginRequestMessage"/> class.
+        /// Initializes a new instance of the <see cref="RunPluginRequestMessage"/> class.
         /// </summary>
         /// <param name="messageContainer">The Group or Chat to execute the plugin with.</param>
         /// <param name="plugin">The plugin to execute upon index completion.</param>
-        public IndexAndRunPluginRequestMessage(IMessageContainer messageContainer, IGroupChatPlugin plugin)
+        public RunPluginRequestMessage(IMessageContainer messageContainer, IGroupChatPlugin plugin)
         {
             this.MessageContainer = messageContainer;
             this.Plugin = plugin;

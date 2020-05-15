@@ -79,7 +79,8 @@
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
     <Compile Include="Extensions\ZoomBorder.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />
-    <Compile Include="Messaging\IndexAndRunPluginRequestMessage.cs" />
+    <Compile Include="Messaging\SwitchToPageRequestMessage.cs" />
+    <Compile Include="Messaging\RunPluginRequestMessage.cs" />
     <Compile Include="Messaging\DisconnectedRequestMessage.cs" />
     <Compile Include="Native\WindowsThemeUtils.cs" />
     <Compile Include="Native\RecoveryManager.cs" />

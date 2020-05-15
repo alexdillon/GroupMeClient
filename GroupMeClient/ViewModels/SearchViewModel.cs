@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
@@ -221,6 +222,9 @@ namespace GroupMeClient.ViewModels
         /// <inheritdoc/>
         void IPluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
         {
+            var command = new Messaging.SwitchToPageRequestMessage(Messaging.SwitchToPageRequestMessage.Page.Search);
+            Messenger.Default.Send(command);
+
             this.OpenNewGroupChat(container);
             this.UpdateContextView(message);
         }

@@ -696,7 +696,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
         {
-            var command = new Messaging.IndexAndRunPluginRequestMessage(this.MessageContainer, plugin);
+            var command = new Messaging.RunPluginRequestMessage(this.MessageContainer, plugin);
             Messenger.Default.Send(command);
         }
 
