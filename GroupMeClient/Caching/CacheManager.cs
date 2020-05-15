@@ -53,11 +53,11 @@ namespace GroupMeClient.Caching
                 // Chat.Id returns the Id of the other user
                 // However, GroupMe messages are natively returned with a Conversation Id instead
                 // Conversation IDs are user1+user2.
-                var conversatonId = c.LatestMessage.ConversationId;
+                var conversationId = c.LatestMessage.ConversationId;
 
                 return cacheContext.Messages
                     .AsNoTracking()
-                    .Where(m => m.ConversationId == conversatonId);
+                    .Where(m => m.ConversationId == conversationId);
             }
             else
             {
