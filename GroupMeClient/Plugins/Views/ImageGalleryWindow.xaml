@@ -11,10 +11,12 @@
         xmlns:controls1="clr-namespace:GroupMeClient.Views.Controls"
         xmlns:converters="clr-namespace:GroupMeClient.Converters"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
         Title="ImageGalleryView" Height="600" Width="920">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -29,8 +31,50 @@
                    Foreground="{DynamicResource BlackBrush}"
                    Grid.Row="0"/>
 
+        <Expander Grid.Row="1"
+                  Header="Filter Options"
+                  Margin="15,5,25,0"
+                  Controls:ControlsHelper.ContentCharacterCasing="Normal"
+                  Background="{DynamicResource ControlBackgroundBrush}"
+                  BorderBrush="Transparent"
+                  HorizontalAlignment="Center">
+
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Label Content="Starting Date" Grid.Row="0" Grid.Column="0"/>
+                    <DatePicker SelectedDate="{Binding FilterStartDate, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" />
+                    <Label Content="Ending Date" Grid.Row="1" Grid.Column="0" />
+                    <DatePicker SelectedDate="{Binding FilterEndDate, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" />
+                    <Label Content="Sent By: " VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" />
+                    <ComboBox ItemsSource="{Binding Members}" SelectedItem="{Binding FilterMessagesFrom, Mode=TwoWay}" DisplayMemberPath="Name" Controls:TextBoxHelper.ClearTextButton="True" Grid.Row="2" Grid.Column="1" />
+                </Grid>
+
+                <CheckBox Content="Hide Reply Screnshots" IsChecked="{Binding FilterReplyScreenshots, Mode=TwoWay}"  />
+
+                <Button Margin="0,5,0,0" Command="{Binding ResetFilters}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Reset  " />
+                            <iconPacks:PackIconFontAwesome Kind="EraserSolid" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+
+        </Expander>
+
         <extensions:ListBoxWithPosition
-            Grid.Row="1"
+            Grid.Row="2"
             ItemsSource="{Binding Images}"
             BorderThickness="0"
             Background="{DynamicResource ControlBackgroundBrush}"

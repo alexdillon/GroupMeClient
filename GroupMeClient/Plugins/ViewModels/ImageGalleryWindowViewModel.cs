@@ -24,6 +24,11 @@ namespace GroupMeClient.Plugins.ViewModels
     /// </summary>
     public class ImageGalleryWindowViewModel : ViewModelBase
     {
+        private bool filterReplyScreenshots;
+        private DateTime filterStartDate;
+        private DateTime filterEndDate = DateTime.Now.AddDays(1);
+        private Member filterMessagesFrom;
+
         private ImageGalleryWindowViewModel(IMessageContainer groupChat, CacheSession cacheSession, IPluginUIIntegration uiIntegration)
         {
             this.GroupChat = groupChat;
@@ -34,6 +39,10 @@ namespace GroupMeClient.Plugins.ViewModels
 
             this.ShowImageDetailsCommand = new RelayCommand<AttachmentImageItem>(this.ShowImageDetails);
             this.LoadMoreCommand = new RelayCommand<ScrollViewer>(async (s) => await this.LoadNextPage(s), true);
+            this.ResetFilters = new RelayCommand<bool>(this.ResetFilterFields);
+
+            this.Members = new ObservableCollection<Member>();
+            this.Images = new ObservableCollection<AttachmentImageItem>();
 
             this.SmallDialogManager = new PopupViewModel()
             {
@@ -47,16 +56,26 @@ namespace GroupMeClient.Plugins.ViewModels
                 EasyClosePopup = new RelayCommand(this.CloseBigPopupHandler),
             };
 
-            this.MessagesWithAttachments =
-               this.CacheSession.CacheForGroupOrChat
-                   .AsEnumerable()
-                   .Where(m => m.Attachments.Count > 0)
-                   .OrderByDescending(m => m.CreatedAtTime);
+            if (this.GroupChat is Group group)
+            {
+                foreach (var member in group.Members)
+                {
+                    this.Members.Add(member);
+                }
+            }
+            else if (this.GroupChat is Chat chat)
+            {
+                this.Members.Add(chat.OtherUser);
+                this.Members.Add(chat.WhoAmI());
+            }
 
-            this.Images = new ObservableCollection<AttachmentImageItem>();
-            this.LastPageIndex = -1;
-            _ = this.LoadNextPage();
+            this.ResetFilterFields(skipUpdating: false);
         }
+
+        /// <summary>
+        /// Gets a collection of the <see cref="Member"/>s who have sent messages in this group or chat.
+        /// </summary>
+        public ObservableCollection<Member> Members { get; }
 
         /// <summary>
         /// Gets a collection of the <see cref="AttachmentImageItem"/>s that should be displayed in this Gallery.
@@ -79,6 +98,11 @@ namespace GroupMeClient.Plugins.ViewModels
         public ICommand LoadMoreCommand { get; }
 
         /// <summary>
+        /// Gets the action to be be performed to reset the search filters.
+        /// </summary>
+        public ICommand ResetFilters { get; }
+
+        /// <summary>
         /// Gets a manager for showing large, top-level popup dialogs.
         /// </summary>
         public PopupViewModel BigDialogManager { get; }
@@ -88,17 +112,55 @@ namespace GroupMeClient.Plugins.ViewModels
         /// </summary>
         public PopupViewModel SmallDialogManager { get; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether screenshots of replied messages should be hidden in the gallery.
+        /// </summary>
+        public bool FilterReplyScreenshots
+        {
+            get => this.filterReplyScreenshots;
+            set => this.SetSearchProperty(() => this.FilterReplyScreenshots, ref this.filterReplyScreenshots, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the beginning date for the time period of messages to display.
+        /// </summary>
+        public DateTime FilterStartDate
+        {
+            get => this.filterStartDate;
+            set => this.SetSearchProperty(() => this.FilterStartDate, ref this.filterStartDate, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the ending date for the time period of messages to display.
+        /// </summary>
+        public DateTime FilterEndDate
+        {
+            get => this.filterEndDate;
+            set => this.SetSearchProperty(() => this.FilterEndDate, ref this.filterEndDate, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Member"/> from which to display messages.
+        /// </summary>
+        public Member FilterMessagesFrom
+        {
+            get => this.filterMessagesFrom;
+            set => this.SetSearchProperty(() => this.FilterMessagesFrom, ref this.filterMessagesFrom, value);
+        }
+
         private IMessageContainer GroupChat { get; }
 
         private CacheSession CacheSession { get; }
 
         private IPluginUIIntegration UIIntegration { get; }
 
-        private IEnumerable<Message> MessagesWithAttachments { get; }
+        private IEnumerable<Message> MessagesWithAttachments { get; set; }
 
         private int ImagesPerPage { get; } = 100;
 
         private int LastPageIndex { get; set; }
+
+        private bool DeferSearchUpdating { get; set; }
 
         /// <summary>
         /// <see cref="GetAttachmentContentUrls(IEnumerable{Attachment})"/> returns a listing of the
@@ -126,6 +188,72 @@ namespace GroupMeClient.Plugins.ViewModels
             }
 
             return results.ToArray();
+        }
+
+        private void SetSearchProperty<T>(System.Linq.Expressions.Expression<Func<T>> propertyExpression, ref T field, T newValue)
+        {
+            this.Set(propertyExpression, ref field, newValue);
+            this.UpdateSearchResults();
+        }
+
+        private void ResetFilterFields(bool skipUpdating = false)
+        {
+            this.DeferSearchUpdating = true;
+
+            this.FilterStartDate = this.GroupChat?.CreatedAtTime.AddDays(-1) ?? DateTime.MinValue;
+            this.FilterEndDate = DateTime.Now.AddDays(1);
+            this.FilterReplyScreenshots = true;
+
+            this.DeferSearchUpdating = false;
+            if (!skipUpdating)
+            {
+                this.UpdateSearchResults();
+            }
+        }
+
+        private void UpdateSearchResults()
+        {
+            if (this.DeferSearchUpdating)
+            {
+                return;
+            }
+
+            this.Images.Clear();
+            this.LastPageIndex = -1;
+
+            var startDate = this.FilterStartDate;
+            var endDate = (this.FilterEndDate == DateTime.MinValue) ? DateTime.Now : this.FilterEndDate.AddDays(1);
+
+            var startDateUnix = ((DateTimeOffset)startDate).ToUnixTimeSeconds();
+            var endDateUnix = ((DateTimeOffset)endDate).ToUnixTimeSeconds();
+
+            IQueryable<Message> messagesFromMember;
+            if (this.FilterMessagesFrom == null)
+            {
+                // Show messages from all chat members
+                messagesFromMember = this.CacheSession.CacheForGroupOrChat;
+            }
+            else
+            {
+                var userId = this.FilterMessagesFrom.UserId;
+                if (string.IsNullOrEmpty(userId) && this.GroupChat is Chat chat)
+                {
+                    // In Chats, the OtherUser field doesn't have the UserId set from GroupMe's API...
+                    userId = chat.Id;
+                }
+
+                messagesFromMember = this.CacheSession.CacheForGroupOrChat
+                    .Where(m => m.UserId == userId);
+            }
+
+            this.MessagesWithAttachments = messagesFromMember
+                .AsEnumerable()
+                .Where(m => m.Attachments.Count > 0)
+                .Where(m => m.CreatedAtUnixTime >= startDateUnix)
+                .Where(m => m.CreatedAtUnixTime <= endDateUnix)
+                .OrderByDescending(m => m.CreatedAtTime);
+
+            _ = this.LoadNextPage();
         }
 
         private async Task LoadNextPage(ScrollViewer scrollViewer = null)
