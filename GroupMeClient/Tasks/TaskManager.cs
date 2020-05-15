@@ -129,7 +129,10 @@ namespace GroupMeClient.Tasks
             /// </summary>
             public void Cancel()
             {
-                this.CancellationTokenSource.Cancel();
+                if (!this.Payload.IsCompleted)
+                {
+                    this.CancellationTokenSource.Cancel();
+                }
             }
         }
     }
