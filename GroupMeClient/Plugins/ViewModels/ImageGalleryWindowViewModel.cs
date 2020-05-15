@@ -156,6 +156,8 @@ namespace GroupMeClient.Plugins.ViewModels
 
         private IEnumerable<Message> MessagesWithAttachments { get; set; }
 
+        private int MessagesWithAttachmentsCount { get; set; }
+
         private int ImagesPerPage { get; } = 100;
 
         private int LastPageIndex { get; set; }
@@ -253,6 +255,8 @@ namespace GroupMeClient.Plugins.ViewModels
                 .Where(m => m.CreatedAtUnixTime <= endDateUnix)
                 .OrderByDescending(m => m.CreatedAtTime);
 
+            this.MessagesWithAttachmentsCount = this.MessagesWithAttachments.Count();
+
             _ = this.LoadNextPage();
         }
 
@@ -265,12 +269,16 @@ namespace GroupMeClient.Plugins.ViewModels
 
             double originalOffset = scrollViewer?.VerticalOffset ?? 0.0;
 
+            this.LastPageIndex += 1;
+            var range = this.MessagesWithAttachments.Skip(this.LastPageIndex * this.ImagesPerPage).Take(this.ImagesPerPage);
+
+            if ((this.LastPageIndex * this.ImagesPerPage) + this.ImagesPerPage > this.MessagesWithAttachmentsCount)
+            {
+              return;
+            }
+
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                this.LastPageIndex += 1;
-
-                var range = this.MessagesWithAttachments.Skip(this.LastPageIndex * this.ImagesPerPage).Take(this.ImagesPerPage);
-
                 foreach (var msg in range)
                 {
                     var imageUrls = GetAttachmentContentUrls(msg.Attachments);
