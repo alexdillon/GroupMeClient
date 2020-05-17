@@ -40,7 +40,7 @@ namespace GroupMeClient.Tasks
         public void AddTask(string name, string tag, Task payload, CancellationTokenSource cancellationTokenSource = null)
         {
             var task = new GroupMeTask(name, tag, payload, cancellationTokenSource);
-            payload.ContinueWith(x => this.TaskCompleted(x, task));
+            payload.ContinueWith(x => this.TaskCompleted(task));
             Application.Current.Dispatcher.Invoke(() =>
             {
                 this.RunningTasks.Add(task);
@@ -80,7 +80,7 @@ namespace GroupMeClient.Tasks
             this.TaskCountChanged?.Invoke(this, new EventArgs());
         }
 
-        private void TaskCompleted(Task value, GroupMeTask taskWrapper)
+        private void TaskCompleted(GroupMeTask taskWrapper)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {

@@ -199,10 +199,6 @@ namespace GroupMeClient.ViewModels
 
         private IMessageContainer SelectedGroupChat { get; set; }
 
-        private Task IndexingTask { get; set; }
-
-        private CancellationTokenSource CancellationTokenSource { get; set; }
-
         private bool DeferSearchUpdating { get; set; }
 
         /// <summary>
@@ -388,7 +384,7 @@ namespace GroupMeClient.ViewModels
 
             this.ResultsView.AssociateWith = this.SelectedGroupChat;
             this.ResultsView.DisplayMessages(orderedMessages, cacheContext);
-            this.ResultsView.ChangePage(0);
+            _ = this.ResultsView.LoadPage(0);
         }
 
         private void UpdateContextView(Message message)
@@ -402,7 +398,7 @@ namespace GroupMeClient.ViewModels
 
             this.ContextView.AssociateWith = this.SelectedGroupChat;
             this.ContextView.DisplayMessages(messagesForGroupChat, cacheContext);
-            this.ContextView.EnsureVisible(message);
+            _ = this.ContextView.EnsureVisible(message);
         }
 
         private void CloseLittlePopup()
