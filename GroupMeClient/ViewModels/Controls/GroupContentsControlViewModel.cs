@@ -56,7 +56,7 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 ClosePopup = new RelayCommand(this.ClosePopupHandler),
                 EasyClosePopup = null,  // EasyClose makes it too easy to accidently close the send dialog.
-                PopupDialog = null
+                PopupDialog = null,
             };
 
             this.ReliabilityStateMachine = new ReliabilityStateMachine();
@@ -585,8 +585,6 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task<Message> InjectReplyData(Message responseMessage)
         {
-            var suffix = $"\n/rmid:{this.MessageBeingRepliedTo.Message.Id}";
-
             var renderedOriginalMessage = this.RenderMessageToPngImage(this.MessageBeingRepliedTo.Message);
             var renderedImageAttachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(renderedOriginalMessage, this.MessageContainer);
 
@@ -594,9 +592,9 @@ namespace GroupMeClient.ViewModels.Controls
             attachments.Add(renderedImageAttachment);
 
             var amendedMessage = Message.CreateMessage(
-                responseMessage.Text + suffix,
+                responseMessage.Text,
                 attachments,
-                "gmdc");
+                $"gmdc-r{this.MessageBeingRepliedTo.Message.Id}");
 
             return amendedMessage;
         }
