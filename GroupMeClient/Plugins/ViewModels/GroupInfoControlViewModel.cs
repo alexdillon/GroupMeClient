@@ -7,12 +7,13 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
 using Microsoft.Win32;
 
-namespace GroupMeClient.ViewModels.Controls
+namespace GroupMeClient.Plugins.ViewModels
 {
     /// <summary>
     /// <see cref="GroupInfoControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.GroupInfoControlViewModel"/> control.
@@ -200,7 +201,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <see cref="GroupInfoPseudoPlugin"/> defines a plugin-style object that can be used to integrate
         /// Group Information functionality into a <see cref="GroupContentsControlViewModel"/>.
         /// </summary>
-        public class GroupInfoPseudoPlugin : GroupMeClientPlugin.PluginBase, IGroupChatPlugin
+        public class GroupInfoPseudoPlugin : PluginBase, IGroupChatPlugin
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="GroupInfoPseudoPlugin"/> class.
@@ -231,6 +232,7 @@ namespace GroupMeClient.ViewModels.Controls
                 var request = new Messaging.DialogRequestMessage(new GroupInfoControlViewModel(this.Group));
                 Messenger.Default.Send(request);
 
+                cleanup(cacheSession);
                 return Task.CompletedTask;
             }
         }

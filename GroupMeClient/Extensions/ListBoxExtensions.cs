@@ -42,7 +42,17 @@ namespace GroupMeClient.Extensions
                 "ScrollToTop",
                 typeof(ICommand),
                 typeof(ListBoxExtensions),
-                new FrameworkPropertyMetadata(null, OnScrollToTopPropertyChanged));
+                new FrameworkPropertyMetadata(null, OnScrollToTopBottomPropertyChanged));
+
+        /// <summary>
+        /// Gets a property indicating if Scroll To Bottom notifications are enabled.
+        /// </summary>
+        public static readonly DependencyProperty ScrollToBottomProperty =
+            DependencyProperty.RegisterAttached(
+                "ScrollToBottom",
+                typeof(ICommand),
+                typeof(ListBoxExtensions),
+                new FrameworkPropertyMetadata(null, OnScrollToTopBottomPropertyChanged));
 
         /// <summary>
         /// Gets a value indicating whether Auto Scrolling in enabled.
@@ -85,6 +95,26 @@ namespace GroupMeClient.Extensions
         public static void SetScrollToTop(DependencyObject ob, ICommand value)
         {
             ob.SetValue(ScrollToTopProperty, value);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether notifications when the control is scrolled to the bottom are enabled.
+        /// </summary>
+        /// <param name="ob">The dependency object to retreive the property from.</param>
+        /// <returns>A boolean indicating whether enabled.</returns>
+        public static ICommand GetScrollToBottom(DependencyObject ob)
+        {
+            return (ICommand)ob.GetValue(ScrollToBottomProperty);
+        }
+
+        /// <summary>
+        /// Sets a value indicating whether Scroll to Bottom notications are enabled.
+        /// </summary>
+        /// <param name="ob">The dependency object to retreive the property from.</param>
+        /// <param name="value">Whether scroll to top notifications are enabled. </param>
+        public static void SetScrollToBottom(DependencyObject ob, ICommand value)
+        {
+            ob.SetValue(ScrollToBottomProperty, value);
         }
 
         /// <summary>
@@ -134,10 +164,11 @@ namespace GroupMeClient.Extensions
             SetAutoScrollToEnd(listBox, (bool)e.NewValue);
         }
 
-        private static void OnScrollToTopPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        private static void OnScrollToTopBottomPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             var listBox = obj as ListBox;
 
+            listBox.Loaded -= OnListBoxLoaded;
             listBox.Loaded += OnListBoxLoaded;
         }
 
@@ -159,12 +190,21 @@ namespace GroupMeClient.Extensions
             if (scrollViewer.VerticalOffset == 0)
             {
                 var command = GetScrollToTop(listBox);
-                if (command == null || !command.CanExecute(null))
+                if (command != null && command.CanExecute(null))
                 {
-                    return;
+                    command.Execute(scrollViewer);
                 }
-
-                command.Execute(scrollViewer);
+            }
+            else if ((int)scrollViewer.VerticalOffset == (int)scrollViewer.ScrollableHeight)
+            {
+                if (e.VerticalChange < 1000)
+                {
+                    var command = GetScrollToBottom(listBox);
+                    if (command != null && command.CanExecute(null))
+                    {
+                        command.Execute(scrollViewer);
+                    }
+                }
             }
         }
 

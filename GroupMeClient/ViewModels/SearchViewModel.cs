@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
@@ -21,7 +22,6 @@ namespace GroupMeClient.ViewModels
     /// </summary>
     public class SearchViewModel : ViewModelBase, IPluginUIIntegration
     {
-        private ViewModelBase popupDialog;
         private string searchTerm = string.Empty;
         private string selectedGroupName = string.Empty;
         private bool filterHasAttachedImage;
@@ -59,8 +59,6 @@ namespace GroupMeClient.ViewModels
                 NewestAtBottom = true,
             };
 
-            this.ClosePopup = new RelayCommand(this.CloseLittlePopup);
-            this.EasyClosePopup = new RelayCommand(this.CloseLittlePopup);
             this.ResetFilters = new RelayCommand<bool>(this.ResetFilterFields);
 
             this.Loaded = new RelayCommand(async () => await this.LoadIndexedGroups(), true);
@@ -101,16 +99,6 @@ namespace GroupMeClient.ViewModels
         /// Gets the ViewModel for the in-context message view.
         /// </summary>
         public PaginatedMessagesControlViewModel ContextView { get; }
-
-        /// <summary>
-        /// Gets the Big Dialog that should be displayed as a popup.
-        /// Gets null if no dialog should be displayed.
-        /// </summary>
-        public ViewModelBase PopupDialog
-        {
-            get { return this.popupDialog; }
-            private set { this.Set(() => this.PopupDialog, ref this.popupDialog, value); }
-        }
 
         /// <summary>
         /// Gets or sets the string entered to search for.
@@ -199,10 +187,6 @@ namespace GroupMeClient.ViewModels
 
         private IMessageContainer SelectedGroupChat { get; set; }
 
-        private Task IndexingTask { get; set; }
-
-        private CancellationTokenSource CancellationTokenSource { get; set; }
-
         private bool DeferSearchUpdating { get; set; }
 
         /// <summary>
@@ -234,6 +218,9 @@ namespace GroupMeClient.ViewModels
         /// <inheritdoc/>
         void IPluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
         {
+            var command = new Messaging.SwitchToPageRequestMessage(Messaging.SwitchToPageRequestMessage.Page.Search);
+            Messenger.Default.Send(command);
+
             this.OpenNewGroupChat(container);
             this.UpdateContextView(message);
         }
@@ -388,7 +375,7 @@ namespace GroupMeClient.ViewModels
 
             this.ResultsView.AssociateWith = this.SelectedGroupChat;
             this.ResultsView.DisplayMessages(orderedMessages, cacheContext);
-            this.ResultsView.ChangePage(0);
+            _ = this.ResultsView.LoadPage(0);
         }
 
         private void UpdateContextView(Message message)
@@ -402,31 +389,7 @@ namespace GroupMeClient.ViewModels
 
             this.ContextView.AssociateWith = this.SelectedGroupChat;
             this.ContextView.DisplayMessages(messagesForGroupChat, cacheContext);
-            this.ContextView.EnsureVisible(message);
-        }
-
-        private void CloseLittlePopup()
-        {
-            if (this.PopupDialog is LoadingControlViewModel)
-            {
-                if (this.IndexingTask != null && !(this.IndexingTask.IsCompleted || this.IndexingTask.IsCanceled))
-                {
-                    // handle cancellation and restart
-                    this.CancellationTokenSource.Cancel();
-                    this.IndexingTask.ContinueWith((l) =>
-                    {
-                        Application.Current.Dispatcher.Invoke(() => this.CloseLittlePopup());
-                    });
-                    return;
-                }
-            }
-
-            if (this.PopupDialog is IDisposable d)
-            {
-                d.Dispose();
-            }
-
-            this.PopupDialog = null;
+            _ = this.ContextView.EnsureVisible(message);
         }
     }
 }

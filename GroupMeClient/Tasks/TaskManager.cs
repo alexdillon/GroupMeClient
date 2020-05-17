@@ -40,7 +40,7 @@ namespace GroupMeClient.Tasks
         public void AddTask(string name, string tag, Task payload, CancellationTokenSource cancellationTokenSource = null)
         {
             var task = new GroupMeTask(name, tag, payload, cancellationTokenSource);
-            payload.ContinueWith(x => this.TaskCompleted(x, task));
+            payload.ContinueWith(x => this.TaskCompleted(task));
             Application.Current.Dispatcher.Invoke(() =>
             {
                 this.RunningTasks.Add(task);
@@ -58,10 +58,13 @@ namespace GroupMeClient.Tasks
             GroupMeTask currentBackgroundTask = this.RunningTasks.FirstOrDefault(t => t.Tag == "backgroundcount");
             if (currentBackgroundTask != null)
             {
-                this.RunningTasks.Remove(currentBackgroundTask);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    this.RunningTasks.Remove(currentBackgroundTask);
+                });
             }
 
-            if (loadCount >= 0)
+            if (loadCount > 0)
             {
                 var newBackgroundTask = new GroupMeTask(
                     $"{loadCount} Group Updates",
@@ -77,7 +80,7 @@ namespace GroupMeClient.Tasks
             this.TaskCountChanged?.Invoke(this, new EventArgs());
         }
 
-        private void TaskCompleted(Task value, GroupMeTask taskWrapper)
+        private void TaskCompleted(GroupMeTask taskWrapper)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -126,7 +129,10 @@ namespace GroupMeClient.Tasks
             /// </summary>
             public void Cancel()
             {
-                this.CancellationTokenSource.Cancel();
+                if (!this.Payload.IsCompleted)
+                {
+                    this.CancellationTokenSource.Cancel();
+                }
             }
         }
     }

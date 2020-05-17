@@ -107,6 +107,8 @@ namespace GroupMeClient.Plugins
                     this.GroupChatPlugins.Add(groupChatPlugin);
                 }
             }
+
+            this.GroupChatPlugins.Add(new ViewModels.ImageGalleryWindowViewModel.ImageGalleryPlugin());
         }
     }
 }

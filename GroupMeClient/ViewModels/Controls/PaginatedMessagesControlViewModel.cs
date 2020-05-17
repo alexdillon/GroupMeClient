@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -32,8 +34,8 @@ namespace GroupMeClient.ViewModels.Controls
             this.CurrentPage = new ObservableCollection<MessageControlViewModelBase>();
             this.MessagesPerPage = 50;
 
-            this.GoBackCommand = new RelayCommand(this.GoBack, this.CanGoBack);
-            this.GoForwardCommand = new RelayCommand(this.GoForward, this.CanGoForward);
+            this.GoBackCommand = new RelayCommand<ScrollViewer>(this.GoBack, this.CanGoBack);
+            this.GoForwardCommand = new RelayCommand<ScrollViewer>(this.GoForward, this.CanGoForward);
 
             this.NewestAtBottom = false;
         }
@@ -47,11 +49,6 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets or sets the number of <see cref="Message"/>s displayed per page.
         /// </summary>
         public int MessagesPerPage { get; set; }
-
-        /// <summary>
-        /// Gets the currently displayed page number.
-        /// </summary>
-        public int CurrentPageNumber { get; private set; }
 
         /// <summary>
         /// Gets the total number of messages displayed in all pages.
@@ -96,12 +93,12 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Gets the action to be performed when the back button is clicked.
         /// </summary>
-        public RelayCommand GoBackCommand { get; }
+        public RelayCommand<ScrollViewer> GoBackCommand { get; }
 
         /// <summary>
         /// Gets the action to be performed when the forward/next button is clicked.
         /// </summary>
-        public RelayCommand GoForwardCommand { get; }
+        public RelayCommand<ScrollViewer> GoForwardCommand { get; }
 
         /// <summary>
         /// Gets or sets the action to be performed when a <see cref="Message"/> is selected.
@@ -122,12 +119,12 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 if (this.ShowTitle && this.TotalMessagesCount != 0)
                 {
-                    var startingMessageNum = (this.CurrentPageNumber * this.MessagesPerPage) + 1;
+                    var startingMessageNum = (this.CurrentPageTop * this.MessagesPerPage) + 1;
                     var endingMessageNum = Math.Min(
-                        (this.CurrentPageNumber * this.MessagesPerPage) + this.MessagesPerPage,
+                        (this.CurrentPageBottom * this.MessagesPerPage) + this.MessagesPerPage,
                         this.TotalMessagesCount);
 
-                    return $"Showing {startingMessageNum}-{endingMessageNum} of {this.TotalMessagesCount} Results";
+                    return $"Showing {startingMessageNum}-{startingMessageNum + endingMessageNum} of {this.TotalMessagesCount} Results";
                 }
                 else
                 {
@@ -160,6 +157,10 @@ namespace GroupMeClient.ViewModels.Controls
 
         private CacheManager.CacheContext CurrentlyDisplayedCacheContext { get; set; }
 
+        private int CurrentPageTop { get; set; }
+
+        private int CurrentPageBottom { get; set; }
+
         /// <summary>
         /// Displays a collection of messages in the control.
         /// </summary>
@@ -169,6 +170,8 @@ namespace GroupMeClient.ViewModels.Controls
         {
             this.DisposeClearPage();
             this.CurrentlyDisplayedCacheContext?.Dispose();
+            this.CurrentPageTop = 0;
+            this.CurrentPageBottom = 0;
 
             this.Messages = messages;
             this.CurrentlyDisplayedCacheContext = cacheContext;
@@ -183,13 +186,16 @@ namespace GroupMeClient.ViewModels.Controls
         /// Ensures the page containing a specific <see cref="Message"/> is displayed.
         /// </summary>
         /// <param name="message">The message to display.</param>
-        public void EnsureVisible(Message message)
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task EnsureVisible(Message message)
         {
             var temp = this.Messages.ToList();
             var index = temp.FindIndex(m => m.Id == message.Id);
 
             int pageNumber = (int)Math.Floor((double)index / this.MessagesPerPage);
-            this.ChangePage(pageNumber);
+            this.CurrentPageTop = pageNumber;
+            this.CurrentPageBottom = pageNumber;
+            await this.LoadPage(pageNumber);
             this.SelectedMessage = this.CurrentPage.First(m => m.Id == message.Id);
         }
 
@@ -197,54 +203,96 @@ namespace GroupMeClient.ViewModels.Controls
         /// Changes the currently displayed page.
         /// </summary>
         /// <param name="pageNumber">The page number to display.</param>
-        public void ChangePage(int pageNumber = 0)
+        /// <param name="isUp">
+        /// The direction the page is being loaded in. True for up, false for down.
+        /// Use null for initially loaded pages that don't have an associated direction.
+        /// </param>
+        /// <param name="sv">The <see cref="ScrollViewer"/> the <see cref="Message"/>s will be displayed in.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task LoadPage(int pageNumber = 0, bool? isUp = null, ScrollViewer sv = null)
         {
-            this.DisposeClearPage();
-            this.CurrentPageNumber = pageNumber;
-
-            if (this.Messages == null)
+            await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                return;
-            }
+                double originalHeight = sv?.ExtentHeight ?? 0.0;
+                double originalOffset = sv?.VerticalOffset ?? 0.0;
 
-            var range = this.Messages.Skip(pageNumber * this.MessagesPerPage).Take(this.MessagesPerPage);
-
-            IEnumerable<Message> displayRange = range;
-            if (this.SyncAndUpdate)
-            {
-                displayRange = this.GetFromGroupMe(range.First(), range.Last());
-            }
-
-            foreach (var msg in displayRange)
-            {
-                if (this.AssociateWith is Group g)
+                if (originalHeight != 0 && isUp == true)
                 {
-                    msg.AssociateWithGroup(g);
-                }
-                else if (this.AssociateWith is Chat c)
-                {
-                    msg.AssociateWithChat(c);
+                    // prevent the At Top event from firing while we are adding new messages
+                    sv.ScrollToVerticalOffset(1);
                 }
 
-                var msgVm = new MessageControlViewModel(
-                    msg,
-                    this.CacheManager,
-                    showLikers: this.ShowLikers);
+                //this.DisposeClearPage();
 
-                // add an inline timestamp if needed
-                if ((this.NewestAtBottom && msg.CreatedAtTime.Subtract(this.LastMarkerTime) > this.maxMarkerDistanceTime) ||
-                    (!this.NewestAtBottom && this.LastMarkerTime.Subtract(msg.CreatedAtTime) > this.maxMarkerDistanceTime))
+                var range = this.Messages.Skip(pageNumber * this.MessagesPerPage).Take(this.MessagesPerPage);
+
+                IEnumerable<Message> displayRange = range;
+                if (this.SyncAndUpdate)
                 {
-                    this.CurrentPage.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, "id-not-used", msgVm.DidISendIt));
-                    this.LastMarkerTime = msg.CreatedAtTime;
+                    displayRange = this.GetFromGroupMe(range.First(), range.Last());
                 }
 
-                this.CurrentPage.Add(msgVm);
-            }
+                if (isUp == true)
+                {
+                    displayRange = displayRange.Reverse();
+                }
 
-            this.GoBackCommand.RaiseCanExecuteChanged();
-            this.GoForwardCommand.RaiseCanExecuteChanged();
-            this.RaisePropertyChanged(nameof(this.Title));
+                foreach (var msg in displayRange)
+                {
+                    if (this.AssociateWith is Group g)
+                    {
+                        msg.AssociateWithGroup(g);
+                    }
+                    else if (this.AssociateWith is Chat c)
+                    {
+                        msg.AssociateWithChat(c);
+                    }
+
+                    var msgVm = new MessageControlViewModel(
+                        msg,
+                        this.CacheManager,
+                        showLikers: this.ShowLikers);
+
+                    // add an inline timestamp if needed
+                    if ((this.NewestAtBottom && msg.CreatedAtTime.Subtract(this.LastMarkerTime) > this.maxMarkerDistanceTime) ||
+                        (!this.NewestAtBottom && this.LastMarkerTime.Subtract(msg.CreatedAtTime) > this.maxMarkerDistanceTime))
+                    {
+                        this.CurrentPage.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, "id-not-used", msgVm.DidISendIt));
+                        this.LastMarkerTime = msg.CreatedAtTime;
+                    }
+
+                    if (isUp == true)
+                    {
+                        this.CurrentPage.Insert(0, msgVm);
+                    }
+                    else
+                    {
+                        this.CurrentPage.Add(msgVm);
+                    }
+                }
+
+                if (isUp == true && originalHeight != 0)
+                {
+                    if (originalHeight != 0)
+                    {
+                        // Calculate the offset where the last message the user was looking at is
+                        // Scroll back to there so new messages appear on top, above screen
+                        sv.UpdateLayout();
+                        double newHeight = sv?.ExtentHeight ?? 0.0;
+                        double difference = newHeight - originalHeight;
+
+                        sv.ScrollToVerticalOffset(difference);
+                    }
+                }
+                else if (isUp == false && originalOffset != 0)
+                {
+                    sv.ScrollToVerticalOffset(originalOffset - 2);
+                }
+
+                this.GoBackCommand.RaiseCanExecuteChanged();
+                this.GoForwardCommand.RaiseCanExecuteChanged();
+                this.RaisePropertyChanged(nameof(this.Title));
+            });
         }
 
         private void DisposeClearPage()
@@ -257,24 +305,26 @@ namespace GroupMeClient.ViewModels.Controls
             this.CurrentPage.Clear();
         }
 
-        private void GoBack()
+        private void GoBack(ScrollViewer sv)
         {
-            this.ChangePage(this.CurrentPageNumber - 1);
+            this.CurrentPageTop--;
+            _ = this.LoadPage(this.CurrentPageTop, true, sv);
         }
 
-        private bool CanGoBack()
+        private bool CanGoBack(ScrollViewer sv)
         {
-            return this.CurrentPageNumber > 0;
+            return this.CurrentPageTop > 0;
         }
 
-        private void GoForward()
+        private void GoForward(ScrollViewer sv)
         {
-            this.ChangePage(this.CurrentPageNumber + 1);
+            this.CurrentPageBottom++;
+            _ = this.LoadPage(this.CurrentPageBottom, false, sv);
         }
 
-        private bool CanGoForward()
+        private bool CanGoForward(ScrollViewer sv)
         {
-            return ((this.CurrentPageNumber * this.MessagesPerPage) + this.MessagesPerPage) < this.TotalMessagesCount;
+            return ((this.CurrentPageBottom * this.MessagesPerPage) + this.MessagesPerPage) < this.TotalMessagesCount;
         }
 
         private IEnumerable<Message> GetFromGroupMe(Message startAt, Message endAt)

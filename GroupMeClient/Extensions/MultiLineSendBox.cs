@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -50,6 +51,7 @@ namespace GroupMeClient.Extensions
             this.KeyDown += this.TextBoxKeyDown;
             this.TextChanged += this.MultiLineSendBox_TextChanged;
             this.PreviewKeyDown += this.TextBoxPreviewKeyDown;
+            this.PreviewTextInput += this.MultiLineSendBox_PreviewTextInput;
 
             var gesture = new KeyGesture(Key.V, ModifierKeys.Shift | ModifierKeys.Control);
             var customPaste = new InputBinding(ApplicationCommands.Paste, gesture);
@@ -81,6 +83,29 @@ namespace GroupMeClient.Extensions
         {
             get { return (Brush)this.GetValue(ErrorTextBrushProperty); }
             set { this.SetValue(ErrorTextBrushProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the contents that is "typed" into this <see cref="TextBox"/> while it is read-only and sending.
+        /// </summary>
+        private string ReadOnlyBuffer { get; set; }
+
+        /// <inheritdoc/>
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            if (e.Property == IsReadOnlyProperty)
+            {
+                if ((bool)e.NewValue == false && (bool)e.OldValue == true)
+                {
+                    if (!string.IsNullOrEmpty(this.ReadOnlyBuffer))
+                    {
+                        TextCompositionManager.StartComposition(new TextComposition(InputManager.Current, this, this.ReadOnlyBuffer));
+                        this.ReadOnlyBuffer = string.Empty;
+                    }
+                }
+            }
+
+            base.OnPropertyChanged(e);
         }
 
         private static void OnBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -126,6 +151,14 @@ namespace GroupMeClient.Extensions
             {
                 e.Handled = true;
                 this.RaiseSendEvent();
+            }
+        }
+
+        private void MultiLineSendBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (this.IsReadOnly)
+            {
+                this.ReadOnlyBuffer += e.Text;
             }
         }
 

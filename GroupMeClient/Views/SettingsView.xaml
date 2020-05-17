@@ -179,6 +179,13 @@
                         Squirrel for Windows
                     </Hyperlink>
                     <LineBreak />
+                    
+                     <Hyperlink 
+                        NavigateUri="https://gitlab.com/sbaeumlisberger/virtualizing-wrap-panel/"
+                        extensions:WebHyperlinkExtensions.IsWebLink="True">
+                        Virtualizing Wrap Panel
+                    </Hyperlink>
+                    <LineBreak />
 
                     <Hyperlink 
                         NavigateUri="https://github.com/XamlAnimatedGif/XamlAnimatedGif"

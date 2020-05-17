@@ -58,7 +58,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Gets or sets the attached items (Tweets, Web Links, Videos, etc.), if present.
         /// </summary>
-        public ObservableCollection<ViewModelBase> AttachedItems { get; set; } = new ObservableCollection<ViewModelBase>();
+        public ObservableCollection<object> AttachedItems { get; set; } = new ObservableCollection<object>();
 
         /// <summary>
         /// Gets the command to be performed when this <see cref="Message"/> is 'Liked'.
@@ -447,16 +447,28 @@ namespace GroupMeClient.ViewModels.Controls
                 }
             }
 
+            var repliedMessageId = string.Empty;
+
             // Check if this is a GroupMe Desktop Client Reply-extension message
             if (!string.IsNullOrEmpty(this.Message.Text) && Regex.IsMatch(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex))
             {
+                // Method 1, where /rmid:<message-id> is appended to the end of the message body
                 var token = Regex.Match(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex).Value;
-                var originalMessageId = token.Replace("\n/rmid:", string.Empty);
-
                 this.HiddenText = token + this.HiddenText;
+                repliedMessageId = token.Replace("\n/rmid:", string.Empty);
+            }
+            else if (this.Message.SourceGuid.StartsWith("gmdc-r"))
+            {
+                // Method 2, where gmdc-r<message-id> is included as the prefix of the message GUID
+                var parts = this.Message.SourceGuid.Split('-');
+                repliedMessageId = parts[1].Substring(1);
+            }
 
+            // Handle if this is a GroupMe Desktop Client Reply-extension message
+            if (!string.IsNullOrEmpty(repliedMessageId))
+            {
                 var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
-                var repliedMessageAttachment = new RepliedMessageControlViewModel(originalMessageId, container, this.CacheManager, this.NestLevel);
+                var repliedMessageAttachment = new RepliedMessageControlViewModel(repliedMessageId, container, this.CacheManager, this.NestLevel);
 
                 // Replace the photo of the original message that is included for non-GMDC clients with the real message
                 if (this.AttachedItems.Count > 0)

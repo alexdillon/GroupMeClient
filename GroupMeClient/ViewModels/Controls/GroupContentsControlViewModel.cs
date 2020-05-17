@@ -15,6 +15,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Caching;
 using GroupMeClient.Extensions;
+using GroupMeClient.Plugins.ViewModels;
 using GroupMeClient.Utilities;
 using GroupMeClient.Views.Controls;
 using GroupMeClientApi.Models;
@@ -33,6 +34,7 @@ namespace GroupMeClient.ViewModels.Controls
         private string typedMessageContents = string.Empty;
         private bool isSelectionAllowed = false;
         private MessageControlViewModel messageBeingRepliedTo;
+        private bool isSending;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -56,7 +58,7 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 ClosePopup = new RelayCommand(this.ClosePopupHandler),
                 EasyClosePopup = null,  // EasyClose makes it too easy to accidently close the send dialog.
-                PopupDialog = null
+                PopupDialog = null,
             };
 
             this.ReliabilityStateMachine = new ReliabilityStateMachine();
@@ -81,6 +83,9 @@ namespace GroupMeClient.ViewModels.Controls
             this.CacheManager = cacheManager;
             this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
+
+            // Generate an initial Guid to be used for the first message sent
+            this.SendingMessageGuid = Guid.NewGuid().ToString();
 
             // Install Pseduo-Plugins
             if (this.MessageContainer is Group g)
@@ -216,6 +221,15 @@ namespace GroupMeClient.ViewModels.Controls
             set { this.Set(() => this.MessageBeingRepliedTo, ref this.messageBeingRepliedTo, value); }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether a <see cref="Message"/> is currently sending.
+        /// </summary>
+        public bool IsSending
+        {
+            get => this.isSending;
+            private set => this.Set(() => this.IsSending, ref this.isSending, value);
+        }
+
         private CacheManager CacheManager { get; }
 
         private SemaphoreSlim ReloadSem { get; }
@@ -228,9 +242,9 @@ namespace GroupMeClient.ViewModels.Controls
 
         private Timer RetryTimer { get; set; }
 
-        private bool IsSending { get; set; }
-
         private Settings.SettingsManager Settings { get; }
+
+        private string SendingMessageGuid { get; set; }
 
         /// <summary>
         /// Reloads and redisplay the newest messages.
@@ -481,7 +495,8 @@ namespace GroupMeClient.ViewModels.Controls
                 this.IsSending = true;
                 var newMessage = Message.CreateMessage(
                     this.TypedMessageContents,
-                    guidPrefix: "gmdc");
+                    guidPrefix: "gmdc",
+                    guid: this.SendingMessageGuid);
                 await this.SendMessageAsync(newMessage);
             }
         }
@@ -541,7 +556,8 @@ namespace GroupMeClient.ViewModels.Controls
             var message = Message.CreateMessage(
                 contents,
                 attachmentsList,
-                "gmdc");
+                guidPrefix: "gmdc",
+                guid: this.SendingMessageGuid);
             bool success = await this.SendMessageAsync(message);
 
             if (success)
@@ -556,9 +572,45 @@ namespace GroupMeClient.ViewModels.Controls
 
         private byte[] RenderMessageToPngImage(Message message)
         {
+            var messageDataContext = new MessageControlViewModel(message, this.CacheManager, false, true, 1);
+
+            // Copy the attachments from the version of the message that is already rendered and displayed.
+            // These attachments already have previews downloaded and ready-to-render.
+            messageDataContext.AttachedItems.Clear();
+            var displayedMessage = this.Messages.First(m => m.Id == message.Id);
+            foreach (var attachment in (displayedMessage as MessageControlViewModel).AttachedItems)
+            {
+                // Images don't render correctly as-is due to the usage of the GIF attached property.
+                if (attachment is Attachments.GroupMeImageAttachmentControlViewModel gmImage)
+                {
+                    byte[] imageBytes = null;
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        gmImage.ImageAttachmentStream.Seek(0, SeekOrigin.Begin);
+                        gmImage.ImageAttachmentStream.CopyTo(memoryStream);
+                        imageBytes = memoryStream.ToArray();
+                    }
+
+                    messageDataContext.AttachedItems.Add(new Image()
+                    {
+                        Source = ImageUtils.BytesToImageSource(imageBytes),
+                    });
+                }
+                else if (attachment is Attachments.ImageLinkAttachmentControlViewModel linkedImage)
+                {
+                    // Linked Images aren't downloaded on the ViewModel side
+                    // Just include the URL of the image
+                    messageDataContext.AttachedItems.Add($"Image: {linkedImage.Url}");
+                }
+                else
+                {
+                    messageDataContext.AttachedItems.Add(attachment);
+                }
+            }
+
             var messageControl = new MessageControl()
             {
-                DataContext = new MessageControlViewModel(message, this.CacheManager, false, true, 1),
+                DataContext = messageDataContext,
                 Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
                 Foreground = (Brush)Application.Current.FindResource("BlackBrush"),
             };
@@ -585,8 +637,6 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task<Message> InjectReplyData(Message responseMessage)
         {
-            var suffix = $"\n/rmid:{this.MessageBeingRepliedTo.Message.Id}";
-
             var renderedOriginalMessage = this.RenderMessageToPngImage(this.MessageBeingRepliedTo.Message);
             var renderedImageAttachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(renderedOriginalMessage, this.MessageContainer);
 
@@ -594,9 +644,10 @@ namespace GroupMeClient.ViewModels.Controls
             attachments.Add(renderedImageAttachment);
 
             var amendedMessage = Message.CreateMessage(
-                responseMessage.Text + suffix,
+                responseMessage.Text,
                 attachments,
-                "gmdc");
+                guidPrefix: $"gmdc-r{this.MessageBeingRepliedTo.Message.Id}",
+                guid: this.SendingMessageGuid);
 
             return amendedMessage;
         }
@@ -614,9 +665,11 @@ namespace GroupMeClient.ViewModels.Controls
             if (success)
             {
                 this.MessageContainer.Messages.Add(newMessage);
-                await this.LoadMoreAsync(null, true);
+                _ = this.LoadMoreAsync(null, true);
 
                 this.TypedMessageContents = string.Empty;
+                this.MessageBeingRepliedTo = null;
+                this.SendingMessageGuid = Guid.NewGuid().ToString();
             }
             else
             {
@@ -628,7 +681,6 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             this.IsSending = false;
-            this.MessageBeingRepliedTo = null;
 
             return success;
         }
@@ -695,7 +747,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
         {
-            var command = new Messaging.IndexAndRunPluginRequestMessage(this.MessageContainer, plugin);
+            var command = new Messaging.RunPluginRequestMessage(this.MessageContainer, plugin);
             Messenger.Default.Send(command);
         }
 
