@@ -241,8 +241,15 @@
                             Orientation="Vertical"
                             Background="{DynamicResource MessageDetailsBrush}"
                             Height="45"
+                            ContextMenu="{StaticResource emptyContextMenu}"
                             Visibility="{Binding ShowDetails, Converter={StaticResource boolToVisibilityConverter}}">
 
+                    <behaviors:Interaction.Triggers>
+                        <behaviors:EventTrigger EventName="MouseRightButtonUp" >
+                            <behaviors:InvokeCommandAction Command="{Binding Path=DataContext.ToggleMessageDetails, RelativeSource={RelativeSource AncestorType=controls:MessageControl}}" />
+                        </behaviors:EventTrigger>
+                    </behaviors:Interaction.Triggers>
+                    
                     <Label Content="{Binding SentTimeString}"
                            ContentStringFormat="Sent: {0}"
                            FontWeight="Regular"
