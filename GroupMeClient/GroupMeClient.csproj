@@ -76,6 +76,7 @@
     <Compile Include="Converters\PercentageConverter.cs" />
     <Compile Include="Converters\ValueConverterGroup.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
+    <Compile Include="Extensions\FastVirtualizingWrapPanel.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
     <Compile Include="Extensions\ZoomBorder.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />
