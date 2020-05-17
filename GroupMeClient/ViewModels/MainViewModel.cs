@@ -108,7 +108,7 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
-        /// Gets the manager for the dialog that should be displayed as a large popup.
+        /// Gets or sets the manager for the dialog that should be displayed as a large popup.
         /// </summary>
         public PopupViewModel DialogManager { get; set; }
 
@@ -168,7 +168,8 @@ namespace GroupMeClient.ViewModels
 
             Messenger.Default.Register<Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
             Messenger.Default.Register<Messaging.DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
-            Messenger.Default.Register<Messaging.IndexAndRunPluginRequestMessage>(this, this.IndexAndRunCommand);
+            Messenger.Default.Register<Messaging.RunPluginRequestMessage>(this, this.IndexAndRunCommand);
+            Messenger.Default.Register<Messaging.SwitchToPageRequestMessage>(this, this.SwitchToPageCommand);
 
             if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
             {
@@ -367,9 +368,36 @@ namespace GroupMeClient.ViewModels
             });
         }
 
-        private void IndexAndRunCommand(Messaging.IndexAndRunPluginRequestMessage cmd)
+        private void IndexAndRunCommand(Messaging.RunPluginRequestMessage cmd)
         {
             this.SearchViewModel.RunPlugin(cmd.MessageContainer, cmd.Plugin);
+        }
+
+        private void SwitchToPageCommand(Messaging.SwitchToPageRequestMessage cmd)
+        {
+            ViewModelBase selectedPage = null;
+
+            switch (cmd.SelectedPage)
+            {
+                case Messaging.SwitchToPageRequestMessage.Page.Chats:
+                    selectedPage = this.ChatsViewModel;
+                    break;
+                case Messaging.SwitchToPageRequestMessage.Page.Search:
+                    selectedPage = this.SearchViewModel;
+                    break;
+                case Messaging.SwitchToPageRequestMessage.Page.Settings:
+                    selectedPage = this.SettingsViewModel;
+                    break;
+            }
+
+            foreach (var menuItem in this.MenuItems)
+            {
+                if (menuItem.Tag == selectedPage)
+                {
+                    this.SelectedItem = menuItem;
+                    break;
+                }
+            }
         }
 
         private async Task RefreshEverything()

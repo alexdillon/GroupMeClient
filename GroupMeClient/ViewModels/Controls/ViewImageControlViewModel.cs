@@ -21,11 +21,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewImageControlViewModel"/> class.
         /// </summary>
-        /// <param name="attachment">The attachment display.</param>
+        /// <param name="imageUrl">The url of the image to display.</param>
         /// <param name="downloader">The downloader to use.</param>
-        public ViewImageControlViewModel(ImageAttachment attachment, ImageDownloader downloader)
+        public ViewImageControlViewModel(string imageUrl, ImageDownloader downloader)
         {
-            this.ImageAttachment = attachment;
+            this.ImageUrl = imageUrl;
             this.ImageDownloader = downloader;
 
             this.SaveImage = new RelayCommand(this.SaveImageAction);
@@ -63,7 +63,7 @@ namespace GroupMeClient.ViewModels.Controls
             private set { this.Set(() => this.IsLoading, ref this.isLoading, value); }
         }
 
-        private ImageAttachment ImageAttachment { get; }
+        private string ImageUrl { get; }
 
         private ImageDownloader ImageDownloader { get; }
 
@@ -75,7 +75,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private async Task LoadImageAttachment()
         {
-            var image = await this.ImageDownloader.DownloadPostImageAsync($"{this.ImageAttachment.Url}");
+            var image = await this.ImageDownloader.DownloadPostImageAsync(this.ImageUrl);
 
             if (image == null)
             {
@@ -90,7 +90,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
 
-            var imageUrlWithoutLongId = this.ImageAttachment.Url.Substring(0, this.ImageAttachment.Url.LastIndexOf('.'));
+            var imageUrlWithoutLongId = this.ImageUrl.Substring(0, this.ImageUrl.LastIndexOf('.'));
             var extension = System.IO.Path.GetExtension(imageUrlWithoutLongId);
             var filter = $"Image (*{extension})|*{extension}";
 

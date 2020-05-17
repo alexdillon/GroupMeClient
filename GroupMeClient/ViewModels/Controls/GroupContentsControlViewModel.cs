@@ -15,6 +15,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Caching;
 using GroupMeClient.Extensions;
+using GroupMeClient.Plugins.ViewModels;
 using GroupMeClient.Utilities;
 using GroupMeClient.Views.Controls;
 using GroupMeClientApi.Models;
@@ -746,7 +747,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
         {
-            var command = new Messaging.IndexAndRunPluginRequestMessage(this.MessageContainer, plugin);
+            var command = new Messaging.RunPluginRequestMessage(this.MessageContainer, plugin);
             Messenger.Default.Send(command);
         }
 

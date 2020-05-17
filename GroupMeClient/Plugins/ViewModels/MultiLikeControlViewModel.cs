@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
+using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
 
-namespace GroupMeClient.ViewModels.Controls
+namespace GroupMeClient.Plugins.ViewModels
 {
     /// <summary>
     /// <see cref="MultiLikeControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.MultiLikeControl"/> control.
@@ -192,6 +193,7 @@ namespace GroupMeClient.ViewModels.Controls
             public Task Activated(IMessageContainer groupOrChat, CacheSession cacheSession, IPluginUIIntegration integration, Action<CacheSession> cleanup)
             {
                 this.GroupContentsControlViewModel.SmallDialogManager.PopupDialog = this.MultiLikeControlViewModel;
+                cleanup(cacheSession);
                 return Task.CompletedTask;
             }
         }
