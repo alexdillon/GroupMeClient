@@ -11,9 +11,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -21,24 +19,14 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Viewbox Grid.Row="0" Grid.Column="1"
+        <Viewbox Grid.Row="0"
                  StretchDirection="DownOnly" Stretch="Uniform">
             <Label Content="{Binding Title}"
                    HorizontalContentAlignment="Center"
                    VerticalContentAlignment="Center"/>
         </Viewbox>
 
-        <Button Grid.Row="0" Grid.Column="0"
-                Margin="15,5,0,5"
-                Content="Back"
-                Command="{Binding GoBackCommand}" />
-        
-        <Button Grid.Row="0" Grid.Column="2"
-                Margin="0,5,25,5"
-                Content="Next"
-                Command="{Binding GoForwardCommand}" />
-
-        <ListBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
+        <ListBox Grid.Row="1"
                  ItemsSource="{Binding CurrentPage}"
                  BorderThickness="0"
                  Background="{DynamicResource ControlBackgroundBrush}"
@@ -51,6 +39,9 @@
                  VirtualizingStackPanel.ScrollUnit="Pixel"
                  UseLayoutRounding="True"
                  SelectedItem="{Binding SelectedMessage, Mode=OneWay}"
+                 extensions:ListBoxExtensions.AutoScrollToEnd="False"
+                 extensions:ListBoxExtensions.ScrollToBottom="{Binding GoForwardCommand}"
+                 extensions:ListBoxExtensions.ScrollToTop="{Binding GoBackCommand}"
                  x:Name="messagesListbox">
             
             <ListBox.ItemContainerStyle>
