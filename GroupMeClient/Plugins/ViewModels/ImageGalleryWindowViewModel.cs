@@ -462,7 +462,7 @@ namespace GroupMeClient.Plugins.ViewModels
         public class ImageGalleryPlugin : PluginBase, IGroupChatPlugin
         {
             /// <inheritdoc/>
-            public string PluginName => "Image Gallery New";
+            public string PluginName => "Image Gallery";
 
             /// <inheritdoc/>
             public override string PluginDisplayName => this.PluginName;
