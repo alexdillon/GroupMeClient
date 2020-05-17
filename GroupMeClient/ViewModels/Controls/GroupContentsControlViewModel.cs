@@ -220,6 +220,15 @@ namespace GroupMeClient.ViewModels.Controls
             set { this.Set(() => this.MessageBeingRepliedTo, ref this.messageBeingRepliedTo, value); }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether a <see cref="Message"/> is currently sending.
+        /// </summary>
+        public bool IsSending
+        {
+            get => this.isSending;
+            private set => this.Set(() => this.IsSending, ref this.isSending, value);
+        }
+
         private CacheManager CacheManager { get; }
 
         private SemaphoreSlim ReloadSem { get; }
@@ -231,8 +240,6 @@ namespace GroupMeClient.ViewModels.Controls
         private ReliabilityStateMachine ReliabilityStateMachine { get; }
 
         private Timer RetryTimer { get; set; }
-
-        private bool IsSending { get; set; }
 
         private Settings.SettingsManager Settings { get; }
 
