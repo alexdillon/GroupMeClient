@@ -221,6 +221,11 @@ namespace GroupMeClient.Plugins.ViewModels
                 return;
             }
 
+            foreach (var image in this.Images)
+            {
+                image.Dispose();
+            }
+
             this.Images.Clear();
             this.LastPageIndex = -1;
 
@@ -358,7 +363,7 @@ namespace GroupMeClient.Plugins.ViewModels
         /// <summary>
         /// <see cref="AttachmentImageItem"/> represents each image that will be shown in the gallery.
         /// </summary>
-        public class AttachmentImageItem : ViewModelBase
+        public class AttachmentImageItem : ViewModelBase, IDisposable
         {
             private bool isLoading;
             private Stream imageData;
@@ -411,6 +416,12 @@ namespace GroupMeClient.Plugins.ViewModels
             private string Url { get; }
 
             private ImageDownloader ImageDownloader { get; }
+
+            /// <inheritdoc/>
+            public void Dispose()
+            {
+                ((IDisposable)this.ImageData).Dispose();
+            }
 
             private async Task LoadImage()
             {
