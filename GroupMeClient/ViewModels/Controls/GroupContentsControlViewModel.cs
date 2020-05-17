@@ -33,6 +33,7 @@ namespace GroupMeClient.ViewModels.Controls
         private string typedMessageContents = string.Empty;
         private bool isSelectionAllowed = false;
         private MessageControlViewModel messageBeingRepliedTo;
+        private bool isSending;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -56,7 +57,7 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 ClosePopup = new RelayCommand(this.ClosePopupHandler),
                 EasyClosePopup = null,  // EasyClose makes it too easy to accidently close the send dialog.
-                PopupDialog = null
+                PopupDialog = null,
             };
 
             this.ReliabilityStateMachine = new ReliabilityStateMachine();
@@ -81,6 +82,9 @@ namespace GroupMeClient.ViewModels.Controls
             this.CacheManager = cacheManager;
             this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
+
+            // Generate an initial Guid to be used for the first message sent
+            this.SendingMessageGuid = Guid.NewGuid().ToString();
 
             // Install Pseduo-Plugins
             if (this.MessageContainer is Group g)
@@ -231,6 +235,8 @@ namespace GroupMeClient.ViewModels.Controls
         private bool IsSending { get; set; }
 
         private Settings.SettingsManager Settings { get; }
+
+        private string SendingMessageGuid { get; set; }
 
         /// <summary>
         /// Reloads and redisplay the newest messages.
@@ -481,7 +487,8 @@ namespace GroupMeClient.ViewModels.Controls
                 this.IsSending = true;
                 var newMessage = Message.CreateMessage(
                     this.TypedMessageContents,
-                    guidPrefix: "gmdc");
+                    guidPrefix: "gmdc",
+                    guid: this.SendingMessageGuid);
                 await this.SendMessageAsync(newMessage);
             }
         }
@@ -541,7 +548,8 @@ namespace GroupMeClient.ViewModels.Controls
             var message = Message.CreateMessage(
                 contents,
                 attachmentsList,
-                "gmdc");
+                guidPrefix: "gmdc",
+                guid: this.SendingMessageGuid);
             bool success = await this.SendMessageAsync(message);
 
             if (success)
@@ -596,7 +604,8 @@ namespace GroupMeClient.ViewModels.Controls
             var amendedMessage = Message.CreateMessage(
                 responseMessage.Text + suffix,
                 attachments,
-                "gmdc");
+                guidPrefix: "gmdc",
+                guid: this.SendingMessageGuid);
 
             return amendedMessage;
         }
@@ -614,9 +623,11 @@ namespace GroupMeClient.ViewModels.Controls
             if (success)
             {
                 this.MessageContainer.Messages.Add(newMessage);
-                await this.LoadMoreAsync(null, true);
+                _ = this.LoadMoreAsync(null, true);
 
                 this.TypedMessageContents = string.Empty;
+                this.MessageBeingRepliedTo = null;
+                this.SendingMessageGuid = Guid.NewGuid().ToString();
             }
             else
             {
@@ -628,7 +639,6 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             this.IsSending = false;
-            this.MessageBeingRepliedTo = null;
 
             return success;
         }

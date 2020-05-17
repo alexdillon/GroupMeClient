@@ -413,7 +413,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="GroupMeClientApi">
-      <Version>1.0.4</Version>
+      <Version>1.0.5</Version>
     </PackageReference>
     <PackageReference Include="GroupMeClientPlugin">
       <Version>2.0.1</Version>
