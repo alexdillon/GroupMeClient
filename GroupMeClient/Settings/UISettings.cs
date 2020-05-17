@@ -30,6 +30,12 @@ namespace GroupMeClient.Settings
         public int MaximumNumberOfMultiChatsMinibar { get; set; } = 4;
 
         /// <summary>
+        /// Gets or sets a value indicating whether interacting with system notifications is permitted. Interactions include
+        /// shortcuts for liking messages and quickly replying to a group or chat.
+        /// </summary>
+        public bool EnableNotificationInteractions { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the user selected theme that should be applied to the entire application UI.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]

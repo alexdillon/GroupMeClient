@@ -24,11 +24,12 @@ namespace GroupMeClient.Notifications.Display
         /// <summary>
         /// Creates a <see cref="PopupNotificationProvider"/> to display operating system level notifications.
         /// </summary>
+        /// <param name="enableInteraction">A value indicating whether interactions, like replying and liking, is allowed with notifications.</param>
         /// <returns>A PopupNotificationProvider.</returns>
-        public static PopupNotificationProvider CreatePlatformNotificationProvider()
+        public static PopupNotificationProvider CreatePlatformNotificationProvider(bool enableInteraction)
         {
             // TODO: actually test to see if platform is Windows 10
-            return new PopupNotificationProvider(new Win10.Win10ToastNotificationsProvider());
+            return new PopupNotificationProvider(new Win10.Win10ToastNotificationsProvider(enableInteraction));
         }
 
         /// <summary>
@@ -57,7 +58,9 @@ namespace GroupMeClient.Notifications.Display
                         this.RemoveUnprintableCharacters(notification.Alert),
                         notification.Message.AvatarUrl,
                         (notification.Message as IAvatarSource).IsRoundedAvatar,
-                        (image as ImageAttachment).Url);
+                        (image as ImageAttachment).Url,
+                        container.Id,
+                        notification.Message.Id);
                 }
                 else
                 {
@@ -65,7 +68,9 @@ namespace GroupMeClient.Notifications.Display
                        container.Name,
                        this.RemoveUnprintableCharacters(notification.Alert),
                        notification.Message.AvatarUrl,
-                       (notification.Message as IAvatarSource).IsRoundedAvatar);
+                       (notification.Message as IAvatarSource).IsRoundedAvatar,
+                       container.Id,
+                       notification.Message.Id);
                 }
             }
         }
@@ -86,7 +91,9 @@ namespace GroupMeClient.Notifications.Display
                         this.RemoveUnprintableCharacters(notification.Alert),
                         container.ImageOrAvatarUrl,
                         container.IsRoundedAvatar,
-                        (image as ImageAttachment).Url);
+                        (image as ImageAttachment).Url,
+                        container.Id,
+                        notification.Message.Id);
                 }
                 else
                 {
@@ -94,7 +101,9 @@ namespace GroupMeClient.Notifications.Display
                         container.Name,
                         this.RemoveUnprintableCharacters(notification.Alert),
                         container.ImageOrAvatarUrl,
-                        container.IsRoundedAvatar);
+                        container.IsRoundedAvatar,
+                        container.Id,
+                        notification.Message.Id);
                 }
             }
         }
@@ -109,7 +118,8 @@ namespace GroupMeClient.Notifications.Display
                     container.Name,
                     this.RemoveUnprintableCharacters(alert),
                     container.ImageOrAvatarUrl,
-                    container.IsRoundedAvatar);
+                    container.IsRoundedAvatar,
+                    container.Id);
             }
         }
 

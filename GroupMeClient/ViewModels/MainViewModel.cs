@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -12,6 +13,7 @@ using GroupMeClient.Notifications.Display.WpfToast;
 using GroupMeClient.Plugins;
 using GroupMeClient.Updates;
 using GroupMeClient.ViewModels.Controls;
+using GroupMeClientApi.Models;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 
@@ -159,6 +161,48 @@ namespace GroupMeClient.ViewModels
 
         private int DisconnectedComponentCount { get; set; }
 
+        /// <summary>
+        /// Provides <see cref="Message"/> sending functionality than can be invoked from a notification.
+        /// </summary>
+        /// <param name="containerId">The ID of the <see cref="Group"/> or <see cref="Chat"/> to send to.</param>
+        /// <param name="messageText">The message text to send.</param>
+        /// /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task<bool> NotificationQuickReplyMessage(string containerId, string messageText)
+        {
+            var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Chats(), this.GroupMeClient.Groups());
+            var group = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
+            var msg = Message.CreateMessage(
+                body: messageText,
+                guidPrefix: "gmdctoast");
+
+            if (msg == null)
+            {
+                return false;
+            }
+
+            return await group?.SendMessage(msg);
+        }
+
+        /// <summary>
+        /// Provides "Liking" functionality for a <see cref="Message"/> that can be invoked from a notification.
+        /// </summary>
+        /// <param name="containerId">The <see cref="Group"/> or <see cref="Chat"/> ID.</param>
+        /// <param name="messageId">The ID of the <see cref="Message"/> to like.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task<bool> NotificationLikeMessage(string containerId, string messageId)
+        {
+            var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Chats(), this.GroupMeClient.Groups());
+            var group = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
+            var message = group?.Messages.FirstOrDefault(m => m.Id == messageId);
+
+            if (message == null)
+            {
+                return false;
+            }
+
+            return await message.LikeMessage();
+        }
+
         private void InitializeClient()
         {
             this.SettingsManager = new Settings.SettingsManager(this.SettingsPath);
@@ -219,7 +263,7 @@ namespace GroupMeClient.ViewModels
             this.ToastHolderManager = new ToastHolderViewModel();
 
             this.NotificationRouter.RegisterNewSubscriber(this.ChatsViewModel);
-            this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
+            this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider(this.SettingsManager.UISettings.EnableNotificationInteractions));
             this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider(this.ToastHolderManager));
         }
 
