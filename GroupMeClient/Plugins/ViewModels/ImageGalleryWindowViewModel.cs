@@ -206,6 +206,7 @@ namespace GroupMeClient.Plugins.ViewModels
             this.FilterStartDate = this.GroupChat?.CreatedAtTime.AddDays(-1) ?? DateTime.MinValue;
             this.FilterEndDate = DateTime.Now.AddDays(1);
             this.FilterReplyScreenshots = true;
+            this.FilterMessagesFrom = null;
 
             this.DeferSearchUpdating = false;
             if (!skipUpdating)
@@ -288,7 +289,21 @@ namespace GroupMeClient.Plugins.ViewModels
                 foreach (var msg in range)
                 {
                     var imageUrls = GetAttachmentContentUrls(msg.Attachments, true);
-                    for (int i = 0; i < imageUrls.Length; i++)
+
+                    var numberOfImages = imageUrls.Length;
+                    if (this.FilterReplyScreenshots)
+                    {
+                        var isReply =
+                            (!string.IsNullOrEmpty(msg.Text) && System.Text.RegularExpressions.Regex.IsMatch(msg.Text, Utilities.RegexUtils.RepliedMessageRegex)) ||
+                            msg.SourceGuid.StartsWith("gmdc-r");
+
+                        if (isReply)
+                        {
+                            numberOfImages -= 1;
+                        }
+                    }
+
+                    for (int i = 0; i < numberOfImages; i++)
                     {
                         if (!string.IsNullOrEmpty(imageUrls[i]))
                         {
