@@ -63,6 +63,8 @@ namespace GroupMeClient.Notifications.Display.Win10
 
         private bool HasPerformedCleanup { get; set; } = false;
 
+        private bool InteractionsEnabled { get; }
+
         private string ToastImagePath => Path.GetTempPath() + "WindowsNotifications.GroupMeToasts.Images";
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
@@ -114,6 +116,8 @@ namespace GroupMeClient.Notifications.Display.Win10
 
             ToastActionsCustom actions = null;
 
+            if (this.InteractionsEnabled)
+            {
                 var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
                 var source = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
 
@@ -136,6 +140,8 @@ namespace GroupMeClient.Notifications.Display.Win10
                         },
                     },
                 };
+            }
+
             ToastContent toastContent = new ToastContent()
             {
                 Launch = $"action={LaunchActions.ShowGroup}&conversationId={containerId}",
@@ -183,6 +189,8 @@ namespace GroupMeClient.Notifications.Display.Win10
 
             ToastActionsCustom actions = null;
 
+            if (this.InteractionsEnabled)
+            {
                 var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
                 var source = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
 
@@ -205,6 +213,8 @@ namespace GroupMeClient.Notifications.Display.Win10
                         },
                     },
                 };
+            }
+
             ToastContent toastContent = new ToastContent()
             {
                 Launch = $"action={LaunchActions.ShowGroup}&conversationId={containerId}",

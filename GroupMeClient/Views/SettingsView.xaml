@@ -49,6 +49,9 @@
                     <CheckBox Content="Show Only Previews When Multiple Images Are Attached to a Single Message"
                               IsChecked="{Binding ShowPreviewsForMultiImages, Mode=TwoWay}" Margin="0,5,0,0"/>
 
+                    <CheckBox Content="Enable Quick Reply and Like Actions in Windows Notifications"
+                              IsChecked="{Binding EnableNotificationInteractions, Mode=TwoWay}" Margin="0,5,0,0"/>
+
                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                         <Label Content="Maximum Number of Multi-Chats with Full Sidebar: " />
                         <controls:NumericUpDown Minimum="1" Maximum="6" Width="30"

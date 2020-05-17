@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -12,6 +13,7 @@ using GroupMeClient.Notifications.Display.WpfToast;
 using GroupMeClient.Plugins;
 using GroupMeClient.Updates;
 using GroupMeClient.ViewModels.Controls;
+using GroupMeClientApi.Models;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 
@@ -108,7 +110,7 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
-        /// Gets the manager for the dialog that should be displayed as a large popup.
+        /// Gets or sets the manager for the dialog that should be displayed as a large popup.
         /// </summary>
         public PopupViewModel DialogManager { get; set; }
 
@@ -260,7 +262,7 @@ namespace GroupMeClient.ViewModels
             this.ToastHolderManager = new ToastHolderViewModel();
 
             this.NotificationRouter.RegisterNewSubscriber(this.ChatsViewModel);
-            this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider());
+            this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider(this.SettingsManager.UISettings.EnableNotificationInteractions));
             this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider(this.ToastHolderManager));
         }
 

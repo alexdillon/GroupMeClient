@@ -93,6 +93,24 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether interactions with system notifications are allowed.
+        /// </summary>
+        public bool EnableNotificationInteractions
+        {
+            get
+            {
+                return this.SettingsManager.UISettings.EnableNotificationInteractions;
+            }
+
+            set
+            {
+                this.SettingsManager.UISettings.EnableNotificationInteractions = value;
+                this.RaisePropertyChanged(nameof(this.EnableNotificationInteractions));
+                this.SettingsManager.SaveSettings();
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating which UI theme should be applied.
         /// </summary>
         public Settings.ThemeOptions Theme

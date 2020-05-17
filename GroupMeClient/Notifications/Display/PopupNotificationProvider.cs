@@ -24,11 +24,12 @@ namespace GroupMeClient.Notifications.Display
         /// <summary>
         /// Creates a <see cref="PopupNotificationProvider"/> to display operating system level notifications.
         /// </summary>
+        /// <param name="enableInteraction">A value indicating whether interactions, like replying and liking, is allowed with notifications.</param>
         /// <returns>A PopupNotificationProvider.</returns>
-        public static PopupNotificationProvider CreatePlatformNotificationProvider()
+        public static PopupNotificationProvider CreatePlatformNotificationProvider(bool enableInteraction)
         {
             // TODO: actually test to see if platform is Windows 10
-            return new PopupNotificationProvider(new Win10.Win10ToastNotificationsProvider());
+            return new PopupNotificationProvider(new Win10.Win10ToastNotificationsProvider(enableInteraction));
         }
 
         /// <summary>
