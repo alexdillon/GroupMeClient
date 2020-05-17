@@ -44,6 +44,8 @@ namespace GroupMeClient.ViewModels
             this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<GroupContentsControlViewModel>();
 
+            Messenger.Default.Register<Messaging.ShowChatRequestMessage>(this, this.ShowChatRequest);
+
             this.MarkAllAsRead = new RelayCommand(this.MarkAllGroupsChatsRead);
             this.SearchToggled = new RelayCommand<bool>((t) => this.GroupChatFilter = t ? this.GroupChatFilter : string.Empty);
 
@@ -255,7 +257,7 @@ namespace GroupMeClient.ViewModels
                             // create a new GroupControl ViewModel for this Group
                             var vm = new GroupControlViewModel(group)
                             {
-                                GroupSelected = new RelayCommand<GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
+                                GroupSelected = new RelayCommand<GroupControlViewModel>((g) => this.OpenNewGroupChat(g), (g) => true, true),
                                 TotalUnreadCount = unreadMessages,
                             };
                             this.AllGroupsChats.Add(vm);
@@ -295,7 +297,16 @@ namespace GroupMeClient.ViewModels
             }
         }
 
-        private void OpenNewGroupChat(GroupControlViewModel group)
+        private void ShowChatRequest(Messaging.ShowChatRequestMessage requestMessage)
+        {
+            var groupOrChat = this.AllGroupsChats.FirstOrDefault(g => g.Id == requestMessage.GroupOrChatId);
+            if (groupOrChat != null)
+            {
+                this.OpenNewGroupChat(groupOrChat, skipClose: true);
+            }
+        }
+
+        private void OpenNewGroupChat(GroupControlViewModel group, bool skipClose = false)
         {
             if (this.ActiveGroupsChats.Any(g => g.Id == group.Id))
             {
@@ -322,17 +333,20 @@ namespace GroupMeClient.ViewModels
                 this.PublishTotalUnreadCount();
             }
 
-            // Limit to three multi-chats at a time
-            // But, only close a single chat. Users will not expect multiple
-            // chats to close at once. This could occur if the user opened several chats in MiniBar mode,
-            // and then switched back to regular mode.
-            var maximumChats = this.MiniBarModeEnabled ? this.SettingsManager.UISettings.MaximumNumberOfMultiChatsMinibar : this.SettingsManager.UISettings.MaximumNumberOfMultiChatsNormal;
-            if (this.ActiveGroupsChats.Count > maximumChats)
+            if (!skipClose)
             {
-                var removeGroup = this.ActiveGroupsChats.Last();
-                this.PushClient.Unsubscribe(group.MessageContainer);
+                // Limit to three multi-chats at a time
+                // But, only close a single chat. Users will not expect multiple
+                // chats to close at once. This could occur if the user opened several chats in MiniBar mode,
+                // and then switched back to regular mode.
+                var maximumChats = this.MiniBarModeEnabled ? this.SettingsManager.UISettings.MaximumNumberOfMultiChatsMinibar : this.SettingsManager.UISettings.MaximumNumberOfMultiChatsNormal;
+                if (this.ActiveGroupsChats.Count > maximumChats)
+                {
+                    var removeGroup = this.ActiveGroupsChats.Last();
+                    this.PushClient.Unsubscribe(group.MessageContainer);
 
-                this.ActiveGroupsChats.Remove(removeGroup);
+                    this.ActiveGroupsChats.Remove(removeGroup);
+                }
             }
 
             this.SettingsManager.ChatsSettings.OpenChats.Clear();

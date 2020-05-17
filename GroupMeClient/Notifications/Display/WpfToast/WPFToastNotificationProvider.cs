@@ -23,7 +23,7 @@ namespace GroupMeClient.Notifications.Display.WpfToast
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
         /// <inheritdoc />
-        Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar)
+        Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar, string containerId)
         {
             var toast = new ToastNotificationViewModel(
                 body,
@@ -36,7 +36,7 @@ namespace GroupMeClient.Notifications.Display.WpfToast
         }
 
         /// <inheritdoc />
-        Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl)
+        Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl, string containerId, string messageId)
         {
             var toast = new ToastNotificationViewModel(
               body,
@@ -49,7 +49,7 @@ namespace GroupMeClient.Notifications.Display.WpfToast
         }
 
         /// <inheritdoc />
-        Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar)
+        Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar, string containerId, string messageId)
         {
             var toast = new ToastNotificationViewModel(
               body,

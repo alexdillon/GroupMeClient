@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using GalaSoft.MvvmLight.Messaging;
+using Microsoft.QueryStringDotNET;
 using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace GroupMeClient.Notifications.Display.Win10
@@ -23,8 +25,26 @@ namespace GroupMeClient.Notifications.Display.Win10
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // Perform a normal launch
-                this.OpenWindowIfNeeded();
+                if (invokedArgs.Length == 0)
+                {
+                    // Perform a normal launch
+                    this.OpenWindowIfNeeded();
+                }
+
+                var args = QueryString.Parse(invokedArgs);
+                var action = (Win10ToastNotificationsProvider.LaunchActions)Enum.Parse(typeof(Win10ToastNotificationsProvider.LaunchActions), args["action"]);
+
+                switch (action)
+                {
+                    case Win10ToastNotificationsProvider.LaunchActions.ShowGroup:
+                        this.OpenWindowIfNeeded();
+                        var command = new Messaging.ShowChatRequestMessage(args["conversationId"]);
+                        Messenger.Default.Send(command);
+                        break;
+
+                    case Win10ToastNotificationsProvider.LaunchActions.LikeMessage:
+                        break;
+                }
             });
         }
 

@@ -92,7 +92,7 @@ namespace GroupMeClient.Notifications.Display.Win10
         {
             ToastContent toastContent = new ToastContent()
             {
-                Launch = "action=viewChat&conversationId=5",
+                Launch = $"action={LaunchActions.ShowGroup}&conversationId={containerId}",
 
                 Visual = new ToastVisual()
                 {
@@ -133,7 +133,7 @@ namespace GroupMeClient.Notifications.Display.Win10
         {
             ToastContent toastContent = new ToastContent()
             {
-                Launch = "action=viewConversation&conversationId=5",
+                Launch = $"action={LaunchActions.ShowGroup}&conversationId={containerId}",
 
                 Visual = new ToastVisual()
                 {

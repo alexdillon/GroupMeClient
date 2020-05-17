@@ -57,7 +57,9 @@ namespace GroupMeClient.Notifications.Display
                         this.RemoveUnprintableCharacters(notification.Alert),
                         notification.Message.AvatarUrl,
                         (notification.Message as IAvatarSource).IsRoundedAvatar,
-                        (image as ImageAttachment).Url);
+                        (image as ImageAttachment).Url,
+                        container.Id,
+                        notification.Message.Id);
                 }
                 else
                 {
@@ -65,7 +67,9 @@ namespace GroupMeClient.Notifications.Display
                        container.Name,
                        this.RemoveUnprintableCharacters(notification.Alert),
                        notification.Message.AvatarUrl,
-                       (notification.Message as IAvatarSource).IsRoundedAvatar);
+                       (notification.Message as IAvatarSource).IsRoundedAvatar,
+                       container.Id,
+                       notification.Message.Id);
                 }
             }
         }
@@ -86,7 +90,9 @@ namespace GroupMeClient.Notifications.Display
                         this.RemoveUnprintableCharacters(notification.Alert),
                         container.ImageOrAvatarUrl,
                         container.IsRoundedAvatar,
-                        (image as ImageAttachment).Url);
+                        (image as ImageAttachment).Url,
+                        container.Id,
+                        notification.Message.Id);
                 }
                 else
                 {
@@ -94,7 +100,9 @@ namespace GroupMeClient.Notifications.Display
                         container.Name,
                         this.RemoveUnprintableCharacters(notification.Alert),
                         container.ImageOrAvatarUrl,
-                        container.IsRoundedAvatar);
+                        container.IsRoundedAvatar,
+                        container.Id,
+                        notification.Message.Id);
                 }
             }
         }
@@ -109,7 +117,8 @@ namespace GroupMeClient.Notifications.Display
                     container.Name,
                     this.RemoveUnprintableCharacters(alert),
                     container.ImageOrAvatarUrl,
-                    container.IsRoundedAvatar);
+                    container.IsRoundedAvatar,
+                    container.Id);
             }
         }
 
