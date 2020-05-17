@@ -169,19 +169,20 @@ namespace GroupMeClient.Plugins.ViewModels
         /// URLs for all images, linked images, and video attachments in the provided <see cref="IEnumerable{T}"/>.
         /// </summary>
         /// <param name="attachments">The list of <see cref="Attachment"/>s to scan through.</param>
+        /// <param name="preview">Whether the returned URLs are for preview versions of the content.</param>
         /// <returns>An array of content URLs.</returns>
-        public static string[] GetAttachmentContentUrls(IEnumerable<Attachment> attachments)
+        public static string[] GetAttachmentContentUrls(IEnumerable<Attachment> attachments, bool preview)
         {
             var results = new List<string>();
             foreach (var attachment in attachments)
             {
                 if (attachment is ImageAttachment imageAttachment)
                 {
-                    results.Add($"{imageAttachment.Url}");
+                    results.Add($"{imageAttachment.Url}{(preview ? ".preview" : string.Empty)}");
                 }
                 else if (attachment is LinkedImageAttachment linkedImageAttachment)
                 {
-                    results.Add($"{linkedImageAttachment.Url}");
+                    results.Add($"{linkedImageAttachment.Url}{(preview ? ".preview" : string.Empty)}");
                 }
                 else if (attachment is VideoAttachment videoAttachment)
                 {
@@ -281,12 +282,12 @@ namespace GroupMeClient.Plugins.ViewModels
             {
                 foreach (var msg in range)
                 {
-                    var imageUrls = GetAttachmentContentUrls(msg.Attachments);
+                    var imageUrls = GetAttachmentContentUrls(msg.Attachments, true);
                     for (int i = 0; i < imageUrls.Length; i++)
                     {
                         if (!string.IsNullOrEmpty(imageUrls[i]))
                         {
-                            var entry = new AttachmentImageItem($"{imageUrls[i]}.preview", msg, i, this.GroupChat.Client.ImageDownloader);
+                            var entry = new AttachmentImageItem(imageUrls[i], msg, i, this.GroupChat.Client.ImageDownloader);
                             this.Images.Add(entry);
                         }
                     }

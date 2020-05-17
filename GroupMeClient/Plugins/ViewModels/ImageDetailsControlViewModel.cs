@@ -15,7 +15,7 @@ namespace GroupMeClient.Plugins.ViewModels
     /// <summary>
     /// <see cref="ImageDetailsControlViewModel"/> provides a ViewModel for the <see cref="ImageDetailsControl"/> control.
     /// </summary>
-    public class ImageDetailsControlViewModel : ViewModelBase
+    public class ImageDetailsControlViewModel : ViewModelBase, IDisposable
     {
         private bool isLoading;
         private Stream imageData;
@@ -43,7 +43,7 @@ namespace GroupMeClient.Plugins.ViewModels
             this.GotoContext = new RelayCommand(gotoContextAction);
 
             this.SenderAvatar = new AvatarControlViewModel(this.Message, this.ImageDownloader);
-            this.ImageUrl = ImageGalleryWindowViewModel.GetAttachmentContentUrls(this.Message.Attachments)[this.ImageIndex];
+            this.ImageUrl = ImageGalleryWindowViewModel.GetAttachmentContentUrls(this.Message.Attachments, false)[this.ImageIndex];
 
             _ = this.LoadImage();
         }
@@ -103,6 +103,12 @@ namespace GroupMeClient.Plugins.ViewModels
         private string ImageUrl { get; }
 
         private Action<ViewModelBase> ShowPopupAction { get; }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            ((IDisposable)this.ImageData)?.Dispose();
+        }
 
         private async Task LoadImage()
         {
