@@ -26,6 +26,22 @@ namespace GroupMeClient.Notifications.Display.Win10
             DesktopNotificationManagerCompat.RegisterActivator<GroupMeNotificationActivator>();
         }
 
+        /// <summary>
+        /// <see cref="LaunchActions"/> define the actions that can be performed upon activation of a Windows 10 Notification.
+        /// </summary>
+        public enum LaunchActions
+        {
+            /// <summary>
+            /// The <see cref="GroupMeClientApi.Models.Group"/> or <see cref="GroupMeClientApi.Models.Chat"/> should be opened and displayed.
+            /// </summary>
+            ShowGroup,
+
+            /// <summary>
+            /// The <see cref="GroupMeClientApi.Models.Member"/> should be liked.
+            /// </summary>
+            LikeMessage,
+        }
+
         private string ApplicationId => "com.squirrel.GroupMeDesktopClient.GroupMeClient";
 
         private bool HasPerformedCleanup { get; set; } = false;
@@ -35,11 +51,11 @@ namespace GroupMeClient.Notifications.Display.Win10
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
         /// <inheritdoc/>
-        async Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar)
+        async Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar, string containerId)
         {
             ToastContent toastContent = new ToastContent()
             {
-                Launch = "action=viewConversation&conversationId=5",
+                Launch = $"action={LaunchActions.ShowGroup}&conversationId={containerId}",
 
                 Visual = new ToastVisual()
                 {
@@ -72,11 +88,11 @@ namespace GroupMeClient.Notifications.Display.Win10
         }
 
         /// <inheritdoc/>
-        async Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl)
+        async Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl, string containerId, string messageId)
         {
             ToastContent toastContent = new ToastContent()
             {
-                Launch = "action=viewConversation&conversationId=5",
+                Launch = "action=viewChat&conversationId=5",
 
                 Visual = new ToastVisual()
                 {
@@ -113,7 +129,7 @@ namespace GroupMeClient.Notifications.Display.Win10
         }
 
         /// <inheritdoc/>
-        async Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar)
+        async Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar, string containerId, string messageId)
         {
             ToastContent toastContent = new ToastContent()
             {
