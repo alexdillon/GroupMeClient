@@ -33,6 +33,7 @@ namespace GroupMeClient.ViewModels.Controls
         private string typedMessageContents = string.Empty;
         private bool isSelectionAllowed = false;
         private MessageControlViewModel messageBeingRepliedTo;
+        private bool isSending;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -81,6 +82,9 @@ namespace GroupMeClient.ViewModels.Controls
             this.CacheManager = cacheManager;
             this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
+
+            // Generate an initial Guid to be used for the first message sent
+            this.SendingMessageGuid = Guid.NewGuid().ToString();
 
             // Install Pseduo-Plugins
             if (this.MessageContainer is Group g)
@@ -216,6 +220,15 @@ namespace GroupMeClient.ViewModels.Controls
             set { this.Set(() => this.MessageBeingRepliedTo, ref this.messageBeingRepliedTo, value); }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether a <see cref="Message"/> is currently sending.
+        /// </summary>
+        public bool IsSending
+        {
+            get => this.isSending;
+            private set => this.Set(() => this.IsSending, ref this.isSending, value);
+        }
+
         private CacheManager CacheManager { get; }
 
         private SemaphoreSlim ReloadSem { get; }
@@ -228,9 +241,9 @@ namespace GroupMeClient.ViewModels.Controls
 
         private Timer RetryTimer { get; set; }
 
-        private bool IsSending { get; set; }
-
         private Settings.SettingsManager Settings { get; }
+
+        private string SendingMessageGuid { get; set; }
 
         /// <summary>
         /// Reloads and redisplay the newest messages.
@@ -481,7 +494,8 @@ namespace GroupMeClient.ViewModels.Controls
                 this.IsSending = true;
                 var newMessage = Message.CreateMessage(
                     this.TypedMessageContents,
-                    guidPrefix: "gmdc");
+                    guidPrefix: "gmdc",
+                    guid: this.SendingMessageGuid);
                 await this.SendMessageAsync(newMessage);
             }
         }
@@ -541,7 +555,8 @@ namespace GroupMeClient.ViewModels.Controls
             var message = Message.CreateMessage(
                 contents,
                 attachmentsList,
-                "gmdc");
+                guidPrefix: "gmdc",
+                guid: this.SendingMessageGuid);
             bool success = await this.SendMessageAsync(message);
 
             if (success)
@@ -594,7 +609,8 @@ namespace GroupMeClient.ViewModels.Controls
             var amendedMessage = Message.CreateMessage(
                 responseMessage.Text,
                 attachments,
-                $"gmdc-r{this.MessageBeingRepliedTo.Message.Id}");
+                guidPrefix: $"gmdc-r{this.MessageBeingRepliedTo.Message.Id}",
+                guid: this.SendingMessageGuid);
 
             return amendedMessage;
         }
@@ -612,9 +628,11 @@ namespace GroupMeClient.ViewModels.Controls
             if (success)
             {
                 this.MessageContainer.Messages.Add(newMessage);
-                await this.LoadMoreAsync(null, true);
+                _ = this.LoadMoreAsync(null, true);
 
                 this.TypedMessageContents = string.Empty;
+                this.MessageBeingRepliedTo = null;
+                this.SendingMessageGuid = Guid.NewGuid().ToString();
             }
             else
             {
@@ -626,7 +644,6 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             this.IsSending = false;
-            this.MessageBeingRepliedTo = null;
 
             return success;
         }
