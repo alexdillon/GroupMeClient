@@ -50,8 +50,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public DateTime Timestamp
         {
-            get { return this.timestamp; }
-            private set { this.Set(() => this.Timestamp, ref this.timestamp, value); }
+            get => this.timestamp;
+            private set => this.Set(() => this.Timestamp, ref this.timestamp, value);
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public bool ShowRead
         {
-            get { return this.showRead; }
-            private set { this.Set(() => this.ShowRead, ref this.showRead, value); }
+            get => this.showRead;
+            private set => this.Set(() => this.ShowRead, ref this.showRead, value);
         }
 
         /// <summary>

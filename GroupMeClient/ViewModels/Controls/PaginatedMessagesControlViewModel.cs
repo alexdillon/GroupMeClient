@@ -222,8 +222,6 @@ namespace GroupMeClient.ViewModels.Controls
                     sv.ScrollToVerticalOffset(1);
                 }
 
-                //this.DisposeClearPage();
-
                 var range = this.Messages.Skip(pageNumber * this.MessagesPerPage).Take(this.MessagesPerPage);
 
                 IEnumerable<Message> displayRange = range;

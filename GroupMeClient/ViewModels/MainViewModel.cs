@@ -59,8 +59,8 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public HamburgerMenuItemCollection MenuItems
         {
-            get { return this.menuItems; }
-            set { this.Set(() => this.MenuItems, ref this.menuItems, value); }
+            get => this.menuItems;
+            set => this.Set(() => this.MenuItems, ref this.menuItems, value);
         }
 
         /// <summary>
@@ -68,8 +68,8 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public HamburgerMenuItemCollection MenuOptionItems
         {
-            get { return this.menuOptionItems; }
-            set { this.Set(() => this.MenuOptionItems, ref this.menuOptionItems, value); }
+            get => this.menuOptionItems;
+            set => this.Set(() => this.MenuOptionItems, ref this.menuOptionItems, value);
         }
 
         /// <summary>
@@ -77,8 +77,8 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public HamburgerMenuItem SelectedItem
         {
-            get { return this.selectedItem; }
-            set { this.Set(() => this.SelectedItem, ref this.selectedItem, value); }
+            get => this.selectedItem;
+            set => this.Set(() => this.SelectedItem, ref this.selectedItem, value);
         }
 
         /// <summary>
@@ -87,8 +87,8 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public int UnreadCount
         {
-            get { return this.unreadCount; }
-            set { this.Set(() => this.UnreadCount, ref this.unreadCount, value); }
+            get => this.unreadCount;
+            set => this.Set(() => this.UnreadCount, ref this.unreadCount, value);
         }
 
         /// <summary>
@@ -96,8 +96,8 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public bool IsReconnecting
         {
-            get { return this.isReconnecting; }
-            set { this.Set(() => this.IsReconnecting, ref this.isReconnecting, value); }
+            get => this.isReconnecting;
+            set => this.Set(() => this.IsReconnecting, ref this.isReconnecting, value);
         }
 
         /// <summary>
@@ -105,8 +105,8 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public bool IsRefreshing
         {
-            get { return this.isRefreshing; }
-            set { this.Set(() => this.IsRefreshing, ref this.isRefreshing, value); }
+            get => this.isRefreshing;
+            set => this.Set(() => this.IsRefreshing, ref this.isRefreshing, value);
         }
 
         /// <summary>

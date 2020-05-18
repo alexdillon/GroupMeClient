@@ -62,8 +62,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public string SelectedMessageContents
         {
-            get { return this.selectedMessageContents; }
-            set { this.Set(() => this.SelectedMessageContents, ref this.selectedMessageContents, value); }
+            get => this.selectedMessageContents;
+            set => this.Set(() => this.SelectedMessageContents, ref this.selectedMessageContents, value);
         }
 
         private CancellationTokenSource GeneratorCancel { get; set; }

@@ -84,8 +84,8 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// </summary>
         public ImageSource RenderedImage
         {
-            get { return this.renderedImage; }
-            private set { this.Set(() => this.RenderedImage, ref this.renderedImage, value); }
+            get => this.renderedImage;
+            private set => this.Set(() => this.RenderedImage, ref this.renderedImage, value);
         }
 
         /// <summary>

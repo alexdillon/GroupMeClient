@@ -124,8 +124,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public AvatarControlViewModel Avatar
         {
-            get { return this.avatar; }
-            private set { this.Set(() => this.Avatar, ref this.avatar, value); }
+            get => this.avatar;
+            private set => this.Set(() => this.Avatar, ref this.avatar, value);
         }
 
         /// <summary>
@@ -160,9 +160,17 @@ namespace GroupMeClient.ViewModels.Controls
                 {
                     return "GroupMe Desktop Client";
                 }
+                else if (this.Message.SourceGuid.StartsWith("gmdctoast-"))
+                {
+                    return "GroupMe Desktop Client (Quick Reply)";
+                }
                 else if (this.Message.SourceGuid.StartsWith("gmdca-"))
                 {
                     return "GroupMe Desktop Client Avalonia";
+                }
+                else if (this.Message.SourceGuid.StartsWith("gmdcatoast-"))
+                {
+                    return "GroupMe Desktop Client Avalonia (Quick Reply)";
                 }
                 else if (this.message.SourceGuid.StartsWith("android"))
                 {

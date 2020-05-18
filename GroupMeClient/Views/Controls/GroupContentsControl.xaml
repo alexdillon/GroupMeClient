@@ -337,7 +337,7 @@
                 ErrorTextBrush="Red"
                 AcceptsReturn="True"
                 TextWrapping="Wrap"
-                IsReadOnly="True"
+                IsReadOnly="{Binding IsSending}"
                 Controls:TextBoxHelper.Watermark="Send a Message..."
                 Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 extensions:FileDragDropPasteHelper.IsFileDragDropPasteEnabled="True"

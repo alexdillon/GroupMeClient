@@ -21,8 +21,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public string Message
         {
-            get { return this.message; }
-            set { this.Set(() => this.Message, ref this.message, value); }
+            get => this.message;
+            set => this.Set(() => this.Message, ref this.message, value);
         }
     }
 }
