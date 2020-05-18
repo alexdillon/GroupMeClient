@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using GalaSoft.MvvmLight.Messaging;
@@ -45,8 +44,13 @@ namespace GroupMeClient.Notifications.Display.Win10
                 {
                     case LaunchActions.ShowGroup:
                         this.OpenWindowIfNeeded();
-                        var command = new Messaging.ShowChatRequestMessage(args["conversationId"]);
-                        Messenger.Default.Send(command);
+
+                        var openChatCommand = new Messaging.ShowChatRequestMessage(args["conversationId"]);
+                        Messenger.Default.Send(openChatCommand);
+
+                        var showChatsPageCommand = new Messaging.SwitchToPageRequestMessage(Messaging.SwitchToPageRequestMessage.Page.Chats);
+                        Messenger.Default.Send(showChatsPageCommand);
+
                         break;
 
                     case LaunchActions.LikeMessage:
