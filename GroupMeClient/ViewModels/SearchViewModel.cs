@@ -3,11 +3,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using GroupMeClient.Utilities;
 using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
@@ -189,6 +189,10 @@ namespace GroupMeClient.ViewModels
 
         private bool DeferSearchUpdating { get; set; }
 
+        private ReliabilityStateMachine ReliabilityStateMachine { get; } = new ReliabilityStateMachine();
+
+        private Timer RetryTimer { get; set; }
+
         /// <summary>
         /// Provides cleanup services after a plugin terminates with a specific <see cref="CacheSession"/>.
         /// </summary>
@@ -233,23 +237,33 @@ namespace GroupMeClient.ViewModels
 
         private async Task LoadIndexedGroups()
         {
-            await this.GroupMeClient.GetGroupsAsync();
-            await this.GroupMeClient.GetChatsAsync();
-            var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
-
-            this.CacheManager.SuperIndexer.BeginAsyncTransaction(groupsAndChats);
-            this.CacheManager.SuperIndexer.EndTransaction();
-
-            this.AllGroupsChats.Clear();
-
-            foreach (var group in groupsAndChats)
+            try
             {
-                // Add Group/Chat to the list
-                var vm = new GroupControlViewModel(group)
+                await this.GroupMeClient.GetGroupsAsync();
+                await this.GroupMeClient.GetChatsAsync();
+                var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
+
+                this.CacheManager.SuperIndexer.BeginAsyncTransaction(groupsAndChats);
+                this.CacheManager.SuperIndexer.EndTransaction();
+
+                this.AllGroupsChats.Clear();
+
+                foreach (var group in groupsAndChats)
                 {
-                    GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s.MessageContainer), (g) => true, true),
-                };
-                this.AllGroupsChats.Add(vm);
+                    // Add Group/Chat to the list
+                    var vm = new GroupControlViewModel(group)
+                    {
+                        GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s.MessageContainer), (g) => true, true),
+                    };
+                    this.AllGroupsChats.Add(vm);
+                }
+
+                this.ReliabilityStateMachine.Succeeded();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception in {nameof(this.LoadIndexedGroups)} - {ex.Message}. Retrying...");
+                this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(async () => await this.LoadIndexedGroups());
             }
         }
 
