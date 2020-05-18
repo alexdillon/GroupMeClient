@@ -52,8 +52,8 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// </summary>
         public ImageSource FaviconImage
         {
-            get { return this.faviconImage; }
-            private set { this.Set(() => this.FaviconImage, ref this.faviconImage, value); }
+            get => this.faviconImage;
+            private set => this.Set(() => this.FaviconImage, ref this.faviconImage, value);
         }
 
         /// <inheritdoc/>

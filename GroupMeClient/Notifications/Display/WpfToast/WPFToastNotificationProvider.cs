@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using GroupMeClientApi.Models;
 
 namespace GroupMeClient.Notifications.Display.WpfToast

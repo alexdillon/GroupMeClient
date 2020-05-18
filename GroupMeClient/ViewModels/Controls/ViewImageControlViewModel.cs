@@ -5,7 +5,6 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi;
-using GroupMeClientApi.Models.Attachments;
 using Microsoft.Win32;
 
 namespace GroupMeClient.ViewModels.Controls
@@ -50,8 +49,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public Stream ImageStream
         {
-            get { return this.imageAttachmentStream; }
-            internal set { this.Set(() => this.ImageStream, ref this.imageAttachmentStream, value); }
+            get => this.imageAttachmentStream;
+            internal set => this.Set(() => this.ImageStream, ref this.imageAttachmentStream, value);
         }
 
         /// <summary>
@@ -59,8 +58,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public bool IsLoading
         {
-            get { return this.isLoading; }
-            private set { this.Set(() => this.IsLoading, ref this.isLoading, value); }
+            get => this.isLoading;
+            private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
         }
 
         private string ImageUrl { get; }

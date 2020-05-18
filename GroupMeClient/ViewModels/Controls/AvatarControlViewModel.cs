@@ -50,8 +50,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public ImageSource AvatarRound
         {
-            get { return this.avatarRound; }
-            private set { this.Set(() => this.AvatarRound, ref this.avatarRound, value); }
+            get => this.avatarRound;
+            private set => this.Set(() => this.AvatarRound, ref this.avatarRound, value);
         }
 
         /// <summary>
@@ -60,8 +60,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public ImageSource AvatarSquare
         {
-            get { return this.avatarSquare; }
-            private set { this.Set(() => this.AvatarSquare, ref this.avatarSquare, value); }
+            get => this.avatarSquare;
+            private set => this.Set(() => this.AvatarSquare, ref this.avatarSquare, value);
         }
 
         /// <summary>

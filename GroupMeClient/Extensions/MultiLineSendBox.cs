@@ -63,8 +63,8 @@ namespace GroupMeClient.Extensions
         /// </summary>
         public event RoutedEventHandler Send
         {
-            add { this.AddHandler(SendEvent, value); }
-            remove { this.RemoveHandler(SendEvent, value); }
+            add => this.AddHandler(SendEvent, value);
+            remove => this.RemoveHandler(SendEvent, value);
         }
 
         /// <summary>
@@ -72,8 +72,8 @@ namespace GroupMeClient.Extensions
         /// </summary>
         public Brush RegularTextBrush
         {
-            get { return (Brush)this.GetValue(RegularTextBrushProperty); }
-            set { this.SetValue(RegularTextBrushProperty, value); }
+            get => (Brush)this.GetValue(RegularTextBrushProperty);
+            set => this.SetValue(RegularTextBrushProperty, value);
         }
 
         /// <summary>
@@ -81,8 +81,8 @@ namespace GroupMeClient.Extensions
         /// </summary>
         public Brush ErrorTextBrush
         {
-            get { return (Brush)this.GetValue(ErrorTextBrushProperty); }
-            set { this.SetValue(ErrorTextBrushProperty, value); }
+            get => (Brush)this.GetValue(ErrorTextBrushProperty);
+            set => this.SetValue(ErrorTextBrushProperty, value);
         }
 
         /// <summary>

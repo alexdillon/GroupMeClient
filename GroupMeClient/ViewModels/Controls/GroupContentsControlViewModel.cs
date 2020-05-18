@@ -180,8 +180,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public IMessageContainer MessageContainer
         {
-            get { return this.messageContainer; }
-            set { this.Set(() => this.MessageContainer, ref this.messageContainer, value); }
+            get => this.messageContainer;
+            set => this.Set(() => this.MessageContainer, ref this.messageContainer, value);
         }
 
         /// <summary>
@@ -189,8 +189,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public AvatarControlViewModel TopBarAvatar
         {
-            get { return this.topBarAvatar; }
-            private set { this.Set(() => this.TopBarAvatar, ref this.topBarAvatar, value); }
+            get => this.topBarAvatar;
+            private set => this.Set(() => this.TopBarAvatar, ref this.topBarAvatar, value);
         }
 
         /// <summary>
@@ -198,8 +198,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public string TypedMessageContents
         {
-            get { return this.typedMessageContents; }
-            set { this.Set(() => this.TypedMessageContents, ref this.typedMessageContents, value); }
+            get => this.typedMessageContents;
+            set => this.Set(() => this.TypedMessageContents, ref this.typedMessageContents, value);
         }
 
         /// <summary>
@@ -207,8 +207,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public bool IsSelectionAllowed
         {
-            get { return this.isSelectionAllowed; }
-            set { this.Set(() => this.IsSelectionAllowed, ref this.isSelectionAllowed, value); }
+            get => this.isSelectionAllowed;
+            set => this.Set(() => this.IsSelectionAllowed, ref this.isSelectionAllowed, value);
         }
 
         /// <summary>
@@ -217,8 +217,8 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public MessageControlViewModel MessageBeingRepliedTo
         {
-            get { return this.messageBeingRepliedTo; }
-            set { this.Set(() => this.MessageBeingRepliedTo, ref this.messageBeingRepliedTo, value); }
+            get => this.messageBeingRepliedTo;
+            set => this.Set(() => this.MessageBeingRepliedTo, ref this.messageBeingRepliedTo, value);
         }
 
         /// <summary>

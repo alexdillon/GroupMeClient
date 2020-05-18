@@ -65,8 +65,8 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// </summary>
         public System.IO.Stream ImageAttachmentStream
         {
-            get { return this.imageAttachmentStream; }
-            internal set { this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value); }
+            get => this.imageAttachmentStream;
+            internal set => this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value);
         }
 
         /// <summary>
@@ -74,8 +74,8 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// </summary>
         public bool IsLoading
         {
-            get { return this.isLoading; }
-            private set { this.Set(() => this.IsLoading, ref this.isLoading, value); }
+            get => this.isLoading;
+            private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
         }
 
         private ImageAttachment ImageAttachment { get; }

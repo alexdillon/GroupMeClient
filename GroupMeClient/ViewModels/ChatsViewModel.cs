@@ -103,15 +103,8 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public bool MiniBarModeEnabled
         {
-            get
-            {
-                return this.miniBarModeEnabled;
-            }
-
-            set
-            {
-                this.Set(() => this.MiniBarModeEnabled, ref this.miniBarModeEnabled, value);
-            }
+            get => this.miniBarModeEnabled;
+            set => this.Set(() => this.MiniBarModeEnabled, ref this.miniBarModeEnabled, value);
         }
 
         private ObservableCollection<GroupControlViewModel> AllGroupsChats { get; }

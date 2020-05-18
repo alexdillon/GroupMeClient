@@ -177,8 +177,8 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public string SelectedGroupName
         {
-            get { return this.selectedGroupName; }
-            private set { this.Set(() => this.SelectedGroupName, ref this.selectedGroupName, value); }
+            get => this.selectedGroupName;
+            private set => this.Set(() => this.SelectedGroupName, ref this.selectedGroupName, value);
         }
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }

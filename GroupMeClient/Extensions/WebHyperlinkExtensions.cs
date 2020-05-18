@@ -58,7 +58,7 @@ namespace GroupMeClient.Extensions
 
         private static void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            Extensions.WebBrowserHelper.OpenUrl(e.Uri.ToString());
+            WebBrowserHelper.OpenUrl(e.Uri.ToString());
             e.Handled = true;
         }
     }
