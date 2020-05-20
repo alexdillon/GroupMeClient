@@ -45,69 +45,69 @@ namespace GroupMeClient.Plugins
         /// <param name="pluginsPath">The folder to load plugins from.</param>
         public void LoadPlugins(string pluginsPath)
         {
-            if (!Directory.Exists(pluginsPath))
-            {
-                return;
-            }
-
-            string[] dllFileNames = Directory.GetFiles(pluginsPath, "*.dll");
-
-            ICollection<Assembly> assemblies = new List<Assembly>(dllFileNames.Length);
-            foreach (string dllFile in dllFileNames)
-            {
-                AssemblyName an = AssemblyName.GetAssemblyName(dllFile);
-                Assembly assembly = Assembly.Load(an);
-                assemblies.Add(assembly);
-            }
-
-            Type pluginType = typeof(PluginBase);
-            ICollection<Type> pluginTypes = new List<Type>();
-            foreach (Assembly assembly in assemblies)
-            {
-                if (assembly != null)
-                {
-                    try
-                    {
-                        Type[] types = assembly.GetTypes();
-                        foreach (Type type in types)
-                        {
-                            if (type.IsInterface || type.IsAbstract)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                if (type.IsSubclassOf(pluginType))
-                                {
-                                    pluginTypes.Add(type);
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        Debug.WriteLine($"Failed to load plugin {assembly.FullName}");
-                    }
-                }
-            }
-
             this.GroupChatPlugins.Clear();
             this.MessageComposePlugins.Clear();
 
-            foreach (Type type in pluginTypes)
+            // Load plugins from the plugins folder
+            if (Directory.Exists(pluginsPath))
             {
-                var plugin = (PluginBase)Activator.CreateInstance(type);
+                string[] dllFileNames = Directory.GetFiles(pluginsPath, "*.dll");
 
-                if (plugin is IMessageComposePlugin messageComposePlugin)
+                ICollection<Assembly> assemblies = new List<Assembly>(dllFileNames.Length);
+                foreach (string dllFile in dllFileNames)
                 {
-                    this.MessageComposePlugins.Add(messageComposePlugin);
+                    AssemblyName an = AssemblyName.GetAssemblyName(dllFile);
+                    Assembly assembly = Assembly.Load(an);
+                    assemblies.Add(assembly);
                 }
-                else if (plugin is IGroupChatPlugin groupChatPlugin)
+
+                Type pluginType = typeof(PluginBase);
+                ICollection<Type> pluginTypes = new List<Type>();
+                foreach (Assembly assembly in assemblies)
                 {
-                    this.GroupChatPlugins.Add(groupChatPlugin);
+                    if (assembly != null)
+                    {
+                        try
+                        {
+                            Type[] types = assembly.GetTypes();
+                            foreach (Type type in types)
+                            {
+                                if (type.IsInterface || type.IsAbstract)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    if (type.IsSubclassOf(pluginType))
+                                    {
+                                        pluginTypes.Add(type);
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Debug.WriteLine($"Failed to load plugin {assembly.FullName}");
+                        }
+                    }
+                }
+
+                foreach (Type type in pluginTypes)
+                {
+                    var plugin = (PluginBase)Activator.CreateInstance(type);
+
+                    if (plugin is IMessageComposePlugin messageComposePlugin)
+                    {
+                        this.MessageComposePlugins.Add(messageComposePlugin);
+                    }
+                    else if (plugin is IGroupChatPlugin groupChatPlugin)
+                    {
+                        this.GroupChatPlugins.Add(groupChatPlugin);
+                    }
                 }
             }
 
+            // Load plugins that ship directly in GMDC
             this.GroupChatPlugins.Add(new ViewModels.ImageGalleryWindowViewModel.ImageGalleryPlugin());
         }
     }
