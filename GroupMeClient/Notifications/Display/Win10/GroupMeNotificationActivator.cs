@@ -76,16 +76,22 @@ namespace GroupMeClient.Notifications.Display.Win10
         private void OpenWindowIfNeeded()
         {
             // Make sure we have a window open (in case user clicked toast while app closed)
-            if (App.Current.Windows.Count == 0)
+            if (Application.Current.Windows.Count == 0)
             {
                 new MainWindow().Show();
             }
 
+            var mainWindow = Application.Current.Windows[0];
+
             // Activate the window, bringing it to focus
-            App.Current.Windows[0].Activate();
+            mainWindow.Activate();
 
             // And make sure to maximize the window too, in case it was currently minimized
-            App.Current.Windows[0].WindowState = WindowState.Normal;
+            // Setting 'Normal' will restore the window to maximized if it was full-screen before being minimized
+            if (mainWindow.WindowState == WindowState.Minimized)
+            {
+                mainWindow.WindowState = WindowState.Normal;
+            }
         }
 
         private void ShowReplyToast(string containerId, string messageId, string containerName, string containerAvatar)
