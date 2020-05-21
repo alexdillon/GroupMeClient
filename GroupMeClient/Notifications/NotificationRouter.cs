@@ -43,7 +43,7 @@ namespace GroupMeClient
             }
         }
 
-        private void PushNotificationReceived(object sender, Notification notification)
+        private void PushNotificationReceived(object sender, GroupMeClientApi.Push.Notifications.Notification notification)
         {
             foreach (var observer in this.Subscribers)
             {

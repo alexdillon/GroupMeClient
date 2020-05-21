@@ -28,8 +28,18 @@ namespace GroupMeClient.Notifications.Display
         /// <returns>A PopupNotificationProvider.</returns>
         public static PopupNotificationProvider CreatePlatformNotificationProvider(Settings.SettingsManager settingsManager)
         {
-            // TODO: actually test to see if platform is Windows 10
-            return new PopupNotificationProvider(new Win10.Win10ToastNotificationsProvider(settingsManager));
+            var osVersion = System.Environment.OSVersion.Version;
+
+            if (osVersion.Major == 10)
+            {
+                // UWP-type Toast Notifications are natively supported (modern Windows 10 builds)
+                return new PopupNotificationProvider(new Win10.Win10ToastNotificationsProvider(settingsManager));
+            }
+            else
+            {
+                // No system-level notification support (pre-Win 10)
+                return new PopupNotificationProvider(new Win7.Win7ToastNotificationsProvider(settingsManager));
+            }
         }
 
         /// <summary>

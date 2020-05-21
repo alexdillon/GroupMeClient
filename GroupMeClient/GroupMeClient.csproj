@@ -86,6 +86,8 @@
     <Compile Include="Messaging\DisconnectedRequestMessage.cs" />
     <Compile Include="Native\WindowsThemeUtils.cs" />
     <Compile Include="Native\RecoveryManager.cs" />
+    <Compile Include="Notifications\Display\Win7\SingularNotificationManager.cs" />
+    <Compile Include="Notifications\Display\Win7\Win7ToastNotificationsProvider.cs" />
     <Compile Include="Notifications\Display\WpfToast\ToastHolder.xaml.cs">
       <DependentUpon>ToastHolder.xaml</DependentUpon>
     </Compile>
@@ -458,6 +460,9 @@
     </PackageReference>
     <PackageReference Include="MvvmLight">
       <Version>5.4.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Notification.WPF">
+      <Version>1.0.1.11</Version>
     </PackageReference>
     <PackageReference Include="NuGet.CommandLine">
       <Version>5.5.1</Version>
