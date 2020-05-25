@@ -35,6 +35,8 @@ namespace GroupMeClient.ViewModels.Controls
         private bool isSelectionAllowed = false;
         private MessageControlViewModel messageBeingRepliedTo;
         private bool isSending;
+        private double scalingFactor = 1.0;
+        private bool showDisplayOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -53,6 +55,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.SelectionChangedCommand = new RelayCommand<object>(this.SelectionChangedHandler);
             this.InitiateReply = new RelayCommand<MessageControlViewModel>(m => this.InitiateReplyCommand(m));
             this.TerminateReply = new RelayCommand(() => this.MessageBeingRepliedTo = null, true);
+            this.ToggleDisplayOptions = new RelayCommand(() => this.ShowDisplayOptions = !this.ShowDisplayOptions, true);
 
             this.SmallDialogManager = new PopupViewModel()
             {
@@ -83,6 +86,8 @@ namespace GroupMeClient.ViewModels.Controls
             this.CacheManager = cacheManager;
             this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
+
+            this.ScalingFactor = this.Settings.UISettings.ScalingFactorForMessages;
 
             // Generate an initial Guid to be used for the first message sent
             this.SendingMessageGuid = Guid.NewGuid().ToString();
@@ -154,6 +159,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// Options Menu is activated.
         /// </summary>
         public ICommand GroupChatPluginActivated { get; }
+
+        /// <summary>
+        /// Gets the action to be performed to toggle the <see cref="ShowDisplayOptions"/> property.
+        /// </summary>
+        public ICommand ToggleDisplayOptions { get; }
 
         /// <summary>
         /// Gets the title of the <see cref="Group"/> or <see cref="Chat"/>.
@@ -228,6 +238,24 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get => this.isSending;
             private set => this.Set(() => this.IsSending, ref this.isSending, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value representing the scaling factor the Group Or Chat contents should be rendered at.
+        /// </summary>
+        public double ScalingFactor
+        {
+            get => this.scalingFactor;
+            set => this.Set(() => this.ScalingFactor, ref this.scalingFactor, value);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the display options should be shown.
+        /// </summary>
+        public bool ShowDisplayOptions
+        {
+            get => this.showDisplayOptions;
+            private set => this.Set(() => this.ShowDisplayOptions, ref this.showDisplayOptions, value);
         }
 
         private CacheManager CacheManager { get; }
