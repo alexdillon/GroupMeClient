@@ -295,7 +295,9 @@ namespace GroupMeClient.ViewModels
             var groupOrChat = this.AllGroupsChats.FirstOrDefault(g => g.Id == requestMessage.GroupOrChatId);
             if (groupOrChat != null)
             {
-                this.OpenNewGroupChat(groupOrChat, skipClose: true);
+                this.OpenNewGroupChat(
+                    group: groupOrChat,
+                    skipClose: !this.SettingsManager.UISettings.StrictlyEnforceMultiChatLimits);
             }
         }
 
