@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -37,7 +38,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         /// <summary>
         /// Gets the contents of the Tweet.
         /// </summary>
-        public string Text => this.FileData?.FileName;
+        public string Text => $"{this.FileData?.FileName} ({BytesToString(this.FileData?.FileSize)})";
 
         /// <summary>
         /// Gets or sets a value indicating whether the file is currently being loaded.
@@ -65,6 +66,44 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
         private IMessageContainer MessageContainer { get; set; }
 
         private Message Message { get; }
+
+        /// <summary>
+        /// Converts a number of bytes to a human-readable size representation.
+        /// </summary>
+        /// <param name="byteCount">The number of bytes.</param>
+        /// <returns>A human-readable size string.</returns>
+        /// <remarks>Adapted from https://stackoverflow.com/a/4975942.</remarks>
+        private static string BytesToString(string byteCount)
+        {
+            if (long.TryParse(byteCount, out var bytes))
+            {
+                return BytesToString(bytes);
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Converts a number of bytes to a human-readable size representation.
+        /// </summary>
+        /// <param name="byteCount">The number of bytes.</param>
+        /// <returns>A human-readable size string.</returns>
+        /// <remarks>Adapted from https://stackoverflow.com/a/4975942.</remarks>
+        private static string BytesToString(long byteCount)
+        {
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; // Longs run out around EB
+            if (byteCount == 0)
+            {
+                return "0" + suf[0];
+            }
+
+            long bytes = Math.Abs(byteCount);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+            return (Math.Sign(byteCount) * num).ToString() + " " + suf[place];
+        }
 
         private async Task LoadFileInfo()
         {
