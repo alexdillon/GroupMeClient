@@ -36,6 +36,11 @@ namespace GroupMeClient.Settings
         public bool EnableNotificationInteractions { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets a value indicating that scaling factor that should be applied when displaying messages.
+        /// </summary>
+        public double ScalingFactorForMessages { get; set; } = 1.0;
+
+        /// <summary>
         /// Gets or sets a value indicating whether strict enforcement of MultiChat limits are enabled. If enabled,
         /// groups and chats will be forcibly closed if needed to not exceed the <see cref="MaximumNumberOfMultiChatsNormal"/> or
         /// <see cref="MaximumNumberOfMultiChatsMinibar"/>. This typically applies when opening a Windows 10 Toast Notification,
