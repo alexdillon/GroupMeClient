@@ -109,6 +109,24 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
+        /// Gets or sets a value indicating the scaling factor used when rendering messages.
+        /// </summary>
+        public double ScalingFactorForMessages
+        {
+            get
+            {
+                return this.SettingsManager.UISettings.ScalingFactorForMessages;
+            }
+
+            set
+            {
+                this.SettingsManager.UISettings.ScalingFactorForMessages = value;
+                this.RaisePropertyChanged(nameof(this.ScalingFactorForMessages));
+                this.SettingsManager.SaveSettings();
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating which UI theme should be applied.
         /// </summary>
         public Settings.ThemeOptions Theme

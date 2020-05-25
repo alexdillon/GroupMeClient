@@ -36,6 +36,11 @@ namespace GroupMeClient.Settings
         public bool EnableNotificationInteractions { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets a value indicating that scaling factor that should be applied when displaying messages.
+        /// </summary>
+        public double ScalingFactorForMessages { get; set; } = 1.0;
+
+        /// <summary>
         /// Gets or sets the user selected theme that should be applied to the entire application UI.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]

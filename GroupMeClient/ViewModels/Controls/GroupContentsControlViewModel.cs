@@ -87,6 +87,8 @@ namespace GroupMeClient.ViewModels.Controls
             this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
 
+            this.ScalingFactor = this.Settings.UISettings.ScalingFactorForMessages;
+
             // Generate an initial Guid to be used for the first message sent
             this.SendingMessageGuid = Guid.NewGuid().ToString();
 

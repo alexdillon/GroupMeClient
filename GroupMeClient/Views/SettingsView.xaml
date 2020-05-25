@@ -65,6 +65,13 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <TextBlock Text="{Binding ScalingFactor, StringFormat='Zoom {0:0.00}'}" Padding="0,0,15,0" />
+                        <Slider Width="250" Minimum="0.50" Maximum="1.50" Value="{Binding ScalingFactor, Mode=TwoWay}" TickPlacement="BottomRight" TickFrequency="0.10" />
+
+                    </StackPanel>
+
+
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                         <Label Content="Theme: " />
                         <ComboBox MinWidth="150"
                                   ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type settings:ThemeOptions}}}"
