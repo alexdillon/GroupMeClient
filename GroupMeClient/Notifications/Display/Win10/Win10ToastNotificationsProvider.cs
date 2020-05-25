@@ -20,14 +20,14 @@ namespace GroupMeClient.Notifications.Display.Win10
         /// <summary>
         /// Initializes a new instance of the <see cref="Win10ToastNotificationsProvider"/> class.
         /// </summary>
-        /// <param name="enableInteraction">A value indicating whether interactions, like replying and liking, is allowed with notifications.</param>
-        public Win10ToastNotificationsProvider(bool enableInteraction)
+        /// <param name="settingsManager">The settings instance to use.</param>
+        public Win10ToastNotificationsProvider(Settings.SettingsManager settingsManager)
         {
             // Register AUMID and COM server (for Desktop Bridge apps, this no-ops)
             DesktopNotificationManagerCompat.RegisterAumidAndComServer<GroupMeNotificationActivator>(ApplicationId);
             DesktopNotificationManagerCompat.RegisterActivator<GroupMeNotificationActivator>();
 
-            this.InteractionsEnabled = enableInteraction;
+            this.SettingsManager = settingsManager;
         }
 
         /// <summary>
@@ -36,12 +36,12 @@ namespace GroupMeClient.Notifications.Display.Win10
         public enum LaunchActions
         {
             /// <summary>
-            /// The <see cref="GroupMeClientApi.Models.Group"/> or <see cref="GroupMeClientApi.Models.Chat"/> should be opened and displayed.
+            /// The <see cref="Group"/> or <see cref="Chat"/> should be opened and displayed.
             /// </summary>
             ShowGroup,
 
             /// <summary>
-            /// The <see cref="GroupMeClientApi.Models.Member"/> should be liked.
+            /// The <see cref="Member"/> should be liked.
             /// </summary>
             LikeMessage,
 
@@ -63,7 +63,7 @@ namespace GroupMeClient.Notifications.Display.Win10
 
         private bool HasPerformedCleanup { get; set; } = false;
 
-        private bool InteractionsEnabled { get; }
+        private Settings.SettingsManager SettingsManager { get; }
 
         private string ToastImagePath => Path.GetTempPath() + "WindowsNotifications.GroupMeToasts.Images";
 
@@ -116,7 +116,7 @@ namespace GroupMeClient.Notifications.Display.Win10
 
             ToastActionsCustom actions = null;
 
-            if (this.InteractionsEnabled)
+            if (this.SettingsManager.UISettings.EnableNotificationInteractions)
             {
                 var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
                 var source = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
@@ -189,7 +189,7 @@ namespace GroupMeClient.Notifications.Display.Win10
 
             ToastActionsCustom actions = null;
 
-            if (this.InteractionsEnabled)
+            if (this.SettingsManager.UISettings.EnableNotificationInteractions)
             {
                 var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
                 var source = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
@@ -257,10 +257,10 @@ namespace GroupMeClient.Notifications.Display.Win10
         private void ShowToast(ToastContent toastContent, string tag = "")
         {
             bool isActive = false;
-            Application.Current.Dispatcher.Invoke((Action)(() =>
+            Application.Current.Dispatcher.Invoke(() =>
             {
                 isActive = Application.Current.MainWindow?.IsActive ?? false;
-            }));
+            });
 
             if (isActive)
             {

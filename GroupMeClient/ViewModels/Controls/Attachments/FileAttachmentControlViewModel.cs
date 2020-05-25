@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -77,11 +78,20 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             if (e == null || e.LeftButton == MouseButtonState.Pressed)
             {
                 this.IsLoading = true;
-                var data = await this.FileAttachment.DownloadFileAsync(this.MessageContainer.Messages.First());
+                var data = await this.FileAttachment.DownloadFileAsync(this.Message);
 
                 var tempFile = Utilities.TempFileUtils.GetTempFileName(this.FileData.FileName);
                 File.WriteAllBytes(tempFile, data);
-                System.Diagnostics.Process.Start(tempFile);
+
+                try
+                {
+                    Process.Start(tempFile);
+                }
+                catch (System.Exception)
+                {
+                    Process.Start("explorer.exe", string.Format("/select,\"{0}\"", tempFile));
+                }
+
                 this.IsLoading = false;
             }
         }
@@ -98,7 +108,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             if (saveFileDialog.ShowDialog() == true)
             {
                 this.IsLoading = true;
-                var data = await this.FileAttachment.DownloadFileAsync(this.MessageContainer.Messages.First());
+                var data = await this.FileAttachment.DownloadFileAsync(this.Message);
 
                 using (var fs = File.OpenWrite(saveFileDialog.FileName))
                 {
