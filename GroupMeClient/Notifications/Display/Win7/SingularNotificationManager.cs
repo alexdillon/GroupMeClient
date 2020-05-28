@@ -46,6 +46,7 @@ namespace GroupMeClient.Notifications.Display.Win7
 
         private Dispatcher Dispatcher { get; }
 
+        /// <inheritdoc/>
         public void Show(object content, string areaName = "", TimeSpan? expirationTime = null, Action onClick = null, Action onClose = null)
         {
             if (!this.Dispatcher.CheckAccess())
@@ -58,6 +59,7 @@ namespace GroupMeClient.Notifications.Display.Win7
             {
                 if (!window.IsVisible)
                 {
+                    window.Visibility = Visibility.Visible;
                     window.Show();
                     window.WindowState = WindowState.Normal;
                 }

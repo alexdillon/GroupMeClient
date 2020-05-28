@@ -87,7 +87,11 @@
     <Compile Include="Native\WindowsThemeUtils.cs" />
     <Compile Include="Native\RecoveryManager.cs" />
     <Compile Include="Notifications\Display\Win7\SingularNotificationManager.cs" />
+    <Compile Include="Notifications\Display\Win7\Win7ToastNotification.xaml.cs">
+      <DependentUpon>Win7ToastNotification.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Notifications\Display\Win7\Win7ToastNotificationsProvider.cs" />
+    <Compile Include="Notifications\Display\Win7\Win7ToastNotificationViewModel.cs" />
     <Compile Include="Notifications\Display\WpfToast\ToastHolder.xaml.cs">
       <DependentUpon>ToastHolder.xaml</DependentUpon>
     </Compile>
@@ -273,6 +277,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Notifications\Display\Win7\Win7ToastNotification.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Notifications\Display\WpfToast\ToastHolder.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

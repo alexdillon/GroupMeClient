@@ -13,6 +13,7 @@
              xmlns:pluginviews="clr-namespace:GroupMeClient.Plugins.Views"
              xmlns:pluginvm="clr-namespace:GroupMeClient.Plugins.ViewModels"
              xmlns:toast="clr-namespace:GroupMeClient.Notifications.Display.WpfToast"
+             xmlns:win7="clr-namespace:GroupMeClient.Notifications.Display.Win7"
              StartupUri="MainWindow.xaml"
              mc:Ignorable="d">
     <Application.Resources>
@@ -122,6 +123,10 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type toast:ToastHolderViewModel}">
                 <toast:ToastHolder />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type win7:Win7ToastNotificationViewModel}">
+                <win7:Win7ToastNotification />
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type pluginvm:MultiLikeControlViewModel}">

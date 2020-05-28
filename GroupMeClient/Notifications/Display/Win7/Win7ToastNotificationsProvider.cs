@@ -31,51 +31,39 @@ namespace GroupMeClient.Notifications.Display.Win7
         private Win10.GroupMeNotificationActivator NotificationActivator { get; }
 
         /// <inheritdoc/>
-        Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar, string containerId)
+        async Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar, string containerId)
         {
             var action = $"action={LaunchActions.ShowGroup}&conversationId={containerId}";
-            var notification = new Notification.Wpf.NotificationContent()
-            {
-                Message = body,
-                Title = title,
-                Type = NotificationType.Notification,
-            };
+            var notification = new Win7ToastNotificationViewModel(
+                title: title,
+                message: body,
+                imageData: await this.GroupMeClient.ImageDownloader.DownloadAvatarImageAsync(avatarUrl, !roundedAvatar));
 
             this.ShowToast(notification, action);
-
-            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>
-        Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl, string containerId, string messageId)
+        async Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl, string containerId, string messageId)
         {
             var action = $"action={LaunchActions.ShowGroup}&conversationId={containerId}";
-            var notification = new Notification.Wpf.NotificationContent()
-            {
-                Message = body,
-                Title = title,
-                Type = NotificationType.Notification,
-            };
+            var notification = new Win7ToastNotificationViewModel(
+               title: title,
+               message: body,
+               imageData: await this.GroupMeClient.ImageDownloader.DownloadAvatarImageAsync(avatarUrl, !roundedAvatar));
 
             this.ShowToast(notification, action);
-
-            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>
-        Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar, string containerId, string messageId)
+        async Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar, string containerId, string messageId)
         {
             var action = $"action={LaunchActions.ShowGroup}&conversationId={containerId}";
-            var notification = new Notification.Wpf.NotificationContent()
-            {
-                Message = body,
-                Title = title,
-                Type = NotificationType.Notification,
-            };
+            var notification = new Win7ToastNotificationViewModel(
+               title: title,
+               message: body,
+               imageData: await this.GroupMeClient.ImageDownloader.DownloadAvatarImageAsync(avatarUrl, !roundedAvatar));
 
             this.ShowToast(notification, action);
-
-            return Task.CompletedTask;
         }
 
         /// <inheritdoc/>
@@ -84,7 +72,7 @@ namespace GroupMeClient.Notifications.Display.Win7
             this.GroupMeClient = client;
         }
 
-        private void ShowToast(NotificationContent toastContent, string activationCommand)
+        private void ShowToast(Win7ToastNotificationViewModel toastContent, string activationCommand)
         {
             bool isActive = false;
             Application.Current.Dispatcher.Invoke(() =>
