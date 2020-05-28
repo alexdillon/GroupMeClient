@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using GroupMeClientApi;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 using GroupMeClientApi.Push;
@@ -38,7 +39,14 @@ namespace GroupMeClient.Notifications.Display
             else
             {
                 // No system-level notification support (pre-Win 10)
-                return new PopupNotificationProvider(new Win7.Win7ToastNotificationsProvider(settingsManager));
+                if (settingsManager.UISettings.EnableNonNativeNotifications)
+                {
+                    return new PopupNotificationProvider(new Win7.Win7ToastNotificationsProvider(settingsManager));
+                }
+                else
+                {
+                    return new PopupNotificationProvider(new DummyVisualSink());
+                }
             }
         }
 
@@ -171,6 +179,31 @@ namespace GroupMeClient.Notifications.Display
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// <see cref="DummyVisualSink"/> provides a placeholder notification sink that does absolutely nothing.
+        /// </summary>
+        private class DummyVisualSink : IPopupNotificationSink
+        {
+            public void RegisterClient(GroupMeClientApi.GroupMeClient client)
+            {
+            }
+
+            public Task ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl, string containerId, string messageId)
+            {
+                return Task.CompletedTask;
+            }
+
+            public Task ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar, string containerId, string messageId)
+            {
+                return Task.CompletedTask;
+            }
+
+            public Task ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar, string containerId)
+            {
+                return Task.CompletedTask;
+            }
         }
     }
 }
