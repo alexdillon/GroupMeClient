@@ -1,6 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using GroupMeClient.ViewModels.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace GroupMeClient.ViewModels
 {
@@ -17,6 +21,14 @@ namespace GroupMeClient.ViewModels
         {
             this.InstalledPlugins = new ObservableCollection<Plugin>();
             this.SettingsManager = settingsManager;
+
+            this.ManageReposCommand = new RelayCommand(this.ManageRepos);
+            this.DialogManager = new PopupViewModel()
+            {
+                PopupDialog = null,
+                EasyClosePopup = null,
+                ClosePopup = new RelayCommand(this.ClosePopup),
+            };
 
             this.LoadPluginInfo();
         }
@@ -35,6 +47,16 @@ namespace GroupMeClient.ViewModels
         /// Gets a string describing the git commit the application has built from.
         /// </summary>
         public string ApplicationCommit => $"{ThisAssembly.Git.Commit}-{ThisAssembly.Git.Branch}{(ThisAssembly.Git.IsDirty ? "-dirty" : string.Empty)}";
+
+        /// <summary>
+        /// Gets the <see cref="PopupViewModel"/> for the Settings view.
+        /// </summary>
+        public PopupViewModel DialogManager { get; }
+
+        /// <summary>
+        /// Gets the command used to open a popup to manage plugin repositories.
+        /// </summary>
+        public ICommand ManageReposCommand { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the UI Setting for only showing previews when multiple images are attached to a single message is enabled.
@@ -149,18 +171,53 @@ namespace GroupMeClient.ViewModels
         private void LoadPluginInfo()
         {
             // Load Group Chat Plugins
-            foreach (var plugin in Plugins.PluginManager.Instance.GroupChatPlugins)
+            foreach (var plugin in Plugins.PluginManager.Instance.GroupChatPluginsBuiltIn)
             {
                 var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
-                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Group Chat Plugins" });
+                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Group Chat Plugins", Source = "Built-In" });
+            }
+
+            foreach (var plugin in Plugins.PluginManager.Instance.GroupChatPluginsAutoInstalled)
+            {
+                var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
+                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Group Chat Plugins", Source = "Auto Installed" });
+            }
+
+            foreach (var plugin in Plugins.PluginManager.Instance.GroupChatPluginsManuallyInstalled)
+            {
+                var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
+                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Group Chat Plugins", Source = "Manually Installed" });
             }
 
             // Load Message Effect Plugins
-            foreach (var plugin in Plugins.PluginManager.Instance.MessageComposePlugins)
+            foreach (var plugin in Plugins.PluginManager.Instance.MessageComposePluginsBuiltIn)
             {
                 var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
-                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Message Effect Plugins" });
+                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Message Effect Plugins", Source = "Built-In" });
             }
+
+            foreach (var plugin in Plugins.PluginManager.Instance.MessageComposePluginsAutoInstalled)
+            {
+                var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
+                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Message Effect Plugins", Source = "Auto Installed" });
+            }
+
+            foreach (var plugin in Plugins.PluginManager.Instance.MessageComposePluginsManuallyInstalled)
+            {
+                var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
+                this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Message Effect Plugins", Source = "Manually Installed" });
+            }
+        }
+
+        private void ManageRepos()
+        {
+            var repoManager = new ManageReposViewModel();
+            this.DialogManager.PopupDialog = repoManager;
+        }
+
+        private void ClosePopup()
+        {
+            this.DialogManager.PopupDialog = null;
         }
 
         /// <summary>
@@ -182,6 +239,11 @@ namespace GroupMeClient.ViewModels
             /// Gets or sets the plugin type.
             /// </summary>
             public string Type { get; set; }
+
+            /// <summary>
+            /// Gets or sets the source of the plugin.
+            /// </summary>
+            public string Source { get; set; }
         }
     }
 }

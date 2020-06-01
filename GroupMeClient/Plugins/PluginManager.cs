@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
@@ -32,12 +33,54 @@ namespace GroupMeClient.Plugins
         /// <summary>
         /// Gets the available <see cref="IGroupChatPlugin"/> plugins.
         /// </summary>
-        public ICollection<IGroupChatPlugin> GroupChatPlugins { get; } = new List<IGroupChatPlugin>();
+        public IEnumerable<IGroupChatPlugin> GroupChatPlugins
+        {
+            get
+            {
+                return Enumerable.Concat(this.GroupChatPluginsAutoInstalled, this.GroupChatPluginsBuiltIn).Concat(this.GroupChatPluginsManuallyInstalled);
+            }
+        }
+
+        /// <summary>
+        /// Gets the available <see cref="IGroupChatPlugin"/> plugins that are built-in.
+        /// </summary>
+        public ICollection<IGroupChatPlugin> GroupChatPluginsBuiltIn { get; } = new List<IGroupChatPlugin>();
+
+        /// <summary>
+        /// Gets the available <see cref="IGroupChatPlugin"/> plugins that are manually installed.
+        /// </summary>
+        public ICollection<IGroupChatPlugin> GroupChatPluginsManuallyInstalled { get; } = new List<IGroupChatPlugin>();
+
+        /// <summary>
+        /// Gets the available <see cref="IGroupChatPlugin"/> plugins that are automatically installed from a repo.
+        /// </summary>
+        public ICollection<IGroupChatPlugin> GroupChatPluginsAutoInstalled { get; } = new List<IGroupChatPlugin>();
 
         /// <summary>
         /// Gets the available <see cref="IMessageComposePlugin"/> plugins.
         /// </summary>
-        public ICollection<IMessageComposePlugin> MessageComposePlugins { get; } = new List<IMessageComposePlugin>();
+        public IEnumerable<IMessageComposePlugin> MessageComposePlugins
+        {
+            get
+            {
+                return Enumerable.Concat(this.MessageComposePluginsAutoInstalled, this.MessageComposePluginsBuiltIn).Concat(this.MessageComposePluginsManuallyInstalled);
+            }
+        }
+
+        /// <summary>
+        /// Gets the available <see cref="IMessageComposePlugin"/> plugins.
+        /// </summary>
+        public ICollection<IMessageComposePlugin> MessageComposePluginsBuiltIn { get; } = new List<IMessageComposePlugin>();
+
+        /// <summary>
+        /// Gets the available <see cref="IMessageComposePlugin"/> plugins.
+        /// </summary>
+        public ICollection<IMessageComposePlugin> MessageComposePluginsManuallyInstalled { get; } = new List<IMessageComposePlugin>();
+
+        /// <summary>
+        /// Gets the available <see cref="IMessageComposePlugin"/> plugins.
+        /// </summary>
+        public ICollection<IMessageComposePlugin> MessageComposePluginsAutoInstalled { get; } = new List<IMessageComposePlugin>();
 
         /// <summary>
         /// Loads and registers all available plugins.
@@ -45,32 +88,60 @@ namespace GroupMeClient.Plugins
         /// <param name="pluginsPath">The folder to load plugins from.</param>
         public void LoadPlugins(string pluginsPath)
         {
-            this.GroupChatPlugins.Clear();
-            this.MessageComposePlugins.Clear();
+            this.GroupChatPluginsAutoInstalled.Clear();
+            this.GroupChatPluginsBuiltIn.Clear();
+            this.GroupChatPluginsManuallyInstalled.Clear();
 
-            // Load plugins from the plugins folder
+            this.MessageComposePluginsAutoInstalled.Clear();
+            this.MessageComposePluginsBuiltIn.Clear();
+            this.MessageComposePluginsManuallyInstalled.Clear();
+
+            Directory.CreateDirectory(pluginsPath);
+
             if (Directory.Exists(pluginsPath))
             {
-                string[] dllFileNames = Directory.GetFiles(pluginsPath, "*.dll");
+                var dllFileNames = Directory.GetFiles(pluginsPath, "*.dll");
 
-                ICollection<Assembly> assemblies = new List<Assembly>(dllFileNames.Length);
+                foreach (var file in dllFileNames)
+                {
+                    if (Path.GetFileNameWithoutExtension(file).EndsWith(PluginInstaller.StagingSuffix))
+                    {
+                        var originalPluginName = Path.GetFileName(file).Replace(PluginInstaller.StagingSuffix, string.Empty);
+                        var originalPluginFullPath = Path.Combine(pluginsPath, originalPluginName);
+                        if (File.Exists(originalPluginFullPath))
+                        {
+                            File.Delete(originalPluginFullPath);
+                        }
+
+                        // If a zero-byte staging file is used, don't keep it.
+                        if (new FileInfo(file).Length > 0)
+                        {
+                            File.Move(file, originalPluginFullPath);
+                        }
+                    }
+                }
+
+                // Get a new listing after staged installations are completed.
+                dllFileNames = Directory.GetFiles(pluginsPath, "*.dll");
+
+                var assemblies = new List<Assembly>(dllFileNames.Length);
                 foreach (string dllFile in dllFileNames)
                 {
-                    AssemblyName an = AssemblyName.GetAssemblyName(dllFile);
-                    Assembly assembly = Assembly.Load(an);
+                    var an = AssemblyName.GetAssemblyName(dllFile);
+                    var assembly = Assembly.Load(an);
                     assemblies.Add(assembly);
                 }
 
-                Type pluginType = typeof(PluginBase);
-                ICollection<Type> pluginTypes = new List<Type>();
-                foreach (Assembly assembly in assemblies)
+                var pluginType = typeof(PluginBase);
+                var pluginTypes = new List<Type>();
+                foreach (var assembly in assemblies)
                 {
                     if (assembly != null)
                     {
                         try
                         {
-                            Type[] types = assembly.GetTypes();
-                            foreach (Type type in types)
+                            var types = assembly.GetTypes();
+                            foreach (var type in types)
                             {
                                 if (type.IsInterface || type.IsAbstract)
                                 {
@@ -92,23 +163,23 @@ namespace GroupMeClient.Plugins
                     }
                 }
 
-                foreach (Type type in pluginTypes)
+                foreach (var type in pluginTypes)
                 {
                     var plugin = (PluginBase)Activator.CreateInstance(type);
 
                     if (plugin is IMessageComposePlugin messageComposePlugin)
                     {
-                        this.MessageComposePlugins.Add(messageComposePlugin);
+                        this.MessageComposePluginsManuallyInstalled.Add(messageComposePlugin);
                     }
                     else if (plugin is IGroupChatPlugin groupChatPlugin)
                     {
-                        this.GroupChatPlugins.Add(groupChatPlugin);
+                        this.GroupChatPluginsManuallyInstalled.Add(groupChatPlugin);
                     }
                 }
             }
 
             // Load plugins that ship directly in GMDC
-            this.GroupChatPlugins.Add(new ViewModels.ImageGalleryWindowViewModel.ImageGalleryPlugin());
+            this.GroupChatPluginsBuiltIn.Add(new ViewModels.ImageGalleryWindowViewModel.ImageGalleryPlugin());
         }
     }
 }

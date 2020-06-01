@@ -1,0 +1,133 @@
+﻿<UserControl x:Class="GroupMeClient.Views.Controls.UpdatePluginsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" 
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="200"
+             Background="Black" >
+
+    <UserControl.Resources>
+        <Style x:Key="MyColumnHeader" 
+               BasedOn="{StaticResource MetroGridViewColumnHeader}" 
+               TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="controls:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
+        </Style>
+
+        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
+        
+    </UserControl.Resources>
+
+    <Grid>
+        <StackPanel Orientation="Vertical" Margin="15">
+            <GroupBox>
+                <GroupBox.Header>
+                    <TextBlock Foreground="White" Text="Repositories"/>
+                </GroupBox.Header>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Button Content="Add GitHub Repo"
+                            Grid.Row="0" Grid.Column="0"
+                            Margin="0,0,10,10"
+                            Command="{Binding BeginAddingGitHubRepoCommand}" />
+
+                    <Button Content="Remove Repo"
+                            Grid.Row="0" Grid.Column="1"
+                            IsEnabled="{Binding ElementName=availableReposList, Path=SelectedItems.Count}"
+                            Margin="0,0,10,10"
+                            Command="{Binding RemoveSelectedRepoCommand}" />
+
+                    <!--List of Known Repos-->
+                    <ListView
+                        x:Name="availableReposList"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        Grid.Row="1"
+                        ItemsSource="{Binding AddedRepos}"
+                        SelectedItem="{Binding SelectedRepo}">
+                        <ListView.View>
+                            <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
+                                <GridViewColumn Header="Url" Width="300" DisplayMemberBinding="{Binding Url}" />
+                                <GridViewColumn Header="Type" Width="70" DisplayMemberBinding="{Binding Type}" />
+                                <GridViewColumn Header="Source" Width="130" DisplayMemberBinding="{Binding Source}" />
+                            </GridView>
+                        </ListView.View>
+
+                        <ListView.Template>
+                            <ControlTemplate>
+                                <ItemsPresenter/>
+                            </ControlTemplate>
+                        </ListView.Template>
+                    </ListView>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Margin="0,10,0,0">
+                <GroupBox.Header>
+                    <TextBlock Foreground="White" Text="Available Plugins"/>
+                </GroupBox.Header>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Button Content="Install Selected Plugin"
+                            IsEnabled="{Binding ElementName=availablePluginsList, Path=SelectedItems.Count}"
+                            Grid.Row="0" Grid.Column="0"
+                            Margin="0,0,10,10"
+                            Command="{Binding InstallPluginsCommand}" />
+
+                    <!--List of Available Plugins-->
+                    
+                    <ListView
+                        x:Name="availablePluginsList"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        Grid.Row="1"
+                        ItemsSource="{Binding AvailablePlugins}"
+                        SelectedItem="{Binding SelectedPlugin}">
+                        <ListView.View>
+                            <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
+                                <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Name}" />
+                                <GridViewColumn Header="Version" Width="70" DisplayMemberBinding="{Binding Version}" />
+                                <GridViewColumn Header="Source" Width="200" DisplayMemberBinding="{Binding Source}" />
+                            </GridView>
+                        </ListView.View>
+
+                        <ListView.Template>
+                            <ControlTemplate>
+                                <ItemsPresenter/>
+                            </ControlTemplate>
+                        </ListView.Template>
+                    </ListView>
+
+                    <controls:ProgressRing Grid.Column="0"
+                                           Grid.ColumnSpan="3"
+                                           Grid.Row="1"
+                                           IsActive="True"
+                                           Visibility="{Binding IsUpdatingPlugins, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</UserControl>

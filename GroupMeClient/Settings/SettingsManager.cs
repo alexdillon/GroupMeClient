@@ -41,9 +41,9 @@ namespace GroupMeClient.Settings
         /// </summary>
         public void LoadSettings()
         {
-            if (System.IO.File.Exists(this.SettingsFile))
+            if (File.Exists(this.SettingsFile))
             {
-                string json = System.IO.File.ReadAllText(this.SettingsFile);
+                string json = File.ReadAllText(this.SettingsFile);
                 JsonConvert.PopulateObject(json, this);
             }
         }

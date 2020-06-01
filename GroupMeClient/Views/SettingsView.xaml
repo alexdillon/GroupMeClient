@@ -5,7 +5,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
              xmlns:settings="clr-namespace:GroupMeClient.Settings"
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" 
+             xmlns:controls1="clr-namespace:GroupMeClient.Views.Controls"
              d:DesignHeight="1024"
              d:DesignWidth="768"
              mc:Ignorable="d">
@@ -18,197 +19,228 @@
         </Style>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Orientation="Vertical">
-            <!--Settings Header-->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="55"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical">
+                <!--Settings Header-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="55"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                <TextBlock Grid.Column="0"
-                               HorizontalAlignment="Left" VerticalAlignment="Center"
-                               Padding="15,0,0,0"
-                               Height="Auto" FontSize="17" FontWeight="SemiBold"
-                               Text="Settings" />
+                    <TextBlock Grid.Column="0"
+                                   HorizontalAlignment="Left" VerticalAlignment="Center"
+                                   Padding="15,0,0,0"
+                                   Height="Auto" FontSize="17" FontWeight="SemiBold"
+                                   Text="Settings" />
 
-                <Border Grid.Column="0" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
-            </Grid>
+                    <Border Grid.Column="0" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+                </Grid>
 
-            <!--Settings Area-->
-            <GroupBox Margin="10" Padding="10">
-                <GroupBox.Header>
-                    <TextBlock Foreground="White" Text="UI Settings"/>
-                </GroupBox.Header>
+                <!--Settings Area-->
+                <GroupBox Margin="10" Padding="10">
+                    <GroupBox.Header>
+                        <TextBlock Foreground="White" Text="UI Settings"/>
+                    </GroupBox.Header>
 
-                <StackPanel>
-                    <CheckBox Content="Show Only Previews When Multiple Images Are Attached to a Single Message"
-                              IsChecked="{Binding ShowPreviewsForMultiImages, Mode=TwoWay}" Margin="0,5,0,0"/>
+                    <StackPanel>
+                        <CheckBox Content="Show Only Previews When Multiple Images Are Attached to a Single Message"
+                                  IsChecked="{Binding ShowPreviewsForMultiImages, Mode=TwoWay}" Margin="0,5,0,0"/>
 
-                    <CheckBox Content="Enable Quick Reply and Like Actions in Windows Notifications"
-                              IsChecked="{Binding EnableNotificationInteractions, Mode=TwoWay}" Margin="0,5,0,0"/>
+                        <CheckBox Content="Enable Quick Reply and Like Actions in Windows Notifications"
+                                  IsChecked="{Binding EnableNotificationInteractions, Mode=TwoWay}" Margin="0,5,0,0"/>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                        <Label Content="Maximum Number of Multi-Chats with Full Sidebar: " />
-                        <controls:NumericUpDown Minimum="1" Maximum="6" Width="30"
-                                                Value="{Binding MaximumNumberOfMultiChats}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <Label Content="Maximum Number of Multi-Chats with Full Sidebar: " />
+                            <controls:NumericUpDown Minimum="1" Maximum="6" Width="30"
+                                                    Value="{Binding MaximumNumberOfMultiChats}"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <Label Content="Maximum Number of Multi-Chats in MiniBar Mode: " />
+                            <controls:NumericUpDown Minimum="1" Maximum="6" Width="30"
+                                                    Value="{Binding MaximumNumberOfMultiChatsMiniBar}"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="7,5,0,0">
+                            <TextBlock Text="{Binding ScalingFactorForMessages, StringFormat='Zoom {0:0.00}x'}" Padding="0,0,15,0" />
+                            <Slider Width="265" Minimum="0.50" Maximum="1.50" Value="{Binding ScalingFactorForMessages, Mode=TwoWay}" TickPlacement="BottomRight" TickFrequency="0.10" />
+                        </StackPanel>
+
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <Label Content="Theme: " />
+                            <ComboBox MinWidth="150"
+                                      ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type settings:ThemeOptions}}}"
+                                      SelectedValue="{Binding Theme}"/> 
+                        </StackPanel>
                     </StackPanel>
+                </GroupBox>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                        <Label Content="Maximum Number of Multi-Chats in MiniBar Mode: " />
-                        <controls:NumericUpDown Minimum="1" Maximum="6" Width="30"
-                                                Value="{Binding MaximumNumberOfMultiChatsMiniBar}"/>
-                    </StackPanel>
+                <!--About Area-->
+                <GroupBox Margin="10" Padding="10">
+                    <GroupBox.Header>
+                        <TextBlock Foreground="White" Text="About"/>
+                    </GroupBox.Header>
 
-                    <StackPanel Orientation="Horizontal" Margin="7,5,0,0">
-                        <TextBlock Text="{Binding ScalingFactorForMessages, StringFormat='Zoom {0:0.00}x'}" Padding="0,0,15,0" />
-                        <Slider Width="265" Minimum="0.50" Maximum="1.50" Value="{Binding ScalingFactorForMessages, Mode=TwoWay}" TickPlacement="BottomRight" TickFrequency="0.10" />
-                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap">
+                        <Run FontWeight="SemiBold">GroupMe Desktop Client is a modular client for accessing GroupMe on Windows.</Run>
+                        <LineBreak />
+                        By Alex Dillon, 2020
+                        <LineBreak />
+                        <LineBreak />
+                        Version: <Run Text="{Binding ApplicationVersion, Mode=OneWay}"/>
+                        <LineBreak />
+                        Built: <Run Text="{Binding ApplicationCommit, Mode=OneWay}"/>
+                    </TextBlock>
 
+                </GroupBox>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                        <Label Content="Theme: " />
-                        <ComboBox MinWidth="150"
-                                  ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type settings:ThemeOptions}}}"
-                                  SelectedValue="{Binding Theme}"/> 
-                    </StackPanel>
-                </StackPanel>
-            </GroupBox>
-
-            <!--About Area-->
-            <GroupBox Margin="10" Padding="10">
-                <GroupBox.Header>
-                    <TextBlock Foreground="White" Text="About"/>
-                </GroupBox.Header>
-
-                <TextBlock TextWrapping="Wrap">
-                    <Run FontWeight="SemiBold">GroupMe Desktop Client is a modular client for accessing GroupMe on Windows.</Run>
-                    <LineBreak />
-                    By Alex Dillon, 2020
-                    <LineBreak />
-                    <LineBreak />
-                    Version: <Run Text="{Binding ApplicationVersion, Mode=OneWay}"/>
-                    <LineBreak />
-                    Built: <Run Text="{Binding ApplicationCommit, Mode=OneWay}"/>
-                </TextBlock>
-
-            </GroupBox>
-
-            <!--Plugins Area-->
-            <GroupBox Margin="10" Padding="10">
-                <GroupBox.Header>
-                    <TextBlock Foreground="White" Text="Plugins"/>
-                </GroupBox.Header>
-
-                <GroupBox.Resources>
-                    <CollectionViewSource x:Key="ListBoxItems" Source="{Binding Path=InstalledPlugins}">
-                        <CollectionViewSource.GroupDescriptions>
-                            <PropertyGroupDescription PropertyName="Type" />
-                        </CollectionViewSource.GroupDescriptions>
-                    </CollectionViewSource>
-                </GroupBox.Resources>
-
-                <ListView
-                    ItemsSource="{Binding Source={StaticResource ListBoxItems}}"
-                    IsHitTestVisible="False">
-                    <ListView.View>
-                        <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
-                            <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Name}" />
-                            <GridViewColumn Header="Version" Width="70" DisplayMemberBinding="{Binding Version}" />
-                        </GridView>
-                    </ListView.View>
+                <!--Plugins Area-->
+                <GroupBox Margin="10" Padding="10">
+                    <GroupBox.Header>
+                        <TextBlock Foreground="White" Text="Plugins"/>
+                    </GroupBox.Header>
                     
-                    <ListView.Template>
-                        <ControlTemplate>
-                            <ItemsPresenter/>
-                        </ControlTemplate>
-                    </ListView.Template>
+                    <GroupBox.Resources>
+                        <CollectionViewSource x:Key="ListBoxItems" Source="{Binding Path=InstalledPlugins}">
+                            <CollectionViewSource.GroupDescriptions>
+                                <PropertyGroupDescription PropertyName="Type" />
+                            </CollectionViewSource.GroupDescriptions>
+                        </CollectionViewSource>
+                    </GroupBox.Resources>
 
-                    <ListView.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock FontWeight="Bold" FontSize="12" Text="{Binding Name}"/>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
-                    </ListView.GroupStyle>
-                </ListView>
-            </GroupBox>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-            <!--Credits and License Area-->
-            <GroupBox Margin="10" Padding="10">
-                <GroupBox.Header>
-                    <TextBlock Foreground="White" Text="Open Source Credits"/>
-                </GroupBox.Header>
+                        <Button Grid.Column="0" Grid.Row="0"
+                                Content="Manage Plugins and Repos"
+                                Margin="0, 0, 10, 10"
+                                Command="{Binding ManageReposCommand}" />
 
-                <TextBlock TextWrapping="Wrap">
-                    GroupMe Desktop Client uses a lot of open source technologies. We would like to send a big thank you to the following projects and the thousands of contributors that help make this program possible!
-                    <LineBreak />
-                    <LineBreak />
+                        <Button Grid.Column="1" Grid.Row="0"
+                                Margin="0, 0, 10, 10"
+                                Content="Check for Plugin Updates"
+                                Command="{Binding ManageReposCommand}" />
+
+                        <ListView
+                            Grid.Column="0"
+                            Grid.ColumnSpan="3"
+                            Grid.Row="1"
+                            ItemsSource="{Binding Source={StaticResource ListBoxItems}}"
+                            IsHitTestVisible="False">
+                            <ListView.View>
+                                <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
+                                    <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Name}" />
+                                    <GridViewColumn Header="Version" Width="70" DisplayMemberBinding="{Binding Version}" />
+                                    <GridViewColumn Header="Source" Width="130" DisplayMemberBinding="{Binding Source}" />
+                                </GridView>
+                            </ListView.View>
+
+                            <ListView.Template>
+                                <ControlTemplate>
+                                    <ItemsPresenter/>
+                                </ControlTemplate>
+                            </ListView.Template>
+
+                            <ListView.GroupStyle>
+                                <GroupStyle>
+                                    <GroupStyle.HeaderTemplate>
+                                        <DataTemplate>
+                                            <TextBlock FontWeight="Bold" FontSize="12" Text="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </GroupStyle.HeaderTemplate>
+                                </GroupStyle>
+                            </ListView.GroupStyle>
+                        </ListView>
+                    </Grid>
+                </GroupBox>
+
+                <!--Credits and License Area-->
+                <GroupBox Margin="10" Padding="10">
+                    <GroupBox.Header>
+                        <TextBlock Foreground="White" Text="Open Source Credits"/>
+                    </GroupBox.Header>
+
+                    <TextBlock TextWrapping="Wrap">
+                        GroupMe Desktop Client uses a lot of open source technologies. We would like to send a big thank you to the following projects and the thousands of contributors that help make this program possible!
+                        <LineBreak />
+                        <LineBreak />
                 
-                    <Hyperlink 
-                        NavigateUri="https://mahapps.com/"
-                        extensions:WebHyperlinkExtensions.IsWebLink="True">
-                        MahApps Metro UI Toolkit
-                    </Hyperlink>
-                    <LineBreak />
+                        <Hyperlink 
+                            NavigateUri="https://mahapps.com/"
+                            extensions:WebHyperlinkExtensions.IsWebLink="True">
+                            MahApps Metro UI Toolkit
+                        </Hyperlink>
+                        <LineBreak />
                 
-                    <Hyperlink 
-                        NavigateUri="http://www.mvvmlight.net/"
-                        extensions:WebHyperlinkExtensions.IsWebLink="True">
-                        MVVMLight
-                    </Hyperlink>
-                    <LineBreak />
+                        <Hyperlink 
+                            NavigateUri="http://www.mvvmlight.net/"
+                            extensions:WebHyperlinkExtensions.IsWebLink="True">
+                            MVVMLight
+                        </Hyperlink>
+                        <LineBreak />
                 
-                    <Hyperlink 
-                        NavigateUri="https://github.com/ericsink/SQLitePCL.raw"
-                        extensions:WebHyperlinkExtensions.IsWebLink="True">
-                        SQLitePCLRaw
-                    </Hyperlink>
-                    <LineBreak />
+                        <Hyperlink 
+                            NavigateUri="https://github.com/ericsink/SQLitePCL.raw"
+                            extensions:WebHyperlinkExtensions.IsWebLink="True">
+                            SQLitePCLRaw
+                        </Hyperlink>
+                        <LineBreak />
                 
-                    <Hyperlink 
-                        NavigateUri="https://github.com/aspnet/EntityFrameworkCore"
-                        extensions:WebHyperlinkExtensions.IsWebLink="True">
-                        Entity Framework Core
-                    </Hyperlink>
-                    <LineBreak />
+                        <Hyperlink 
+                            NavigateUri="https://github.com/aspnet/EntityFrameworkCore"
+                            extensions:WebHyperlinkExtensions.IsWebLink="True">
+                            Entity Framework Core
+                        </Hyperlink>
+                        <LineBreak />
                 
-                    <Hyperlink 
-                        NavigateUri="https://github.com/Squirrel/Squirrel.Windows"
-                        extensions:WebHyperlinkExtensions.IsWebLink="True">
-                        Squirrel for Windows
-                    </Hyperlink>
-                    <LineBreak />
+                        <Hyperlink 
+                            NavigateUri="https://github.com/Squirrel/Squirrel.Windows"
+                            extensions:WebHyperlinkExtensions.IsWebLink="True">
+                            Squirrel for Windows
+                        </Hyperlink>
+                        <LineBreak />
                     
-                     <Hyperlink 
-                        NavigateUri="https://gitlab.com/sbaeumlisberger/virtualizing-wrap-panel/"
-                        extensions:WebHyperlinkExtensions.IsWebLink="True">
-                        Virtualizing Wrap Panel
-                    </Hyperlink>
-                    <LineBreak />
+                         <Hyperlink 
+                            NavigateUri="https://gitlab.com/sbaeumlisberger/virtualizing-wrap-panel/"
+                            extensions:WebHyperlinkExtensions.IsWebLink="True">
+                            Virtualizing Wrap Panel
+                        </Hyperlink>
+                        <LineBreak />
 
-                    <Hyperlink 
-                        NavigateUri="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
-                        extensions:WebHyperlinkExtensions.IsWebLink="True">
-                        XAML Animated Gif
-                    </Hyperlink>
-                    <LineBreak />
+                        <Hyperlink 
+                            NavigateUri="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
+                            extensions:WebHyperlinkExtensions.IsWebLink="True">
+                            XAML Animated Gif
+                        </Hyperlink>
+                        <LineBreak />
                 
-                    <LineBreak />
-                    Main application icon made by 
-                    <Hyperlink NavigateUri="https://www.flaticon.com/authors/freepik" extensions:WebHyperlinkExtensions.IsWebLink="True">Freepik</Hyperlink>
-                    from 
-                    <Hyperlink NavigateUri="https://www.flaticon.com/" extensions:WebHyperlinkExtensions.IsWebLink="True">www.flaticon.com</Hyperlink>
-                    is licensed by
-                    <Hyperlink NavigateUri="http://creativecommons.org/licenses/by/3.0/" extensions:WebHyperlinkExtensions.IsWebLink="True">CC 3.0 BY</Hyperlink>
-                </TextBlock>
-            </GroupBox>
-        </StackPanel>
-    </ScrollViewer>
+                        <LineBreak />
+                        Main application icon made by 
+                        <Hyperlink NavigateUri="https://www.flaticon.com/authors/freepik" extensions:WebHyperlinkExtensions.IsWebLink="True">Freepik</Hyperlink>
+                        from 
+                        <Hyperlink NavigateUri="https://www.flaticon.com/" extensions:WebHyperlinkExtensions.IsWebLink="True">www.flaticon.com</Hyperlink>
+                        is licensed by
+                        <Hyperlink NavigateUri="http://creativecommons.org/licenses/by/3.0/" extensions:WebHyperlinkExtensions.IsWebLink="True">CC 3.0 BY</Hyperlink>
+                    </TextBlock>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!--Popup Dialog-->
+        <controls1:Popup DataContext="{Binding DialogManager}" />
+    </Grid>
 </UserControl>
