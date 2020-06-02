@@ -165,15 +165,32 @@ namespace GroupMeClient.Plugins
 
                 foreach (var type in pluginTypes)
                 {
+                    var hostedAssemblyName = Path.GetFileNameWithoutExtension(type.Module.Name);
+                    var installedPlugin = PluginInstaller.Instance.InstalledPlugins.FirstOrDefault(p => p.InstallationGuid == hostedAssemblyName);
+
                     var plugin = (PluginBase)Activator.CreateInstance(type);
 
                     if (plugin is IMessageComposePlugin messageComposePlugin)
                     {
-                        this.MessageComposePluginsManuallyInstalled.Add(messageComposePlugin);
+                        if (installedPlugin == null)
+                        {
+                            this.MessageComposePluginsManuallyInstalled.Add(messageComposePlugin);
+                        }
+                        else
+                        {
+                            this.MessageComposePluginsAutoInstalled.Add(messageComposePlugin);
+                        }
                     }
                     else if (plugin is IGroupChatPlugin groupChatPlugin)
                     {
-                        this.GroupChatPluginsManuallyInstalled.Add(groupChatPlugin);
+                        if (installedPlugin == null)
+                        {
+                            this.GroupChatPluginsManuallyInstalled.Add(groupChatPlugin);
+                        }
+                        else
+                        {
+                            this.GroupChatPluginsAutoInstalled.Add(groupChatPlugin);
+                        }
                     }
                 }
             }
