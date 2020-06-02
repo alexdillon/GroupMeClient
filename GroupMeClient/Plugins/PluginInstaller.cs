@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Octokit;
@@ -110,7 +111,39 @@ namespace GroupMeClient.Plugins
 
             await this.UnpackAndCopyPackage(installedPlugin.InstallationGuid, StagingSuffix, plugin.BinaryUrl);
 
-            this.PluginSettings.InstalledPlugins.Add(installedPlugin);
+            this.SavePluginSettings();
+        }
+
+        /// <summary>
+        /// Finds the currently installed version of a specific plugin using the embedded version file metadata.
+        /// For plugins that fail to load, a version of 0.0.0 will be returned.
+        /// </summary>
+        /// <param name="plugin">The plugin to return the version of.</param>
+        /// <returns>The <see cref="Version"/> of the plugin.</returns>
+        public Version GetPluginVersion(PluginSettings.InstalledPlugin plugin)
+        {
+            try
+            {
+                var fullPath = Path.Combine(pluginRoot, $"{plugin.InstallationGuid}.dll");
+                var assemblyName = AssemblyName.GetAssemblyName(fullPath);
+                return assemblyName.Version;
+            }
+            catch (Exception)
+            {
+                return new Version(0, 0, 0);
+            }
+        }
+
+        /// <summary>
+        /// Uninstalls the specified plugin.
+        /// </summary>
+        /// <param name="plugin">The plugin to uninstall.</param>
+        public void UninstallPlugin(PluginSettings.InstalledPlugin plugin)
+        {
+            var stagingDeleteFilename = Path.Combine(pluginRoot, $"{plugin.InstallationGuid}{StagingSuffix}.dll");
+            File.WriteAllBytes(stagingDeleteFilename, new byte[] { });
+
+            this.PluginSettings.InstalledPlugins.Remove(plugin);
             this.SavePluginSettings();
         }
 

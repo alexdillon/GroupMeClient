@@ -133,7 +133,7 @@
                         <Button Grid.Column="1" Grid.Row="0"
                                 Margin="0, 0, 10, 10"
                                 Content="Check for Plugin Updates"
-                                Command="{Binding ManageReposCommand}" />
+                                Command="{Binding ManageUpdatesCommand}" />
 
                         <ListView
                             Grid.Column="0"

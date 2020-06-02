@@ -118,6 +118,11 @@ namespace GroupMeClient.Plugins
                         {
                             File.Move(file, originalPluginFullPath);
                         }
+                        else
+                        {
+                            // Delete the zero-byte staging stub
+                            File.Delete(file);
+                        }
                     }
                 }
 

@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Plugins;
-using GroupMeClient.Plugins.Repositories;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -15,57 +15,53 @@ namespace GroupMeClient.ViewModels.Controls
     public class UpdatePluginsViewModel : ViewModelBase
     {
         private bool isUpdatingPlugins;
-        private bool showAddRepoTextbox;
-        private string enteredRepoUrl;
-        private Repository selectedRepo;
-        private Repository.AvailablePlugin selectedPlugin;
+        private Repository.AvailablePlugin selectedToUpdate;
+        private PluginSettings.InstalledPlugin selectedToUninstall;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdatePluginsViewModel"/> class.
         /// </summary>
         public UpdatePluginsViewModel()
         {
-            this.AddedRepos = new ObservableCollection<Repository>();
-            this.AvailablePlugins = new ObservableCollection<Repository.AvailablePlugin>();
+            this.AvailableUpdates = new ObservableCollection<Repository.AvailablePlugin>();
+            this.AvailablePlugins = new ObservableCollection<PluginSettings.InstalledPlugin>();
 
-            this.BeginAddingGitHubRepoCommand = new RelayCommand(this.BeginAddingGitHubRepo);
-            this.RemoveSelectedRepoCommand = new RelayCommand(this.RemoveSelectedRepo);
-            this.InstallPluginsCommand = new RelayCommand(async () => await this.InstallPlugins(), true);
-            this.CloseGitHubRepoCommand = new RelayCommand(this.CancelAddingGitHubRepo);
-            this.FinishAddGitHubRepoCommand = new RelayCommand(this.FinishAddingGitHubRepo);
+            this.UpdateSelectedCommand = new RelayCommand(async () => await this.UpdateSelectedPlugin(), true);
+            this.UpdateAllCommand = new RelayCommand(async () => await this.UpdateAllPlugins(), true);
+            this.UninstallPluginCommand = new RelayCommand(this.UninstallSelectedPlugin);
 
-            foreach (var repo in PluginInstaller.Instance.AddedRepositories)
+            foreach (var plugin in PluginInstaller.Instance.InstalledPlugins)
             {
-                this.AddedRepos.Add(repo);
+                this.AvailablePlugins.Add(plugin);
             }
 
             _ = this.UpdateAvailablePlugins();
         }
 
         /// <summary>
-        /// Gets a list of <see cref="Repository"/>s that have been added.
+        /// Gets a list of updates that can be installed.
         /// </summary>
-        public ObservableCollection<Repository> AddedRepos { get; }
+        public ObservableCollection<Repository.AvailablePlugin> AvailableUpdates { get; }
 
         /// <summary>
         /// Gets a list of <see cref="AvailablePlugins"/> from the <see cref="AddedRepos"/>.
         /// </summary>
-        public ObservableCollection<Repository.AvailablePlugin> AvailablePlugins { get; }
+        public ObservableCollection<PluginSettings.InstalledPlugin> AvailablePlugins { get; }
 
         /// <summary>
-        /// Gets the command to begin adding a new GitHub Repo.
+        /// Gets the command to update the selected <see cref="SelectedToUpdate"/> plugin.
         /// </summary>
-        public ICommand BeginAddingGitHubRepoCommand { get; }
+        public ICommand UpdateSelectedCommand { get; }
 
         /// <summary>
-        /// Gets the command to remove the selected repo from the repo list.
+        /// Gets the command to update all available plugins.
         /// </summary>s
-        public ICommand RemoveSelectedRepoCommand { get; }
+        public ICommand UpdateAllCommand { get; }
 
         /// <summary>
-        /// Gets the command to install the selected plugin.
+        /// Gets the command to uninstall the <see cref="SelectedToUninstall"/> plugin.
         /// </summary>
-        public ICommand InstallPluginsCommand { get; }
+        public ICommand UninstallPluginCommand { get; }
 
         /// <summary>
         /// Gets the command used to finish adding a new GitHub Repo.
@@ -87,47 +83,29 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
-        /// Gets a value indicating whether the textbox for entering the URL of a new repo should be shown.
+        /// Gets or sets the currently selected <see cref="Repository.AvailablePlugin"/> to update..
         /// </summary>
-        public bool ShowAddRepoTextbox
+        public Repository.AvailablePlugin SelectedToUpdate
         {
-            get => this.showAddRepoTextbox;
-            private set => this.Set(() => this.ShowAddRepoTextbox, ref this.showAddRepoTextbox, value);
+            get => this.selectedToUpdate;
+            set => this.Set(() => this.SelectedToUpdate, ref this.selectedToUpdate, value);
         }
 
         /// <summary>
-        /// Gets or sets a value containing the entered repository URL.
+        /// Gets or sets the currently selected plugin to uninstall.
         /// </summary>
-        public string EnteredRepoUrl
+        public PluginSettings.InstalledPlugin SelectedToUninstall
         {
-            get => this.enteredRepoUrl;
-            set => this.Set(() => this.EnteredRepoUrl, ref this.enteredRepoUrl, value);
-        }
-
-        /// <summary>
-        /// Gets or sets the currently selected repo.
-        /// </summary>
-        public Repository SelectedRepo
-        {
-            get => this.selectedRepo;
-            set => this.Set(() => this.SelectedRepo, ref this.selectedRepo, value);
-        }
-
-        /// <summary>
-        /// Gets or sets the currently selected plugin.
-        /// </summary>
-        public Repository.AvailablePlugin SelectedPlugin
-        {
-            get => this.selectedPlugin;
-            set => this.Set(() => this.SelectedPlugin, ref this.selectedPlugin, value);
+            get => this.selectedToUninstall;
+            set => this.Set(() => this.SelectedToUninstall, ref this.selectedToUninstall, value);
         }
 
         private async Task UpdateAvailablePlugins()
         {
-            this.AvailablePlugins.Clear();
+            this.AvailableUpdates.Clear();
             this.IsUpdatingPlugins = true;
 
-            foreach (var repo in this.AddedRepos)
+            foreach (var repo in PluginInstaller.Instance.AddedRepositories)
             {
                 foreach (var plugin in await repo.GetAvailablePlugins())
                 {
@@ -135,10 +113,15 @@ namespace GroupMeClient.ViewModels.Controls
                         .FirstOrDefault(p => p.PluginName == plugin.Name &&
                                              p.RepositoryUrl == repo.Url);
 
-                    // Only show plugins for installation that are not already installed
-                    if (installed == null)
+                    // Ensure the plugin is currently installed
+                    if (installed != null)
                     {
-                        this.AvailablePlugins.Add(plugin);
+                        var currentVersion = PluginInstaller.Instance.GetPluginVersion(installed);
+
+                        if (plugin.Version > currentVersion)
+                        {
+                            this.AvailableUpdates.Add(plugin);
+                        }
                     }
                 }
             }
@@ -146,55 +129,40 @@ namespace GroupMeClient.ViewModels.Controls
             this.IsUpdatingPlugins = false;
         }
 
-        private void BeginAddingGitHubRepo()
+        private async Task UpdateSelectedPlugin()
         {
-            this.ShowAddRepoTextbox = true;
-        }
-
-        private void RemoveSelectedRepo()
-        {
-            if (this.SelectedRepo != null)
-            {
-                var settingsRepo = PluginInstaller.Instance.AddedRepositories.FirstOrDefault(r => r.Url == this.SelectedRepo.Url);
-                PluginInstaller.Instance.RemoveRepository(settingsRepo);
-                this.AddedRepos.Remove(this.SelectedRepo);
-                this.SelectedRepo = null;
-                _ = this.UpdateAvailablePlugins();
-            }
-        }
-
-        private async Task InstallPlugins()
-        {
-            if (this.SelectedPlugin != null)
+            if (this.SelectedToUpdate != null)
             {
                 this.IsUpdatingPlugins = true;
-                await PluginInstaller.Instance.InstallPlugin(this.SelectedPlugin);
-                await this.UpdateAvailablePlugins();
+
+                await PluginInstaller.Instance.UpdatePlugin(this.SelectedToUpdate);
+                this.AvailableUpdates.Remove(this.SelectedToUpdate);
+
                 this.IsUpdatingPlugins = false;
             }
         }
 
-        private void FinishAddingGitHubRepo()
+        private async Task UpdateAllPlugins()
         {
-            if (!string.IsNullOrEmpty(this.EnteredRepoUrl))
+            this.IsUpdatingPlugins = true;
+
+            foreach (var update in this.AvailableUpdates)
             {
-                var existingRepoSource = this.AddedRepos.FirstOrDefault(r => r.Url == this.EnteredRepoUrl);
-                if (existingRepoSource == null)
-                {
-                    var repo = new GitHubRepository(this.EnteredRepoUrl);
-                    PluginInstaller.Instance.AddRepository(repo);
-                    this.AddedRepos.Add(repo);
-                    _ = this.UpdateAvailablePlugins();
-                }
+                await PluginInstaller.Instance.UpdatePlugin(update);
             }
 
-            this.CancelAddingGitHubRepo();
+            this.AvailableUpdates.Clear();
+
+            this.IsUpdatingPlugins = false;
         }
 
-        private void CancelAddingGitHubRepo()
+        private void UninstallSelectedPlugin()
         {
-            this.EnteredRepoUrl = string.Empty;
-            this.ShowAddRepoTextbox = false;
+            if (this.SelectedToUninstall != null)
+            {
+                PluginInstaller.Instance.UninstallPlugin(this.SelectedToUninstall);
+                this.AvailablePlugins.Remove(this.SelectedToUninstall);
+            }
         }
     }
 }

@@ -23,7 +23,7 @@
         <StackPanel Orientation="Vertical" Margin="15">
             <GroupBox>
                 <GroupBox.Header>
-                    <TextBlock Foreground="White" Text="Repositories"/>
+                    <TextBlock Foreground="White" Text="Updates"/>
                 </GroupBox.Header>
 
                 <Grid>
@@ -38,78 +38,29 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <Button Content="Add GitHub Repo"
+                    <Button Content="Update Selected"
                             Grid.Row="0" Grid.Column="0"
                             Margin="0,0,10,10"
-                            Command="{Binding BeginAddingGitHubRepoCommand}" />
+                            IsEnabled="{Binding ElementName=availableUpdatesList, Path=SelectedItems.Count}"
+                            Command="{Binding UpdateSelectedCommand}" />
 
-                    <Button Content="Remove Repo"
+                    <Button Content="Update All"
                             Grid.Row="0" Grid.Column="1"
-                            IsEnabled="{Binding ElementName=availableReposList, Path=SelectedItems.Count}"
                             Margin="0,0,10,10"
-                            Command="{Binding RemoveSelectedRepoCommand}" />
+                            Command="{Binding UpdateAllCommand}" />
 
                     <!--List of Known Repos-->
                     <ListView
-                        x:Name="availableReposList"
+                        x:Name="availableUpdatesList"
                         Grid.Column="0"
                         Grid.ColumnSpan="3"
                         Grid.Row="1"
-                        ItemsSource="{Binding AddedRepos}"
-                        SelectedItem="{Binding SelectedRepo}">
-                        <ListView.View>
-                            <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
-                                <GridViewColumn Header="Url" Width="300" DisplayMemberBinding="{Binding Url}" />
-                                <GridViewColumn Header="Type" Width="70" DisplayMemberBinding="{Binding Type}" />
-                                <GridViewColumn Header="Source" Width="130" DisplayMemberBinding="{Binding Source}" />
-                            </GridView>
-                        </ListView.View>
-
-                        <ListView.Template>
-                            <ControlTemplate>
-                                <ItemsPresenter/>
-                            </ControlTemplate>
-                        </ListView.Template>
-                    </ListView>
-                </Grid>
-            </GroupBox>
-
-            <GroupBox Margin="0,10,0,0">
-                <GroupBox.Header>
-                    <TextBlock Foreground="White" Text="Available Plugins"/>
-                </GroupBox.Header>
-
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <Button Content="Install Selected Plugin"
-                            IsEnabled="{Binding ElementName=availablePluginsList, Path=SelectedItems.Count}"
-                            Grid.Row="0" Grid.Column="0"
-                            Margin="0,0,10,10"
-                            Command="{Binding InstallPluginsCommand}" />
-
-                    <!--List of Available Plugins-->
-                    
-                    <ListView
-                        x:Name="availablePluginsList"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="3"
-                        Grid.Row="1"
-                        ItemsSource="{Binding AvailablePlugins}"
-                        SelectedItem="{Binding SelectedPlugin}">
+                        ItemsSource="{Binding AvailableUpdates}"
+                        SelectedItem="{Binding SelectedToUpdate}">
                         <ListView.View>
                             <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
                                 <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Name}" />
-                                <GridViewColumn Header="Version" Width="70" DisplayMemberBinding="{Binding Version}" />
+                                <GridViewColumn Header="Version" Width="60" DisplayMemberBinding="{Binding Version}" />
                                 <GridViewColumn Header="Source" Width="200" DisplayMemberBinding="{Binding Source}" />
                             </GridView>
                         </ListView.View>
@@ -126,6 +77,52 @@
                                            Grid.Row="1"
                                            IsActive="True"
                                            Visibility="{Binding IsUpdatingPlugins, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Margin="0,10,0,0">
+                <GroupBox.Header>
+                    <TextBlock Foreground="White" Text="Uninstall Plugins"/>
+                </GroupBox.Header>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Button Content="Uninstall Selected Plugin"
+                            IsEnabled="{Binding ElementName=installedPluginList, Path=SelectedItems.Count}"
+                            Grid.Row="0" Grid.Column="0"
+                            Margin="0,0,10,10"
+                            Command="{Binding UninstallPluginCommand}" />
+
+                    <!--List of All Installed Plugins-->
+                    <ListView
+                        x:Name="installedPluginList"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        Grid.Row="1"
+                        ItemsSource="{Binding AvailablePlugins}"
+                        SelectedItem="{Binding SelectedToUninstall}">
+                        <ListView.View>
+                            <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
+                                <GridViewColumn Header="PluginName" Width="250" DisplayMemberBinding="{Binding PluginName}" />
+                            </GridView>
+                        </ListView.View>
+
+                        <ListView.Template>
+                            <ControlTemplate>
+                                <ItemsPresenter/>
+                            </ControlTemplate>
+                        </ListView.Template>
+                    </ListView>
                 </Grid>
             </GroupBox>
         </StackPanel>

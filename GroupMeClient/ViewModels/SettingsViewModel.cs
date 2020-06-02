@@ -23,6 +23,8 @@ namespace GroupMeClient.ViewModels
             this.SettingsManager = settingsManager;
 
             this.ManageReposCommand = new RelayCommand(this.ManageRepos);
+            this.ManageUpdatesCommand = new RelayCommand(this.ManageUpdates);
+
             this.DialogManager = new PopupViewModel()
             {
                 PopupDialog = null,
@@ -57,6 +59,11 @@ namespace GroupMeClient.ViewModels
         /// Gets the command used to open a popup to manage plugin repositories.
         /// </summary>
         public ICommand ManageReposCommand { get; }
+
+        /// <summary>
+        /// Gets the command used to open a popup to manage plugin updates.
+        /// </summary>
+        public ICommand ManageUpdatesCommand { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the UI Setting for only showing previews when multiple images are attached to a single message is enabled.
@@ -213,6 +220,12 @@ namespace GroupMeClient.ViewModels
         {
             var repoManager = new ManageReposViewModel();
             this.DialogManager.PopupDialog = repoManager;
+        }
+
+        private void ManageUpdates()
+        {
+            var updateManager = new UpdatePluginsViewModel();
+            this.DialogManager.PopupDialog = updateManager;
         }
 
         private void ClosePopup()
