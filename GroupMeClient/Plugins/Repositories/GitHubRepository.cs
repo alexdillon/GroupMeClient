@@ -24,23 +24,29 @@ namespace GroupMeClient.Plugins.Repositories
         /// <inheritdoc/>
         public override async Task<List<AvailablePlugin>> GetAvailablePlugins()
         {
-            var urlParts = this.Url.Split('/');
-            var gitUser = urlParts[3];
-            var gitRepoName = urlParts[4];
-
-            var httpClient = new HttpClient();
-            var header = new ProductHeaderValue("GroupMeDesktopClient", ThisAssembly.SimpleVersion);
-            var github = new GitHubClient(header);
-            var latestRelease = await github.Repository.Release.GetLatest(gitUser, gitRepoName);
-
-            var releasesFile = latestRelease.Assets.FirstOrDefault(a => a.Name == "RELEASES.txt");
-
-            if (releasesFile != null)
+            try
             {
-                var data = await httpClient.GetStringAsync(releasesFile.BrowserDownloadUrl);
-                var assetUrl = releasesFile.BrowserDownloadUrl.Replace("RELEASES.txt", string.Empty);
-                var availablePlugins = this.ParseReleases(data, assetUrl, $"{gitUser}/{gitRepoName}");
-                return availablePlugins;
+                var urlParts = this.Url.Split('/');
+                var gitUser = urlParts[3];
+                var gitRepoName = urlParts[4];
+
+                var httpClient = new HttpClient();
+                var header = new ProductHeaderValue("GroupMeDesktopClient", ThisAssembly.SimpleVersion);
+                var github = new GitHubClient(header);
+                var latestRelease = await github.Repository.Release.GetLatest(gitUser, gitRepoName);
+
+                var releasesFile = latestRelease.Assets.FirstOrDefault(a => a.Name == "RELEASES.txt");
+
+                if (releasesFile != null)
+                {
+                    var data = await httpClient.GetStringAsync(releasesFile.BrowserDownloadUrl);
+                    var assetUrl = releasesFile.BrowserDownloadUrl.Replace("RELEASES.txt", string.Empty);
+                    var availablePlugins = this.ParseReleases(data, assetUrl, $"{gitUser}/{gitRepoName}");
+                    return availablePlugins;
+                }
+            }
+            catch (Exception)
+            {
             }
 
             return new List<AvailablePlugin>();
