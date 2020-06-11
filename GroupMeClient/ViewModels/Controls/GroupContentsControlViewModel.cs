@@ -17,9 +17,11 @@ using GroupMeClient.Caching;
 using GroupMeClient.Extensions;
 using GroupMeClient.Plugins.ViewModels;
 using GroupMeClient.Utilities;
+using GroupMeClient.ViewModels.Controls.Attachments;
 using GroupMeClient.Views.Controls;
 using GroupMeClientApi.Models;
 using Microsoft.Win32;
+using NuGet;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -606,35 +608,7 @@ namespace GroupMeClient.ViewModels.Controls
             // These attachments already have previews downloaded and ready-to-render.
             messageDataContext.AttachedItems.Clear();
             var displayedMessage = this.Messages.First(m => m.Id == message.Id);
-            foreach (var attachment in (displayedMessage as MessageControlViewModel).AttachedItems)
-            {
-                // Images don't render correctly as-is due to the usage of the GIF attached property.
-                if (attachment is Attachments.GroupMeImageAttachmentControlViewModel gmImage)
-                {
-                    byte[] imageBytes = null;
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        gmImage.ImageAttachmentStream.Seek(0, SeekOrigin.Begin);
-                        gmImage.ImageAttachmentStream.CopyTo(memoryStream);
-                        imageBytes = memoryStream.ToArray();
-                    }
-
-                    messageDataContext.AttachedItems.Add(new Image()
-                    {
-                        Source = ImageUtils.BytesToImageSource(imageBytes),
-                    });
-                }
-                else if (attachment is Attachments.ImageLinkAttachmentControlViewModel linkedImage)
-                {
-                    // Linked Images aren't downloaded on the ViewModel side
-                    // Just include the URL of the image
-                    messageDataContext.AttachedItems.Add($"Image: {linkedImage.Url}");
-                }
-                else
-                {
-                    messageDataContext.AttachedItems.Add(attachment);
-                }
-            }
+            this.FixImagesInReplyBitmaps(displayedMessage as MessageControlViewModel, messageDataContext);
 
             var messageControl = new MessageControl()
             {
@@ -648,7 +622,7 @@ namespace GroupMeClient.ViewModels.Controls
             messageControl.UpdateLayout();
             var desiredSize = messageControl.DesiredSize;
             desiredSize.Width = Math.Max(300, desiredSize.Width);
-            desiredSize.Height = Math.Min(250, desiredSize.Height);
+         //   desiredSize.Height = Math.Min(250, desiredSize.Height);
             messageControl.Arrange(new Rect(new Point(0, 0), desiredSize));
 
             var bmp = new RenderTargetBitmap((int)messageControl.RenderSize.Width, (int)messageControl.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
@@ -660,6 +634,52 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 encoder.Save(quotedMessageRenderPng);
                 return quotedMessageRenderPng.ToArray();
+            }
+        }
+
+        private void FixImagesInReplyBitmaps(MessageControlViewModel displayedMessage, MessageControlViewModel renderTarget)
+        {
+            var newAttachments = new List<object>();
+
+            foreach (var attachment in displayedMessage.AttachedItems)
+            {
+                // Images don't render correctly as-is due to the usage of the GIF attached property.
+                if (attachment is Attachments.GroupMeImageAttachmentControlViewModel gmImage)
+                {
+                    byte[] imageBytes = null;
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        gmImage.ImageAttachmentStream.Seek(0, SeekOrigin.Begin);
+                        gmImage.ImageAttachmentStream.CopyTo(memoryStream);
+                        imageBytes = memoryStream.ToArray();
+                    }
+
+                    newAttachments.Add(new Image()
+                    {
+                        Source = ImageUtils.BytesToImageSource(imageBytes),
+                    });
+                }
+                else if (attachment is Attachments.ImageLinkAttachmentControlViewModel linkedImage)
+                {
+                    // Linked Images aren't downloaded on the ViewModel side
+                    // Just include the URL of the image
+                    newAttachments.Add($"Image: {linkedImage.Url}");
+                }
+                else if (attachment is RepliedMessageControlViewModel reply)
+                {
+                    this.FixImagesInReplyBitmaps(reply.Message, reply.Message);
+                    newAttachments.Add(reply.Message);
+                }
+                else
+                {
+                    newAttachments.Add(attachment);
+                }
+            }
+
+            renderTarget.AttachedItems.Clear();
+            foreach (var newAttachment in newAttachments)
+            {
+                renderTarget.AttachedItems.Add(newAttachment);
             }
         }
 
