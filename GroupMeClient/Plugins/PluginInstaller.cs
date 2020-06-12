@@ -163,7 +163,7 @@ namespace GroupMeClient.Plugins
                         }
                         else
                         {
-                            entry.ExtractToFile(Path.Combine(pluginRoot, entry.Name));
+                            entry.ExtractToFile(Path.Combine(pluginRoot, entry.Name), true);
                         }
                     }
                 }
