@@ -282,6 +282,9 @@ namespace GroupMeClient.ViewModels.Controls
         public async Task LoadNewMessages()
         {
             await this.LoadMoreAsync(null, true);
+
+            // Rebind the title incase the group metadata was updated
+            this.RaisePropertyChanged(nameof(this.Title));
         }
 
         /// <summary>
