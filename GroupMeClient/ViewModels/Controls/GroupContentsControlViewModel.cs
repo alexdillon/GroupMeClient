@@ -616,7 +616,7 @@ namespace GroupMeClient.ViewModels.Controls
             messageControl.UpdateLayout();
             var desiredSize = messageControl.DesiredSize;
             desiredSize.Width = Math.Max(300, desiredSize.Width);
-            desiredSize.Height = Math.Min(250, desiredSize.Height);
+            /*desiredSize.Height = Math.Min(250, desiredSize.Height);*/
             messageControl.Arrange(new Rect(new Point(0, 0), desiredSize));
 
             var bmp = new RenderTargetBitmap((int)messageControl.RenderSize.Width, (int)desiredSize.Height, 96, 96, PixelFormats.Pbgra32);
