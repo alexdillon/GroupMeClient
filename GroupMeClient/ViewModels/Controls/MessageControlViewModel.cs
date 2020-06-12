@@ -58,6 +58,24 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MessageControlViewModel"/> class.
+        /// </summary>
+        /// <param name="copy">An existing <see cref="MessageControlViewModel"/> to copy from.</param>
+        /// <param name="nestLevelOffset">An additive offset to apply to the nest level that is copied from the existing message.</param>
+        public MessageControlViewModel(MessageControlViewModel copy, int nestLevelOffset = 0)
+        {
+            this.Message = copy.Message;
+            this.CacheManager = copy.CacheManager;
+            this.Avatar = copy.Avatar;
+            this.Inlines = copy.Inlines;
+            this.LikeAction = copy.LikeAction;
+            this.ToggleMessageDetails = copy.ToggleMessageDetails;
+            this.ShowLikers = copy.ShowLikers;
+            this.ShowPreviewsOnlyForMultiImages = copy.ShowPreviewsOnlyForMultiImages;
+            this.NestLevel = copy.NestLevel + nestLevelOffset;
+        }
+
+        /// <summary>
         /// Gets or sets the attached items (Tweets, Web Links, Videos, etc.), if present.
         /// </summary>
         public ObservableCollection<object> AttachedItems { get; set; } = new ObservableCollection<object>();

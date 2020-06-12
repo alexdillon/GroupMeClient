@@ -610,22 +610,16 @@ namespace GroupMeClient.ViewModels.Controls
             var displayedMessage = this.Messages.First(m => m.Id == message.Id);
             this.FixImagesInReplyBitmaps(displayedMessage as MessageControlViewModel, messageDataContext);
 
-            var messageControl = new MessageControl()
-            {
-                DataContext = messageDataContext,
-                Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
-                Foreground = (Brush)Application.Current.FindResource("BlackBrush"),
-            };
-
+            var messageControl = this.DuplicateMessage(messageDataContext);
             messageControl.Measure(new Size(500, double.PositiveInfinity));
             messageControl.ApplyTemplate();
             messageControl.UpdateLayout();
             var desiredSize = messageControl.DesiredSize;
             desiredSize.Width = Math.Max(300, desiredSize.Width);
-         //   desiredSize.Height = Math.Min(250, desiredSize.Height);
+            desiredSize.Height = Math.Min(250, desiredSize.Height);
             messageControl.Arrange(new Rect(new Point(0, 0), desiredSize));
 
-            var bmp = new RenderTargetBitmap((int)messageControl.RenderSize.Width, (int)messageControl.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
+            var bmp = new RenderTargetBitmap((int)messageControl.RenderSize.Width, (int)desiredSize.Height, 96, 96, PixelFormats.Pbgra32);
             bmp.Render(messageControl);
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(bmp));
@@ -635,6 +629,16 @@ namespace GroupMeClient.ViewModels.Controls
                 encoder.Save(quotedMessageRenderPng);
                 return quotedMessageRenderPng.ToArray();
             }
+        }
+
+        private MessageControl DuplicateMessage(MessageControlViewModel viewModel)
+        {
+            return new MessageControl()
+            {
+                DataContext = viewModel,
+                Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
+                Foreground = (Brush)Application.Current.FindResource("BlackBrush"),
+            };
         }
 
         private void FixImagesInReplyBitmaps(MessageControlViewModel displayedMessage, MessageControlViewModel renderTarget)
@@ -675,6 +679,14 @@ namespace GroupMeClient.ViewModels.Controls
             foreach (var newAttachment in newAttachments)
             {
                 renderTarget.AttachedItems.Add(newAttachment);
+            }
+
+            if (displayedMessage.RepliedMessage != null)
+            {
+                var copyOfReplyMessage = new MessageControlViewModel(displayedMessage.RepliedMessage.Message);
+                var copyOfReplyAttachment = new RepliedMessageControlViewModel(copyOfReplyMessage);
+                this.FixImagesInReplyBitmaps(displayedMessage.RepliedMessage.Message, copyOfReplyMessage);
+                renderTarget.RepliedMessage = copyOfReplyAttachment;
             }
         }
 
