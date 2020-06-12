@@ -60,6 +60,13 @@ namespace GroupMeClient.ViewModels.Controls
             set
             {
                 this.Set(() => this.MessageContainer, ref this.messageContainer, value);
+
+                if (this.Avatar != null && this.MessageContainer.ImageOrAvatarUrl != this.Avatar.CurrentlyRenderedUrl)
+                {
+                    // Reload the avatar if the latest URL returned doesn't match what's currently rendered.
+                    _ = this.Avatar.LoadAvatarAsync();
+                }
+
                 this.RaisePropertyChangeForAll();
             }
         }

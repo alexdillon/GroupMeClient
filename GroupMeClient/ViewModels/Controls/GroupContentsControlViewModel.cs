@@ -285,6 +285,12 @@ namespace GroupMeClient.ViewModels.Controls
 
             // Rebind the title incase the group metadata was updated
             this.RaisePropertyChanged(nameof(this.Title));
+
+            if (this.TopBarAvatar != null && this.MessageContainer.ImageOrAvatarUrl != this.TopBarAvatar.CurrentlyRenderedUrl)
+            {
+                // Reload the avatar if the latest URL returned doesn't match what's currently rendered.
+                _ = this.TopBarAvatar.LoadAvatarAsync();
+            }
         }
 
         /// <summary>
