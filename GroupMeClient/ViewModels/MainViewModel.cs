@@ -208,6 +208,7 @@ namespace GroupMeClient.ViewModels
             this.SettingsManager = new Settings.SettingsManager(this.SettingsPath);
             this.SettingsManager.LoadSettings();
 
+            PluginInstaller.SetupPluginInstaller(this.PluginsPath);
             PluginManager.Instance.LoadPlugins(this.PluginsPath);
 
             Messenger.Default.Register<Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);

@@ -52,6 +52,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -96,6 +98,9 @@
       <DependentUpon>ToastHolder.xaml</DependentUpon>
     </Compile>
     <Compile Include="Notifications\Display\WpfToast\ToastHolderViewModel.cs" />
+    <Compile Include="Plugins\PluginInstaller.cs" />
+    <Compile Include="Plugins\Repositories\GitHubRepository.cs" />
+    <Compile Include="Plugins\Repositories\Repository.cs" />
     <Compile Include="Plugins\ViewModels\ImageDetailsControlViewModel.cs" />
     <Compile Include="Plugins\ViewModels\ImageGalleryWindowViewModel.cs" />
     <Compile Include="Plugins\Views\ImageDetailsControl.xaml.cs">
@@ -104,6 +109,7 @@
     <Compile Include="Plugins\Views\ImageGalleryWindow.xaml.cs">
       <DependentUpon>ImageGalleryWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Plugins\PluginSettings.cs" />
     <Compile Include="Settings\ThemeOptions.cs" />
     <Compile Include="Tasks\TaskManager.cs" />
     <Compile Include="Themes\ThemeManager.cs" />
@@ -153,6 +159,7 @@
     <Compile Include="ViewModels\Controls\Attachments\VideoAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\AvatarControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\InlineReadSentMarkerControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\UpdatePluginsViewModel.cs" />
     <Compile Include="ViewModels\Controls\PaginatedMessagesControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupContentsControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\GenericLinkAttachmentControlViewModel.cs" />
@@ -167,6 +174,7 @@
     <Compile Include="ViewModels\Controls\SendContentControlViewModelBase.cs" />
     <Compile Include="ViewModels\Controls\SendFileControlViewModel.cs" />
     <Compile Include="Plugins\ViewModels\GroupInfoControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\ManageReposViewModel.cs" />
     <Compile Include="ViewModels\Controls\ViewImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
@@ -190,6 +198,9 @@
     </Compile>
     <Compile Include="Views\Controls\InlineReadSentMarkerControl.xaml.cs">
       <DependentUpon>InlineReadSentMarkerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\UpdatePlugins.xaml.cs">
+      <DependentUpon>UpdatePlugins.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\PaginatedMessagesControl.xaml.cs">
       <DependentUpon>PaginatedMessagesControl.xaml</DependentUpon>
@@ -226,6 +237,9 @@
     </Compile>
     <Compile Include="Plugins\Views\GroupInfoControl.xaml.cs">
       <DependentUpon>GroupInfoControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\ManageReposControl.xaml.cs">
+      <DependentUpon>ManageReposControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\ViewImageControl.xaml.cs">
       <DependentUpon>ViewImageControl.xaml</DependentUpon>
@@ -321,6 +335,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Controls\UpdatePlugins.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Controls\PaginatedMessagesControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -366,6 +384,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Plugins\Views\GroupInfoControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\ManageReposControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -476,6 +498,9 @@
       <Version>5.5.1</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Octokit">
+      <Version>0.47.0</Version>
     </PackageReference>
     <PackageReference Include="QueryString.NET">
       <Version>1.0.0</Version>

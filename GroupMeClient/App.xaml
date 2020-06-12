@@ -117,6 +117,12 @@
             <DataTemplate DataType="{x:Type ctrlvm:LoadingControlViewModel}">
                 <ctrlviews:LoadingControl />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:ManageReposViewModel}">
+                <ctrlviews:ManageReposControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:UpdatePluginsViewModel}">
+                <ctrlviews:UpdatePluginsControl />
+            </DataTemplate>
 
             <DataTemplate DataType="{x:Type toast:ToastNotificationViewModel}">
                 <toast:ToastNotification />
