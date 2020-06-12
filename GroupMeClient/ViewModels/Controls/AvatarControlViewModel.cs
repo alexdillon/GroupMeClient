@@ -65,6 +65,11 @@ namespace GroupMeClient.ViewModels.Controls
         }
 
         /// <summary>
+        /// Gets the URL that is currently rendering in the <see cref="AvatarControlViewModel"/>.
+        /// </summary>
+        public string CurrentlyRenderedUrl { get; private set; }
+
+        /// <summary>
         /// Asychronously downloads the avatar image from GroupMe.
         /// </summary>
         /// <returns>A <see cref="Task"/> with the download status.</returns>
@@ -90,6 +95,8 @@ namespace GroupMeClient.ViewModels.Controls
             {
                 image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl, isGroup);
             }
+
+            this.CurrentlyRenderedUrl = this.AvatarSource.ImageOrAvatarUrl;
 
             var bitmapImage = Utilities.ImageUtils.BytesToImageSource(image);
 
