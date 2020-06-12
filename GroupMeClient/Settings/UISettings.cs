@@ -49,6 +49,11 @@ namespace GroupMeClient.Settings
         public bool StrictlyEnforceMultiChatLimits { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether non-native (simulated) notifications will be used on pre-Windows 10 platforms.
+        /// </summary>
+        public bool EnableNonNativeNotifications { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the user selected theme that should be applied to the entire application UI.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]

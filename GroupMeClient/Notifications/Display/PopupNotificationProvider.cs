@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using GroupMeClientApi;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 using GroupMeClientApi.Push;
@@ -28,8 +29,25 @@ namespace GroupMeClient.Notifications.Display
         /// <returns>A PopupNotificationProvider.</returns>
         public static PopupNotificationProvider CreatePlatformNotificationProvider(Settings.SettingsManager settingsManager)
         {
-            // TODO: actually test to see if platform is Windows 10
-            return new PopupNotificationProvider(new Win10.Win10ToastNotificationsProvider(settingsManager));
+            var osVersion = System.Environment.OSVersion.Version;
+
+            if (osVersion.Major == 10)
+            {
+                // UWP-type Toast Notifications are natively supported (modern Windows 10 builds)
+                return new PopupNotificationProvider(new Win10.Win10ToastNotificationsProvider(settingsManager));
+            }
+            else
+            {
+                // No system-level notification support (pre-Win 10)
+                if (settingsManager.UISettings.EnableNonNativeNotifications)
+                {
+                    return new PopupNotificationProvider(new Win7.Win7ToastNotificationsProvider(settingsManager));
+                }
+                else
+                {
+                    return new PopupNotificationProvider(new DummyVisualSink());
+                }
+            }
         }
 
         /// <summary>
@@ -161,6 +179,31 @@ namespace GroupMeClient.Notifications.Display
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// <see cref="DummyVisualSink"/> provides a placeholder notification sink that does absolutely nothing.
+        /// </summary>
+        private class DummyVisualSink : IPopupNotificationSink
+        {
+            public void RegisterClient(GroupMeClientApi.GroupMeClient client)
+            {
+            }
+
+            public Task ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl, string containerId, string messageId)
+            {
+                return Task.CompletedTask;
+            }
+
+            public Task ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar, string containerId, string messageId)
+            {
+                return Task.CompletedTask;
+            }
+
+            public Task ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar, string containerId)
+            {
+                return Task.CompletedTask;
+            }
         }
     }
 }
