@@ -17,9 +17,11 @@ using GroupMeClient.Caching;
 using GroupMeClient.Extensions;
 using GroupMeClient.Plugins.ViewModels;
 using GroupMeClient.Utilities;
+using GroupMeClient.ViewModels.Controls.Attachments;
 using GroupMeClient.Views.Controls;
 using GroupMeClientApi.Models;
 using Microsoft.Win32;
+using NuGet;
 
 namespace GroupMeClient.ViewModels.Controls
 {
@@ -606,10 +608,47 @@ namespace GroupMeClient.ViewModels.Controls
             // These attachments already have previews downloaded and ready-to-render.
             messageDataContext.AttachedItems.Clear();
             var displayedMessage = this.Messages.First(m => m.Id == message.Id);
-            foreach (var attachment in (displayedMessage as MessageControlViewModel).AttachedItems)
+            this.FixImagesInReplyBitmaps(displayedMessage as MessageControlViewModel, messageDataContext);
+
+            var messageControl = this.DuplicateMessage(messageDataContext);
+            messageControl.Measure(new Size(500, double.PositiveInfinity));
+            messageControl.ApplyTemplate();
+            messageControl.UpdateLayout();
+            var desiredSize = messageControl.DesiredSize;
+            desiredSize.Width = Math.Max(300, desiredSize.Width);
+            /*desiredSize.Height = Math.Min(250, desiredSize.Height);*/
+            messageControl.Arrange(new Rect(new Point(0, 0), desiredSize));
+
+            var bmp = new RenderTargetBitmap((int)messageControl.RenderSize.Width, (int)desiredSize.Height, 96, 96, PixelFormats.Pbgra32);
+            bmp.Render(messageControl);
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmp));
+
+            using (var quotedMessageRenderPng = new MemoryStream())
+            {
+                encoder.Save(quotedMessageRenderPng);
+                return quotedMessageRenderPng.ToArray();
+            }
+        }
+
+        private MessageControl DuplicateMessage(MessageControlViewModel viewModel)
+        {
+            return new MessageControl()
+            {
+                DataContext = viewModel,
+                Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
+                Foreground = (Brush)Application.Current.FindResource("BlackBrush"),
+            };
+        }
+
+        private void FixImagesInReplyBitmaps(MessageControlViewModel displayedMessage, MessageControlViewModel renderTarget)
+        {
+            var newAttachments = new List<object>();
+
+            foreach (var attachment in displayedMessage.AttachedItems)
             {
                 // Images don't render correctly as-is due to the usage of the GIF attached property.
-                if (attachment is Attachments.GroupMeImageAttachmentControlViewModel gmImage)
+                if (attachment is GroupMeImageAttachmentControlViewModel gmImage)
                 {
                     byte[] imageBytes = null;
                     using (var memoryStream = new MemoryStream())
@@ -619,47 +658,35 @@ namespace GroupMeClient.ViewModels.Controls
                         imageBytes = memoryStream.ToArray();
                     }
 
-                    messageDataContext.AttachedItems.Add(new Image()
+                    newAttachments.Add(new Image()
                     {
                         Source = ImageUtils.BytesToImageSource(imageBytes),
                     });
                 }
-                else if (attachment is Attachments.ImageLinkAttachmentControlViewModel linkedImage)
+                else if (attachment is ImageLinkAttachmentControlViewModel linkedImage)
                 {
                     // Linked Images aren't downloaded on the ViewModel side
                     // Just include the URL of the image
-                    messageDataContext.AttachedItems.Add($"Image: {linkedImage.Url}");
+                    newAttachments.Add($"Image: {linkedImage.Url}");
                 }
                 else
                 {
-                    messageDataContext.AttachedItems.Add(attachment);
+                    newAttachments.Add(attachment);
                 }
             }
 
-            var messageControl = new MessageControl()
+            renderTarget.AttachedItems.Clear();
+            foreach (var newAttachment in newAttachments)
             {
-                DataContext = messageDataContext,
-                Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
-                Foreground = (Brush)Application.Current.FindResource("BlackBrush"),
-            };
+                renderTarget.AttachedItems.Add(newAttachment);
+            }
 
-            messageControl.Measure(new Size(500, double.PositiveInfinity));
-            messageControl.ApplyTemplate();
-            messageControl.UpdateLayout();
-            var desiredSize = messageControl.DesiredSize;
-            desiredSize.Width = Math.Max(300, desiredSize.Width);
-            desiredSize.Height = Math.Min(250, desiredSize.Height);
-            messageControl.Arrange(new Rect(new Point(0, 0), desiredSize));
-
-            var bmp = new RenderTargetBitmap((int)messageControl.RenderSize.Width, (int)messageControl.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
-            bmp.Render(messageControl);
-            var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(bmp));
-
-            using (var quotedMessageRenderPng = new MemoryStream())
+            if (displayedMessage.RepliedMessage != null)
             {
-                encoder.Save(quotedMessageRenderPng);
-                return quotedMessageRenderPng.ToArray();
+                var copyOfReplyMessage = new MessageControlViewModel(displayedMessage.RepliedMessage.Message);
+                var copyOfReplyAttachment = new RepliedMessageControlViewModel(copyOfReplyMessage);
+                this.FixImagesInReplyBitmaps(displayedMessage.RepliedMessage.Message, copyOfReplyMessage);
+                renderTarget.RepliedMessage = copyOfReplyAttachment;
             }
         }
 

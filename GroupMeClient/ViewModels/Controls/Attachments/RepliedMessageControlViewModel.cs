@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GroupMeClient.Caching;
+using GroupMeClient.Views.Controls;
 using GroupMeClientApi.Models;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
@@ -7,8 +8,10 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
     /// <summary>
     /// <see cref="RepliedMessageControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.RepliedMessageControl"/> control.
     /// </summary>
-    public class RepliedMessageControlViewModel : AttachmentViewModelBase
+    public class RepliedMessageControlViewModel : ViewModelBase
     {
+        private MessageControlViewModel message;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RepliedMessageControlViewModel"/> class.
         /// </summary>
@@ -41,12 +44,22 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             }
         }
 
-        /// <inheritdoc/>
-        public override bool Shrinkable => false;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RepliedMessageControlViewModel"/> class.
+        /// </summary>
+        /// <param name="nestedMessage">An pre-configured viewmodel that can be used to initialize the <see cref="Message"/> property.</param>
+        public RepliedMessageControlViewModel(MessageControlViewModel nestedMessage)
+        {
+            this.Message = nestedMessage;
+        }
 
         /// <summary>
-        /// Gets the original <see cref="MessageControlViewModel"/> containing the <see cref="Message"/> that is being replied to.
+        /// Gets or sets the original <see cref="MessageControlViewModel"/> containing the <see cref="Message"/> that is being replied to.
         /// </summary>
-        public MessageControlViewModel Message { get; }
+        public MessageControlViewModel Message
+        {
+            get => this.message;
+            set => this.Set(() => this.Message, ref this.message, value);
+        }
     }
 }

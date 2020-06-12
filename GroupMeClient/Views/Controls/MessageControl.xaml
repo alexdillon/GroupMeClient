@@ -15,6 +15,7 @@
     <UserControl.Resources>
         <converters:IsZeroConverter x:Key="isZeroConverter"/>
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
+        <converters:NullToVisibilityConverter x:Key="nullToVisabilityConverter" />
 
         <converters:ValueConverterGroup x:Key="isDeeplyNestedConverter">
             <converters:IsGreaterThanConverter />
@@ -71,39 +72,17 @@
                 <StackPanel Grid.Column="1" Grid.Row="1">
                     <Label Content="{Binding Sender}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" Padding="0" />
 
+                    <ContentControl Content="{Binding RepliedMessage}" 
+                                    HorizontalAlignment="Left"
+                                    Margin="0,0,10,10" 
+                                    Visibility="{Binding RepliedMessage, Converter={StaticResource nullToVisabilityConverter}, ConverterParameter={StaticResource True}}" />
+                    
                     <ItemsControl ItemsSource="{Binding AttachedItems}">
                        <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <UserControl HorizontalAlignment="Left"
-                                             Content="{Binding .}" >
-
-                                    <UserControl.Resources>
-                                        <DataTemplate x:Key="NonShrinkable">
-                                            <StackPanel Orientation="Horizontal">
-                                                <ContentPresenter Content="{Binding}"
-                                                              Margin="0,0,0,10"/>
-                                                <TextBlock Text="" Width="10000" />
-                                            </StackPanel>
-                                        </DataTemplate>
-                                        
-                                        <DataTemplate x:Key="Shrinkable">
-                                            <ContentPresenter Content="{Binding}"
-                                                              MaxWidth="700"/>
-                                        </DataTemplate>
-                                    </UserControl.Resources>
-
-                                    <UserControl.Style>
-                                        <Style TargetType="{x:Type UserControl}">
-                                            <Setter Property="ContentTemplate" Value="{StaticResource Shrinkable}" />
-
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Shrinkable}"  Value="False">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource NonShrinkable}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </UserControl.Style>
-                                </UserControl>
+                                             Content="{Binding .}"
+                                             MaxWidth="700" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
 

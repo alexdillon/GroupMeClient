@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using GalaSoft.MvvmLight;
 using GroupMeClientApi;
 using Newtonsoft.Json;
 
@@ -11,7 +12,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
     /// <see cref="LinkAttachmentBaseViewModel"/> provides a base for controls that display Web Content.
     /// Access to GroupMe's Inline Downloader Service is provided.
     /// </summary>
-    public abstract class LinkAttachmentBaseViewModel : AttachmentViewModelBase, IDisposable
+    public abstract class LinkAttachmentBaseViewModel : ViewModelBase, IDisposable
     {
         private string url;
         private ImageSource renderedImage;
