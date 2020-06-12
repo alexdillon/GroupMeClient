@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GroupMeClient.Caching;
+using GroupMeClient.Views.Controls;
 using GroupMeClientApi.Models;
 
 namespace GroupMeClient.ViewModels.Controls.Attachments
@@ -7,7 +8,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
     /// <summary>
     /// <see cref="RepliedMessageControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.RepliedMessageControl"/> control.
     /// </summary>
-    public class RepliedMessageControlViewModel : AttachmentViewModelBase
+    public class RepliedMessageControlViewModel : ViewModelBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RepliedMessageControlViewModel"/> class.
@@ -41,8 +42,6 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
             }
         }
 
-        /// <inheritdoc/>
-        public override bool Shrinkable => false;
 
         /// <summary>
         /// Gets the original <see cref="MessageControlViewModel"/> containing the <see cref="Message"/> that is being replied to.

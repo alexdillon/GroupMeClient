@@ -26,6 +26,7 @@ namespace GroupMeClient.ViewModels.Controls
 
         private Message message;
         private AvatarControlViewModel avatar;
+        private RepliedMessageControlViewModel repliedMessage;
 
         private bool showDetails;
 
@@ -50,6 +51,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.ShowLikers = showLikers;
             this.ShowPreviewsOnlyForMultiImages = showPreviewsOnlyForMultiImages;
             this.NestLevel = nestLevel;
+            this.RepliedMessage = null;
 
             this.LoadAttachments();
             this.LoadInlinesForMessageBody();
@@ -133,15 +135,18 @@ namespace GroupMeClient.ViewModels.Controls
         /// </summary>
         public bool ShowDetails
         {
-            get
-            {
-                return this.showDetails;
-            }
+            get => this.showDetails;
+            set => this.Set(() => this.ShowDetails, ref this.showDetails, value);
+        }
 
-            set
-            {
-                this.Set(() => this.ShowDetails, ref this.showDetails, value);
-            }
+        /// <summary>
+        /// Gets or sets a value containing a quoted message that is being replied to.
+        /// If this <see cref="Message"/> is not a reply, this value is null.
+        /// </summary>
+        public RepliedMessageControlViewModel RepliedMessage
+        {
+            get => this.repliedMessage;
+            set => this.Set(() => this.RepliedMessage, ref this.repliedMessage, value);
         }
 
         /// <summary>
@@ -496,7 +501,7 @@ namespace GroupMeClient.ViewModels.Controls
                     }
                 }
 
-                this.AttachedItems.Insert(0, repliedMessageAttachment);
+                this.RepliedMessage = repliedMessageAttachment;
             }
 
             if (doneWithAttachments)

@@ -9,8 +9,8 @@
     
     <Border BorderBrush="LightGray" BorderThickness="1,1,1,1" CornerRadius="3">
         <UserControl Content="{Binding Message}" 
-                        HorizontalAlignment="Left"
-                        MinWidth="300"
-                        Background="{DynamicResource TweetBackgroundBrush}"/>
+                     HorizontalAlignment="Left"
+                     MinWidth="300"
+                     Background="{DynamicResource TweetBackgroundBrush}"/>
     </Border>
 </UserControl>

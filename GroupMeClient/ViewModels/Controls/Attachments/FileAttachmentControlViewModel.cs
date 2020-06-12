@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
@@ -14,7 +15,7 @@ namespace GroupMeClient.ViewModels.Controls.Attachments
     /// <summary>
     /// <see cref="FileAttachmentControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.FileAttachmentControl"/> control.
     /// </summary>
-    public class FileAttachmentControlViewModel : AttachmentViewModelBase
+    public class FileAttachmentControlViewModel : ViewModelBase
     {
         private bool isLoading;
 

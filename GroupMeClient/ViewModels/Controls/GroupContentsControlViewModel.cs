@@ -644,7 +644,7 @@ namespace GroupMeClient.ViewModels.Controls
             foreach (var attachment in displayedMessage.AttachedItems)
             {
                 // Images don't render correctly as-is due to the usage of the GIF attached property.
-                if (attachment is Attachments.GroupMeImageAttachmentControlViewModel gmImage)
+                if (attachment is GroupMeImageAttachmentControlViewModel gmImage)
                 {
                     byte[] imageBytes = null;
                     using (var memoryStream = new MemoryStream())
@@ -659,16 +659,11 @@ namespace GroupMeClient.ViewModels.Controls
                         Source = ImageUtils.BytesToImageSource(imageBytes),
                     });
                 }
-                else if (attachment is Attachments.ImageLinkAttachmentControlViewModel linkedImage)
+                else if (attachment is ImageLinkAttachmentControlViewModel linkedImage)
                 {
                     // Linked Images aren't downloaded on the ViewModel side
                     // Just include the URL of the image
                     newAttachments.Add($"Image: {linkedImage.Url}");
-                }
-                else if (attachment is RepliedMessageControlViewModel reply)
-                {
-                    this.FixImagesInReplyBitmaps(reply.Message, reply.Message);
-                    newAttachments.Add(reply.Message);
                 }
                 else
                 {

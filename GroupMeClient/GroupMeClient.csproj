@@ -139,7 +139,6 @@
     <Compile Include="Utilities\ReliabilityStateMachine.cs" />
     <Compile Include="Utilities\TempFileUtils.cs" />
     <Compile Include="ViewModels\ChatsViewModel.cs" />
-    <Compile Include="ViewModels\Controls\Attachments\AttachmentViewModelBase.cs" />
     <Compile Include="ViewModels\Controls\Attachments\GroupMeImageAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\ImageLinkAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\Attachments\FileAttachmentControlViewModel.cs" />
