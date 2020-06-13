@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
+using GroupMeClient.Native;
 using GroupMeClient.Notifications.Display;
 using GroupMeClient.Notifications.Display.WpfToast;
 using GroupMeClient.Plugins;
@@ -30,6 +32,7 @@ namespace GroupMeClient.ViewModels
         private int unreadCount;
         private bool isReconnecting;
         private bool isRefreshing;
+        private ObservableCollection<string> rebootReasons = new ObservableCollection<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainViewModel"/> class.
@@ -110,6 +113,15 @@ namespace GroupMeClient.ViewModels
         }
 
         /// <summary>
+        /// Gets or sets a collection of reasons the application needs rebooted.
+        /// </summary>
+        public ObservableCollection<string> RebootReasons
+        {
+            get => this.rebootReasons;
+            set => this.Set(() => this.RebootReasons, ref this.rebootReasons, value);
+        }
+
+        /// <summary>
         /// Gets or sets the manager for the dialog that should be displayed as a large popup.
         /// </summary>
         public PopupViewModel DialogManager { get; set; }
@@ -118,6 +130,11 @@ namespace GroupMeClient.ViewModels
         /// Gets or sets the command to be performed to refresh all displayed messages and groups.
         /// </summary>
         public ICommand RefreshEverythingCommand { get; set; }
+
+        /// <summary>
+        /// Gets or sets the command to be performed to soft reboot the application.
+        /// </summary>
+        public ICommand RebootApplication { get; set; }
 
         /// <summary>
         /// Gets the Toast Holder Manager for this application.
@@ -215,6 +232,9 @@ namespace GroupMeClient.ViewModels
             Messenger.Default.Register<Messaging.DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
             Messenger.Default.Register<Messaging.RunPluginRequestMessage>(this, this.IndexAndRunCommand);
             Messenger.Default.Register<Messaging.SwitchToPageRequestMessage>(this, this.SwitchToPageCommand);
+            Messenger.Default.Register<Messaging.RebootRequestMessage>(this, (r) => this.RebootReasons.Add(r.Reason), true);
+
+            this.RebootApplication = new RelayCommand(this.RestartCommand);
 
             if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
             {
@@ -450,6 +470,12 @@ namespace GroupMeClient.ViewModels
             this.IsRefreshing = true;
             await this.ChatsViewModel.RefreshEverything();
             this.IsRefreshing = false;
+        }
+
+        private void RestartCommand()
+        {
+            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location, RecoveryManager.RestartCommandLine);
+            Application.Current.Shutdown();
         }
     }
 }

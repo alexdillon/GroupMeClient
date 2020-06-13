@@ -30,7 +30,8 @@
                    Content="Updating" />
 
         <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Label Content="Updates are being installed. GroupMe Desktop Client will shutdown when fully updated." />
+            <Label Content="Updates are being installed. GroupMe Desktop Client will shutdown when fully updated."
+                   Foreground="Black"/>
         </StackPanel>
     </Grid>
 

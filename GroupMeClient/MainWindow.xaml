@@ -10,7 +10,8 @@
                  xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
                  xmlns:converters="clr-namespace:GroupMeClient.Converters"
                  xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-                 xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls" 
+                 xmlns:sys="clr-namespace:System;assembly=mscorlib"
                  Title="GroupMe Desktop Client"
                  TitleCaps="False"
                  Width="1024"
@@ -45,8 +46,30 @@
             </Grid>
         </DataTemplate>
 
-       
+        <converters:ValueConverterGroup x:Key="isGreaterThanZeroToVisibleConverter">
+            <converters:IsGreaterThanConverter />
+            <BooleanToVisibilityConverter />
+        </converters:ValueConverterGroup>
+
+        <sys:Int32 x:Key="zeroStatic">0</sys:Int32>
+
     </Window.Resources>
+
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands ShowLastSeparator="False">
+
+            <ToggleButton HorizontalAlignment="Center"
+                          VerticalAlignment="Top"
+                          Background="#FFAB00"
+                          Margin="0,0,10,0"
+                          Width="35" Height="30"
+                          BorderThickness="0"
+                          Visibility="{Binding RebootReasons.Count, Converter={StaticResource isGreaterThanZeroToVisibleConverter}, ConverterParameter={StaticResource zeroStatic}}"
+                          x:Name="rebootOptionsToggle">
+                <iconPacks:PackIconModern Width="15" Height="15" Foreground="White" Kind="Flag"/>
+            </ToggleButton>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
 
     <Grid>
         <Grid.Resources>
@@ -154,6 +177,7 @@
                                    Foreground="White" />
         </ToggleButton>
 
+        <!--Running Tasks List-->
         <ListBox Visibility="{Binding IsMouseOver, ElementName=loadingSpinnerButton, Converter={StaticResource booleanToVisibilityConverter}}"
                  ItemsSource="{Binding TaskManager.RunningTasks}"
                  Width="230"
@@ -279,6 +303,62 @@
                         Width="250"
                         Margin="0,60,5,0"
                         Content="{Binding ToastHolderManager}" />
+        
+        <!--Reboot Options Area-->
+        <StackPanel Orientation="Vertical"
+                    Visibility="{Binding IsChecked, ElementName=rebootOptionsToggle, Converter={StaticResource booleanToVisibilityConverter}}"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Width="275"
+                    Margin="0,0,25,0"
+                    Background="{DynamicResource LikerAreaBackgroundBrush}">
+            <ListBox ItemsSource="{Binding RebootReasons}"
+                     Background="{DynamicResource LikerAreaBackgroundBrush}">
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Height="50">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="175" />
+                            </Grid.ColumnDefinitions>
+
+                            <iconPacks:PackIconMaterial Kind="Update"
+                                                    Grid.Column="0"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Margin="10,0,10,0"
+                                                    Width="16" Height="16" />
+
+                            <TextBlock Grid.Column="1"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="Wrap"
+                                    Text="{Binding}"
+                                    FontSize="14"
+                                    VerticalAlignment="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+
+            <Button Width="150"
+                    Height="30"
+                    Content="Reboot Now"
+                    Command="{Binding RebootApplication}"
+                    Margin="0,0,0,10"/>
+        </StackPanel>
     </Grid>
 
     <Window.TaskbarItemInfo>

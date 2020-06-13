@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using GalaSoft.MvvmLight.Messaging;
 using Newtonsoft.Json;
 
 namespace GroupMeClient.Plugins
@@ -100,6 +101,7 @@ namespace GroupMeClient.Plugins
 
             this.PluginSettings.InstalledPlugins.Add(installedPlugin);
             this.SavePluginSettings();
+            Messenger.Default.Send(new Messaging.RebootRequestMessage($"Reboot to Finish Installing {plugin.Name} Plugin"));
         }
 
         /// <summary>
@@ -117,6 +119,7 @@ namespace GroupMeClient.Plugins
             await this.UnpackAndCopyPackage(installedPlugin.InstallationGuid, StagingSuffix, plugin.BinaryUrl);
 
             this.SavePluginSettings();
+            Messenger.Default.Send(new Messaging.RebootRequestMessage($"Reboot to Finish Updating {plugin.Name} Plugin"));
         }
 
         /// <summary>
@@ -130,6 +133,7 @@ namespace GroupMeClient.Plugins
 
             this.PluginSettings.InstalledPlugins.Remove(plugin);
             this.SavePluginSettings();
+            Messenger.Default.Send(new Messaging.RebootRequestMessage($"Reboot to Finish Uninstalling {plugin.PluginName} Plugin"));
         }
 
         private async Task UnpackAndCopyPackage(string guid, string suffix, string binaryUrl)

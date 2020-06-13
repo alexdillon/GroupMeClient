@@ -82,6 +82,7 @@
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
     <Compile Include="Extensions\ZoomBorder.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />
+    <Compile Include="Messaging\RebootRequestMessage.cs" />
     <Compile Include="Messaging\ShowChatRequestMessage.cs" />
     <Compile Include="Messaging\SwitchToPageRequestMessage.cs" />
     <Compile Include="Messaging\RunPluginRequestMessage.cs" />
