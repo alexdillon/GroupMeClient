@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GroupMeClient.Plugins;
 
 namespace GroupMeClient.Plugins
@@ -33,6 +34,11 @@ namespace GroupMeClient.Plugins
             /// Gets or sets the name of this Plugin that is used to identify it in it's home <see cref="Repository"/>.
             /// </summary>
             public string PluginName { get; set; }
+
+            /// <summary>
+            /// Gets or sets the version of the plugin that is installed.
+            /// </summary>
+            public Version Version { get; set; }
 
             /// <summary>
             /// Gets or sets the URL of this <see cref="InstalledPlugin"/>'s home <see cref="Repository"/>.
