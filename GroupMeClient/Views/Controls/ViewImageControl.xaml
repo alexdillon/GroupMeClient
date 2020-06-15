@@ -21,20 +21,25 @@
                 <BooleanToVisibilityConverter />
             </converters:ValueConverterGroup>
         </Grid.Resources>
+        
         <Controls:ProgressRing IsActive="True"
                                Visibility="{Binding Path=IsLoading, Converter={StaticResource VisibleIfTrueConverter}}"
                                Width="60" Height="60"
                                HorizontalAlignment="Center"
                                Background="Transparent"/>
 
-        <extensions:ZoomBorder x:Name="border" ClipToBounds="False" IsManipulationEnabled="true">
+        <extensions:ZoomBorder x:Name="border" ClipToBounds="False" IsManipulationEnabled="true" RenderTransformOrigin="0.5, 0.5">
             <Image
-               MaxWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}"
-               MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualHeight}"
-               Stretch="Uniform"
-               HorizontalAlignment="Center"
-               gif:AnimationBehavior.SourceStream="{Binding ImageStream}">
+                MaxWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}"
+                MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualHeight}"
+                Stretch="Uniform"
+                HorizontalAlignment="Center"
+                gif:AnimationBehavior.SourceStream="{Binding ImageStream}">
             </Image>
+
+            <extensions:ZoomBorder.RenderTransform>
+                <RotateTransform Angle="{Binding RotateAngle}" CenterX="0" CenterY="0" />
+            </extensions:ZoomBorder.RenderTransform>
         </extensions:ZoomBorder>
         
         <Button Width="30"
@@ -71,6 +76,25 @@
                     <iconPacks:PackIconFontAwesome Width="15"
                                                    Height="15"
                                                    Kind="CopySolid" />
+                </DataTemplate>
+            </Button.ContentTemplate>
+        </Button>
+
+        <Button Width="30"
+                Height="30"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="60,-30,0,0"
+                Foreground="White"
+                BorderThickness="0"
+                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                Command="{Binding Path=RotateImage}"
+                Visibility="{Binding Path=IsLoading, Converter={StaticResource VisibleIfFalseConverter}}">
+            <Button.ContentTemplate>
+                <DataTemplate>
+                    <iconPacks:PackIconMaterial Width="15"
+                                                Height="15"
+                                                Kind="RotateRight" />
                 </DataTemplate>
             </Button.ContentTemplate>
         </Button>
