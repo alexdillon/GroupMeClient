@@ -153,6 +153,8 @@ namespace GroupMeClient.ViewModels
 
         private SearchViewModel SearchViewModel { get; set; }
 
+        private StarsViewModel StarsViewModel { get; set; }
+
         private SettingsViewModel SettingsViewModel { get; set; }
 
         private LoginViewModel LoginViewModel { get; set; }
@@ -235,6 +237,7 @@ namespace GroupMeClient.ViewModels
 
                 this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient, this.SettingsManager, this.CacheManager);
                 this.SearchViewModel = new SearchViewModel(this.GroupMeClient, this.CacheManager);
+                this.StarsViewModel = new StarsViewModel(this.GroupMeClient, this.CacheManager, this.SettingsManager);
                 this.SettingsViewModel = new SettingsViewModel(this.SettingsManager);
 
                 this.RegisterNotifications();
@@ -278,12 +281,20 @@ namespace GroupMeClient.ViewModels
                 Tag = this.ChatsViewModel,
             };
 
-            var secondTab = new HamburgerMenuIconItem()
+            var searchTab = new HamburgerMenuIconItem()
             {
                 Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.EmailSearch },
                 Label = "Search",
                 ToolTip = "Search all Groups and Chats.",
                 Tag = this.SearchViewModel,
+            };
+
+            var starsTab = new HamburgerMenuIconItem()
+            {
+                Icon = new PackIconMaterial() { Kind = PackIconMaterialKind.Star },
+                Label = "Starred Messages",
+                ToolTip = "View Stars in Groups and Chats.",
+                Tag = this.StarsViewModel,
             };
 
             // Options (Bottom Menu Items)
@@ -297,7 +308,8 @@ namespace GroupMeClient.ViewModels
 
             // Add Tabs
             this.MenuItems.Add(chatsTab);
-            this.MenuItems.Add(secondTab);
+            this.MenuItems.Add(searchTab);
+            this.MenuItems.Add(starsTab);
 
             // Add Options
             this.MenuOptionItems.Add(settingsTab);

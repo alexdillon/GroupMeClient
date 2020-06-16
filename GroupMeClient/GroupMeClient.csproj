@@ -165,6 +165,7 @@
     <Compile Include="ViewModels\Controls\SendImageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\MessageControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupControlViewModel.cs" />
+    <Compile Include="ViewModels\StarsViewModel.cs" />
     <Compile Include="ViewModels\UpdatingViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="Views\Controls\Attachments\GroupMeImageAttachmentControl.xaml.cs">
@@ -241,6 +242,9 @@
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StarsView.xaml.cs">
+      <DependentUpon>StarsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UpdatingView.xaml.cs">
       <DependentUpon>UpdatingView.xaml</DependentUpon>
@@ -380,6 +384,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LoginView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\StarsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

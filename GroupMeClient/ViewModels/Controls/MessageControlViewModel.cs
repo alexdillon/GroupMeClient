@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Caching;
 using GroupMeClient.ViewModels.Controls.Attachments;
@@ -45,6 +44,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.Inlines = new ObservableCollection<Inline>();
             this.LikeAction = new RelayCommand(async () => { await this.LikeMessageAsync(); }, () => { return true; }, true);
+            this.StarAction = new RelayCommand(this.StarMessage);
             this.ToggleMessageDetails = new RelayCommand(() => this.ShowDetails = !this.ShowDetails);
 
             this.ShowLikers = showLikers;
@@ -64,6 +64,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets the command to be performed when this <see cref="Message"/> is 'Liked'.
         /// </summary>
         public ICommand LikeAction { get; }
+
+        /// <summary>
+        /// Gets the command to be performed when this <see cref="Message"/> is 'Starred'.
+        /// </summary>
+        public ICommand StarAction { get; }
 
         /// <summary>
         /// Gets the command to be performed to toggle whether details are shwon for this <see cref="Message"/>.
@@ -306,9 +311,22 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
-        private CacheManager CacheManager { get; }
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="Message"/> has been starred.
+        /// </summary>
+        public bool IsMessageStarred
+        {
+            get
+            {
+                using (var cache = this.CacheManager.OpenNewContext())
+                {
+                    var result = cache.StarredMessages.Find(this.Message.Id);
+                    return result != null;
+                }
+            }
+        }
 
-        private bool ShowLikers { get; }
+        private CacheManager CacheManager { get; }
 
         private string HiddenText { get; set; } = string.Empty;
 
@@ -700,6 +718,24 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             return result;
+        }
+
+        private void StarMessage()
+        {
+            using (var context = this.CacheManager.OpenNewContext())
+            {
+                if (this.IsMessageStarred)
+                {
+                    context.DeStarMessage(this.Message);
+                }
+                else
+                {
+                    context.StarMessage(this.Message);
+                }
+
+                context.SaveChanges();
+                this.RaisePropertyChanged(nameof(this.IsMessageStarred));
+            }
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using static GroupMeClient.Caching.CacheManager.CacheContext;
 
 namespace GroupMeClient.Caching
 {
@@ -66,6 +67,38 @@ namespace GroupMeClient.Caching
         }
 
         /// <summary>
+        /// Returns a <see cref="Queryable"/> collection of all the starred messages in a given <see cref="IMessageContainer"/>
+        /// that are cached in the database.
+        /// </summary>
+        /// <param name="group">The <see cref="IMessageContainer"/> which to return starred messages for.</param>
+        /// <param name="cacheContext">The cache instance messages should be retreived from.</param>
+        /// <returns>Returns a <see cref="Queryable"/> collection of all the messages in a given <see cref="IMessageContainer"/>.</returns>
+        public static IQueryable<StarredMessage> GetStarredMessagesForGroup(IMessageContainer group, CacheContext cacheContext)
+        {
+            if (group is Group g)
+            {
+                return cacheContext.StarredMessages
+                    .AsNoTracking()
+                    .Where(m => m.ConversationId == g.Id);
+            }
+            else if (group is Chat c)
+            {
+                // Chat.Id returns the Id of the other user
+                // However, GroupMe messages are natively returned with a Conversation Id instead
+                // Conversation IDs are user1+user2.
+                var conversationId = c.LatestMessage.ConversationId;
+
+                return cacheContext.StarredMessages
+                    .AsNoTracking()
+                    .Where(m => m.ConversationId == conversationId);
+            }
+            else
+            {
+                return Enumerable.Empty<StarredMessage>().AsQueryable();
+            }
+        }
+
+        /// <summary>
         /// Creates a new instance of the message cache context.
         /// </summary>
         /// <returns>A new <see cref="CacheContext"/>.</returns>
@@ -96,6 +129,11 @@ namespace GroupMeClient.Caching
             public DbSet<Message> Messages { get; set; }
 
             /// <summary>
+            /// Gets or sets the <see cref="Message"/>s stored in the database that have been starred.
+            /// </summary>
+            public DbSet<StarredMessage> StarredMessages { get; set; }
+
+            /// <summary>
             /// Gets or sets index status for each <see cref="Group"/> or <see cref="Chat"/> stored in this cache.
             /// </summary>
             public DbSet<GroupIndexStatus> IndexStatus { get; set; }
@@ -115,6 +153,34 @@ namespace GroupMeClient.Caching
                     {
                         this.Messages.Add(msg);
                     }
+                }
+            }
+
+            /// <summary>
+            /// Adds a <see cref="Message"/>s to the star list.
+            /// </summary>
+            /// <param name="message">The message to star.</param>
+            public void StarMessage(Message message)
+            {
+                var starMessage = new StarredMessage()
+                {
+                    ConversationId = string.IsNullOrEmpty(message.GroupId) ? message.ConversationId : message.GroupId,
+                    MessageId = message.Id,
+                };
+
+                this.StarredMessages.Add(starMessage);
+            }
+
+            /// <summary>
+            /// Removes a <see cref="Message"/>s from the star list.
+            /// </summary>
+            /// <param name="message">The message to star.</param>
+            public void DeStarMessage(Message message)
+            {
+                var star = this.StarredMessages.FirstOrDefault(m => m.MessageId == message.Id);
+                if (star != null)
+                {
+                    this.StarredMessages.Remove(star);
                 }
             }
 
@@ -155,19 +221,27 @@ namespace GroupMeClient.Caching
                 modelBuilder.Entity<Message>()
                     .HasIndex(p => p.ConversationId);
 
+                // Index on ConversationId to improve lookup speed
+                modelBuilder.Entity<StarredMessage>()
+                    .HasIndex(p => p.ConversationId);
+
+                // Set message primary key for starred messages (Id)
+                modelBuilder.Entity<StarredMessage>()
+                    .HasKey(x => x.MessageId);
+
                 // Provide mapping for the Message.ICollection<FavoritedBy>
                 modelBuilder.Entity<Message>()
-                .Property(x => x.FavoritedBy)
-                .HasConversion(
-                    v => string.Join(",", v),
-                    v => new List<string>(v.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)));
+                    .Property(x => x.FavoritedBy)
+                    .HasConversion(
+                        v => string.Join(",", v),
+                        v => new List<string>(v.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)));
 
                 // Provide JSON serialization for Attachment list
                 modelBuilder.Entity<Message>()
-                .Property(x => x.Attachments)
-                .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<Attachment>>(v));
+                    .Property(x => x.Attachments)
+                    .HasConversion(
+                        v => JsonConvert.SerializeObject(v),
+                        v => JsonConvert.DeserializeObject<List<Attachment>>(v));
             }
 
             /// <summary>
@@ -186,6 +260,22 @@ namespace GroupMeClient.Caching
                 /// All messages prior to this ID are guaranteed to be stored in the cache database.
                 /// </summary>
                 public string LastIndexedId { get; set; }
+            }
+
+            /// <summary>
+            /// Represents a messages that has been starred by the user.
+            /// </summary>
+            public class StarredMessage
+            {
+                /// <summary>
+                /// Gets or sets the ID of the Message that has been starred.
+                /// </summary>
+                public string MessageId { get; set; }
+
+                /// <summary>
+                /// Gets or sets the Id of the conversation this starred message belongs to.
+                /// </summary>
+                public string ConversationId { get; set; }
             }
         }
     }
