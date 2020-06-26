@@ -36,7 +36,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <param name="showLikers">Indicates whether the like status for a message should be displayed.</param>
         /// <param name="showPreviewsOnlyForMultiImages">Indicates whether only previews, or full images, should be shown for multi-images.</param>
         /// <param name="nestLevel">The number of <see cref="MessageControlViewModel"/>s deeply nested this is. Top level messages are 0.</param>
-        public MessageControlViewModel(Message message, CacheManager cacheManager, bool showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0)
+        public MessageControlViewModel(Message message, CacheManager cacheManager, bool? showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0)
         {
             this.Message = message;
             this.CacheManager = cacheManager;
@@ -80,6 +80,14 @@ namespace GroupMeClient.ViewModels.Controls
         /// are not included as attachments have a <see cref="NestLevel"/> of 0.
         /// </summary>
         public int NestLevel { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the  people who have liked this message will be displayed.
+        /// A value of True indicates that likers will be shown. A value of False will hide likers, but
+        /// will not alter the spacing of any other elements. For a value of null, likers will not be shown,
+        /// and the space reserved for likers will be collapsed.
+        /// </summary>
+        public bool? ShowLikers { get; }
 
         /// <summary>
         /// Gets the unique identifier for this <see cref="Message"/>.
@@ -233,7 +241,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get
             {
-                if (!this.ShowLikers)
+                if (this.ShowLikers != true)
                 {
                     return MahApps.Metro.IconPacks.PackIconFontAwesomeKind.None;
                 }
@@ -275,7 +283,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get
             {
-                if (this.message.FavoritedBy.Count == 0 || !this.ShowLikers)
+                if (this.message.FavoritedBy.Count == 0 || this.ShowLikers != true)
                 {
                     return string.Empty;
                 }

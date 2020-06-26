@@ -165,7 +165,7 @@ namespace GroupMeClient.ViewModels
                 this.MessagesList = new PaginatedMessagesControlViewModel(cacheManager)
                 {
                     AssociateWith = messageContainer,
-                    ShowLikers = false,
+                    ShowLikers = null,
                     SyncAndUpdate = false,
                     ShowTitle = true,
                 };

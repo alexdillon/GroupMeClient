@@ -27,6 +27,7 @@
         </converters:ValueConverterGroup>
 
         <converters:IsGreaterThanConverter x:Key="isGreaterThanConverter" />
+        <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter" />
 
         <sys:Int32 x:Key="collapseNestLevel">1</sys:Int32>
         <sys:Boolean x:Key="True">True</sys:Boolean>
@@ -164,6 +165,7 @@
                       MaxHeight="60"
                       VerticalAlignment="Top"
                       Background="Transparent"
+                      Visibility="{Binding ShowLikers, Converter={StaticResource nullToVisibilityConverter}, ConverterParameter={StaticResource True}}"
                       x:Name="likeButtonArea">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="15" />

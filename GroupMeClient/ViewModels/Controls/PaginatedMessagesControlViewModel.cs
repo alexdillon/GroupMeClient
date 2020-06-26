@@ -63,7 +63,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Gets or sets a value indicating whether 'Like' status will be shown on Messages.
         /// </summary>
-        public bool ShowLikers { get; set; } = true;
+        public bool? ShowLikers { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether displayed messages will be sychronized with GroupMe,
