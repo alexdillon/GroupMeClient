@@ -167,7 +167,7 @@ namespace GroupMeClient.ViewModels
                     AssociateWith = messageContainer,
                     ShowLikers = null,
                     SyncAndUpdate = false,
-                    ShowTitle = true,
+                    ShowTitle = false,
                 };
 
                 var context = cacheManager.OpenNewContext();

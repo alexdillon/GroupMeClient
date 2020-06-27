@@ -124,7 +124,7 @@ namespace GroupMeClient.ViewModels.Controls
                         (this.CurrentPageBottom * this.MessagesPerPage) + this.MessagesPerPage,
                         this.TotalMessagesCount);
 
-                    return $"Showing {startingMessageNum}-{startingMessageNum + endingMessageNum} of {this.TotalMessagesCount} Results";
+                    return $"Showing {startingMessageNum}-{startingMessageNum + endingMessageNum - 1} of {this.TotalMessagesCount} Results";
                 }
                 else
                 {
