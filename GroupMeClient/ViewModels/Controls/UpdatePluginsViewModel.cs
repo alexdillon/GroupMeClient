@@ -115,9 +115,7 @@ namespace GroupMeClient.ViewModels.Controls
                     // Ensure the plugin is currently installed
                     if (installed != null)
                     {
-                        var currentVersion = PluginInstaller.Instance.GetPluginVersion(installed);
-
-                        if (plugin.Version > currentVersion)
+                        if (plugin.Version > installed.Version)
                         {
                             this.AvailableUpdates.Add(plugin);
                         }

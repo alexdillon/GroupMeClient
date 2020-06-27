@@ -15,8 +15,12 @@
             <Setter Property="controls:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
         </Style>
 
+        <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MetroListViewItem}">
+            <Setter Property="Background" Value="#252525" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
-        
     </UserControl.Resources>
 
     <Grid>
@@ -60,10 +64,12 @@
                         <ListView.View>
                             <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
                                 <GridViewColumn Header="Url" Width="300" DisplayMemberBinding="{Binding Url}" />
-                                <GridViewColumn Header="Type" Width="70" DisplayMemberBinding="{Binding Type}" />
-                                <GridViewColumn Header="Source" Width="130" DisplayMemberBinding="{Binding Source}" />
                             </GridView>
                         </ListView.View>
+
+                        <ListView.Resources>
+                      
+                        </ListView.Resources>
 
                         <ListView.Template>
                             <ControlTemplate>

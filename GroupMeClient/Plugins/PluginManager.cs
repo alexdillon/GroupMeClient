@@ -97,37 +97,50 @@ namespace GroupMeClient.Plugins
             this.MessageComposePluginsManuallyInstalled.Clear();
 
             Directory.CreateDirectory(pluginsPath);
+            Directory.CreateDirectory(Path.Combine(pluginsPath, PluginInstaller.PackagesDirectory));
 
             if (Directory.Exists(pluginsPath))
             {
-                var dllFileNames = Directory.GetFiles(pluginsPath, "*.dll");
-
-                foreach (var file in dllFileNames)
+                // Handle staged removals
+                foreach (var file in Directory.GetFiles(Path.Combine(pluginsPath, PluginInstaller.PackagesDirectory), "*.rm"))
                 {
                     if (Path.GetFileNameWithoutExtension(file).EndsWith(PluginInstaller.StagingSuffix))
                     {
-                        var originalPluginName = Path.GetFileName(file).Replace(PluginInstaller.StagingSuffix, string.Empty);
-                        var originalPluginFullPath = Path.Combine(pluginsPath, originalPluginName);
-                        if (File.Exists(originalPluginFullPath))
-                        {
-                            File.Delete(originalPluginFullPath);
-                        }
+                        var originalPluginName = Path.GetFileNameWithoutExtension(file).Replace(PluginInstaller.StagingSuffix, string.Empty);
+                        var originalPluginFullPath = Path.Combine(pluginsPath, PluginInstaller.PackagesDirectory, originalPluginName);
 
-                        // If a zero-byte staging file is used, don't keep it.
-                        if (new FileInfo(file).Length > 0)
-                        {
-                            File.Move(file, originalPluginFullPath);
-                        }
-                        else
+                        if (new FileInfo(file).Length == 0)
                         {
                             // Delete the zero-byte staging stub
                             File.Delete(file);
+
+                            // Delete the staged installation directory
+                            if (Directory.Exists(originalPluginFullPath))
+                            {
+                                Directory.Delete(originalPluginFullPath, true);
+                            }
                         }
                     }
                 }
 
-                // Get a new listing after staged installations are completed.
-                dllFileNames = Directory.GetFiles(pluginsPath, "*.dll");
+                // Handle staged upgrades
+                foreach (var directory in Directory.GetDirectories(Path.Combine(pluginsPath, PluginInstaller.PackagesDirectory)))
+                {
+                    if (Path.GetFileNameWithoutExtension(directory).EndsWith(PluginInstaller.StagingSuffix))
+                    {
+                        var originalPluginName = Path.GetFileNameWithoutExtension(directory).Replace(PluginInstaller.StagingSuffix, string.Empty);
+                        var originalPluginFullPath = Path.Combine(pluginsPath, PluginInstaller.PackagesDirectory, originalPluginName);
+
+                        if (Directory.Exists(originalPluginFullPath))
+                        {
+                            Directory.Delete(originalPluginFullPath, true);
+                        }
+
+                        Directory.Move(directory, originalPluginFullPath);
+                    }
+                }
+
+                var dllFileNames = Directory.GetFiles(pluginsPath, "*.dll", SearchOption.AllDirectories);
 
                 var assemblies = new List<Assembly>(dllFileNames.Length);
                 foreach (string dllFile in dllFileNames)
@@ -170,7 +183,7 @@ namespace GroupMeClient.Plugins
 
                 foreach (var type in pluginTypes)
                 {
-                    var hostedAssemblyName = Path.GetFileNameWithoutExtension(type.Module.Name);
+                    var hostedAssemblyName = Path.GetFileNameWithoutExtension(Path.GetDirectoryName(type.Module.Assembly.Location));
                     var installedPlugin = PluginInstaller.Instance.InstalledPlugins.FirstOrDefault(p => p.InstallationGuid == hostedAssemblyName);
 
                     var plugin = (PluginBase)Activator.CreateInstance(type);

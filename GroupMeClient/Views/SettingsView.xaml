@@ -126,13 +126,13 @@
                         </Grid.RowDefinitions>
 
                         <Button Grid.Column="0" Grid.Row="0"
-                                Content="Manage Plugins and Repos"
+                                Content="Add Plugins and Repos"
                                 Margin="0, 0, 10, 10"
                                 Command="{Binding ManageReposCommand}" />
 
                         <Button Grid.Column="1" Grid.Row="0"
                                 Margin="0, 0, 10, 10"
-                                Content="Check for Plugin Updates"
+                                Content="Update and Manage Plugins"
                                 Command="{Binding ManageUpdatesCommand}" />
 
                         <ListView

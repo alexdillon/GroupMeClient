@@ -4,11 +4,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
+using GalaSoft.MvvmLight.Messaging;
 using Newtonsoft.Json;
-using Octokit;
-using Windows.Networking.NetworkOperators;
 
 namespace GroupMeClient.Plugins
 {
@@ -34,6 +32,11 @@ namespace GroupMeClient.Plugins
         /// Gets the suffix that is applied to the end of a filename to indicate that it is being staged for installation.
         /// </summary>
         public static string StagingSuffix => "--staging";
+
+        /// <summary>
+        /// Gets the name of the subdirectory that houses plugin packages.
+        /// </summary>
+        public static string PackagesDirectory => "packages";
 
         /// <summary>
         /// Gets a listing of the known <see cref="Repository"/>s that have been added and are available.
@@ -91,12 +94,14 @@ namespace GroupMeClient.Plugins
                 RepositoryUrl = plugin.ParentRepo.Url,
                 InstallationGuid = Guid.NewGuid().ToString(),
                 PluginName = plugin.Name,
+                Version = plugin.Version,
             };
 
             await this.UnpackAndCopyPackage(installedPlugin.InstallationGuid, string.Empty, plugin.BinaryUrl);
 
             this.PluginSettings.InstalledPlugins.Add(installedPlugin);
             this.SavePluginSettings();
+            Messenger.Default.Send(new Messaging.RebootRequestMessage($"Reboot to Finish Installing {plugin.Name}"));
         }
 
         /// <summary>
@@ -109,29 +114,12 @@ namespace GroupMeClient.Plugins
             var installedPlugin = this.PluginSettings.InstalledPlugins.First(p => p.RepositoryUrl == plugin.ParentRepo.Url &&
                                                                                   p.PluginName == plugin.Name);
 
+            installedPlugin.Version = plugin.Version;
+
             await this.UnpackAndCopyPackage(installedPlugin.InstallationGuid, StagingSuffix, plugin.BinaryUrl);
 
             this.SavePluginSettings();
-        }
-
-        /// <summary>
-        /// Finds the currently installed version of a specific plugin using the embedded version file metadata.
-        /// For plugins that fail to load, a version of 0.0.0 will be returned.
-        /// </summary>
-        /// <param name="plugin">The plugin to return the version of.</param>
-        /// <returns>The <see cref="Version"/> of the plugin.</returns>
-        public Version GetPluginVersion(PluginSettings.InstalledPlugin plugin)
-        {
-            try
-            {
-                var fullPath = Path.Combine(pluginRoot, $"{plugin.InstallationGuid}.dll");
-                var assemblyName = AssemblyName.GetAssemblyName(fullPath);
-                return assemblyName.Version;
-            }
-            catch (Exception)
-            {
-                return new Version(0, 0, 0);
-            }
+            Messenger.Default.Send(new Messaging.RebootRequestMessage($"Reboot to Finish Updating {plugin.Name}"));
         }
 
         /// <summary>
@@ -140,11 +128,12 @@ namespace GroupMeClient.Plugins
         /// <param name="plugin">The plugin to uninstall.</param>
         public void UninstallPlugin(PluginSettings.InstalledPlugin plugin)
         {
-            var stagingDeleteFilename = Path.Combine(pluginRoot, $"{plugin.InstallationGuid}{StagingSuffix}.dll");
+            var stagingDeleteFilename = Path.Combine(pluginRoot, PackagesDirectory, $"{plugin.InstallationGuid}{StagingSuffix}.rm");
             File.WriteAllBytes(stagingDeleteFilename, new byte[] { });
 
             this.PluginSettings.InstalledPlugins.Remove(plugin);
             this.SavePluginSettings();
+            Messenger.Default.Send(new Messaging.RebootRequestMessage($"Reboot to Finish Uninstalling {plugin.PluginName}"));
         }
 
         private async Task UnpackAndCopyPackage(string guid, string suffix, string binaryUrl)
@@ -155,17 +144,8 @@ namespace GroupMeClient.Plugins
             {
                 using (var zip = new ZipArchive(stream, ZipArchiveMode.Read))
                 {
-                    foreach (var entry in zip.Entries)
-                    {
-                        if (Path.GetExtension(entry.Name).ToLower() == ".dll")
-                        {
-                            entry.ExtractToFile(Path.Combine(pluginRoot, $"{guid}{suffix}.dll"));
-                        }
-                        else
-                        {
-                            entry.ExtractToFile(Path.Combine(pluginRoot, entry.Name));
-                        }
-                    }
+                    var targetDirectory = Path.Combine(pluginRoot, PackagesDirectory, $"{guid}{suffix}");
+                    zip.ExtractToDirectory(targetDirectory);
                 }
             }
         }
@@ -175,10 +155,14 @@ namespace GroupMeClient.Plugins
             if (File.Exists(this.PluginSettingsFile))
             {
                 string json = File.ReadAllText(this.PluginSettingsFile);
-                JsonConvert.PopulateObject(json, this.PluginSettings, new JsonSerializerSettings()
+
+                var settings = new JsonSerializerSettings()
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
-                });
+                };
+                settings.Converters.Add(new Newtonsoft.Json.Converters.VersionConverter());
+
+                JsonConvert.PopulateObject(json, this.PluginSettings, settings);
             }
         }
 
@@ -191,6 +175,8 @@ namespace GroupMeClient.Plugins
                     Formatting = Formatting.Indented,
                     TypeNameHandling = TypeNameHandling.Auto,
                 };
+
+                serializer.Converters.Add(new Newtonsoft.Json.Converters.VersionConverter());
 
                 serializer.Serialize(file, this.PluginSettings);
             }
