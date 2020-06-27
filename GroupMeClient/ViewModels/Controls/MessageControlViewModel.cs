@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Caching;
 using GroupMeClient.ViewModels.Controls.Attachments;
@@ -38,7 +37,7 @@ namespace GroupMeClient.ViewModels.Controls
         /// <param name="showLikers">Indicates whether the like status for a message should be displayed.</param>
         /// <param name="showPreviewsOnlyForMultiImages">Indicates whether only previews, or full images, should be shown for multi-images.</param>
         /// <param name="nestLevel">The number of <see cref="MessageControlViewModel"/>s deeply nested this is. Top level messages are 0.</param>
-        public MessageControlViewModel(Message message, CacheManager cacheManager, bool showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0)
+        public MessageControlViewModel(Message message, CacheManager cacheManager, bool? showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0)
         {
             this.Message = message;
             this.CacheManager = cacheManager;
@@ -46,6 +45,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.Inlines = new ObservableCollection<Inline>();
             this.LikeAction = new RelayCommand(async () => { await this.LikeMessageAsync(); }, () => { return true; }, true);
+            this.StarAction = new RelayCommand(this.StarMessage);
             this.ToggleMessageDetails = new RelayCommand(() => this.ShowDetails = !this.ShowDetails);
 
             this.ShowLikers = showLikers;
@@ -86,6 +86,11 @@ namespace GroupMeClient.ViewModels.Controls
         public ICommand LikeAction { get; }
 
         /// <summary>
+        /// Gets the command to be performed when this <see cref="Message"/> is 'Starred'.
+        /// </summary>
+        public ICommand StarAction { get; }
+
+        /// <summary>
         /// Gets the command to be performed to toggle whether details are shwon for this <see cref="Message"/>.
         /// </summary>
         public ICommand ToggleMessageDetails { get; }
@@ -95,6 +100,14 @@ namespace GroupMeClient.ViewModels.Controls
         /// are not included as attachments have a <see cref="NestLevel"/> of 0.
         /// </summary>
         public int NestLevel { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the  people who have liked this message will be displayed.
+        /// A value of True indicates that likers will be shown. A value of False will hide likers, but
+        /// will not alter the spacing of any other elements. For a value of null, likers will not be shown,
+        /// and the space reserved for likers will be collapsed.
+        /// </summary>
+        public bool? ShowLikers { get; }
 
         /// <summary>
         /// Gets the unique identifier for this <see cref="Message"/>.
@@ -251,7 +264,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get
             {
-                if (!this.ShowLikers)
+                if (this.ShowLikers != true)
                 {
                     return MahApps.Metro.IconPacks.PackIconFontAwesomeKind.None;
                 }
@@ -293,7 +306,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get
             {
-                if (this.message.FavoritedBy.Count == 0 || !this.ShowLikers)
+                if (this.message.FavoritedBy.Count == 0 || this.ShowLikers != true)
                 {
                     return string.Empty;
                 }
@@ -329,9 +342,22 @@ namespace GroupMeClient.ViewModels.Controls
             }
         }
 
-        private CacheManager CacheManager { get; }
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="Message"/> has been starred.
+        /// </summary>
+        public bool IsMessageStarred
+        {
+            get
+            {
+                using (var cache = this.CacheManager.OpenNewContext())
+                {
+                    var result = cache.StarredMessages.Find(this.Message.Id);
+                    return result != null;
+                }
+            }
+        }
 
-        private bool ShowLikers { get; }
+        private CacheManager CacheManager { get; }
 
         private string HiddenText { get; set; } = string.Empty;
 
@@ -723,6 +749,24 @@ namespace GroupMeClient.ViewModels.Controls
             }
 
             return result;
+        }
+
+        private void StarMessage()
+        {
+            using (var context = this.CacheManager.OpenNewContext())
+            {
+                if (this.IsMessageStarred)
+                {
+                    context.DeStarMessage(this.Message);
+                }
+                else
+                {
+                    context.StarMessage(this.Message);
+                }
+
+                context.SaveChanges();
+                this.RaisePropertyChanged(nameof(this.IsMessageStarred));
+            }
         }
 
         /// <summary>

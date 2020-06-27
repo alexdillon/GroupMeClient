@@ -115,7 +115,7 @@
         <ToggleButton Height="48"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Top"
-                      Margin="0,170,0,0"
+                      Margin="0,200,0,0"
                       BorderThickness="0"
                       BorderBrush="Transparent"
                       Focusable="False" 

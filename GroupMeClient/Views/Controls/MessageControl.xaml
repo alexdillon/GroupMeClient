@@ -22,7 +22,13 @@
             <converters:InverseBoolConverter />
         </converters:ValueConverterGroup>
 
+        <converters:ValueConverterGroup x:Key="invertedBoolToVisibilityConverter">
+            <converters:InverseBoolConverter />
+            <BooleanToVisibilityConverter />
+        </converters:ValueConverterGroup>
+
         <converters:IsGreaterThanConverter x:Key="isGreaterThanConverter" />
+        <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter" />
 
         <sys:Int32 x:Key="collapseNestLevel">1</sys:Int32>
         <sys:Boolean x:Key="True">True</sys:Boolean>
@@ -34,6 +40,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="55" />
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
@@ -110,10 +117,34 @@
                     </extensions:SelectableTextBlock>
                 </StackPanel>
 
-                <Grid Grid.Column="2" Grid.Row="1" 
+                <iconPacks:PackIconFontAwesome Width="18" Height="18"
+                                               Grid.Row="1"
+                                               Grid.Column="2"
+                                               VerticalAlignment="Top"
+                                               Margin="0,13,10,0"
+                                               HorizontalAlignment="Center"
+                                               Kind="StarSolid"
+                                               Visibility="{Binding IsMessageStarred, Converter={StaticResource boolToVisibilityConverter}}"
+                                               Foreground="{DynamicResource SidebarBrush}"
+                                               Background="Transparent" >
+                    <iconPacks:PackIconFontAwesome.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Command="{Binding StarAction}"
+                                      Visibility="{Binding IsMessageStarred, Converter={StaticResource invertedBoolToVisibilityConverter}}"
+                                      Header="Star Message" />
+
+                            <MenuItem Command="{Binding StarAction}"
+                                      Visibility="{Binding IsMessageStarred, Converter={StaticResource boolToVisibilityConverter}}"
+                                      Header="Un-Star Message" />
+                        </ContextMenu>
+                    </iconPacks:PackIconFontAwesome.ContextMenu>
+                </iconPacks:PackIconFontAwesome>
+
+                <Grid Grid.Column="3" Grid.Row="1" 
                       MaxHeight="60"
                       VerticalAlignment="Top"
                       Background="Transparent"
+                      Visibility="{Binding ShowLikers, Converter={StaticResource nullToVisibilityConverter}, ConverterParameter={StaticResource True}}"
                       x:Name="likeButtonArea">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="15" />
@@ -141,14 +172,26 @@
                         Content="{Binding LikeCount}" />
 
                     <behaviors:Interaction.Triggers>
-                        <behaviors:EventTrigger EventName="MouseDown" >
+                        <behaviors:EventTrigger EventName="MouseLeftButtonDown" >
                             <behaviors:InvokeCommandAction Command="{Binding LikeAction}" />
                         </behaviors:EventTrigger>
                     </behaviors:Interaction.Triggers>
+
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Command="{Binding StarAction}"
+                                      Visibility="{Binding IsMessageStarred, Converter={StaticResource invertedBoolToVisibilityConverter}}"
+                                      Header="Star Message" />
+
+                            <MenuItem Command="{Binding StarAction}"
+                                      Visibility="{Binding IsMessageStarred, Converter={StaticResource boolToVisibilityConverter}}"
+                                      Header="Un-Star Message" />
+                        </ContextMenu>
+                    </Grid.ContextMenu>
                 </Grid>
 
                 <Canvas x:Name="likesCanvas"
-                        Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-45,16,0"
+                        Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" Margin="0,-45,16,0"
                         Background="Transparent">
 
                     <!--Use a trigger to change the visibility of the liker's popup area-->
