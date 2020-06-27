@@ -16,6 +16,7 @@ namespace GroupMeClient.ViewModels.Controls
     {
         private Stream imageAttachmentStream;
         private bool isLoading;
+        private double rotateAngle;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewImageControlViewModel"/> class.
@@ -29,6 +30,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             this.SaveImage = new RelayCommand(this.SaveImageAction);
             this.CopyImage = new RelayCommand(this.CopyImageAction);
+            this.RotateImage = new RelayCommand(this.RotateImageAction);
 
             this.IsLoading = true;
             _ = this.LoadImageAttachment();
@@ -43,6 +45,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets the action to be performed when the copy image button is clicked.
         /// </summary>
         public ICommand CopyImage { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when the roate image button is clicked.
+        /// </summary>
+        public ICommand RotateImage { get; }
 
         /// <summary>
         /// Gets the attached image.
@@ -60,6 +67,15 @@ namespace GroupMeClient.ViewModels.Controls
         {
             get => this.isLoading;
             private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
+        }
+
+        /// <summary>
+        /// Gets a value indicating how far clockwise the image should be rotated, expressed in degrees.
+        /// </summary>
+        public double RotateAngle
+        {
+            get => this.rotateAngle;
+            private set => this.Set(() => this.RotateAngle, ref this.rotateAngle, value);
         }
 
         private string ImageUrl { get; }
@@ -119,6 +135,12 @@ namespace GroupMeClient.ViewModels.Controls
             System.Windows.Clipboard.SetDataObject(imageClipObject, true);
 
             ms.Dispose();
+        }
+
+        private void RotateImageAction()
+        {
+            this.RotateAngle += 90;
+            this.RotateAngle %= 360;
         }
     }
 }
