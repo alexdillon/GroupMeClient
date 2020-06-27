@@ -32,7 +32,7 @@ namespace GroupMeClient.ViewModels.Controls
         {
             this.CacheManager = cacheManager;
             this.CurrentPage = new ObservableCollection<MessageControlViewModelBase>();
-            this.MessagesPerPage = 50;
+            this.MessagesPerPage = 25;
 
             this.GoBackCommand = new RelayCommand<ScrollViewer>(this.GoBack, this.CanGoBack);
             this.GoForwardCommand = new RelayCommand<ScrollViewer>(this.GoForward, this.CanGoForward);
@@ -189,9 +189,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task EnsureVisible(Message message)
         {
-            var temp = this.Messages.ToList();
-            var index = temp.FindIndex(m => m.Id == message.Id);
+            var preceedingMessages = this.Messages
+                .Where(m => m.Id.CompareTo(message.Id) < 0)
+                .OrderBy(m => m.Id);
 
+            int index = preceedingMessages.Count();
             int pageNumber = (int)Math.Floor((double)index / this.MessagesPerPage);
             this.CurrentPageTop = pageNumber;
             this.CurrentPageBottom = pageNumber;
