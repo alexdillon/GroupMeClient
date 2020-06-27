@@ -168,6 +168,7 @@ namespace GroupMeClient.ViewModels
                     ShowLikers = null,
                     SyncAndUpdate = false,
                     ShowTitle = false,
+                    NewestAtBottom = true,
                 };
 
                 var context = cacheManager.OpenNewContext();
@@ -182,7 +183,11 @@ namespace GroupMeClient.ViewModels
 
                 this.IsEmpty = messagesList.Count == 0;
 
-                this.MessagesList.DisplayMessages(messagesList.AsQueryable(), context);
+                var sortedMessages = messagesList
+                    .AsQueryable()
+                    .OrderBy(m => m.CreatedAtUnixTime);
+
+                this.MessagesList.DisplayMessages(sortedMessages, context);
                 _ = this.MessagesList.LoadPage(0);
             }
 
