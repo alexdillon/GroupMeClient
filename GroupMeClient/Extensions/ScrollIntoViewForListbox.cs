@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
 namespace GroupMeClient.Extensions
@@ -37,11 +38,19 @@ namespace GroupMeClient.Extensions
                     listBox.Dispatcher.BeginInvoke(
                         (Action)(() =>
                         {
+                            var scrollToTopAction = ListBoxExtensions.GetScrollToTop(listBox);
+                            var scrollToBottomAction = ListBoxExtensions.GetScrollToBottom(listBox);
+                            ListBoxExtensions.SetScrollToTop(listBox, null);
+                            ListBoxExtensions.SetScrollToBottom(listBox, null);
+
                             listBox.UpdateLayout();
                             if (listBox.SelectedItem != null)
                             {
                                 listBox.ScrollIntoView(listBox.SelectedItem);
                             }
+
+                            ListBoxExtensions.SetScrollToTop(listBox, scrollToTopAction);
+                            ListBoxExtensions.SetScrollToBottom(listBox, scrollToBottomAction);
                         }));
                 }
             }
