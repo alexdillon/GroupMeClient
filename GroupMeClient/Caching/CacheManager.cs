@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using GroupMeClient.Tasks;
 using GroupMeClientApi.Models;
@@ -25,6 +27,7 @@ namespace GroupMeClient.Caching
         {
             this.Path = databasePath;
             this.SuperIndexer = new SuperIndexer(this, taskScheduler);
+            this.HasBeenUpgradeChecked = false;
         }
 
         /// <summary>
@@ -33,6 +36,8 @@ namespace GroupMeClient.Caching
         public SuperIndexer SuperIndexer { get; }
 
         private string Path { get; }
+
+        private bool HasBeenUpgradeChecked { get; set; }
 
         /// <summary>
         /// Returns a <see cref="Queryable"/> collection of all the messages in a given <see cref="IMessageContainer"/>
@@ -104,7 +109,13 @@ namespace GroupMeClient.Caching
         /// <returns>A new <see cref="CacheContext"/>.</returns>
         public CacheContext OpenNewContext()
         {
-            var context = new CacheContext(this.Path);
+            var context = new CacheContext(this.Path, !this.HasBeenUpgradeChecked);
+
+            if (!this.HasBeenUpgradeChecked)
+            {
+                this.HasBeenUpgradeChecked = true;
+            }
+
             return context;
         }
 
@@ -114,13 +125,31 @@ namespace GroupMeClient.Caching
         public class CacheContext : DbContext
         {
             /// <summary>
+            /// Initializes a new instance of the <see cref="CacheContext"/> class. This is provided
+            /// for Entity Framework Migration support.
+            /// </summary>
+            public CacheContext()
+            {
+            }
+
+            /// <summary>
             /// Initializes a new instance of the <see cref="CacheContext"/> class.
             /// </summary>
             /// <param name="databaseName">The name of the database file to open.</param>
-            public CacheContext(string databaseName)
+            /// <param name="doDatabaseUpgrade">A value indicating whether database upgrades should be evaluated.</param>
+            public CacheContext(string databaseName, bool doDatabaseUpgrade)
             {
                 this.DatabaseName = databaseName ?? throw new ArgumentNullException(nameof(databaseName));
-                this.Database.EnsureCreated();
+
+                if (doDatabaseUpgrade)
+                {
+                    if (System.IO.File.Exists(databaseName))
+                    {
+                        this.EnsureMigrationsSupported();
+                    }
+
+                    this.Database.Migrate();
+                }
             }
 
             /// <summary>
@@ -242,6 +271,48 @@ namespace GroupMeClient.Caching
                     .HasConversion(
                         v => JsonConvert.SerializeObject(v),
                         v => JsonConvert.DeserializeObject<List<Attachment>>(v));
+            }
+
+            /// <summary>
+            /// Checks whether the underlying database has been setup for EF Migrations by checking
+            /// for the existance of the __EFMigrationsHistory table. If the database is in a legacy format,
+            /// it will be upgraded to be migration compatible.
+            /// </summary>
+            /// <remarks>
+            /// Adapted from https://stackoverflow.com/a/53473874.
+            /// </remarks>
+            private void EnsureMigrationsSupported()
+            {
+                var conn = this.Database.GetDbConnection();
+                if (conn.State.Equals(ConnectionState.Closed))
+                {
+                    conn.Open();
+                }
+
+                using (var command = conn.CreateCommand())
+                {
+                    command.CommandText = @"SELECT name FROM sqlite_master WHERE type='table' AND name='__EFMigrationsHistory';";
+                    var exists = command.ExecuteScalar() != null;
+
+                    if (!exists)
+                    {
+                        // Databases created prior to GMDC 27 were created with EnsureCreated,
+                        // and do not support migrations. The InitialCreate Migration
+                        // is schema compatible with the legacy database format, so just mark
+                        // it as being compliant with "20200629053659_InitialCreate" under EF "3.1.5"
+                        using (var createTableCmd = conn.CreateCommand())
+                        {
+                            createTableCmd.CommandText = "CREATE TABLE \"__EFMigrationsHistory\" ( \"MigrationId\" TEXT NOT NULL CONSTRAINT \"PK___EFMigrationsHistory\" PRIMARY KEY, \"ProductVersion\" TEXT NOT NULL )";
+                            createTableCmd.ExecuteNonQuery();
+                        }
+
+                        using (var insertHistoryCmd = conn.CreateCommand())
+                        {
+                            insertHistoryCmd.CommandText = "INSERT INTO __EFMigrationsHistory (MigrationId, ProductVersion) VALUES (\"20200629053659_InitialCreate\", \"3.1.5\")";
+                            insertHistoryCmd.ExecuteNonQuery();
+                        }
+                    }
+                }
             }
 
             /// <summary>
