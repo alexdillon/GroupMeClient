@@ -134,11 +134,14 @@ namespace GroupMeClient.Extensions
 
                 if (st.ScaleX < 1.0 || st.ScaleY < 1.0)
                 {
-                    st.ScaleX = 1.0;
-                    st.ScaleY = 1.0;
+                    if (!Keyboard.IsKeyDown(Key.LeftCtrl) && !Keyboard.IsKeyDown(Key.RightCtrl))
+                    {
+                        st.ScaleX = 1.0;
+                        st.ScaleY = 1.0;
 
-                    tt.X = 0;
-                    tt.Y = 0;
+                        tt.X = 0;
+                        tt.Y = 0;
+                    }
                 }
             }
         }
