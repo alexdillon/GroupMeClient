@@ -439,7 +439,27 @@ namespace GroupMeClient.ViewModels.Controls
 
         private void LoadAttachments()
         {
-            bool hasMultipleImages = this.Message.Attachments.OfType<ImageAttachment>().Count() > 1;
+            int totalAttachedImages = this.Message.Attachments.OfType<ImageAttachment>().Count();
+
+            // Check if this is a GroupMe Desktop Client Reply-extension message
+            var repliedMessageId = string.Empty;
+            if (!string.IsNullOrEmpty(this.Message.Text) && Regex.IsMatch(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex))
+            {
+                // Method 1, where /rmid:<message-id> is appended to the end of the message body
+                var token = Regex.Match(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex).Value;
+                this.HiddenText = token + this.HiddenText;
+                repliedMessageId = token.Replace("\n/rmid:", string.Empty);
+                totalAttachedImages--; // Don't count the preview bitmap as an image
+            }
+            else if (this.Message.SourceGuid.StartsWith("gmdc-r"))
+            {
+                // Method 2, where gmdc-r<message-id> is included as the prefix of the message GUID
+                var parts = this.Message.SourceGuid.Split('-');
+                repliedMessageId = parts[1].Substring(1);
+                totalAttachedImages--; // Don't count the preview bitmap as an image
+            }
+
+            bool hasMultipleImages = totalAttachedImages > 1;
             bool doneWithAttachments = false;
 
             // Load GroupMe Image and Video Attachments
@@ -502,23 +522,6 @@ namespace GroupMeClient.ViewModels.Controls
                     doneWithAttachments = true;
                     break;
                 }
-            }
-
-            var repliedMessageId = string.Empty;
-
-            // Check if this is a GroupMe Desktop Client Reply-extension message
-            if (!string.IsNullOrEmpty(this.Message.Text) && Regex.IsMatch(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex))
-            {
-                // Method 1, where /rmid:<message-id> is appended to the end of the message body
-                var token = Regex.Match(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex).Value;
-                this.HiddenText = token + this.HiddenText;
-                repliedMessageId = token.Replace("\n/rmid:", string.Empty);
-            }
-            else if (this.Message.SourceGuid.StartsWith("gmdc-r"))
-            {
-                // Method 2, where gmdc-r<message-id> is included as the prefix of the message GUID
-                var parts = this.Message.SourceGuid.Split('-');
-                repliedMessageId = parts[1].Substring(1);
             }
 
             // Handle if this is a GroupMe Desktop Client Reply-extension message
