@@ -84,7 +84,17 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <ContentControl Grid.Column="0" Content="{Binding Avatar}" Width="35" Height="35" />
+                                        <ContentControl Grid.Column="0" Content="{Binding Avatar}" Width="35" Height="35" >
+                                            <behaviors:Interaction.Triggers>
+                                                <behaviors:EventTrigger EventName="MouseDown" >
+                                                    <behaviors:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                                                                                      AncestorType={x:Type ScrollViewer}}, Path=DataContext.ShowImageCommand}"
+                                                                                   CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                                                                                      AncestorType={x:Type ContentControl}}, Path=Content}" />
+                                                </behaviors:EventTrigger>
+                                            </behaviors:Interaction.Triggers>
+                                        </ContentControl>
+                                        
                                         <Label Grid.Column="1" Content="{Binding MemberInfo.Name}" Foreground="White" />
                                     </Grid>
                                 </DataTemplate>
@@ -105,7 +115,16 @@
                                         Height="150"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Top"
-                                        Content="{Binding GroupAvatar}" />
+                                        Content="{Binding GroupAvatar}">
+                            
+                            <behaviors:Interaction.Triggers>
+                                <behaviors:EventTrigger EventName="MouseDown" >
+                                    <behaviors:InvokeCommandAction Command="{Binding ShowImageCommand}"
+                                                                   CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                                                                      AncestorType={x:Type ContentControl}}, Path=Content}" />
+                                </behaviors:EventTrigger>
+                            </behaviors:Interaction.Triggers>
+                        </ContentControl>
 
                         <TextBlock Text="{Binding GroupDescription}"
                                    HorizontalAlignment="Center"
@@ -186,7 +205,16 @@
                                         Height="150"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Top"
-                                        Content="{Binding MemberAvatar}" />
+                                        Content="{Binding MemberAvatar}">
+                            
+                            <behaviors:Interaction.Triggers>
+                                <behaviors:EventTrigger EventName="MouseDown" >
+                                    <behaviors:InvokeCommandAction Command="{Binding ShowImageCommand}"
+                                                                   CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                                                                      AncestorType={x:Type ContentControl}}, Path=Content}" />
+                                </behaviors:EventTrigger>
+                            </behaviors:Interaction.Triggers>
+                        </ContentControl>
 
                         <StackPanel HorizontalAlignment="Center"
                                     VerticalAlignment="Center">

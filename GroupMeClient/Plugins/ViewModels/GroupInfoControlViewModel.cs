@@ -32,6 +32,7 @@ namespace GroupMeClient.Plugins.ViewModels
             this.EditNicknameCommand = new RelayCommand(async () => await this.ToggleName());
             this.ChangeAvatarCommand = new RelayCommand(async () => await this.ChangeAvatar());
             this.ResetAvatarToProfileCommand = new RelayCommand(async () => await this.ResetAvatarToProfile());
+            this.ShowImageCommand = new RelayCommand<AvatarControlViewModel>(this.ShowImage);
         }
 
         /// <summary>
@@ -48,6 +49,11 @@ namespace GroupMeClient.Plugins.ViewModels
         /// Gets the command to execute reset a user's avatar to their profile image.
         /// </summary>
         public ICommand ResetAvatarToProfileCommand { get; }
+
+        /// <summary>
+        /// Gets the command to execute to view an avatar in the image viewer.
+        /// </summary>
+        public ICommand ShowImageCommand { get; }
 
         /// <summary>
         /// Gets or sets  the avatar for this <see cref="Group"/>.
@@ -179,6 +185,13 @@ namespace GroupMeClient.Plugins.ViewModels
             }
 
             return false;
+        }
+
+        private void ShowImage(AvatarControlViewModel image)
+        {
+            var vm = new ViewImageControlViewModel(image.CurrentlyRenderedUrl, image.ImageDownloader);
+            var request = new Messaging.DialogRequestMessage(vm, topMost: true);
+            Messenger.Default.Send(request);
         }
 
         /// <summary>
