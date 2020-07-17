@@ -172,8 +172,9 @@
                         Content="{Binding LikeCount}" />
 
                     <behaviors:Interaction.Triggers>
-                        <behaviors:EventTrigger EventName="MouseLeftButtonDown" >
-                            <behaviors:InvokeCommandAction Command="{Binding LikeAction}" />
+                        <behaviors:EventTrigger EventName="MouseDown" >
+                            <behaviors:InvokeCommandAction Command="{Binding LikeAction}"
+                                                           PassEventArgsToCommand="True"/>
                         </behaviors:EventTrigger>
                     </behaviors:Interaction.Triggers>
 
