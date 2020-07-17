@@ -6,7 +6,8 @@
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" 
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
-             Background="Black" >
+             Background="Black" 
+             Foreground="White">
 
     <UserControl.Resources>
         <Style x:Key="MyColumnHeader" 
