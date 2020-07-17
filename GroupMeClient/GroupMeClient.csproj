@@ -83,6 +83,7 @@
     <Compile Include="Converters\ValueConverterGroup.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtension.cs" />
     <Compile Include="Extensions\FastVirtualizingWrapPanel.cs" />
+    <Compile Include="Extensions\HandlingEventTrigger.cs" />
     <Compile Include="Extensions\TaskbarItemOverlayExtensions.cs" />
     <Compile Include="Extensions\ZoomBorder.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />
@@ -544,7 +545,6 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-
   <ItemGroup>
     <NuGetCommandLine Include="..\packages\NuGet.CommandLine.*\tools\nuget.exe">
       <InProject>False</InProject>
@@ -553,58 +553,38 @@
       <InProject>False</InProject>
     </Squirrel>
   </ItemGroup>
-
   <Target Name="_DetermineSetupNuGetVersion" Condition="'$(SetupNugetVersion)' == ''">
     <ItemGroup>
       <Package-Nuget-CommandLine Include="@(PackageReference)" Condition=" '%(Identity)' == 'Nuget.CommandLine' " />
     </ItemGroup>
-
     <CreateProperty Value="%(Package-Nuget-CommandLine.Version)">
       <Output TaskParameter="Value" PropertyName="SetupNuGetVersion" />
     </CreateProperty>
-
     <Message Text="Automatically detected Nuget version: $(SetupNugetVersion)" Importance="Normal" />
   </Target>
-
-
   <Target Name="_DetermineSetupSquirrelVersion" Condition="'$(SetupSquirrelVersion)' == ''">
     <ItemGroup>
       <Package-Squirrel-Windows Include="@(PackageReference)" Condition=" '%(Identity)' == 'Squirrel.Windows' " />
     </ItemGroup>
-
     <CreateProperty Value="%(Package-Squirrel-Windows.Version)">
       <Output TaskParameter="Value" PropertyName="SetupSquirrelVersion" />
     </CreateProperty>
-
-    <Message Text="Automatically detected Squirrel.Windows version: $(SetupSquirrelVersion)" Importance="Normal"  />
+    <Message Text="Automatically detected Squirrel.Windows version: $(SetupSquirrelVersion)" Importance="Normal" />
   </Target>
-
-
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'" DependsOnTargets="_DetermineSetupNuGetVersion;_DetermineSetupSquirrelVersion">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="myAssemblyInfo" />
     </GetAssemblyIdentity>
-
     <PropertyGroup>
       <_NugetPath>$(NuGetPackageRoot)Nuget.CommandLine\$(SetupNuGetVersion)\tools\nuget.exe</_NugetPath>
     </PropertyGroup>
-
-
     <PropertyGroup>
       <_SquirrelPath>$(NuGetPackageRoot)Squirrel.Windows\$(SetupSquirrelVersion)\tools\Squirrel.exe</_SquirrelPath>
     </PropertyGroup>
-
-    <Error Text="Nuget version could not be determined. Make sure Nuget.Commandline package is installed"
-             Condition=" '$(SetupNuGetVersion)' == ''"/>
-    <Error Text="nuget.exe could not be found. Make sure the 'Nuget.Commandline' package is installed. Path: '$(_NugetPath)'"
-           Condition="!Exists('$(_NugetPath)')" />
-
-    <Error Text="Squirrel version could not be determined. Make sure Squirrel.Windows is installed "
-              Condition=" '$(SetupSquirrelVersion)' == ''"/>
-    <Error Text="Squirrel.exe could not be found. Make sure Squirrel.Windows is installed. Path: '$(_SquirrelPath)'"
-           Condition="!Exists('$(_SquirrelPath)')" />
-
-
+    <Error Text="Nuget version could not be determined. Make sure Nuget.Commandline package is installed" Condition=" '$(SetupNuGetVersion)' == ''" />
+    <Error Text="nuget.exe could not be found. Make sure the 'Nuget.Commandline' package is installed. Path: '$(_NugetPath)'" Condition="!Exists('$(_NugetPath)')" />
+    <Error Text="Squirrel version could not be determined. Make sure Squirrel.Windows is installed " Condition=" '$(SetupSquirrelVersion)' == ''" />
+    <Error Text="Squirrel.exe could not be found. Make sure Squirrel.Windows is installed. Path: '$(_SquirrelPath)'" Condition="!Exists('$(_SquirrelPath)')" />
     <Exec Command="&quot;$(_NugetPath)&quot; pack GroupMeClient.nuspec -Version %(myAssemblyInfo.Version) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
     <Exec Command="&quot;$(_SquirrelPath)&quot; --releasify $(OutDir)GroupMeDesktopClient.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg --releaseDir=$(OutDir)\..\Publish" />
   </Target>
