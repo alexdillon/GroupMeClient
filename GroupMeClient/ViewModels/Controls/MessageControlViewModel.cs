@@ -44,7 +44,7 @@ namespace GroupMeClient.ViewModels.Controls
 
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.Inlines = new ObservableCollection<Inline>();
-            this.LikeAction = new RelayCommand(async () => { await this.LikeMessageAsync(); }, () => { return true; }, true);
+            this.LikeAction = new RelayCommand<MouseButtonEventArgs>(async (e) => { await this.LikeMessageAsync(e); }, (e) => { return true; }, true);
             this.StarAction = new RelayCommand(this.StarMessage);
             this.ToggleMessageDetails = new RelayCommand(() => this.ShowDetails = !this.ShowDetails);
 
@@ -374,36 +374,44 @@ namespace GroupMeClient.ViewModels.Controls
         /// <summary>
         /// Likes a message and updates the Liker's Display area for the current <see cref="Message"/>.
         /// </summary>
+        /// <param name="e">The event arguments from the action triggering the like.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task LikeMessageAsync()
+        public async Task LikeMessageAsync(MouseButtonEventArgs e = null)
         {
-            var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
-            var alreadyLiked = this.Message.FavoritedBy.Contains(me.Id);
-
-            if (alreadyLiked)
+            // The only time a Like should not be performed is if the Right Mouse Button was clicked.
+            // That button is reserved for invoking star behavior instead. All other buttons (like custom
+            // buttons or side-click buttons) are acceptible.
+            if (e == null ||
+                (e is MouseButtonEventArgs mouseArgs && mouseArgs.ChangedButton != MouseButton.Right))
             {
-                var success = await this.Message.UnlikeMessage();
-                if (success)
+                var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
+                var alreadyLiked = this.Message.FavoritedBy.Contains(me.Id);
+
+                if (alreadyLiked)
                 {
-                    lock (this.messageLock)
+                    var success = await this.Message.UnlikeMessage();
+                    if (success)
                     {
-                        this.Message.FavoritedBy.Remove(me.Id);
+                        lock (this.messageLock)
+                        {
+                            this.Message.FavoritedBy.Remove(me.Id);
+                        }
                     }
                 }
-            }
-            else
-            {
-                var success = await this.Message.LikeMessage();
-                if (success)
+                else
                 {
-                    lock (this.messageLock)
+                    var success = await this.Message.LikeMessage();
+                    if (success)
                     {
-                        this.Message.FavoritedBy.Add(me.Id);
+                        lock (this.messageLock)
+                        {
+                            this.Message.FavoritedBy.Add(me.Id);
+                        }
                     }
                 }
-            }
 
-            this.UpdateDisplay();
+                this.UpdateDisplay();
+            }
         }
 
         /// <summary>
