@@ -20,6 +20,13 @@
             <Setter Property="Background" Value="Black" />
         </Style>
 
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MetroTextBox}">
+            <Setter Property="Controls:ControlsHelper.FocusBorderBrush"
+                    Value="White" />
+            <Setter Property="Controls:ControlsHelper.MouseOverBorderBrush"
+                    Value="White" />
+        </Style>
+
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
         <converters:ValueConverterGroup x:Key="inverseBooleanToVisibilityConverter">
             <converters:InverseBoolConverter />
@@ -38,7 +45,7 @@
                    HorizontalAlignment="Center"
                    FontSize="18"/>
         
-        <TabControl Grid.Row="1" Background="Black">
+        <TabControl Grid.Row="1" Background="Red">
             <TabItem Header="Group Info" 
                      Style="{StaticResource tabStyle}">
                 <Grid>
@@ -123,20 +130,26 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="Nickname: "
+                                       Foreground="White"
                                        FontSize="14"
                                        VerticalAlignment="Center"/>
                             
-                            <TextBox Text="{Binding MemberNickname, Mode=TwoWay}"
-                                     Visibility="{Binding IsEditingNickname, Converter={StaticResource boolToVisibilityConverter}}"
-                                     Grid.Column="1"
-                                     FontSize="14"/>
-
                             <TextBlock Text="{Binding MemberNickname}"
                                        Visibility="{Binding IsEditingNickname, Converter={StaticResource inverseBooleanToVisibilityConverter}}"
                                        VerticalAlignment="Center"
                                        Padding="6,4,2,4"
                                        Grid.Column="1"
+                                       Foreground="White"
+                                       
                                        FontSize="14"/>
+
+                            <TextBox Text="{Binding MemberNickname, Mode=TwoWay}"
+                                     Visibility="{Binding IsEditingNickname, Converter={StaticResource boolToVisibilityConverter}}"
+                                     Grid.Column="1"
+                                     CaretBrush="White"
+                                     Foreground="White"
+                                     Background="Black"
+                                     FontSize="14"/>
 
                             <Button Grid.Column="2"
                                     Command="{Binding EditNicknameCommand}"
