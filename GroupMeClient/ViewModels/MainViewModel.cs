@@ -124,7 +124,12 @@ namespace GroupMeClient.ViewModels
         /// <summary>
         /// Gets or sets the manager for the dialog that should be displayed as a large popup.
         /// </summary>
-        public PopupViewModel DialogManager { get; set; }
+        public PopupViewModel DialogManagerRegular { get; set; }
+
+        /// <summary>
+        /// Gets or sets the manager for the dialog that should be displayed as a large topmost popup.
+        /// </summary>
+        public PopupViewModel DialogManagerTopMost { get; set; }
 
         /// <summary>
         /// Gets or sets the command to be performed to refresh all displayed messages and groups.
@@ -268,10 +273,17 @@ namespace GroupMeClient.ViewModels
 
             Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
 
-            this.DialogManager = new PopupViewModel()
+            this.DialogManagerRegular = new PopupViewModel()
             {
                 EasyClosePopup = new RelayCommand(this.CloseBigPopup),
                 ClosePopup = new RelayCommand(this.CloseBigPopup),
+                PopupDialog = null,
+            };
+
+            this.DialogManagerTopMost = new PopupViewModel()
+            {
+                EasyClosePopup = new RelayCommand(this.CloseBigTopMostPopup),
+                ClosePopup = new RelayCommand(this.CloseBigTopMostPopup),
                 PopupDialog = null,
             };
 
@@ -408,17 +420,34 @@ namespace GroupMeClient.ViewModels
 
         private void OpenBigPopup(Messaging.DialogRequestMessage dialog)
         {
-            this.DialogManager.PopupDialog = dialog.Dialog;
+            if (dialog.TopMost)
+            {
+                this.DialogManagerTopMost.PopupDialog = dialog.Dialog;
+            }
+            else
+            {
+                this.DialogManagerRegular.PopupDialog = dialog.Dialog;
+            }
         }
 
         private void CloseBigPopup()
         {
-            if (this.DialogManager.PopupDialog is IDisposable d)
+            if (this.DialogManagerRegular.PopupDialog is IDisposable d)
             {
                 d.Dispose();
             }
 
-            this.DialogManager.PopupDialog = null;
+            this.DialogManagerRegular.PopupDialog = null;
+        }
+
+        private void CloseBigTopMostPopup()
+        {
+            if (this.DialogManagerTopMost.PopupDialog is IDisposable d)
+            {
+                d.Dispose();
+            }
+
+            this.DialogManagerTopMost.PopupDialog = null;
         }
 
         private void UpdateNotificationCount(Messaging.UnreadRequestMessage update)
