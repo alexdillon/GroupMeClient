@@ -46,13 +46,13 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
+
         <TextBlock Text="{Binding GroupName}"
                    Grid.Row="0"
                    HorizontalAlignment="Center"
                    FontSize="18"/>
         
-        <TabControl Grid.Row="1" Background="Red">
+        <TabControl Grid.Row="1" Background="Black">
             <TabItem Header="Group Info" 
                      Style="{StaticResource tabStyle}">
                 <Grid>
@@ -126,6 +126,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
+
                     <StackPanel Orientation="Vertical"
                                 Grid.Column="0"
                                 Margin="0,7,0,0">
@@ -147,7 +148,6 @@
                                        Padding="6,4,2,4"
                                        Grid.Column="1"
                                        Foreground="White"
-                                       
                                        FontSize="14"/>
 
                             <TextBox Text="{Binding MemberNickname, Mode=TwoWay}"
@@ -160,13 +160,15 @@
 
                             <Button Grid.Column="2"
                                     Command="{Binding EditNicknameCommand}"
+                                    Foreground="White"
                                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                     Visibility="{Binding IsEditingNickname, Converter={StaticResource inverseBooleanToVisibilityConverter}}">
-                                <iconPacks:PackIconEntypo Kind="Edit" Foreground="White" />
+                                <iconPacks:PackIconEntypo Kind="Edit" Foreground="White"/>
                             </Button>
 
                             <Button Grid.Column="2"
                                     Command="{Binding EditNicknameCommand}"
+                                    Foreground="White"
                                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                     Visibility="{Binding IsEditingNickname, Converter={StaticResource boolToVisibilityConverter}}">
                                 <iconPacks:PackIconMaterial Kind="Check" />
