@@ -271,6 +271,12 @@ namespace GroupMeClient.Notifications.Display.Win10
             var doc = new XmlDocument();
             doc.LoadXml(toastContent.GetContent());
 
+            if (string.IsNullOrEmpty(tag))
+            {
+                // Windows 10 likes to not show Toasts with a blank tag
+                tag = Guid.NewGuid().ToString().Substring(0, 15);
+            }
+
             // And create the toast notification
             var toast = new ToastNotification(doc)
             {
