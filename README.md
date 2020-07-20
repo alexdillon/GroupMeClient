@@ -58,10 +58,10 @@ Featured Open-Source, 3rd-Party Plugins:
   </tr>
   <tr>
     <td>
-    <img src="./docs/screenshots/MessagePlugin.png" height="400px" style="max-width: 50%; display:block ">
+    <img src="./docs/screenshots/MessagePlugin.png" style="max-width: 100%; display:block ">
     </td>
     <td>
-    <img src="./docs/screenshots/GMDC-Giphy.png" height="400px" style="max-width: 50%; display:block ">
+    <img src="./docs/screenshots/GMDC-Giphy.png" style="max-width: 100%; display:block ">
     </td>
   </tr>
 </table>
