@@ -6,7 +6,7 @@
   <img alt="GitHub" src="https://img.shields.io/github/license/alexdillon/GroupMeClient?color=blue">
 </p>
 
-GroupMe Desktop Client is a modular, open-source, configurable client for using the GroupMe chat service on Windows. GroupMe Desktop Client offers support for unique features such as search, threaded replies, and plugins, and is compatible with Windows 7 through Windows 10.
+GroupMe Desktop Client is a unoffical, modular, open-source, configurable client for using the GroupMe chat service on Windows. GroupMe Desktop Client offers support for unique features such as search, threaded replies, and plugins, and is compatible with Windows 7 through Windows 10.
 
 Different color theme options are also supported in GMDC.
 
