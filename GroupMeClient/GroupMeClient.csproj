@@ -492,7 +492,7 @@
       <Version>1.6.5</Version>
     </PackageReference>
     <PackageReference Include="MahApps.Metro.IconPacks">
-      <Version>4.1.0</Version>
+      <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
       <Version>3.1.6</Version>
@@ -503,7 +503,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
-      <Version>6.0.0</Version>
+      <Version>6.1.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
       <Version>10.0.19041.1</Version>
@@ -515,15 +515,15 @@
       <Version>5.4.1.1</Version>
     </PackageReference>
     <PackageReference Include="Notification.WPF">
-      <Version>1.0.1.11</Version>
+      <Version>1.0.2</Version>
     </PackageReference>
     <PackageReference Include="NuGet.CommandLine">
-      <Version>5.5.1</Version>
+      <Version>5.6.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Octokit">
-      <Version>0.47.0</Version>
+      <Version>0.48.0</Version>
     </PackageReference>
     <PackageReference Include="QueryString.NET">
       <Version>1.0.0</Version>
@@ -537,7 +537,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="VirtualizingWrapPanel">
-      <Version>1.4.3</Version>
+      <Version>1.5.0</Version>
     </PackageReference>
     <PackageReference Include="XamlAnimatedGif">
       <Version>1.2.2</Version>
