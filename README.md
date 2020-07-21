@@ -45,7 +45,7 @@ GroupMe Desktop Client includes a rich Image Gallery feature with support for fi
 </table>
 
 ### Plugins
-GroupMe Desktop Client is highly extensible through its open source plugin system. Plugins can operate in a variety of ways. For example, Message Effect Plugins can be used to help compose new messages to send, or can provide humorous suggestions based on what has been typed. More complex plugins can run in dedicated windows and can provide complex functionality.
+GroupMe Desktop Client is highly extensible through its open source plugin system. Plugins can operate in a variety of ways. For example, Message Effect Plugins can be used to help compose new messages to send, or can provide humorous suggestions based on what has been typed. More complex plugins can run in dedicated windows and can provide sophisticated functionality.
 
 ![Plugin Screenshot](./docs/screenshots/Plugins.png)
 
