@@ -75,7 +75,7 @@ Viewing a Reply in GMDC              |  Threaded Reply in Non-GMDC
 
 
 ### Multi-Chat
-GroupMe Desktop Client supports displaying multiple chats simultaneously, side-by-side. The number of chats that can be opened both normally, and in collapsed-sidebar mode is fully user configurable. 
+GroupMe Desktop Client supports displaying multiple chats simultaneously, side-by-side. The number of chats that can be opened both normally, and in collapsed-sidebar mode, is fully user configurable. 
 
 ![MultiChat](./docs/screenshots/MultiChat.png)
 
