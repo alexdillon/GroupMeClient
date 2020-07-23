@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using GroupMeClient.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
+using Windows.ApplicationModel.VoiceCommands;
 
 namespace GroupMeClient.ViewModels
 {
@@ -55,6 +57,14 @@ namespace GroupMeClient.ViewModels
             // Perform additional startup procedures that are dependent on the values
             // configured in the settings file.
             this.InitializeClient();
+        }
+
+        public string ThisShouldHaveAWarningSinceNoComment { get; set; }
+
+        public void OutOfOrderFunction()
+        {
+            if (true)
+                Debug.Write("Bad, missing brackets");
         }
 
         /// <summary>
