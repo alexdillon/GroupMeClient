@@ -77,8 +77,12 @@
     <Compile Include="Caching\Migrations\20200630021510_StarMessageSupport.designer.cs">
       <DependentUpon>20200630021510_StarMessageSupport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Caching\Migrations\20200726203522_HiddenMessageSupport.cs" />
+    <Compile Include="Caching\Migrations\20200726203522_HiddenMessageSupport.designer.cs">
+      <DependentUpon>20200726203522_HiddenMessageSupport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Caching\Models\GroupIndexStatus.cs" />
-    <Compile Include="Caching\Models\IDatabaseMessageWrapper.cs" />
+    <Compile Include="Caching\Models\HiddenMessage.cs" />
     <Compile Include="Caching\Models\StarredMessage.cs" />
     <Compile Include="Caching\SuperIndexer.cs" />
     <Compile Include="Converters\IsGreaterThanConverter.cs" />

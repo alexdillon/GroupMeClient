@@ -78,9 +78,59 @@ namespace GroupMeClient.Caching
         /// <returns>Returns a <see cref="Queryable"/> collection of all the starred messages in a given <see cref="IMessageContainer"/>.</returns>
         public static IQueryable<StarredMessage> GetStarredMessagesForGroup(IMessageContainer group, CacheContext cacheContext)
         {
-            return GetMessageWrapperForGroup(group, cacheContext.StarredMessages);
+            if (group is Group g)
+            {
+                return cacheContext.StarredMessages
+                    .AsNoTracking()
+                    .Where(m => m.ConversationId == g.Id);
+            }
+            else if (group is Chat c)
+            {
+                // Chat.Id returns the Id of the other user
+                // However, GroupMe messages are natively returned with a Conversation Id instead
+                // Conversation IDs are user1+user2.
+                var conversationId = c.LatestMessage.ConversationId;
+
+                return cacheContext.StarredMessages
+                    .AsNoTracking()
+                    .Where(m => m.ConversationId == conversationId);
+            }
+            else
+            {
+                return Enumerable.Empty<StarredMessage>().AsQueryable();
+            }
         }
 
+        /// <summary>
+        /// Returns a <see cref="Queryable"/> collection of all the hidden messages in a given <see cref="IMessageContainer"/>
+        /// that are cached in the database.
+        /// </summary>
+        /// <param name="group">The <see cref="IMessageContainer"/> which to return hidden messages for.</param>
+        /// <param name="cacheContext">The cache instance messages should be retreived from.</param>
+        /// <returns>Returns a <see cref="Queryable"/> collection of all the hidden messages in a given <see cref="IMessageContainer"/>.</returns>
+        public static IQueryable<HiddenMessage> GetHiddenMessagesForGroup(IMessageContainer group, CacheContext cacheContext)
+        {
+            if (group is Group g)
+            {
+                return cacheContext.HiddenMessages
+                    .AsNoTracking()
+                    .Where(m => m.ConversationId == g.Id);
+            }
+            else if (group is Chat c)
+            {
+                // Chat.Id returns the Id of the other user
+                // However, GroupMe messages are natively returned with a Conversation Id instead
+                // Conversation IDs are user1+user2.
+                var conversationId = c.LatestMessage.ConversationId;
+
+                return cacheContext.HiddenMessages
+                    .AsNoTracking()
+                    .Where(m => m.ConversationId == conversationId);
+            }
+            else
+            {
+                return Enumerable.Empty<HiddenMessage>().AsQueryable();
+            }
         }
 
         /// <summary>
@@ -97,32 +147,6 @@ namespace GroupMeClient.Caching
             }
 
             return context;
-        }
-
-        private static IQueryable<T> GetMessageWrapperForGroup<T>(IMessageContainer group, DbSet<T> dbSet)
-            where T : class, IDatabaseMessageWrapper
-        {
-            if (group is Group g)
-            {
-                return dbSet
-                    .AsNoTracking()
-                    .Where(m => m.GroupIdentifer == g.Id);
-            }
-            else if (group is Chat c)
-            {
-                // Chat.Id returns the Id of the other user
-                // However, GroupMe messages are natively returned with a Conversation Id instead
-                // Conversation IDs are user1+user2.
-                var conversationId = c.LatestMessage.ConversationId;
-
-                return dbSet
-                    .AsNoTracking()
-                    .Where(m => m.ChatIdentifier == conversationId);
-            }
-            else
-            {
-                return Enumerable.Empty<T>().AsQueryable();
-            }
         }
 
         /// <summary>
@@ -167,6 +191,11 @@ namespace GroupMeClient.Caching
             /// Gets or sets the <see cref="Message"/>s stored in the database that have been starred.
             /// </summary>
             public DbSet<StarredMessage> StarredMessages { get; set; }
+
+            /// <summary>
+            /// Gets or sets the <see cref="Message"/>s stored in the database that have been hidden.
+            /// </summary>
+            public DbSet<HiddenMessage> HiddenMessages { get; set; }
 
             /// <summary>
             /// Gets or sets index status for each <see cref="Group"/> or <see cref="Chat"/> stored in this cache.
@@ -216,6 +245,34 @@ namespace GroupMeClient.Caching
                 if (star != null)
                 {
                     this.StarredMessages.Remove(star);
+                }
+            }
+
+            /// <summary>
+            /// Adds a <see cref="Message"/> to the hidden list.
+            /// </summary>
+            /// <param name="message">The message to star.</param>
+            public void HideMessage(Message message)
+            {
+                var hiddenMessage = new HiddenMessage()
+                {
+                    ConversationId = string.IsNullOrEmpty(message.GroupId) ? message.ConversationId : message.GroupId,
+                    MessageId = message.Id,
+                };
+
+                this.HiddenMessages.Add(hiddenMessage);
+            }
+
+            /// <summary>
+            /// Removes a <see cref="Message"/> from the hidden list.
+            /// </summary>
+            /// <param name="message">The message to star.</param>
+            public void DeHideMessage(Message message)
+            {
+                var hidden = this.HiddenMessages.FirstOrDefault(m => m.MessageId == message.Id);
+                if (hidden != null)
+                {
+                    this.HiddenMessages.Remove(hidden);
                 }
             }
 
