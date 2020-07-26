@@ -11,12 +11,12 @@ namespace GroupMeClient.Themes
     {
         private static readonly ResourceDictionary GroupMeLightTheme = new ResourceDictionary()
         {
-            Source = new Uri("pack://application:,,,/GroupMeLight.xaml"),
+            Source = new Uri("pack://application:,,,/Styles/GroupMeLight.xaml"),
         };
 
         private static readonly ResourceDictionary GroupMeDarkTheme = new ResourceDictionary()
         {
-            Source = new Uri("pack://application:,,,/GroupMeDark.xaml"),
+            Source = new Uri("pack://application:,,,/Styles/GroupMeDark.xaml"),
         };
 
         private static ResourceDictionary currentGroupMeTheme = null;
