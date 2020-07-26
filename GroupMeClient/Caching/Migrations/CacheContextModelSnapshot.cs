@@ -13,9 +13,9 @@ namespace GroupMeClient.Caching.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.5");
+                .HasAnnotation("ProductVersion", "3.1.6");
 
-            modelBuilder.Entity("GroupMeClient.Caching.CacheManager+CacheContext+GroupIndexStatus", b =>
+            modelBuilder.Entity("GroupMeClient.Caching.Models.GroupIndexStatus", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -28,7 +28,20 @@ namespace GroupMeClient.Caching.Migrations
                     b.ToTable("IndexStatus");
                 });
 
-            modelBuilder.Entity("GroupMeClient.Caching.CacheManager+CacheContext+StarredMessage", b =>
+            modelBuilder.Entity("GroupMeClient.Caching.Models.HiddenMessage", b =>
+                {
+                    b.Property<string>("MessageId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConversationId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("MessageId");
+
+                    b.ToTable("HiddenMessages");
+                });
+
+            modelBuilder.Entity("GroupMeClient.Caching.Models.StarredMessage", b =>
                 {
                     b.Property<string>("MessageId")
                         .HasColumnType("TEXT");

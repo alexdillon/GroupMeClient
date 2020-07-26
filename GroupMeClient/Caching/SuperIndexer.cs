@@ -219,7 +219,7 @@ namespace GroupMeClient.Caching
 
                 if (groupState == null)
                 {
-                    groupState = new Caching.CacheManager.CacheContext.GroupIndexStatus()
+                    groupState = new Models.GroupIndexStatus()
                     {
                         Id = container.Id,
                     };
