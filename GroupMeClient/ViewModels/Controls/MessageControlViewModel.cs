@@ -46,6 +46,7 @@ namespace GroupMeClient.ViewModels.Controls
             this.Inlines = new ObservableCollection<Inline>();
             this.LikeAction = new RelayCommand<MouseButtonEventArgs>(async (e) => { await this.LikeMessageAsync(e); }, (e) => { return true; }, true);
             this.StarAction = new RelayCommand(this.StarMessage);
+            this.DeHideAction = new RelayCommand(this.DeHideMessage);
             this.ToggleMessageDetails = new RelayCommand(() => this.ShowDetails = !this.ShowDetails);
 
             this.ShowLikers = showLikers;
@@ -89,6 +90,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets the command to be performed when this <see cref="Message"/> is 'Starred'.
         /// </summary>
         public ICommand StarAction { get; }
+
+        /// <summary>
+        /// Gets the command to be performed to de-hide this <see cref="Message"/>.
+        /// </summary>
+        public ICommand DeHideAction { get; }
 
         /// <summary>
         /// Gets the command to be performed to toggle whether details are shwon for this <see cref="Message"/>.
@@ -352,6 +358,21 @@ namespace GroupMeClient.ViewModels.Controls
                 using (var cache = this.CacheManager.OpenNewContext())
                 {
                     var result = cache.StarredMessages.Find(this.Message.Id);
+                    return result != null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="Message"/> has been hidden.
+        /// </summary>
+        public bool IsMessageHidden
+        {
+            get
+            {
+                using (var cache = this.CacheManager.OpenNewContext())
+                {
+                    var result = cache.HiddenMessages.Find(this.Message.Id);
                     return result != null;
                 }
             }
@@ -777,6 +798,20 @@ namespace GroupMeClient.ViewModels.Controls
 
                 context.SaveChanges();
                 this.RaisePropertyChanged(nameof(this.IsMessageStarred));
+            }
+        }
+
+        private void DeHideMessage()
+        {
+            using (var context = this.CacheManager.OpenNewContext())
+            {
+                if (this.IsMessageHidden)
+                {
+                    context.DeHideMessage(this.Message);
+                }
+
+                context.SaveChanges();
+                this.RaisePropertyChanged(nameof(this.IsMessageHidden));
             }
         }
 

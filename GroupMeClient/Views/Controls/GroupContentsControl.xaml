@@ -136,6 +136,11 @@
                                                 <MenuItem Header="Reply To Message" 
                                                           Command="{Binding PlacementTarget.Tag.DataContext.InitiateReply, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
                                                           CommandParameter="{Binding .}"/>
+                                                <Separator />
+                                                
+                                                <MenuItem Header="Hide Message" 
+                                                          Command="{Binding PlacementTarget.Tag.DataContext.HideMessage, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
+                                                          CommandParameter="{Binding .}"/>
                                             </ContextMenu>
                                         </ContentPresenter.ContextMenu>
                                     </ContentPresenter>

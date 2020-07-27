@@ -6,7 +6,6 @@
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:controls="clr-namespace:GroupMeClient.Views.Controls"
              xmlns:views="clr-namespace:GroupMeClient.Views"
-             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:converters="clr-namespace:GroupMeClient.Converters"
@@ -131,13 +130,12 @@
                             Margin="10,5,10,0"
                             DataContext="{Binding TopBarAvatar}" />
 
-                        <!--Group Label-->
-                        <TextBlock Grid.Column="1"
-                                   HorizontalAlignment="Left" VerticalAlignment="Center"
-                                   Padding="5,5,0,0"
-                                   Height="Auto" FontSize="17" FontWeight="SemiBold"
-                                   TextTrimming="CharacterEllipsis"
-                                   Text="{Binding Path=MessageContainer.Name}" />
+                        <!--Group Name and Drop Down Menu Button-->
+                        <ToggleButton Style="{StaticResource ToggleDropdownGroupName}"
+                                      Grid.Column="1"
+                                      Margin="0,4,0,0"
+                                      Tag="{Binding Path=MessageContainer.Name}"
+                                      x:Name="toggleGroupOptionsButton"/>
 
                         <!--Close Group Button-->
                         <Button Grid.Column="2"
@@ -167,8 +165,23 @@
                                    TextAlignment="Center"
                                    Foreground="{DynamicResource GroupsSidebarFontBrush}"
                                    Margin="0,20,0,0"
-                                   Text="No Starred Messages Found"
+                                   Text="{Binding Type, StringFormat=No {0} Messages Found}"
                                    Visibility="{Binding IsEmpty, Converter={StaticResource boolToVisibilityConverter}}"/>
+
+                        <!--Plugins Dropdown List-->
+                        <Border Grid.Row="1" 
+                                Grid.Column="0" 
+                                Grid.ColumnSpan="3"
+                                Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
+                                VerticalAlignment="Top"
+                                BorderThickness="20,10,20,30"
+                                BorderBrush="{DynamicResource PluginMenuBrush}">
+                            <StackPanel Orientation="Vertical" 
+                                        Background="{DynamicResource PluginMenuBrush}">
+                                <RadioButton Content="Show Starred Messages" FontSize="16" Margin="5" IsChecked="{Binding IsShowingStars}" />
+                                <RadioButton Content="Show Hidden Messages" FontSize="16" Margin="5" IsChecked="{Binding IsShowingHidden}" />
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

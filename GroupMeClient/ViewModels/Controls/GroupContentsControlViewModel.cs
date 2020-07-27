@@ -55,7 +55,8 @@ namespace GroupMeClient.ViewModels.Controls
             this.ReloadView = new RelayCommand<ScrollViewer>(async (s) => await this.LoadMoreAsync(s), true);
             this.GroupChatPluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>(this.ActivateGroupPlugin);
             this.SelectionChangedCommand = new RelayCommand<object>(this.SelectionChangedHandler);
-            this.InitiateReply = new RelayCommand<MessageControlViewModel>(m => this.InitiateReplyCommand(m));
+            this.InitiateReply = new RelayCommand<MessageControlViewModel>(m => this.InitiateReplyCommand(m), true);
+            this.HideMessage = new RelayCommand<MessageControlViewModel>(m => this.HideMessageCommand(m), true);
             this.TerminateReply = new RelayCommand(() => this.MessageBeingRepliedTo = null, true);
             this.ToggleDisplayOptions = new RelayCommand(() => this.ShowDisplayOptions = !this.ShowDisplayOptions, true);
 
@@ -134,6 +135,11 @@ namespace GroupMeClient.ViewModels.Controls
         /// Gets the action to be performed when initiating a reply on a message.
         /// </summary>
         public ICommand InitiateReply { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when hiding a message.
+        /// </summary>
+        public ICommand HideMessage { get; }
 
         /// <summary>
         /// Gets the action to be performed when terminating a reply to a message.
@@ -418,37 +424,45 @@ namespace GroupMeClient.ViewModels.Controls
 
                 var maxTimeDifference = TimeSpan.FromMinutes(15);
 
-                // Messages retrieved with the before_id parameter are returned in descending order
-                // Reverse iterate through the messages collection to go newest->oldest
-                for (int i = messages.Count - 1; i >= 0; i--)
+                using (var cacheContext = this.CacheManager.OpenNewContext())
                 {
-                    var msg = messages.ElementAt(i);
-
-                    var oldMsg = this.Messages.FirstOrDefault(m => m.Id == msg.Id);
-
-                    if (oldMsg == null)
+                    // Messages retrieved with the before_id parameter are returned in descending order
+                    // Reverse iterate through the messages collection to go newest->oldest
+                    for (int i = messages.Count - 1; i >= 0; i--)
                     {
-                        // add new message
-                        var msgVm = new MessageControlViewModel(
-                            msg,
-                            this.CacheManager,
-                            showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages);
-                        this.Messages.Add(msgVm);
+                        var msg = messages.ElementAt(i);
 
-                        // add an inline timestamp if needed
-                        if (msg.CreatedAtTime.Subtract(this.LastMarkerTime) > maxTimeDifference)
+                        var oldMsg = this.Messages.FirstOrDefault(m => m.Id == msg.Id);
+                        var messageHidden = cacheContext.HiddenMessages.Find(msg.Id);
+
+                        if (oldMsg == null)
                         {
-                            var messageId = long.Parse(msg.Id);
-                            var timeStampId = (messageId - 1).ToString();
+                            // Skip hidden messages
+                            if (messageHidden == null)
+                            {
+                                // add new message
+                                var msgVm = new MessageControlViewModel(
+                                    msg,
+                                    this.CacheManager,
+                                    showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages);
+                                this.Messages.Add(msgVm);
 
-                            this.Messages.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, timeStampId, msgVm.DidISendIt));
-                            this.LastMarkerTime = msg.CreatedAtTime;
+                                // add an inline timestamp if needed
+                                if (msg.CreatedAtTime.Subtract(this.LastMarkerTime) > maxTimeDifference)
+                                {
+                                    var messageId = long.Parse(msg.Id);
+                                    var timeStampId = (messageId - 1).ToString();
+
+                                    this.Messages.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, timeStampId, msgVm.DidISendIt));
+                                    this.LastMarkerTime = msg.CreatedAtTime;
+                                }
+                            }
                         }
-                    }
-                    else
-                    {
-                        // update an existing one if needed
-                        oldMsg.Message = msg;
+                        else
+                        {
+                            // update an existing one if needed
+                            oldMsg.Message = msg;
+                        }
                     }
                 }
 
@@ -848,6 +862,16 @@ namespace GroupMeClient.ViewModels.Controls
         private void InitiateReplyCommand(MessageControlViewModel message)
         {
             this.MessageBeingRepliedTo = new MessageControlViewModel(message.Message, this.CacheManager, false, true, 1);
+        }
+
+        private void HideMessageCommand(MessageControlViewModel message)
+        {
+            using (var context = this.CacheManager.OpenNewContext())
+            {
+                context.HideMessage(message.Message);
+                this.Messages.Remove(message);
+                context.SaveChanges();
+            }
         }
     }
 }
