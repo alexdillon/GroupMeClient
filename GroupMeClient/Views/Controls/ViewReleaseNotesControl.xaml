@@ -22,7 +22,6 @@
                         <TextBlock Text="{Binding ReleaseNotes}"
                                    Focusable="False"
                                    IsHitTestVisible="False"
-                                   Background="#252525"
                                    TextWrapping="Wrap"/>
                     </Expander>
                 </DataTemplate>
