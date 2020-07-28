@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Octokit;
 using Squirrel;
 
 namespace GroupMeClient.Updates
@@ -53,7 +55,33 @@ namespace GroupMeClient.Updates
 
         private UpdateManager UpdateManager { get; set; }
 
-        private string GitHubUpdateUrl => "https://github.com/alexdillon/GroupMeClient";
+        private string GMDCRepoUser => "alexdillon";
+
+        private string GMDCRepoName => "GroupMeClient";
+
+        private string GMDCGitHubRepoUrl => $"https://github.com/{this.GMDCRepoUser}/{this.GMDCRepoName}";
+
+        /// <summary>
+        /// Gets all versions of the GMDC application that are currently published.
+        /// </summary>
+        /// <returns>A collection of <see cref="ReleaseInfo"/> for all published releases.</returns>
+        public async Task<IEnumerable<ReleaseInfo>> GetVersionsAsync()
+        {
+            var header = new ProductHeaderValue("GroupMeDesktopClient", ThisAssembly.SimpleVersion);
+            var github = new GitHubClient(header);
+            var releases = await github.Repository.Release.GetAll(this.GMDCRepoUser, this.GMDCRepoName);
+
+            var results = new List<ReleaseInfo>();
+            var isNewest = true;
+            foreach (var release in releases)
+            {
+                results.Add(new ReleaseInfo() { Version = release.Name, ReleaseNotes = release.Body, PreRelease = release.Prerelease, IsLatest = isNewest });
+                isNewest = false;
+            }
+
+            return results;
+        }
+
 
         private void LoadComplete(Task<UpdateManager> manager)
         {
@@ -78,6 +106,32 @@ namespace GroupMeClient.Updates
             this.CanShutdown = true;
 
             this.UpdateManager.Dispose();
+        }
+
+        /// <summary>
+        /// <see cref="ReleaseInfo"/> describes a specific version of th GMDC application.
+        /// </summary>
+        public class ReleaseInfo
+        {
+            /// <summary>
+            /// Gets or sets the version string for this release.
+            /// </summary>
+            public string Version { get; set; }
+
+            /// <summary>
+            /// Gets or sets the release notes for this release.
+            /// </summary>
+            public string ReleaseNotes { get; set; }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether this version is a pre-release.
+            /// </summary>
+            public bool PreRelease { get; set; }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether this release is the newest.
+            /// </summary>
+            public bool IsLatest { get; set; }
         }
     }
 }

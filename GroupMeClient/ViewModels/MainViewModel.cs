@@ -243,6 +243,10 @@ namespace GroupMeClient.ViewModels
 
             this.RebootApplication = new RelayCommand(this.RestartCommand);
 
+            this.UpdateAssist = new UpdateAssist();
+            Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
+            this.UpdateAssist.BeginCheckForUpdates();
+
             if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
             {
                 // Startup in Login Mode
@@ -264,7 +268,7 @@ namespace GroupMeClient.ViewModels
                 this.ChatsViewModel = new ChatsViewModel(this.GroupMeClient, this.SettingsManager, this.CacheManager);
                 this.SearchViewModel = new SearchViewModel(this.GroupMeClient, this.CacheManager);
                 this.StarsViewModel = new StarsViewModel(this.GroupMeClient, this.CacheManager, this.SettingsManager);
-                this.SettingsViewModel = new SettingsViewModel(this.SettingsManager);
+                this.SettingsViewModel = new SettingsViewModel(this.SettingsManager, this.UpdateAssist);
 
                 this.RegisterNotifications();
 
@@ -286,9 +290,6 @@ namespace GroupMeClient.ViewModels
                 ClosePopup = new RelayCommand(this.CloseBigTopMostPopup),
                 PopupDialog = null,
             };
-
-            this.UpdateAssist = new UpdateAssist();
-            Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
 
             Native.RecoveryManager.RegisterForRecovery();
             Native.RecoveryManager.RegisterForRestart();

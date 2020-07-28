@@ -1,10 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
+using GroupMeClient.Updates;
 using GroupMeClient.ViewModels.Controls;
-using MahApps.Metro.Controls.Dialogs;
 
 namespace GroupMeClient.ViewModels
 {
@@ -17,13 +19,16 @@ namespace GroupMeClient.ViewModels
         /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
         /// </summary>
         /// <param name="settingsManager">The settings manager to use.</param>
-        public SettingsViewModel(Settings.SettingsManager settingsManager)
+        /// <param name="updateAssist">The update manager to use.</param>
+        public SettingsViewModel(Settings.SettingsManager settingsManager, UpdateAssist updateAssist)
         {
             this.InstalledPlugins = new ObservableCollection<Plugin>();
             this.SettingsManager = settingsManager;
+            this.UpdateAssist = updateAssist;
 
             this.ManageReposCommand = new RelayCommand(this.ManageRepos);
             this.ManageUpdatesCommand = new RelayCommand(this.ManageUpdates);
+            this.ViewReleaseNotesCommand = new RelayCommand(this.ViewReleaseNotes);
 
             this.DialogManager = new PopupViewModel()
             {
@@ -54,6 +59,11 @@ namespace GroupMeClient.ViewModels
         /// Gets the <see cref="PopupViewModel"/> for the Settings view.
         /// </summary>
         public PopupViewModel DialogManager { get; }
+
+        /// <summary>
+        /// Gets the command used to view release notes.
+        /// </summary>
+        public ICommand ViewReleaseNotesCommand { get; }
 
         /// <summary>
         /// Gets the command used to open a popup to manage plugin repositories.
@@ -175,6 +185,8 @@ namespace GroupMeClient.ViewModels
 
         private Settings.SettingsManager SettingsManager { get; }
 
+        private UpdateAssist UpdateAssist { get; }
+
         private void LoadPluginInfo()
         {
             // Load Group Chat Plugins
@@ -214,6 +226,12 @@ namespace GroupMeClient.ViewModels
                 var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
                 this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Message Effect Plugins", Source = "Manually Installed" });
             }
+        }
+
+        private void ViewReleaseNotes()
+        {
+            var viewer = new ViewReleaseNotesControlViewModel(this.UpdateAssist);
+            this.DialogManager.PopupDialog = viewer;
         }
 
         private void ManageRepos()

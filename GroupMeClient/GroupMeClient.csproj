@@ -169,6 +169,7 @@
     <Compile Include="ViewModels\Controls\Attachments\VideoAttachmentControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\AvatarControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\InlineReadSentMarkerControlViewModel.cs" />
+    <Compile Include="ViewModels\Controls\ViewReleaseNotesControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\UpdatePluginsViewModel.cs" />
     <Compile Include="ViewModels\Controls\PaginatedMessagesControlViewModel.cs" />
     <Compile Include="ViewModels\Controls\GroupContentsControlViewModel.cs" />
@@ -209,6 +210,9 @@
     </Compile>
     <Compile Include="Views\Controls\InlineReadSentMarkerControl.xaml.cs">
       <DependentUpon>InlineReadSentMarkerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\ViewReleaseNotesControl.xaml.cs">
+      <DependentUpon>ViewReleaseNotesControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\UpdatePlugins.xaml.cs">
       <DependentUpon>UpdatePlugins.xaml</DependentUpon>
@@ -346,6 +350,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\InlineReadSentMarkerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\ViewReleaseNotesControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
