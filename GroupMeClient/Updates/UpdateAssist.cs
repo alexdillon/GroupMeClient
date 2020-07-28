@@ -27,19 +27,8 @@ namespace GroupMeClient.Updates
 
             var isVsDebug = updateDotExe.Contains(Path.Combine("Debug", "..", "Update.exe"));
 
-            var isInstalled = File.Exists(updateDotExe) && !isVsDebug;
-
-            if (isInstalled)
-            {
-                // Only install updates if this is running as an installed copy
-                // (i.e., not a portable installation or running under Visual Studio)
-                UpdateManager.GitHubUpdateManager(this.GitHubUpdateUrl).ContinueWith(this.LoadComplete);
-            }
-            else
-            {
-                this.UpdateMonitor.SetResult(false);
-                this.CanShutdown = true;
-            }
+            this.IsInstalled = File.Exists(updateDotExe) && !isVsDebug;
+            this.CanShutdown = true;
         }
 
         /// <summary>
@@ -49,9 +38,16 @@ namespace GroupMeClient.Updates
         public bool CanShutdown { get; private set; }
 
         /// <summary>
+        /// Gets a value indicating whether the application running from the installation path.
+        /// If false, this is typically caused by running a debug copy from a build directory, indicating that
+        /// updates cannot be accurately installed.
+        /// </summary>
+        public bool IsInstalled { get; private set; }
+
+        /// <summary>
         /// Gets an awaitable object to monitor the status of an ongoing update operation.
         /// </summary>
-        public TaskCompletionSource<bool> UpdateMonitor { get; private set; } = new TaskCompletionSource<bool>();
+        public TaskCompletionSource<bool> UpdateMonitor { get; private set; }
 
         private UpdateManager UpdateManager { get; set; }
 
@@ -82,6 +78,25 @@ namespace GroupMeClient.Updates
             return results;
         }
 
+        /// <summary>
+        /// Begins checking for updates, and automatically installing and applicable updates in the background.
+        /// </summary>
+        public void BeginCheckForUpdates()
+        {
+            this.UpdateMonitor = new TaskCompletionSource<bool>();
+            if (this.IsInstalled)
+            {
+                // Only install updates if this is running as an installed copy
+                // (i.e., not a portable installation or running under Visual Studio)
+                this.CanShutdown = false;
+                UpdateManager.GitHubUpdateManager(this.GMDCGitHubRepoUrl).ContinueWith(this.LoadComplete);
+            }
+            else
+            {
+                this.UpdateMonitor.SetResult(false);
+                this.CanShutdown = true;
+            }
+        }
 
         private void LoadComplete(Task<UpdateManager> manager)
         {
