@@ -246,6 +246,7 @@ namespace GroupMeClient.ViewModels
             this.UpdateAssist = new UpdateAssist();
             Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
             this.UpdateAssist.BeginCheckForUpdates();
+            this.UpdateAssist.StartUpdateTimer(TimeSpan.FromMinutes(this.SettingsManager.CoreSettings.ApplicationUpdateFrequencyMinutes));
 
             if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
             {

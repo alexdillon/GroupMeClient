@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Octokit;
 using Squirrel;
@@ -51,6 +52,10 @@ namespace GroupMeClient.Updates
 
         private UpdateManager UpdateManager { get; set; }
 
+        private bool HasAlreadyUpdated { get; set; } = false;
+
+        private Timer UpdateTimer { get; set; }
+
         private string GMDCRepoUser => "alexdillon";
 
         private string GMDCRepoName => "GroupMeClient";
@@ -79,12 +84,33 @@ namespace GroupMeClient.Updates
         }
 
         /// <summary>
+        /// Starts a background task that will run and check for updates on a regular interval.
+        /// </summary>
+        /// <param name="interval">The interval on which to check for updates.</param>
+        public void StartUpdateTimer(TimeSpan interval)
+        {
+            this.UpdateTimer = new Timer(
+                (l) => this.BeginCheckForUpdates(),
+                null,
+                TimeSpan.Zero,
+                interval);
+        }
+
+        /// <summary>
+        /// Cancels the background update timer.
+        /// </summary>
+        public void CancelUpdateTimer()
+        {
+            this.UpdateTimer = null;
+        }
+
+        /// <summary>
         /// Begins checking for updates, and automatically installing and applicable updates in the background.
         /// </summary>
         public void BeginCheckForUpdates()
         {
             this.UpdateMonitor = new TaskCompletionSource<bool>();
-            if (this.IsInstalled)
+            if (this.IsInstalled && !this.HasAlreadyUpdated)
             {
                 // Only install updates if this is running as an installed copy
                 // (i.e., not a portable installation or running under Visual Studio)
@@ -119,6 +145,11 @@ namespace GroupMeClient.Updates
             var result = releaseEntry.Result;
             this.UpdateMonitor.SetResult(result != null);
             this.CanShutdown = true;
+
+            if (result != null)
+            {
+                this.HasAlreadyUpdated = true;
+            }
 
             this.UpdateManager.Dispose();
         }
