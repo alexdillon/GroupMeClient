@@ -506,7 +506,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="GroupMeClientApi">
-      <Version>1.0.5</Version>
+      <Version>1.0.6</Version>
     </PackageReference>
     <PackageReference Include="GroupMeClientPlugin">
       <Version>2.0.1</Version>
@@ -566,7 +566,6 @@
       <Version>1.2.2</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <NuGetCommandLine Include="..\packages\NuGet.CommandLine.*\tools\nuget.exe">

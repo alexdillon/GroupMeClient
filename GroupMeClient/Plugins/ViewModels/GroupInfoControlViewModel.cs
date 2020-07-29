@@ -29,9 +29,12 @@ namespace GroupMeClient.Plugins.ViewModels
             this.Group = group;
             this.UpdateDisplay();
 
-            this.EditNicknameCommand = new RelayCommand(async () => await this.ToggleName());
-            this.ChangeAvatarCommand = new RelayCommand(async () => await this.ChangeAvatar());
-            this.ResetAvatarToProfileCommand = new RelayCommand(async () => await this.ResetAvatarToProfile());
+            this.EditNicknameCommand = new RelayCommand(async () => await this.ToggleName(), true);
+            this.ChangeAvatarCommand = new RelayCommand(async () => await this.ChangeAvatar(), true);
+            this.ResetAvatarToProfileCommand = new RelayCommand(async () => await this.ResetAvatarToProfile(), true);
+            this.EditGroupNameCommand = new RelayCommand(async () => await this.ToggleGroupName(), true);
+            this.EditGroupDescriptionCommand = new RelayCommand(async () => await this.ToggleDescription(), true);
+            this.ChangeGroupAvatarCommand = new RelayCommand(async () => await this.ChangeGroupAvatar(), true);
             this.ShowImageCommand = new RelayCommand<AvatarControlViewModel>(this.ShowImage);
         }
 
@@ -49,6 +52,21 @@ namespace GroupMeClient.Plugins.ViewModels
         /// Gets the command to execute reset a user's avatar to their profile image.
         /// </summary>
         public ICommand ResetAvatarToProfileCommand { get; }
+
+        /// <summary>
+        /// Gets the command to execute to begin or end editing a group name.
+        /// </summary>
+        public ICommand EditGroupNameCommand { get; }
+
+        /// <summary>
+        /// Gets the command to execute to begin or end editing a group description.
+        /// </summary>
+        public ICommand EditGroupDescriptionCommand { get; }
+
+        /// <summary>
+        /// Gets the command to execute to change the group avatar image.
+        /// </summary>
+        public ICommand ChangeGroupAvatarCommand { get; }
 
         /// <summary>
         /// Gets the command to execute to view an avatar in the image viewer.
@@ -83,6 +101,15 @@ namespace GroupMeClient.Plugins.ViewModels
         public string MemberNickname { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Group"/> is muted.
+        /// </summary>
+        public bool IsMuted
+        {
+            get => this.Group.MutedUntilTime > DateTime.Now;
+            set => Task.Run(async () => await this.ChangeMuteStatus(value)).Wait();
+        }
+
+        /// <summary>
         /// Gets or sets the current <see cref="Member"/>'s avatar in this <see cref="Group"/>.
         /// </summary>
         public AvatarControlViewModel MemberAvatar { get; set; }
@@ -91,6 +118,16 @@ namespace GroupMeClient.Plugins.ViewModels
         /// Gets or sets a value indicating whether the nickname is currently being edited.
         /// </summary>
         public bool IsEditingNickname { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the group name is currently being edited.
+        /// </summary>
+        public bool IsEditingGroupName { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the group description is currently being edited.
+        /// </summary>
+        public bool IsEditingGroupDescription { get; set; }
 
         /// <summary>
         /// Gets a listing of members in this <see cref="Group"/>.
@@ -185,6 +222,80 @@ namespace GroupMeClient.Plugins.ViewModels
             }
 
             return false;
+        }
+
+        private async Task ToggleGroupName()
+        {
+            if (this.IsEditingGroupName)
+            {
+                _ = await this.Group.UpdateGroupName(this.GroupName);
+                await this.ReloadGroupInfo();
+                this.UpdateDisplay();
+            }
+
+            this.IsEditingGroupName = !this.IsEditingGroupName;
+            this.RaisePropertyChanged(string.Empty);
+        }
+
+        private async Task ToggleDescription()
+        {
+            if (this.IsEditingGroupDescription)
+            {
+                _ = await this.Group.UpdateGroupDescription(this.GroupDescription);
+                await this.ReloadGroupInfo();
+                this.UpdateDisplay();
+            }
+
+            this.IsEditingGroupDescription = !this.IsEditingGroupDescription;
+            this.RaisePropertyChanged(string.Empty);
+        }
+
+        private async Task<bool> ChangeGroupAvatar()
+        {
+            var supportedImages = GroupMeClientApi.Models.Attachments.ImageAttachment.SupportedExtensions.ToList();
+
+            var imageExtensions = string.Join(";", supportedImages.Select(x => "*" + x));
+            var imageExtensionsDisplay = string.Join(", ", supportedImages.Select(x => "*" + x));
+
+            var imageFilter = $"Images ({imageExtensionsDisplay})|{imageExtensions}";
+
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = imageFilter,
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                var extension = Path.GetExtension(openFileDialog.FileName);
+                if (supportedImages.Contains(extension))
+                {
+                    var imageData = File.ReadAllBytes(openFileDialog.FileName);
+                    var result = await this.Group.UpdateGroupAvatar(imageData);
+
+                    await this.ReloadGroupInfo();
+                    this.UpdateDisplay();
+                    this.RaisePropertyChanged(string.Empty);
+
+                    return result;
+                }
+            }
+
+            return false;
+        }
+
+        private async Task ChangeMuteStatus(bool isMuted)
+        {
+            if (isMuted)
+            {
+                await this.Group.MuteGroup(durationMinutes: null);
+            }
+            else
+            {
+                await this.Group.UnMuteGroup();
+            }
+
+            await this.ReloadGroupInfo();
+            this.RaisePropertyChanged(string.Empty);
         }
 
         private void ShowImage(AvatarControlViewModel image)
