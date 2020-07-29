@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -150,8 +149,13 @@ namespace GroupMeClient.ViewModels
         /// <summary>
         /// <see cref="StarredMessageGroup"/> provides a displayable collection of starred messages for a specific <see cref="IMessageContainer"/>.
         /// </summary>
-        public class StarredMessageGroup
+        public class StarredMessageGroup : ViewModelBase
         {
+            private bool isShowingStars;
+            private bool isShowingHidden;
+            private string type;
+            private bool isEmpty;
+
             /// <summary>
             /// Initializes a new instance of the <see cref="StarredMessageGroup"/> class.
             /// </summary>
@@ -171,24 +175,10 @@ namespace GroupMeClient.ViewModels
                     NewestAtBottom = true,
                 };
 
-                var context = cacheManager.OpenNewContext();
-                var starList = CacheManager.GetStarredMessagesForGroup(messageContainer, context);
-                var messagesList = new List<Message>();
+                this.CacheManager = cacheManager;
 
-                foreach (var star in starList)
-                {
-                    var msg = context.Messages.FirstOrDefault(m => m.Id == star.MessageId);
-                    messagesList.Add(msg);
-                }
-
-                this.IsEmpty = messagesList.Count == 0;
-
-                var sortedMessages = messagesList
-                    .AsQueryable()
-                    .OrderBy(m => m.CreatedAtUnixTime);
-
-                this.MessagesList.DisplayMessages(sortedMessages, context);
-                _ = this.MessagesList.LoadPage(0);
+                this.IsShowingStars = true;
+                this.IsShowingHidden = false;
             }
 
             /// <summary>
@@ -202,14 +192,107 @@ namespace GroupMeClient.ViewModels
             public PaginatedMessagesControlViewModel MessagesList { get; }
 
             /// <summary>
-            /// Gets a value indicating whether no starred messages are present for this group.
-            /// </summary>
-            public bool IsEmpty { get; }
-
-            /// <summary>
             /// Gets the group or chat avatar to display in the top bar.
             /// </summary>
             public AvatarControlViewModel TopBarAvatar { get; }
+
+            /// <summary>
+            /// Gets the type of messages being shown.
+            /// </summary>
+            public string Type
+            {
+                get => this.type;
+                private set => this.Set(() => this.Type, ref this.type, value);
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether no starred messages are present for this group.
+            /// </summary>
+            public bool IsEmpty
+            {
+                get => this.isEmpty;
+                private set => this.Set(() => this.IsEmpty, ref this.isEmpty, value);
+            }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether starred messages are being shown.
+            /// </summary>
+            public bool IsShowingStars
+            {
+                get => this.isShowingStars;
+                set
+                {
+                    this.Set(() => this.IsShowingStars, ref this.isShowingStars, value);
+                    if (value)
+                    {
+                        this.LoadStarredMessages();
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether hidden messages are being shown.
+            /// </summary>
+            public bool IsShowingHidden
+            {
+                get => this.isShowingHidden;
+                set
+                {
+                    this.Set(() => this.IsShowingHidden, ref this.isShowingHidden, value);
+                    if (value)
+                    {
+                        this.LoadHiddenMessages();
+                    }
+                }
+            }
+
+            private CacheManager CacheManager { get; }
+
+            private void LoadStarredMessages()
+            {
+                var context = this.CacheManager.OpenNewContext();
+                var starList = CacheManager.GetStarredMessagesForGroup(this.MessageContainer, context);
+                var messagesList = new List<Message>();
+
+                foreach (var star in starList)
+                {
+                    var msg = context.Messages.FirstOrDefault(m => m.Id == star.MessageId);
+                    messagesList.Add(msg);
+                }
+
+                this.IsEmpty = messagesList.Count == 0;
+                this.Type = "Starred";
+
+                var sortedMessages = messagesList
+                    .AsQueryable()
+                    .OrderBy(m => m.CreatedAtUnixTime);
+
+                this.MessagesList.DisplayMessages(sortedMessages, context);
+                _ = this.MessagesList.LoadPage(0);
+            }
+
+            private void LoadHiddenMessages()
+            {
+                var context = this.CacheManager.OpenNewContext();
+                var hiddenList = CacheManager.GetHiddenMessagesForGroup(this.MessageContainer, context);
+                var messagesList = new List<Message>();
+
+                foreach (var hidden in hiddenList)
+                {
+                    var msg = context.Messages.FirstOrDefault(m => m.Id == hidden.MessageId);
+                    messagesList.Add(msg);
+                }
+
+                this.IsEmpty = messagesList.Count == 0;
+                this.Type = "Hidden";
+
+                var sortedMessages = messagesList
+                    .AsQueryable()
+                    .OrderBy(m => m.CreatedAtUnixTime);
+
+                this.MessagesList.DisplayMessages(sortedMessages, context);
+                _ = this.MessagesList.LoadPage(0);
+            }
         }
     }
 }

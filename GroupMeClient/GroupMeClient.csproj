@@ -77,6 +77,13 @@
     <Compile Include="Caching\Migrations\20200630021510_StarMessageSupport.designer.cs">
       <DependentUpon>20200630021510_StarMessageSupport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Caching\Migrations\20200726203522_HiddenMessageSupport.cs" />
+    <Compile Include="Caching\Migrations\20200726203522_HiddenMessageSupport.designer.cs">
+      <DependentUpon>20200726203522_HiddenMessageSupport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Caching\Models\GroupIndexStatus.cs" />
+    <Compile Include="Caching\Models\HiddenMessage.cs" />
+    <Compile Include="Caching\Models\StarredMessage.cs" />
     <Compile Include="Caching\SuperIndexer.cs" />
     <Compile Include="Converters\IsGreaterThanConverter.cs" />
     <Compile Include="Converters\PercentageConverter.cs" />
@@ -285,11 +292,19 @@
     <Compile Include="Views\SearchView.xaml.cs">
       <DependentUpon>SearchView.xaml</DependentUpon>
     </Compile>
-    <Page Include="GroupMeDark.xaml">
+    <Page Include="Styles\ToggleDropdownGroupName.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="GroupMeLight.xaml">
+    <Page Include="Styles\ScrollBarStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\GroupMeDark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\GroupMeLight.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -498,7 +513,7 @@
       <Version>3.1.6</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
-      <Version>3.1.5</Version>
+      <Version>3.1.6</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

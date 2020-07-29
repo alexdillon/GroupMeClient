@@ -68,68 +68,10 @@
             </controls:AvatarControl>
 
             <!--Group Name and Plugins Drop Down Menu Button-->
-            <ToggleButton Grid.Column="1"
-                          BorderThickness="0"
-                          HorizontalAlignment="Left"
-                          FontSize="17" FontWeight="SemiBold"
-                          x:Name="toggleGroupOptionsButton">
-
-                <ToggleButton.Style>
-                    <Style TargetType="{x:Type ToggleButton}">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                    <Border HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="border" Background="{DynamicResource ControlBackgroundBrush}">
-                                        <ContentPresenter Margin="5"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsChecked" Value="true">
-                                            <Setter Property="Background" TargetName="border" Value="{DynamicResource ControlBackgroundBrush}"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ToggleButton.Style>
-
-                <!--Toggle Button Content-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.Resources>
-                        <iconPacks:Octicons x:Key="ArrowDown" Width="15" Height="15" Kind="TriangleDown"></iconPacks:Octicons>
-                        <iconPacks:Octicons x:Key="ArrowUp" Width="15" Height="15" Kind="TriangleUp"></iconPacks:Octicons>
-                    </Grid.Resources>
-
-                    <!--Chat Name Label-->
-                    <TextBlock Grid.Column="0"
-                            HorizontalAlignment="Stretch" VerticalAlignment="Center"
-                            Height="Auto" 
-                            FontSize="17" FontWeight="SemiBold"
-                            TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
-                            Text="{Binding Title}">
-                    </TextBlock>
-
-                    <!--Plugin Dropdown Arrow--> 
-                    <Label Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Label.Style>
-                            <Style TargetType="{x:Type Label}">
-                                <Setter Property="Content" Value="{StaticResource ArrowDown}" />
-
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsChecked, ElementName=toggleGroupOptionsButton}" Value="True">
-                                        <Setter Property="Content" Value="{StaticResource ArrowUp}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Label.Style>
-                    </Label>
-                </Grid>
-            </ToggleButton>
+            <ToggleButton Style="{StaticResource ToggleDropdownGroupName}"
+                          Grid.Column="1"
+                          Tag="{Binding Title}"
+                          x:Name="toggleGroupOptionsButton"/>
 
             <!--Close Group Button-->
             <Button Grid.Column="2"
@@ -193,6 +135,11 @@
                                             <ContextMenu>
                                                 <MenuItem Header="Reply To Message" 
                                                           Command="{Binding PlacementTarget.Tag.DataContext.InitiateReply, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
+                                                          CommandParameter="{Binding .}"/>
+                                                <Separator />
+                                                
+                                                <MenuItem Header="Hide Message" 
+                                                          Command="{Binding PlacementTarget.Tag.DataContext.HideMessage, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
                                                           CommandParameter="{Binding .}"/>
                                             </ContextMenu>
                                         </ContentPresenter.ContextMenu>

@@ -42,6 +42,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
@@ -117,9 +118,30 @@
                     </extensions:SelectableTextBlock>
                 </StackPanel>
 
-                <iconPacks:PackIconFontAwesome Width="18" Height="18"
+                <!--Hidden Message Indicator-->
+                <iconPacks:PackIconOcticons Width="15" Height="15"
                                                Grid.Row="1"
                                                Grid.Column="2"
+                                               VerticalAlignment="Top"
+                                               Margin="0,17,10,0"
+                                               HorizontalAlignment="Center"
+                                               Kind="X"
+                                               Visibility="{Binding IsMessageHidden, Converter={StaticResource boolToVisibilityConverter}}"
+                                               Foreground="Red"
+                                               Background="Transparent">
+                    <iconPacks:PackIconOcticons.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Command="{Binding DeHideAction}"
+                                      Visibility="{Binding IsMessageHidden, Converter={StaticResource boolToVisibilityConverter}}"
+                                      Header="De-Hide Message" />
+                        </ContextMenu>
+                    </iconPacks:PackIconOcticons.ContextMenu>
+                </iconPacks:PackIconOcticons>
+
+                <!--Starred Message Indicator-->
+                <iconPacks:PackIconFontAwesome Width="18" Height="18"
+                                               Grid.Row="1"
+                                               Grid.Column="3"
                                                VerticalAlignment="Top"
                                                Margin="0,13,10,0"
                                                HorizontalAlignment="Center"
@@ -140,7 +162,8 @@
                     </iconPacks:PackIconFontAwesome.ContextMenu>
                 </iconPacks:PackIconFontAwesome>
 
-                <Grid Grid.Column="3" Grid.Row="1" 
+                <!--Like Button-->
+                <Grid Grid.Column="4" Grid.Row="1" 
                       MaxHeight="60"
                       VerticalAlignment="Top"
                       Background="Transparent"
@@ -260,6 +283,7 @@
                     </Grid>
                 </Canvas>
 
+                <!--Message Right-Click Details-->
                 <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
                             Orientation="Vertical"
                             Background="{DynamicResource MessageDetailsBrush}"
