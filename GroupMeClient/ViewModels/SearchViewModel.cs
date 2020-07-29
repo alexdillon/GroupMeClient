@@ -31,6 +31,7 @@ namespace GroupMeClient.ViewModels
         private bool filterHasAttachedDocument;
         private DateTime filterStartDate;
         private DateTime filterEndDate = DateTime.Now.AddDays(1);
+        private Member filterMessagesFrom;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchViewModel"/> class.
@@ -61,6 +62,8 @@ namespace GroupMeClient.ViewModels
 
             this.ResetFilters = new RelayCommand<bool>(this.ResetFilterFields);
 
+            this.Members = new ObservableCollection<Member>();
+
             this.Loaded = new RelayCommand(async () => await this.LoadIndexedGroups(), true);
         }
 
@@ -73,6 +76,11 @@ namespace GroupMeClient.ViewModels
         /// Gets a listing of all available Groups and Chats.
         /// </summary>
         public ObservableCollection<GroupControlViewModel> AllGroupsChats { get; }
+
+        /// <summary>
+        /// Gets a collection of the <see cref="Member"/>s who have sent messages in the selected group or chat.
+        /// </summary>
+        public ObservableCollection<Member> Members { get; }
 
         /// <summary>
         /// Gets the action to be be performed when the big popup has been closed.
@@ -170,6 +178,15 @@ namespace GroupMeClient.ViewModels
         {
             get => this.filterEndDate;
             set => this.SetSearchProperty(() => this.FilterEndDate, ref this.filterEndDate, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Member"/> from which to display messages.
+        /// </summary>
+        public Member FilterMessagesFrom
+        {
+            get => this.filterMessagesFrom;
+            set => this.SetSearchProperty(() => this.FilterMessagesFrom, ref this.filterMessagesFrom, value);
         }
 
         /// <summary>
@@ -275,6 +292,21 @@ namespace GroupMeClient.ViewModels
 
             this.SearchTerm = string.Empty;
             this.SelectedGroupName = group.Name;
+
+            this.Members.Clear();
+            if (this.SelectedGroupChat is Group g)
+            {
+                foreach (var member in g.Members)
+                {
+                    this.Members.Add(member);
+                }
+            }
+            else if (this.SelectedGroupChat is Chat c)
+            {
+                this.Members.Add(c.OtherUser);
+                this.Members.Add(c.WhoAmI());
+            }
+
             this.ContextView.DisplayMessages(null, null);
         }
 
@@ -323,7 +355,26 @@ namespace GroupMeClient.ViewModels
             var startDateUnix = ((DateTimeOffset)startDate).ToUnixTimeSeconds();
             var endDateUnix = ((DateTimeOffset)endDate).ToUnixTimeSeconds();
 
-            var results = messagesForGroupChat
+            IQueryable<Message> messagesFromMemberForGroupChat;
+            if (this.FilterMessagesFrom == null)
+            {
+                // Show messages from all chat members
+                messagesFromMemberForGroupChat = messagesForGroupChat;
+            }
+            else
+            {
+                var userId = this.FilterMessagesFrom.UserId;
+                if (string.IsNullOrEmpty(userId) && this.SelectedGroupChat is Chat chat)
+                {
+                    // In Chats, the OtherUser field doesn't have the UserId set from GroupMe's API...
+                    userId = chat.Id;
+                }
+
+                messagesFromMemberForGroupChat = messagesForGroupChat
+                    .Where(m => m.UserId == userId);
+            }
+
+            var results = messagesFromMemberForGroupChat
                 .Where(m => m.Text.ToLower().Contains(this.SearchTerm.ToLower()))
                 .Where(m => m.CreatedAtUnixTime >= startDateUnix)
                 .Where(m => m.CreatedAtUnixTime <= endDateUnix);

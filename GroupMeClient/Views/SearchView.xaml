@@ -191,6 +191,15 @@
                     <CheckBox Content="Has Document Attachment" IsChecked="{Binding FilterHasAttachedDocument, Mode=TwoWay}" />
                     <CheckBox Content="Mentions Other Group Members" IsChecked="{Binding FilterHasAttachedMentions, Mode=TwoWay}" />
 
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Sent By: " VerticalAlignment="Center" />
+                        <ComboBox ItemsSource="{Binding Members}" 
+                                  SelectedItem="{Binding FilterMessagesFrom, Mode=TwoWay}" 
+                                  DisplayMemberPath="Name" 
+                                  Controls:TextBoxHelper.ClearTextButton="True"
+                                  Width="200"/>
+                    </StackPanel>
+
                     <Button Margin="0,5,0,0" Command="{Binding ResetFilters}">
                         <Button.Content>
                             <StackPanel Orientation="Horizontal">
