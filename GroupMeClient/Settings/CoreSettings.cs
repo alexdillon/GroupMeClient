@@ -15,5 +15,11 @@ namespace GroupMeClient.Settings
         /// Gets or sets the authorization token used for GroupMe Api Operations.
         /// </summary>
         public string AuthToken { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time interval, in minutes, for how frequently the application should check for available
+        /// updates.
+        /// </summary>
+        public int ApplicationUpdateFrequencyMinutes { get; set; } = 60;
     }
 }

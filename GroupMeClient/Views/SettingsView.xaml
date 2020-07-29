@@ -87,17 +87,35 @@
                         <TextBlock Foreground="White" Text="About"/>
                     </GroupBox.Header>
 
-                    <TextBlock TextWrapping="Wrap">
-                        <Run FontWeight="SemiBold">GroupMe Desktop Client is a modular client for accessing GroupMe on Windows.</Run>
-                        <LineBreak />
-                        By Alex Dillon, 2020
-                        <LineBreak />
-                        <LineBreak />
-                        Version: <Run Text="{Binding ApplicationVersion, Mode=OneWay}"/>
-                        <LineBreak />
-                        Built: <Run Text="{Binding ApplicationCommit, Mode=OneWay}"/>
-                    </TextBlock>
+                    <StackPanel Orientation="Vertical">
+                        
+                        <TextBlock TextWrapping="Wrap" Grid.Row="0">
+                            <Run FontWeight="SemiBold">GroupMe Desktop Client is a modular client for accessing GroupMe on Windows.</Run>
+                            <LineBreak />
+                            By Alex Dillon, 2020
+                            <LineBreak />
+                            <LineBreak />
+                            Version: <Run Text="{Binding ApplicationVersion, Mode=OneWay}"/>
+                            <LineBreak />
+                            Built: <Run Text="{Binding ApplicationCommit, Mode=OneWay}"/>
+                            <LineBreak />
+                            <Hyperlink Command="{Binding ViewReleaseNotesCommand}">View Release Notes</Hyperlink>
+                        </TextBlock>
 
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <Button Content="Check for Updates" 
+                                    Command="{Binding CheckForUpdatesCommand}"/>
+
+                            <controls:ProgressRing IsActive="{Binding IsUpdating}"
+                                                   VerticalAlignment="Center"
+                                                   Width="12"
+                                                   Height="12"
+                                                   Margin="10,0,0,0"/>
+                            <TextBlock Text="{Binding UpdateStatus}"
+                                       VerticalAlignment="Center"
+                                       Margin="5,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
                 </GroupBox>
 
                 <!--Plugins Area-->

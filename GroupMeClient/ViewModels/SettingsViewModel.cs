@@ -1,10 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
+using GroupMeClient.Updates;
 using GroupMeClient.ViewModels.Controls;
-using MahApps.Metro.Controls.Dialogs;
 
 namespace GroupMeClient.ViewModels
 {
@@ -13,17 +15,24 @@ namespace GroupMeClient.ViewModels
     /// </summary>
     public class SettingsViewModel : ViewModelBase
     {
+        private string updateStatus;
+        private bool isUpdating;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsViewModel"/> class.
         /// </summary>
         /// <param name="settingsManager">The settings manager to use.</param>
-        public SettingsViewModel(Settings.SettingsManager settingsManager)
+        /// <param name="updateAssist">The update manager to use.</param>
+        public SettingsViewModel(Settings.SettingsManager settingsManager, UpdateAssist updateAssist)
         {
             this.InstalledPlugins = new ObservableCollection<Plugin>();
             this.SettingsManager = settingsManager;
+            this.UpdateAssist = updateAssist;
 
             this.ManageReposCommand = new RelayCommand(this.ManageRepos);
             this.ManageUpdatesCommand = new RelayCommand(this.ManageUpdates);
+            this.ViewReleaseNotesCommand = new RelayCommand(this.ViewReleaseNotes);
+            this.CheckForUpdatesCommand = new RelayCommand(this.CheckForApplicationUpdates, canExecute: () => !this.IsUpdating);
 
             this.DialogManager = new PopupViewModel()
             {
@@ -56,6 +65,16 @@ namespace GroupMeClient.ViewModels
         public PopupViewModel DialogManager { get; }
 
         /// <summary>
+        /// Gets the command used to view release notes.
+        /// </summary>
+        public ICommand ViewReleaseNotesCommand { get; }
+
+        /// <summary>
+        /// Gets the command used to check for application updates.
+        /// </summary>
+        public ICommand CheckForUpdatesCommand { get; }
+
+        /// <summary>
         /// Gets the command used to open a popup to manage plugin repositories.
         /// </summary>
         public ICommand ManageReposCommand { get; }
@@ -64,6 +83,24 @@ namespace GroupMeClient.ViewModels
         /// Gets the command used to open a popup to manage plugin updates.
         /// </summary>
         public ICommand ManageUpdatesCommand { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the application is checking for updates.
+        /// </summary>
+        public bool IsUpdating
+        {
+            get => this.isUpdating;
+            private set => this.Set(() => this.IsUpdating, ref this.isUpdating, value);
+        }
+
+        /// <summary>
+        /// Gets the status of the current update operation.
+        /// </summary>
+        public string UpdateStatus
+        {
+            get => this.updateStatus;
+            private set => this.Set(() => this.UpdateStatus, ref this.updateStatus, value);
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the UI Setting for only showing previews when multiple images are attached to a single message is enabled.
@@ -175,6 +212,8 @@ namespace GroupMeClient.ViewModels
 
         private Settings.SettingsManager SettingsManager { get; }
 
+        private UpdateAssist UpdateAssist { get; }
+
         private void LoadPluginInfo()
         {
             // Load Group Chat Plugins
@@ -213,6 +252,43 @@ namespace GroupMeClient.ViewModels
             {
                 var pluginBase = plugin as GroupMeClientPlugin.PluginBase;
                 this.InstalledPlugins.Add(new Plugin() { Name = pluginBase.PluginDisplayName, Version = pluginBase.PluginVersion, Type = "Message Effect Plugins", Source = "Manually Installed" });
+            }
+        }
+
+        private void ViewReleaseNotes()
+        {
+            var viewer = new ViewReleaseNotesControlViewModel(this.UpdateAssist);
+            this.DialogManager.PopupDialog = viewer;
+        }
+
+        private void CheckForApplicationUpdates()
+        {
+            if (this.UpdateAssist.CanShutdown || this.IsUpdating)
+            {
+                // Don't check for updates if an update is already is progress
+                this.IsUpdating = true;
+                this.UpdateStatus = "Checking for Updates";
+                this.UpdateAssist.BeginCheckForUpdates();
+                this.UpdateAssist.UpdateMonitor.Task.ContinueWith(this.UpdateCheckDone);
+            }
+        }
+
+        private void UpdateCheckDone(Task<bool> t)
+        {
+            this.IsUpdating = false;
+            if (t.Result == true)
+            {
+                // An update was found and installed
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    Messenger.Default.Send(new Messaging.RebootRequestMessage($"Reboot to Finish Updating GMDC"));
+                });
+
+                this.UpdateStatus = string.Empty;
+            }
+            else
+            {
+                this.UpdateStatus = "Up To Date!";
             }
         }
 
