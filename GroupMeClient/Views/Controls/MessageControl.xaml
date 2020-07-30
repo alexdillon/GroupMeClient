@@ -215,7 +215,7 @@
                 </Grid>
 
                 <Canvas x:Name="likesCanvas"
-                        Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" Margin="0,-45,16,0"
+                        Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="5" Margin="0,-45,16,0"
                         Background="Transparent">
 
                     <!--Use a trigger to change the visibility of the liker's popup area-->
