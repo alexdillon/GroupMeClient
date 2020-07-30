@@ -273,7 +273,7 @@ namespace GroupMeClient.ViewModels
             }
         }
 
-        private void UpdateCheckDone(Task<bool> t)
+        private void UpdateCheckDone(Task<bool?> t)
         {
             this.IsUpdating = false;
             if (t.Result == true)
@@ -286,9 +286,13 @@ namespace GroupMeClient.ViewModels
 
                 this.UpdateStatus = string.Empty;
             }
-            else
+            else if (t.Result == false)
             {
                 this.UpdateStatus = "Up To Date!";
+            }
+            else if (t.Result == false)
+            {
+                this.UpdateStatus = "Update Service Not Available.";
             }
         }
 

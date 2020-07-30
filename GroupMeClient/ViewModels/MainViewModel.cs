@@ -411,7 +411,7 @@ namespace GroupMeClient.ViewModels
             }
         }
 
-        private void UpdateCompleted(Task<bool> result)
+        private void UpdateCompleted(Task<bool?> result)
         {
             // safe to shutdown now.
             Application.Current.Dispatcher.Invoke(() =>
