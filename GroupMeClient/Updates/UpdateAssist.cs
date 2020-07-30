@@ -48,13 +48,15 @@ namespace GroupMeClient.Updates
         /// <summary>
         /// Gets an awaitable object to monitor the status of an ongoing update operation.
         /// </summary>
-        public TaskCompletionSource<bool> UpdateMonitor { get; private set; }
+        public TaskCompletionSource<bool?> UpdateMonitor { get; private set; }
 
         private UpdateManager UpdateManager { get; set; }
 
         private bool HasAlreadyUpdated { get; set; } = false;
 
         private Timer UpdateTimer { get; set; }
+
+        private Semaphore UpdateSem { get; } = new Semaphore(1, 1);
 
         private string GMDCRepoUser => "alexdillon";
 
@@ -109,7 +111,10 @@ namespace GroupMeClient.Updates
         /// </summary>
         public void BeginCheckForUpdates()
         {
-            this.UpdateMonitor = new TaskCompletionSource<bool>();
+            // Ensure exclusive updater access.
+            this.UpdateSem.WaitOne();
+
+            this.UpdateMonitor = new TaskCompletionSource<bool?>();
             if (this.IsInstalled && !this.HasAlreadyUpdated)
             {
                 // Only install updates if this is running as an installed copy
@@ -119,8 +124,7 @@ namespace GroupMeClient.Updates
             }
             else
             {
-                this.UpdateMonitor.SetResult(false);
-                this.CanShutdown = true;
+                this.SetUpdateStatus(updateSucceeded: null);
             }
         }
 
@@ -129,29 +133,47 @@ namespace GroupMeClient.Updates
             try
             {
                 this.UpdateManager = manager.Result;
-
                 this.UpdateManager.UpdateApp().ContinueWith(this.UpdateCompleted);
-                this.CanShutdown = false;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Failure while checking for updates. Message: {ex.Message}");
-                this.CanShutdown = true;
+                this.SetUpdateStatus(updateSucceeded: null);
             }
         }
 
         private void UpdateCompleted(Task<ReleaseEntry> releaseEntry)
         {
-            var result = releaseEntry.Result;
-            this.UpdateMonitor.SetResult(result != null);
-            this.CanShutdown = true;
+            bool? updateSucceeded = false;
 
-            if (result != null)
+            try
             {
+                var result = releaseEntry.Result;
+                updateSucceeded = result != null;
+            }
+            catch (Exception)
+            {
+                updateSucceeded = null;
+            }
+            finally
+            {
+                this.UpdateManager.Dispose();
+                this.SetUpdateStatus(updateSucceeded);
+            }
+        }
+
+        private void SetUpdateStatus(bool? updateSucceeded)
+        {
+            this.CanShutdown = true;
+            this.UpdateMonitor.SetResult(updateSucceeded);
+
+            if (updateSucceeded == true)
+            {
+                // No need to re-check for updates in the future if they are already applied and waiting for a reboot
                 this.HasAlreadyUpdated = true;
             }
 
-            this.UpdateManager.Dispose();
+            this.UpdateSem.Release();
         }
 
         /// <summary>
