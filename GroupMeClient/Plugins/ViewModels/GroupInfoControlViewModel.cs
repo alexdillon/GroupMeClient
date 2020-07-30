@@ -36,6 +36,8 @@ namespace GroupMeClient.Plugins.ViewModels
             this.EditGroupDescriptionCommand = new RelayCommand(async () => await this.ToggleDescription(), true);
             this.ChangeGroupAvatarCommand = new RelayCommand(async () => await this.ChangeGroupAvatar(), true);
             this.ShowImageCommand = new RelayCommand<AvatarControlViewModel>(this.ShowImage);
+
+            this.ReloadGroupInfo().ContinueWith((t) => this.RaisePropertyChanged(string.Empty));
         }
 
         /// <summary>
