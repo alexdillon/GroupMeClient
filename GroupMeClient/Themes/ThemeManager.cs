@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Windows;
+using GroupMeClient.Core.Settings;
 using MahApps.Metro;
 
 namespace GroupMeClient.Wpf.Themes
@@ -91,6 +93,29 @@ namespace GroupMeClient.Wpf.Themes
 
             Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent -= Windows_ThemeChangedEvent;
             Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent += Windows_ThemeChangedEvent;
+        }
+
+        /// <summary>
+        /// Updates the current theme of the application.
+        /// </summary>
+        /// <param name="theme">The new theme mode to apply.</param>
+        public static void UpdateTheme(ThemeOptions theme)
+        {
+            switch (theme)
+            {
+                case ThemeOptions.Dark:
+                    SetDarkTheme();
+                    break;
+
+                case ThemeOptions.Light:
+                    SetLightTheme();
+                    break;
+
+                case ThemeOptions.Default:
+                default:
+                    SetSystemTheme();
+                    break;
+            }
         }
 
         private static void Windows_ThemeChangedEvent()

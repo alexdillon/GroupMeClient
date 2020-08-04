@@ -13,7 +13,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="ImageGalleryView" Height="600" Width="920">
+        Title="Image Gallery" Height="600" Width="920">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

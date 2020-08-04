@@ -391,6 +391,7 @@
 
                         <Controls:ToggleSwitch Content="Mute Group"
                                                Grid.Row="1"
+                                               Foreground="White"
                                                IsChecked="{Binding IsMuted}"
                                                HorizontalAlignment="Center"/>
                     </Grid>

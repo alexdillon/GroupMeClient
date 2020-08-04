@@ -16,6 +16,7 @@
             GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.Register<Core.Services.IMessageBoxService, Wpf.Services.WpfMessageBoxService>();
             GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.Register<Core.Services.IMessageRendererService, Wpf.Services.WpfMessageRenderer>();
             GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.Register<Core.Services.IUserInterfaceDispatchService, Wpf.Services.WpfDispatcherService>();
+            GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.Register<Core.Services.IRestoreService, Wpf.Services.WpfRestoreService>();
             GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.Register<Core.Services.IOperatingSystemUIService, Wpf.Services.WinOperatingSystemUIService>();
 
             // Create Plugin Manager singleton

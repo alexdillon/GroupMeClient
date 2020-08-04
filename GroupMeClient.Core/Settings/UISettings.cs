@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Reactive.Subjects;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace GroupMeClient.Core.Settings
@@ -8,7 +10,7 @@ namespace GroupMeClient.Core.Settings
     /// </summary>
     public class UISettings
     {
-        private ThemeOptions theme;
+        private readonly BehaviorSubject<ThemeOptions> theme = new BehaviorSubject<ThemeOptions>(ThemeOptions.Default);
 
         /// <summary>
         /// Gets or sets a value indicating whether messages containing mutliple images are shown as previews.
@@ -59,27 +61,13 @@ namespace GroupMeClient.Core.Settings
         [JsonConverter(typeof(StringEnumConverter))]
         public ThemeOptions Theme
         {
-            get => this.theme;
-
-            set
-            {
-                this.theme = value;
-
-                // TODO the way themes are handled needs revamped
-
-                //switch (this.Theme)
-                //{
-                //    case ThemeOptions.Light:
-                //        Themes.ThemeManager.SetLightTheme();
-                //        break;
-                //    case ThemeOptions.Dark:
-                //        Themes.ThemeManager.SetDarkTheme();
-                //        break;
-                //    case ThemeOptions.Default:
-                //        Themes.ThemeManager.SetSystemTheme();
-                //        break;
-                //}
-            }
+            get => this.theme.Value;
+            set => this.theme.OnNext(value);
         }
+
+        /// <summary>
+        /// Gets an observable for the currently selected theme.
+        /// </summary>
+        public IObservable<ThemeOptions> CurrentSelectedTheme => this.theme;
     }
 }

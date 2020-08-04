@@ -16,6 +16,7 @@ using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClient.Wpf;
 using GroupMeClient.Wpf.Notifications.Display;
 using GroupMeClient.Wpf.Notifications.Display.WpfToast;
+using GroupMeClient.Wpf.Themes;
 using GroupMeClient.Wpf.Updates;
 using GroupMeClientApi.Models;
 using MahApps.Metro.Controls;
@@ -235,6 +236,9 @@ namespace GroupMeClient.Core.ViewModels
             this.SettingsManager = new Settings.SettingsManager(this.SettingsPath);
             this.SettingsManager.LoadSettings();
 
+            this.SettingsManager.UISettings.CurrentSelectedTheme.Subscribe(
+                onNext: (s) => ThemeManager.UpdateTheme(s));
+
             PluginInstaller.SetupPluginInstaller(this.PluginsPath);
 
             var pluginManager = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IPluginManagerService>();
@@ -297,9 +301,8 @@ namespace GroupMeClient.Core.ViewModels
                 PopupDialog = null,
             };
 
-            // TODO Fix native services as well
-            // Native.RecoveryManager.RegisterForRecovery();
-            // Native.RecoveryManager.RegisterForRestart();
+            Wpf.Native.RecoveryManager.RegisterForRecovery();
+            Wpf.Native.RecoveryManager.RegisterForRestart();
         }
 
         private void RegisterNotifications()
@@ -523,9 +526,8 @@ namespace GroupMeClient.Core.ViewModels
 
         private void RestartCommand()
         {
-            // TODO again native services are a mess
-            // System.Diagnostics.Process.Start(Application.ResourceAssembly.Location, RecoveryManager.RestartCommandLine);
-            Application.Current.Shutdown();
+            var restoreService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IRestoreService>();
+            restoreService.SoftApplicationRestart();
         }
     }
 }

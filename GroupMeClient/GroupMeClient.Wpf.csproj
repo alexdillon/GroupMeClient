@@ -111,6 +111,7 @@
       <DependentUpon>ImageGalleryWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\WpfFileDialogService.cs" />
+    <Compile Include="Services\WpfRestoreService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Themes\ThemeManager.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />

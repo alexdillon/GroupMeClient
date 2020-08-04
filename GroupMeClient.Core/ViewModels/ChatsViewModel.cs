@@ -413,8 +413,8 @@ namespace GroupMeClient.Core.ViewModels
 
         private void CheckForRestore()
         {
-            // TODO the way arguments are done needs revamped too
-           // if (Environment.GetCommandLineArgs().Contains(Native.RecoveryManager.RestartCommandLine))
+            var restoreService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IRestoreService>();
+            if (restoreService.ShouldRestoreState)
             {
                 var openChats = this.SettingsManager.ChatsSettings.OpenChats.ToList();
                 openChats.Reverse();

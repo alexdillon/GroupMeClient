@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -46,7 +45,7 @@ namespace GroupMeClient.Wpf.Native
         /// </summary>
         public class ThemeUpdateHook
         {
-            private static readonly Lazy<ThemeUpdateHook> LazyPluginManager = new Lazy<ThemeUpdateHook>(() => new ThemeUpdateHook());
+            private static readonly Lazy<ThemeUpdateHook> LazyThemeHook = new Lazy<ThemeUpdateHook>(() => new ThemeUpdateHook());
 
             private ThemeUpdateHook()
             {
@@ -76,7 +75,7 @@ namespace GroupMeClient.Wpf.Native
             /// <summary>
             /// Gets the instance of the <see cref="PluginManager"/> for the current application.
             /// </summary>
-            public static ThemeUpdateHook Instance => LazyPluginManager.Value;
+            public static ThemeUpdateHook Instance => LazyThemeHook.Value;
 
             private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
             {

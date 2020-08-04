@@ -29,7 +29,7 @@ namespace GroupMeClient.Wpf.Updates
 
             var isVsDebug = updateDotExe.Contains(Path.Combine("Debug", "..", "Update.exe"));
 
-            this.IsInstalled = true || File.Exists(updateDotExe) && !isVsDebug;
+            this.IsInstalled = File.Exists(updateDotExe) && !isVsDebug;
             this.CanShutdown = true;
         }
 
