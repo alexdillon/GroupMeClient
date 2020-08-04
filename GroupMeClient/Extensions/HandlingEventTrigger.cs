@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace GroupMeClient.Extensions
+namespace GroupMeClient.Wpf.Extensions
 {
     /// <summary>
     /// <see cref="HandlingEventTrigger"/> is an event trigger behavior that ensures the source event is marked

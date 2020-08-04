@@ -4,15 +4,16 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using GroupMeClient.Core.Services;
 using Octokit;
 using Squirrel;
 
-namespace GroupMeClient.Updates
+namespace GroupMeClient.Wpf.Updates
 {
     /// <summary>
     /// <see cref="UpdateAssist"/> provides automatic upgrade functionality with Squirrel.
     /// </summary>
-    public class UpdateAssist
+    public class UpdateAssist : IUpdateService
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UpdateAssist"/> class.
@@ -28,7 +29,7 @@ namespace GroupMeClient.Updates
 
             var isVsDebug = updateDotExe.Contains(Path.Combine("Debug", "..", "Update.exe"));
 
-            this.IsInstalled = File.Exists(updateDotExe) && !isVsDebug;
+            this.IsInstalled = true || File.Exists(updateDotExe) && !isVsDebug;
             this.CanShutdown = true;
         }
 
@@ -64,13 +65,10 @@ namespace GroupMeClient.Updates
 
         private string GMDCGitHubRepoUrl => $"https://github.com/{this.GMDCRepoUser}/{this.GMDCRepoName}";
 
-        /// <summary>
-        /// Gets all versions of the GMDC application that are currently published.
-        /// </summary>
-        /// <returns>A collection of <see cref="ReleaseInfo"/> for all published releases.</returns>
+        /// <inheritdoc/>
         public async Task<IEnumerable<ReleaseInfo>> GetVersionsAsync()
         {
-            var header = new ProductHeaderValue("GroupMeDesktopClient", ThisAssembly.SimpleVersion);
+            var header = new ProductHeaderValue("GroupMeDesktopClient", GroupMeClient.Core.GlobalAssemblyInfo.SimpleVersion);
             var github = new GitHubClient(header);
             var releases = await github.Repository.Release.GetAll(this.GMDCRepoUser, this.GMDCRepoName);
 
@@ -85,10 +83,7 @@ namespace GroupMeClient.Updates
             return results;
         }
 
-        /// <summary>
-        /// Starts a background task that will run and check for updates on a regular interval.
-        /// </summary>
-        /// <param name="interval">The interval on which to check for updates.</param>
+        /// <inheritdoc/>
         public void StartUpdateTimer(TimeSpan interval)
         {
             this.UpdateTimer = new Timer(
@@ -98,17 +93,13 @@ namespace GroupMeClient.Updates
                 interval);
         }
 
-        /// <summary>
-        /// Cancels the background update timer.
-        /// </summary>
+        /// <inheritdoc/>
         public void CancelUpdateTimer()
         {
             this.UpdateTimer = null;
         }
 
-        /// <summary>
-        /// Begins checking for updates, and automatically installing and applicable updates in the background.
-        /// </summary>
+        /// <inheritdoc/>
         public void BeginCheckForUpdates()
         {
             // Ensure exclusive updater access.
@@ -174,32 +165,6 @@ namespace GroupMeClient.Updates
             }
 
             this.UpdateSem.Release();
-        }
-
-        /// <summary>
-        /// <see cref="ReleaseInfo"/> describes a specific version of th GMDC application.
-        /// </summary>
-        public class ReleaseInfo
-        {
-            /// <summary>
-            /// Gets or sets the version string for this release.
-            /// </summary>
-            public string Version { get; set; }
-
-            /// <summary>
-            /// Gets or sets the release notes for this release.
-            /// </summary>
-            public string ReleaseNotes { get; set; }
-
-            /// <summary>
-            /// Gets or sets a value indicating whether this version is a pre-release.
-            /// </summary>
-            public bool PreRelease { get; set; }
-
-            /// <summary>
-            /// Gets or sets a value indicating whether this release is the newest.
-            /// </summary>
-            public bool IsLatest { get; set; }
         }
     }
 }

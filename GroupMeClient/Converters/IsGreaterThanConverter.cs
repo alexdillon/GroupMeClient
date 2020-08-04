@@ -3,7 +3,7 @@ using System.Collections;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace GroupMeClient.Converters
+namespace GroupMeClient.Wpf.Converters
 {
     /// <summary>
     /// <see cref="IsGreaterThanConverter"/> provides a converter indicating whether are value is greater than a specified value.

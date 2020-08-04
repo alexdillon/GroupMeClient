@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using GroupMeClient.Core.Plugins;
+using GroupMeClient.Core.Services;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
 using GroupMeClientPlugin.MessageCompose;
 
-namespace GroupMeClient.Plugins
+namespace GroupMeClient.Wpf.Plugins
 {
     /// <summary>
     /// <see cref="PluginManager"/> provides functionality to dynamically load <see cref="IPluginBase"/>-based
@@ -17,19 +19,8 @@ namespace GroupMeClient.Plugins
     /// <remarks>
     /// Based on https://code.msdn.microsoft.com/windowsdesktop/Creating-a-simple-plugin-b6174b62.
     /// </remarks>
-    public sealed class PluginManager
+    public sealed class PluginManager : IPluginManagerService
     {
-        private static readonly Lazy<PluginManager> LazyPluginManager = new Lazy<PluginManager>(() => new PluginManager());
-
-        private PluginManager()
-        {
-        }
-
-        /// <summary>
-        /// Gets the instance of the <see cref="PluginManager"/> for the current application.
-        /// </summary>
-        public static PluginManager Instance => LazyPluginManager.Value;
-
         /// <summary>
         /// Gets the available <see cref="IGroupChatPlugin"/> plugins.
         /// </summary>
@@ -213,8 +204,8 @@ namespace GroupMeClient.Plugins
                 }
             }
 
-            // Load plugins that ship directly in GMDC
-            this.GroupChatPluginsBuiltIn.Add(new ViewModels.ImageGalleryWindowViewModel.ImageGalleryPlugin());
+            // Load plugins that ship directly in GMDC/Wpf
+            this.GroupChatPluginsBuiltIn.Add(new ImageGalleryPlugin());
         }
     }
 }

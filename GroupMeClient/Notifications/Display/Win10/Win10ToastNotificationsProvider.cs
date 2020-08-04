@@ -5,12 +5,14 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using GroupMeClient.Core.Settings;
 using GroupMeClientApi.Models;
+using GroupMeClientPlugin.Notifications.Display;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 
-namespace GroupMeClient.Notifications.Display.Win10
+namespace GroupMeClient.Wpf.Notifications.Display.Win10
 {
     /// <summary>
     /// Provides an adapter for <see cref="PopupNotificationProvider"/> to use Toast Notifications within the Client Window.
@@ -21,7 +23,7 @@ namespace GroupMeClient.Notifications.Display.Win10
         /// Initializes a new instance of the <see cref="Win10ToastNotificationsProvider"/> class.
         /// </summary>
         /// <param name="settingsManager">The settings instance to use.</param>
-        public Win10ToastNotificationsProvider(Settings.SettingsManager settingsManager)
+        public Win10ToastNotificationsProvider(SettingsManager settingsManager)
         {
             // Register AUMID and COM server (for Desktop Bridge apps, this no-ops)
             DesktopNotificationManagerCompat.RegisterAumidAndComServer<GroupMeNotificationActivator>(ApplicationId);
@@ -63,7 +65,7 @@ namespace GroupMeClient.Notifications.Display.Win10
 
         private bool HasPerformedCleanup { get; set; } = false;
 
-        private Settings.SettingsManager SettingsManager { get; }
+        private SettingsManager SettingsManager { get; }
 
         private string ToastImagePath => Path.GetTempPath() + "WindowsNotifications.GroupMeToasts.Images";
 

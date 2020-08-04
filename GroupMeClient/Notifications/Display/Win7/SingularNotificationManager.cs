@@ -4,7 +4,7 @@ using System.Windows.Threading;
 using Notification.Wpf;
 using Notification.Wpf.Controls;
 
-namespace GroupMeClient.Notifications.Display.Win7
+namespace GroupMeClient.Wpf.Notifications.Display.Win7
 {
     /// <summary>
     /// <see cref="SingularNotificationManager"/> provides an implementation of <see cref="Notification.Wpf.INotificationManager"/>

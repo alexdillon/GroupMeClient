@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
-namespace GroupMeClient.Native
+namespace GroupMeClient.Wpf.Native
 {
     /// <summary>
     /// <see cref="WindowsThemeUtils"/> provides helper methods to invoke native operating system themeing functionality when running on Windows.

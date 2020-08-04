@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
-namespace GroupMeClient.Extensions
+namespace GroupMeClient.Wpf.Extensions
 {
     /// <summary>
     /// <see cref="EventFocusAttachment"/> provides support for assigning focus after a <see cref="ToggleButton"/> is clicked.

@@ -2,7 +2,7 @@
 
 using System.Windows.Controls;
 
-namespace GroupMeClient.Views.Controls.Attachments
+namespace GroupMeClient.Wpf.Views.Controls.Attachments
 {
     /// <summary>
     /// Interaction logic for FileAttachmentControl.xaml

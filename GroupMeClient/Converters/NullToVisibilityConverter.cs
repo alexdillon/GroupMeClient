@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace GroupMeClient.Converters
+namespace GroupMeClient.Wpf.Converters
 {
     /// <summary>
     /// <see cref="NullToVisibilityConverter"/> provides a converter to hide null items in XAML.

@@ -9,20 +9,22 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
-using GroupMeClient.Native;
-using GroupMeClient.Notifications.Display;
-using GroupMeClient.Notifications.Display.WpfToast;
-using GroupMeClient.Plugins;
-using GroupMeClient.Updates;
-using GroupMeClient.ViewModels.Controls;
+using GroupMeClient.Core.Notifications;
+using GroupMeClient.Core.Plugins;
+using GroupMeClient.Core.Services;
+using GroupMeClient.Core.ViewModels.Controls;
+using GroupMeClient.Wpf;
+using GroupMeClient.Wpf.Notifications.Display;
+using GroupMeClient.Wpf.Notifications.Display.WpfToast;
+using GroupMeClient.Wpf.Updates;
 using GroupMeClientApi.Models;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 
-namespace GroupMeClient.ViewModels
+namespace GroupMeClient.Core.ViewModels
 {
     /// <summary>
-    /// <see cref="MainViewModel"/> is the top-level ViewModel for the GroupMe Desktop Client.
+    /// <see cref="MainViewModel"/> is the top-level ViewModel for the GroupMe Desktop Client, WPF implementation.
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
@@ -39,6 +41,7 @@ namespace GroupMeClient.ViewModels
         /// </summary>
         public MainViewModel()
         {
+            Startup.StartupServices();
             Directory.CreateDirectory(this.DataRoot);
 
             Utilities.TempFileUtils.InitializeTempStorage();
@@ -233,7 +236,9 @@ namespace GroupMeClient.ViewModels
             this.SettingsManager.LoadSettings();
 
             PluginInstaller.SetupPluginInstaller(this.PluginsPath);
-            PluginManager.Instance.LoadPlugins(this.PluginsPath);
+
+            var pluginManager = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IPluginManagerService>();
+            pluginManager.LoadPlugins(this.PluginsPath);
 
             Messenger.Default.Register<Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
             Messenger.Default.Register<Messaging.DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
@@ -292,8 +297,9 @@ namespace GroupMeClient.ViewModels
                 PopupDialog = null,
             };
 
-            Native.RecoveryManager.RegisterForRecovery();
-            Native.RecoveryManager.RegisterForRestart();
+            // TODO Fix native services as well
+            // Native.RecoveryManager.RegisterForRecovery();
+            // Native.RecoveryManager.RegisterForRestart();
         }
 
         private void RegisterNotifications()
@@ -517,7 +523,8 @@ namespace GroupMeClient.ViewModels
 
         private void RestartCommand()
         {
-            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location, RecoveryManager.RestartCommandLine);
+            // TODO again native services are a mess
+            // System.Diagnostics.Process.Start(Application.ResourceAssembly.Location, RecoveryManager.RestartCommandLine);
             Application.Current.Shutdown();
         }
     }

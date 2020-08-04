@@ -1,17 +1,19 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using GroupMeClientApi;
+using GroupMeClient.Core.Settings;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 using GroupMeClientApi.Push;
 using GroupMeClientApi.Push.Notifications;
+using GroupMeClientPlugin.Notifications;
+using GroupMeClientPlugin.Notifications.Display;
 
-namespace GroupMeClient.Notifications.Display
+namespace GroupMeClient.Wpf.Notifications.Display
 {
     /// <summary>
     /// <see cref="PopupNotificationProvider"/> provides an observer to display notifications from the <see cref="NotificationRouter"/> visually.
     /// </summary>
-    public class PopupNotificationProvider : INotificationSink
+    public class PopupNotificationProvider : GroupMeClientPlugin.Notifications.INotificationSink
     {
         private PopupNotificationProvider(IPopupNotificationSink sink)
         {
@@ -27,7 +29,7 @@ namespace GroupMeClient.Notifications.Display
         /// </summary>
         /// <param name="settingsManager">The settings instance to use.</param>
         /// <returns>A PopupNotificationProvider.</returns>
-        public static PopupNotificationProvider CreatePlatformNotificationProvider(Settings.SettingsManager settingsManager)
+        public static PopupNotificationProvider CreatePlatformNotificationProvider(SettingsManager settingsManager)
         {
             var osVersion = System.Environment.OSVersion.Version;
 

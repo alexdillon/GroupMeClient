@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GroupMeClient.Properties {
+namespace GroupMeClient.Wpf.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace GroupMeClient.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GroupMeClient.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GroupMeClient.Wpf.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,15 +57,6 @@ namespace GroupMeClient.Properties {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to e6zucCgRruqYZmEUMFF9uC4OoaCxmb54MuSOt3yFGtVloQcM.
-        /// </summary>
-        internal static string GroupMeAPIClientId {
-            get {
-                return ResourceManager.GetString("GroupMeAPIClientId", resourceCulture);
             }
         }
     }

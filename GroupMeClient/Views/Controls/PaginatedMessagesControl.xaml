@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="GroupMeClient.Views.Controls.PaginatedMessagesControl"
+﻿<UserControl x:Class="GroupMeClient.Wpf.Views.Controls.PaginatedMessagesControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:extensions="clr-namespace:GroupMeClient.Extensions"
+             xmlns:extensions="clr-namespace:GroupMeClient.Wpf.Extensions"
              mc:Ignorable="d"
              Background="{DynamicResource ControlBackgroundBrush}"
              d:DesignHeight="700" d:DesignWidth="500">

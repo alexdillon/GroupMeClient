@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace GroupMeClient.Utilities
+namespace GroupMeClient.Wpf.Utilities
 {
     /// <summary>
     /// Helper class to provide common Wpf image operations.

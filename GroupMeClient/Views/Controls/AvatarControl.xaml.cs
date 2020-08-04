@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace GroupMeClient.Views.Controls
+namespace GroupMeClient.Wpf.Views.Controls
 {
     /// <summary>
     /// Interaction logic for AvatarControl.xaml

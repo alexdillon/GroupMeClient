@@ -1,9 +1,10 @@
-﻿<UserControl x:Class="GroupMeClient.Views.Controls.Attachments.GenericLinkAttachmentControl"
+﻿<UserControl x:Class="GroupMeClient.Wpf.Views.Controls.Attachments.GenericLinkAttachmentControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:converters="clr-namespace:GroupMeClient.Wpf.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400">
 
@@ -12,6 +13,7 @@
             <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
         </behaviors:EventTrigger>
     </behaviors:Interaction.Triggers>
+    
 
     <Grid ForceCursor="true" Cursor="Hand" Background="White">
         <Grid.ColumnDefinitions>
@@ -21,6 +23,10 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
+        <Grid.Resources>
+            <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
+        </Grid.Resources>
 
         <Grid.ContextMenu>
             <ContextMenu>
@@ -36,7 +42,7 @@
                MinHeight="200"
                VerticalAlignment="Stretch"
                HorizontalAlignment="Stretch"
-               Source="{Binding RenderedImage}" />
+               Source="{Binding RenderedImage, Converter={StaticResource imageSourceConverter}}" />
 
         <StackPanel Grid.Row="1">
             <StackPanel.Background>

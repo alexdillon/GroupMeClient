@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
+using GroupMeClient.Core.Settings;
+using GroupMeClientPlugin.Notifications.Display;
 using Notification.Wpf;
-using static GroupMeClient.Notifications.Display.Win10.Win10ToastNotificationsProvider;
+using static GroupMeClient.Wpf.Notifications.Display.Win10.Win10ToastNotificationsProvider;
 
-namespace GroupMeClient.Notifications.Display.Win7
+namespace GroupMeClient.Wpf.Notifications.Display.Win7
 {
     /// <summary>
     /// Provides an adapter for <see cref="PopupNotificationProvider"/> to use Toast Notifications within the Client Window.
@@ -15,14 +17,14 @@ namespace GroupMeClient.Notifications.Display.Win7
         /// Initializes a new instance of the <see cref="Win7ToastNotificationsProvider"/> class.
         /// </summary>
         /// <param name="settingsManager">The settings instance to use.</param>
-        public Win7ToastNotificationsProvider(Settings.SettingsManager settingsManager)
+        public Win7ToastNotificationsProvider(SettingsManager settingsManager)
         {
             this.SettingsManager = settingsManager;
             this.NotificationManager = new SingularNotificationManager();
             this.NotificationActivator = new Win10.GroupMeNotificationActivator();
         }
 
-        private Settings.SettingsManager SettingsManager { get; }
+        private SettingsManager SettingsManager { get; }
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 

@@ -2,7 +2,7 @@
 
 using System.Windows.Controls;
 
-namespace GroupMeClient.Views
+namespace GroupMeClient.Wpf.Views
 {
     /// <summary>
     /// Interaction logic for StarsView.xaml.

@@ -2,7 +2,7 @@
 using System.Windows;
 using MahApps.Metro;
 
-namespace GroupMeClient.Themes
+namespace GroupMeClient.Wpf.Themes
 {
     /// <summary>
     /// <see cref="ThemeManager"/> provides support for changing the GroupMe Desktop Client theme at runtime.

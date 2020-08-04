@@ -1,8 +1,9 @@
 ﻿using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using GroupMeClient.Wpf.Utilities;
 
-namespace GroupMeClient.Notifications.Display.Win7
+namespace GroupMeClient.Wpf.Notifications.Display.Win7
 {
     /// <summary>
     /// <see cref="Win7ToastNotificationViewModel"/> provides a ViewModel for the <see cref="Win7.Win7ToastNotification"/> control.
@@ -19,7 +20,7 @@ namespace GroupMeClient.Notifications.Display.Win7
         {
             this.Title = title;
             this.Message = message;
-            this.ImageData = Utilities.ImageUtils.BytesToImageSource(imageData);
+            this.ImageData = ImageUtils.BytesToImageSource(imageData);
         }
 
         /// <summary>

@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 
-namespace GroupMeClient.Extensions
+namespace GroupMeClient.Wpf.Extensions
 {
     /// <summary>
     /// <see cref="ListBoxWithPosition"/> provides a ListBox control that reports on scroll position.

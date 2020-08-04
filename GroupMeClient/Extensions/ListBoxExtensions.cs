@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace GroupMeClient.Extensions
+namespace GroupMeClient.Wpf.Extensions
 {
     /// <summary>
     /// Provides MVVM support for scrolling to the bottom of a list or allowing
@@ -192,7 +192,30 @@ namespace GroupMeClient.Extensions
                 var command = GetScrollToTop(listBox);
                 if (command != null && command.CanExecute(null))
                 {
+                    // Save the original position to allow us to return to it when the UI update is completed
+                    double originalHeight = scrollViewer?.ExtentHeight ?? 0.0;
+                    double originalOffset = scrollViewer?.VerticalOffset ?? 0.0;
+
+                    if (originalHeight != 0)
+                    {
+                        // prevent the At Top event from firing while we are adding new messages
+                        scrollViewer.ScrollToVerticalOffset(1);
+                    }
+
+                    // Run the At-Top handler
                     command.Execute(scrollViewer);
+
+                    // Restore the original position after the insert has been completed
+                    if (originalHeight != 0)
+                    {
+                        // Calculate the offset where the last message the user was looking at is
+                        // Scroll back to there so new messages appear on top, above screen
+                        scrollViewer.UpdateLayout();
+                        double newHeight = scrollViewer?.ExtentHeight ?? 0.0;
+                        double difference = newHeight - originalHeight;
+
+                        scrollViewer.ScrollToVerticalOffset(difference);
+                    }
                 }
             }
             else if ((int)scrollViewer.VerticalOffset == (int)scrollViewer.ScrollableHeight)
@@ -202,7 +225,30 @@ namespace GroupMeClient.Extensions
                     var command = GetScrollToBottom(listBox);
                     if (command != null && command.CanExecute(null))
                     {
+                        // Save the original position to allow us to return to it when the UI update is completed
+                        double originalHeight = scrollViewer?.ExtentHeight ?? 0.0;
+                        double originalOffset = scrollViewer?.VerticalOffset ?? 0.0;
+
+                        if (originalHeight != 0)
+                        {
+                            // prevent the At Top event from firing while we are adding new messages
+                            scrollViewer.ScrollToVerticalOffset(1);
+                        }
+
+                        // Run the At-Bottom handler
                         command.Execute(scrollViewer);
+
+                        // Restore the original position after the insert has been completed
+                        if (originalHeight != 0)
+                        {
+                            // Calculate the offset where the last message the user was looking at is
+                            // Scroll back to there so new messages appear on top, above screen
+                            scrollViewer.UpdateLayout();
+                            double newHeight = scrollViewer?.ExtentHeight ?? 0.0;
+                            double difference = newHeight - originalHeight;
+
+                            scrollViewer.ScrollToVerticalOffset(difference);
+                        }
                     }
                 }
             }

@@ -2,7 +2,7 @@
 
 using System.Windows.Markup;
 
-namespace GroupMeClient.Extensions
+namespace GroupMeClient.Wpf.Extensions
 {
     /// <summary>
     /// <see cref="EnumBindingSourceExtension"/> provides support for binding a dropdown list to an enum.

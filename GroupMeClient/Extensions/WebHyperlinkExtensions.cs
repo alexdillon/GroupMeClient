@@ -1,7 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Documents;
+using GroupMeClient.Core.Services;
 
-namespace GroupMeClient.Extensions
+namespace GroupMeClient.Wpf.Extensions
 {
     /// <summary>
     /// <see cref="WebHyperlinkExtensions"/> provides extension methods to easily make HyperLinks that launch
@@ -58,7 +59,9 @@ namespace GroupMeClient.Extensions
 
         private static void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            WebBrowserHelper.OpenUrl(e.Uri.ToString());
+            var osService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
+            osService.OpenWebBrowser(e.Uri.ToString());
+
             e.Handled = true;
         }
     }

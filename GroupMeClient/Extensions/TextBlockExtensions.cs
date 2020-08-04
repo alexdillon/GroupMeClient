@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 
-namespace GroupMeClient.Extensions
+namespace GroupMeClient.Wpf.Extensions
 {
     /// <summary>
     /// <see cref="TextBlockExtensions"/> provide MVVM support for binding <see cref="Inline"/>s to a TextBlock.
@@ -52,9 +52,8 @@ namespace GroupMeClient.Extensions
         private static void OnPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             TextBlock textBlock = sender as TextBlock;
-            ObservableCollection<Inline> list = e.NewValue as ObservableCollection<Inline>;
 
-            if (list != null)
+            if (e.NewValue is ObservableCollection<Inline> list)
             {
                 list.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(InlineCollectionChanged);
 

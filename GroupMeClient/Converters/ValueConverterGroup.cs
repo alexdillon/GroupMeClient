@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Data;
 
-namespace GroupMeClient.Converters
+namespace GroupMeClient.Wpf.Converters
 {
     /// <summary>
     /// <see cref="ValueConverterGroup"/> allows grouping a sequence of converters together.

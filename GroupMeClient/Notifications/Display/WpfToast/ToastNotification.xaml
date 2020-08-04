@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="GroupMeClient.Notifications.Display.WpfToast.ToastNotification"
+﻿<UserControl x:Class="GroupMeClient.Wpf.Notifications.Display.WpfToast.ToastNotification"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:Controls="clr-namespace:GroupMeClient.Views.Controls"
+             xmlns:Controls="clr-namespace:GroupMeClient.Wpf.Views.Controls"
              mc:Ignorable="d" d:DesignWidth="250">
 
     <Grid>

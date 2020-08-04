@@ -2,7 +2,7 @@
 
 using System.Windows.Controls;
 
-namespace GroupMeClient.Views
+namespace GroupMeClient.Wpf.Views
 {
     /// <summary>
     /// XAML Code Begind for ChatsView

@@ -1,10 +1,10 @@
 ﻿using System.Windows.Input;
 using GalaSoft.MvvmLight;
-using GroupMeClient.ViewModels.Controls;
+using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi;
 using GroupMeClientApi.Models;
 
-namespace GroupMeClient.Notifications.Display.WpfToast
+namespace GroupMeClient.Wpf.Notifications.Display.WpfToast
 {
     /// <summary>
     /// <see cref="GroupMeToastNotification"/> provides a ViewModel for the <see cref="ToastNotificationViewModel"/> control.
