@@ -141,7 +141,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             var loadingControl = new LoadingControlViewModel();
             this.GroupContentsControlViewModel.SmallDialogManager.PopupDialog = loadingControl;
 
-            foreach (var message in this.GroupContentsControlViewModel.Messages)
+            foreach (var message in this.GroupContentsControlViewModel.MessagesSorted)
             {
                 var id = long.Parse(message.Id);
                 if (id >= oldestId && id <= newestId && message is MessageControlViewModel mcvm)

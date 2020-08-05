@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using DynamicData;
+using DynamicData.Binding;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
@@ -15,6 +18,7 @@ using GroupMeClient.Core.Plugins.ViewModels;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Utilities;
 using GroupMeClientApi.Models;
+using ReactiveUI;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -38,7 +42,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public GroupContentsControlViewModel()
         {
-            this.Messages = new ObservableCollection<MessageControlViewModelBase>();
+            this.AllMessages = new SourceList<MessageControlViewModelBase>();
 
             this.ReloadSem = new SemaphoreSlim(1, 1);
 
@@ -68,6 +72,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
             {
                 this.GroupChatPlugins.Add(plugin);
             }
+
+            this.MessagesSorted = new ObservableCollectionExtended<MessageControlViewModelBase>();
+
+            this.AllMessages.AsObservableList()
+                .Connect()
+                .Sort(SortExpressionComparer<MessageControlViewModelBase>.Ascending(g => g.Id), SortOptions.UseBinarySearch)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Bind(this.MessagesSorted)
+                .Subscribe();
         }
 
         /// <summary>
@@ -147,9 +160,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ICommand SelectionChangedCommand { get; }
 
         /// <summary>
-        /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed.
+        /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed, sorted in ascending order.
         /// </summary>
-        public ObservableCollection<MessageControlViewModelBase> Messages { get; }
+        public IObservableCollection<MessageControlViewModelBase> MessagesSorted { get; private set; }
 
         /// <summary>
         /// Gets the collection of available Group/Chat UI Plugins to display.
@@ -264,6 +277,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private SemaphoreSlim ReloadSem { get; }
 
+        private SourceList<MessageControlViewModelBase> AllMessages { get; }
+
         private Message FirstDisplayedMessage { get; set; } = null;
 
         private DateTime LastMarkerTime { get; set; } = DateTime.MinValue;
@@ -301,7 +316,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <param name="message">The message containing the updated list of likers.</param>
         public void UpdateMessageLikes(Message message)
         {
-            var msgVm = this.Messages.FirstOrDefault(m => m.Id == message.Id);
+            var msgVm = this.AllMessages.Items.FirstOrDefault(m => m.Id == message.Id);
             if (msgVm is MessageControlViewModel messageVm)
             {
                 messageVm.UpdateLikers(message.FavoritedBy);
@@ -311,13 +326,13 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <inheritdoc />
         void IDisposable.Dispose()
         {
-            this.Messages.Clear();
+            this.AllMessages.Clear();
 
             this.RetryTimer?.Dispose();
 
             try
             {
-                foreach (var msg in this.Messages)
+                foreach (var msg in this.AllMessages.Items)
                 {
                     (msg as IDisposable)?.Dispose();
                 }
@@ -419,7 +434,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                     {
                         var msg = messages.ElementAt(i);
 
-                        var oldMsg = this.Messages.FirstOrDefault(m => m.Id == msg.Id);
+                        var oldMsg = this.AllMessages.Items.FirstOrDefault(m => m.Id == msg.Id);
                         var messageHidden = cacheContext.HiddenMessages.Find(msg.Id);
 
                         if (oldMsg == null)
@@ -432,7 +447,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                                     msg,
                                     this.CacheManager,
                                     showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages);
-                                this.Messages.Add(msgVm);
+                                this.AllMessages.Add(msgVm);
 
                                 // add an inline timestamp if needed
                                 if (msg.CreatedAtTime.Subtract(this.LastMarkerTime) > maxTimeDifference)
@@ -440,7 +455,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                                     var messageId = long.Parse(msg.Id);
                                     var timeStampId = (messageId - 1).ToString();
 
-                                    this.Messages.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, timeStampId, msgVm.DidISendIt));
+                                    this.AllMessages.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, timeStampId, msgVm.DidISendIt));
                                     this.LastMarkerTime = msg.CreatedAtTime;
                                 }
                             }
@@ -457,14 +472,14 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 if (this.MessageContainer.ReadReceipt != null)
                 {
                     // Remove old markers
-                    var toRemove = this.Messages.OfType<InlineReadSentMarkerControlViewModel>().ToList();
+                    var toRemove = this.AllMessages.Items.OfType<InlineReadSentMarkerControlViewModel>().ToList();
                     foreach (var marker in toRemove)
                     {
-                        this.Messages.Remove(marker);
+                        this.AllMessages.Remove(marker);
                     }
 
                     // Attach a "Read Receipt" if the read message is displayed.
-                    var matchedMessage = this.Messages.FirstOrDefault(m => m.Id == this.MessageContainer.ReadReceipt.MessageId);
+                    var matchedMessage = this.AllMessages.Items.FirstOrDefault(m => m.Id == this.MessageContainer.ReadReceipt.MessageId);
                     if (matchedMessage != null)
                     {
                         var msgId = long.Parse(matchedMessage.Id);
@@ -475,12 +490,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
                             (msgId + 1).ToString(),
                             (matchedMessage as MessageControlViewModel).DidISendIt);
 
-                        this.Messages.Add(readMarker);
+                        this.AllMessages.Add(readMarker);
                     }
 
                     // Attach a "Sent Receipt" to the last message confirmed sent by GroupMe
                     var me = this.MessageContainer.WhoAmI();
-                    var lastSentMessage = this.Messages
+                    var lastSentMessage = this.AllMessages.Items
                         .OfType<MessageControlViewModel>()
                         .OrderByDescending(m => m.Id)
                         .FirstOrDefault(m => m.Message.UserId == me.Id);
@@ -495,11 +510,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
                             (msgId + 1).ToString(),
                             (lastSentMessage as MessageControlViewModel).DidISendIt);
 
-                        this.Messages.Add(sentMarker);
+                        this.AllMessages.Add(sentMarker);
                     }
 
                     // Send a Read Receipt for the last message received
-                    var lastReceivedMessage = this.Messages
+                    var lastReceivedMessage = this.AllMessages.Items
                         .OfType<MessageControlViewModel>()
                         .OrderByDescending(m => m.Id)
                         .FirstOrDefault(m => m.Message.UserId != me.Id);
@@ -597,7 +612,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private async Task<Message> InjectReplyData(Message responseMessage)
         {
             var renderingService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IMessageRendererService>();
-            var currentlyDisplayedVersion = this.Messages.First(m => m.Id == this.MessageBeingRepliedTo.Id);
+            var currentlyDisplayedVersion = this.AllMessages.Items.First(m => m.Id == this.MessageBeingRepliedTo.Id);
             var renderedOriginalMessage = renderingService.RenderMessageToPngImage(this.MessageBeingRepliedTo.Message, currentlyDisplayedVersion);
             var renderedImageAttachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(renderedOriginalMessage, this.MessageContainer);
 
@@ -755,7 +770,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             using (var context = this.CacheManager.OpenNewContext())
             {
                 context.HideMessage(message.Message);
-                this.Messages.Remove(message);
+                this.AllMessages.Remove(message);
                 context.SaveChanges();
             }
         }

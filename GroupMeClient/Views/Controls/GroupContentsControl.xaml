@@ -18,12 +18,6 @@
             <!--Force the watermark to apply to the custom type-->
         </Style>
 
-        <CollectionViewSource Source="{Binding Path=Messages}" x:Key="MessagesViewSource">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="Id" Direction="Ascending"/>
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
-
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
         <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
 
@@ -90,7 +84,7 @@
 
         <!--Messages List-->
         <extensions:ListBoxWithPosition
-            ItemsSource="{Binding Source={StaticResource MessagesViewSource}}"
+            ItemsSource="{Binding MessagesSorted}"
             Grid.Row="2" Grid.Column="0"
             BorderThickness="0"
             Background="{DynamicResource ControlBackgroundBrush}"
