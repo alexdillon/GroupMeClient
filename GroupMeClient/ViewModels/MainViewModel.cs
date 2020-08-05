@@ -12,6 +12,7 @@ using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Notifications;
 using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Services;
+using GroupMeClient.Core.ViewModels;
 using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClient.Wpf;
 using GroupMeClient.Wpf.Notifications.Display;
@@ -22,7 +23,7 @@ using GroupMeClientApi.Models;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 
-namespace GroupMeClient.Core.ViewModels
+namespace GroupMeClient.Wpf.ViewModels
 {
     /// <summary>
     /// <see cref="MainViewModel"/> is the top-level ViewModel for the GroupMe Desktop Client, WPF implementation.
@@ -45,10 +46,10 @@ namespace GroupMeClient.Core.ViewModels
             Startup.StartupServices();
             Directory.CreateDirectory(this.DataRoot);
 
-            Utilities.TempFileUtils.InitializeTempStorage();
+            Core.Utilities.TempFileUtils.InitializeTempStorage();
 
-            this.TaskManager = new Tasks.TaskManager();
-            this.CacheManager = new Caching.CacheManager(this.CachePath, this.TaskManager);
+            this.TaskManager = new Core.Tasks.TaskManager();
+            this.CacheManager = new Core.Caching.CacheManager(this.CachePath, this.TaskManager);
 
             this.TaskManager.TaskCountChanged += this.TaskManager_TaskCountChanged;
 
@@ -153,7 +154,7 @@ namespace GroupMeClient.Core.ViewModels
         /// <summary>
         /// Gets the Task Manager for this application.
         /// </summary>
-        public Tasks.TaskManager TaskManager { get; }
+        public Core.Tasks.TaskManager TaskManager { get; }
 
         private string DataRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicroCube", "GroupMe Desktop Client");
 
@@ -167,9 +168,9 @@ namespace GroupMeClient.Core.ViewModels
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
-        private Caching.CacheManager CacheManager { get; }
+        private Core.Caching.CacheManager CacheManager { get; }
 
-        private Settings.SettingsManager SettingsManager { get; set; }
+        private Core.Settings.SettingsManager SettingsManager { get; set; }
 
         private NotificationRouter NotificationRouter { get; set; }
 
@@ -233,7 +234,7 @@ namespace GroupMeClient.Core.ViewModels
 
         private void InitializeClient()
         {
-            this.SettingsManager = new Settings.SettingsManager(this.SettingsPath);
+            this.SettingsManager = new Core.Settings.SettingsManager(this.SettingsPath);
             this.SettingsManager.LoadSettings();
 
             this.SettingsManager.UISettings.CurrentSelectedTheme.Subscribe(
@@ -244,11 +245,11 @@ namespace GroupMeClient.Core.ViewModels
             var pluginManager = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IPluginManagerService>();
             pluginManager.LoadPlugins(this.PluginsPath);
 
-            Messenger.Default.Register<Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
-            Messenger.Default.Register<Messaging.DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
-            Messenger.Default.Register<Messaging.RunPluginRequestMessage>(this, this.IndexAndRunCommand);
-            Messenger.Default.Register<Messaging.SwitchToPageRequestMessage>(this, this.SwitchToPageCommand);
-            Messenger.Default.Register<Messaging.RebootRequestMessage>(this, (r) => this.RebootReasons.Add(r.Reason), true);
+            Messenger.Default.Register<Core.Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
+            Messenger.Default.Register<Core.Messaging.DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
+            Messenger.Default.Register<Core.Messaging.RunPluginRequestMessage>(this, this.IndexAndRunCommand);
+            Messenger.Default.Register<Core.Messaging.SwitchToPageRequestMessage>(this, this.SwitchToPageCommand);
+            Messenger.Default.Register<Core.Messaging.RebootRequestMessage>(this, (r) => this.RebootReasons.Add(r.Reason), true);
 
             this.RebootApplication = new RelayCommand(this.RestartCommand);
 
@@ -285,7 +286,7 @@ namespace GroupMeClient.Core.ViewModels
                 this.CreateMenuItemsRegular();
             }
 
-            Messenger.Default.Register<Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
+            Messenger.Default.Register<Core.Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
 
             this.DialogManagerRegular = new PopupViewModel()
             {
@@ -429,7 +430,7 @@ namespace GroupMeClient.Core.ViewModels
             });
         }
 
-        private void OpenBigPopup(Messaging.DialogRequestMessage dialog)
+        private void OpenBigPopup(Core.Messaging.DialogRequestMessage dialog)
         {
             if (dialog.TopMost)
             {
@@ -461,12 +462,12 @@ namespace GroupMeClient.Core.ViewModels
             this.DialogManagerTopMost.PopupDialog = null;
         }
 
-        private void UpdateNotificationCount(Messaging.UnreadRequestMessage update)
+        private void UpdateNotificationCount(Core.Messaging.UnreadRequestMessage update)
         {
             this.UnreadCount = update.Count;
         }
 
-        private void UpdateDisconnectedComponentsCount(Messaging.DisconnectedRequestMessage update)
+        private void UpdateDisconnectedComponentsCount(Core.Messaging.DisconnectedRequestMessage update)
         {
             this.DisconnectedComponentCount += update.Disconnected ? 1 : -1;
             this.DisconnectedComponentCount = Math.Max(this.DisconnectedComponentCount, 0); // make sure it never goes negative
@@ -485,24 +486,24 @@ namespace GroupMeClient.Core.ViewModels
             });
         }
 
-        private void IndexAndRunCommand(Messaging.RunPluginRequestMessage cmd)
+        private void IndexAndRunCommand(Core.Messaging.RunPluginRequestMessage cmd)
         {
             this.SearchViewModel.RunPlugin(cmd.MessageContainer, cmd.Plugin);
         }
 
-        private void SwitchToPageCommand(Messaging.SwitchToPageRequestMessage cmd)
+        private void SwitchToPageCommand(Core.Messaging.SwitchToPageRequestMessage cmd)
         {
             ViewModelBase selectedPage = null;
 
             switch (cmd.SelectedPage)
             {
-                case Messaging.SwitchToPageRequestMessage.Page.Chats:
+                case Core.Messaging.SwitchToPageRequestMessage.Page.Chats:
                     selectedPage = this.ChatsViewModel;
                     break;
-                case Messaging.SwitchToPageRequestMessage.Page.Search:
+                case Core.Messaging.SwitchToPageRequestMessage.Page.Search:
                     selectedPage = this.SearchViewModel;
                     break;
-                case Messaging.SwitchToPageRequestMessage.Page.Settings:
+                case Core.Messaging.SwitchToPageRequestMessage.Page.Settings:
                     selectedPage = this.SettingsViewModel;
                     break;
             }
