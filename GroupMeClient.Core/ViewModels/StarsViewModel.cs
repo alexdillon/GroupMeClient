@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using DynamicData;
+using DynamicData.Binding;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Caching;
@@ -12,6 +16,7 @@ using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Utilities;
 using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi.Models;
+using ReactiveUI;
 
 namespace GroupMeClient.Core.ViewModels
 {
@@ -32,8 +37,24 @@ namespace GroupMeClient.Core.ViewModels
             this.CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
             this.SettingsManager = settingsManager ?? throw new ArgumentNullException(nameof(settingsManager));
 
-            this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<StarredMessageGroup>();
+
+            this.AllGroupsChats = new SourceList<GroupControlViewModel>();
+            this.SortedGroupChats = new ObservableCollectionExtended<GroupControlViewModel>();
+          
+            var updatedSort = this.AllGroupsChats
+              .Connect()
+              .WhenPropertyChanged(c => c.LastUpdated)
+              .Throttle(TimeSpan.FromMilliseconds(250))
+              .ObserveOn(RxApp.MainThreadScheduler)
+              .Select(_ => Unit.Default);
+
+            this.AllGroupsChats.AsObservableList()
+                .Connect()
+                .Sort(SortExpressionComparer<GroupControlViewModel>.Descending(g => g.LastUpdated), resort: updatedSort)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Bind(this.SortedGroupChats)
+                .Subscribe();
 
             this.Loaded = new RelayCommand(async () => await this.LoadIndexedGroups(), true);
             this.CloseGroup = new RelayCommand<StarredMessageGroup>(this.CloseChat);
@@ -50,9 +71,9 @@ namespace GroupMeClient.Core.ViewModels
         public ICommand CloseGroup { get; }
 
         /// <summary>
-        /// Gets a listing of all available Groups and Chats.
+        /// Gets a view of the Groups and Chats that are sorted to display in the left-panel.
         /// </summary>
-        public ObservableCollection<GroupControlViewModel> AllGroupsChats { get; }
+        public IObservableCollection<GroupControlViewModel> SortedGroupChats { get; private set; }
 
         /// <summary>
         /// Gets a collection of all the Groups and Chats currently opened.
@@ -79,6 +100,8 @@ namespace GroupMeClient.Core.ViewModels
         private ReliabilityStateMachine ReliabilityStateMachine { get; } = new ReliabilityStateMachine();
 
         private Timer RetryTimer { get; set; }
+
+        private SourceList<GroupControlViewModel> AllGroupsChats { get; }
 
         private async Task LoadIndexedGroups()
         {

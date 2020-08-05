@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using DynamicData;
+using DynamicData.Binding;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
@@ -14,6 +18,7 @@ using GroupMeClientApi.Models.Attachments;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
 using Microsoft.EntityFrameworkCore;
+using ReactiveUI;
 
 namespace GroupMeClient.Core.ViewModels
 {
@@ -43,7 +48,22 @@ namespace GroupMeClient.Core.ViewModels
             this.GroupMeClient = groupMeClient ?? throw new ArgumentNullException(nameof(groupMeClient));
             this.CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
 
-            this.AllGroupsChats = new ObservableCollection<GroupControlViewModel>();
+            this.AllGroupsChats = new SourceList<GroupControlViewModel>();
+            this.SortedGroupChats = new ObservableCollectionExtended<GroupControlViewModel>();
+
+            var updatedSort = this.AllGroupsChats
+              .Connect()
+              .WhenPropertyChanged(c => c.LastUpdated)
+              .Throttle(TimeSpan.FromMilliseconds(250))
+              .ObserveOn(RxApp.MainThreadScheduler)
+              .Select(_ => Unit.Default);
+
+            this.AllGroupsChats.AsObservableList()
+                .Connect()
+                .Sort(SortExpressionComparer<GroupControlViewModel>.Descending(g => g.LastUpdated), resort: updatedSort)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Bind(this.SortedGroupChats)
+                .Subscribe();
 
             this.ResultsView = new PaginatedMessagesControlViewModel(this.CacheManager)
             {
@@ -73,9 +93,9 @@ namespace GroupMeClient.Core.ViewModels
         public ICommand Loaded { get; private set; }
 
         /// <summary>
-        /// Gets a listing of all available Groups and Chats.
+        /// Gets a view of the Groups and Chats that are sorted to display in the left-panel.
         /// </summary>
-        public ObservableCollection<GroupControlViewModel> AllGroupsChats { get; }
+        public IObservableCollection<GroupControlViewModel> SortedGroupChats { get; private set; }
 
         /// <summary>
         /// Gets a collection of the <see cref="Member"/>s who have sent messages in the selected group or chat.
@@ -201,6 +221,8 @@ namespace GroupMeClient.Core.ViewModels
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
 
         private Caching.CacheManager CacheManager { get; }
+
+        private SourceList<GroupControlViewModel> AllGroupsChats { get; }
 
         private IMessageContainer SelectedGroupChat { get; set; }
 

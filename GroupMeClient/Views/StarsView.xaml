@@ -14,19 +14,6 @@
              mc:Ignorable="d">
 
     <UserControl.Resources>
-        <CollectionViewSource Source="{Binding Path=AllGroupsChats}" x:Key="GroupsChatsViewSource"
-                              IsLiveSortingRequested="True">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="LastUpdated" Direction="Descending"/>
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
-
-        <CollectionViewSource Source="{Binding Path=ResultsMessages}" x:Key="ResultsViewSource">
-            <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription PropertyName="Id" Direction="Descending"/>
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
-
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
         <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
     </UserControl.Resources>
@@ -73,7 +60,7 @@
         <ScrollViewer Grid.Column="0" Grid.Row="1"
                           VerticalScrollBarVisibility="Visible" PanningMode="VerticalOnly" CanContentScroll="True"
                           VerticalAlignment="Stretch">
-            <ItemsControl ItemsSource="{Binding Source={StaticResource GroupsChatsViewSource}}">
+            <ItemsControl ItemsSource="{Binding SortedGroupChats}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel>
