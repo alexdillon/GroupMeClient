@@ -15,6 +15,6 @@ namespace GroupMeClient.Core.Services
         /// <summary>
         /// Gets or sets a enumeration of extensions that are included in this filter.
         /// </summary>
-        public ICollection<string> Extensions { get; set; }
+        public ICollection<string> Extensions { get; set; } = new List<string>();
     }
 }

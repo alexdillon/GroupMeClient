@@ -114,7 +114,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 new FileFilter() { Name = "Image", Extensions = { extension } },
             };
 
-            var filename = fileDialogService.ShowOpenFileDialog("Select Attachment", filters);
+            var filename = fileDialogService.ShowSaveFileDialog("Save Attachment", filters);
             if (!string.IsNullOrEmpty(filename))
             {
                 using (var fs = File.OpenWrite(filename))

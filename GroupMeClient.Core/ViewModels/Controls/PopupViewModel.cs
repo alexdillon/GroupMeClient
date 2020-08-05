@@ -11,6 +11,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private ViewModelBase popupDialog;
         private ICommand closePopup;
         private ICommand easyClosePopup;
+        private bool isShowingDialog;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PopupViewModel"/> class.
@@ -26,7 +27,20 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ViewModelBase PopupDialog
         {
             get => this.popupDialog;
-            set => this.Set(() => this.PopupDialog, ref this.popupDialog, value);
+            set
+            {
+                this.Set(() => this.PopupDialog, ref this.popupDialog, value);
+                this.IsShowingDialog = this.PopupDialog != null;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether a dialog is being shown.
+        /// </summary>
+        public bool IsShowingDialog
+        {
+            get => this.isShowingDialog;
+            private set => this.Set(() => this.IsShowingDialog, ref this.isShowingDialog, value);
         }
 
         /// <summary>
