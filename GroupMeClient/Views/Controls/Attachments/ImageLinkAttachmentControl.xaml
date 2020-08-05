@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200">
 
@@ -23,10 +24,14 @@
 
         <Image Grid.Row="0"
                Grid.RowSpan="2"
-               MaxWidth="500" 
+               MaxWidth="500"
                Stretch="Uniform"
                StretchDirection="DownOnly"
                HorizontalAlignment="Left"
-               gif:AnimationBehavior.SourceUri="{Binding Url}" />
+               gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}" />
+
+        <Controls:ProgressRing IsActive="{Binding IsLoading}" 
+                                   Width="60" Height="60"
+                                   HorizontalAlignment="Center"/>
     </Grid>
 </UserControl>

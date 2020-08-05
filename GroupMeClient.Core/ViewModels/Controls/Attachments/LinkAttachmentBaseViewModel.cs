@@ -12,7 +12,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
     /// <see cref="LinkAttachmentBaseViewModel"/> provides a base for controls that display Web Content.
     /// Access to GroupMe's Inline Downloader Service is provided.
     /// </summary>
-    public abstract class LinkAttachmentBaseViewModel : ViewModelBase, IDisposable
+    public abstract class LinkAttachmentBaseViewModel : ViewModelBase, IHidesTextAttachment, IDisposable
     {
         private string url;
         private GenericImageSource renderedImage;
@@ -62,23 +62,18 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 
             set
             {
-                this.url = value;
-
-                var stopAtCharacters = new string[] { " ", "\n" };
-                foreach (var stopChar in stopAtCharacters)
-                {
-                    if (this.url.Contains(stopChar))
-                    {
-                        this.url = this.url.Substring(0, this.url.IndexOf(stopChar));
-                    }
-                }
+                this.url = CleanupGroupMeUrl(value);
 
                 if (Uri.TryCreate(this.url, UriKind.Absolute, out var uri))
                 {
                     this.Uri = uri;
+                    this.HiddenText = this.Uri.ToString();
                 }
             }
         }
+
+        /// <inheritdoc/>
+        public string HiddenText { get; private set; } = string.Empty;
 
         /// <summary>
         /// Gets the rendered image.
@@ -98,6 +93,25 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         /// Gets the downloader that should be used for GroupMe operations.
         /// </summary>
         protected ImageDownloader ImageDownloader { get; }
+
+        /// <summary>
+        /// Cleans up a URL extracted from a GroupMe Message and prepares it to be loaded.
+        /// </summary>
+        /// <param name="url">The raw URL to cleanup.</param>
+        /// <returns>A cleaned url.</returns>
+        public static string CleanupGroupMeUrl(string url)
+        {
+            var stopAtCharacters = new string[] { " ", "\n" };
+            foreach (var stopChar in stopAtCharacters)
+            {
+                if (url.Contains(stopChar))
+                {
+                    url = url.Substring(0, url.IndexOf(stopChar));
+                }
+            }
+
+            return url;
+        }
 
         /// <inheritdoc/>
         public abstract void Dispose();

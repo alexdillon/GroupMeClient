@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClientApi;
@@ -11,7 +12,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
     /// <summary>
     /// <see cref="GroupMeImageAttachmentControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.GroupMeImageAttachmentControl"/> control.
     /// </summary>
-    public class GroupMeImageAttachmentControlViewModel : LinkAttachmentBaseViewModel, IDisposable
+    public class GroupMeImageAttachmentControlViewModel : ViewModelBase, IDisposable
     {
         private System.IO.Stream imageAttachmentStream;
         private bool isLoading;
@@ -23,9 +24,9 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         /// <param name="imageDownloader">The downloader to use for loading the image.</param>
         /// <param name="previewMode">The resolution in which to download and render the image.</param>
         public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, ImageDownloader imageDownloader, GroupMeImageDisplayMode previewMode = GroupMeImageDisplayMode.Large)
-            : base(imageDownloader)
         {
             this.ImageAttachment = attachment;
+            this.ImageDownloader = imageDownloader;
             this.Clicked = new RelayCommand(this.ClickedAction);
             this.PreviewMode = previewMode;
 
@@ -82,16 +83,12 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 
         private GroupMeImageDisplayMode PreviewMode { get; }
 
-        /// <inheritdoc/>
-        public override void Dispose()
-        {
-            (this.imageAttachmentStream as IDisposable)?.Dispose();
-        }
+        private ImageDownloader ImageDownloader { get; }
 
         /// <inheritdoc/>
-        protected override void MetadataDownloadCompleted()
+        public void Dispose()
         {
-            // not really a link class, but still need this method.
+            (this.imageAttachmentStream as IDisposable)?.Dispose();
         }
 
         private static string GetGroupMeImageDisplayModeString(GroupMeImageDisplayMode mode)

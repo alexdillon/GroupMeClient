@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Controls.Documents;
@@ -619,7 +620,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             const string WebPrefixHttps = "https://";
             const string WebPrefixHttp = "http://";
 
-            LinkAttachmentBaseViewModel vm;
+            IHidesTextAttachment vm;
 
             var linkExtension = text.Split('.').LastOrDefault();
 
@@ -649,9 +650,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 return;
             }
 
-            if (vm.Uri != null)
+            if (!string.IsNullOrEmpty(vm.HiddenText))
             {
-                this.HiddenText = vm.Url + this.HiddenText;
+                this.HiddenText = vm.HiddenText + this.HiddenText;
             }
         }
 

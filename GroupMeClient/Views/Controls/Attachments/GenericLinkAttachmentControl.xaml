@@ -67,7 +67,7 @@
                 <Image Grid.Row="0" Grid.Column="0"
                        Width="15"
                        HorizontalAlignment="Left"
-                       Source="{Binding FaviconImage}" />
+                       Source="{Binding FaviconImage, Converter={StaticResource imageSourceConverter}}" />
 
                 <Label Grid.Row="0" Grid.Column="1" 
                        Content="{Binding Site}"
