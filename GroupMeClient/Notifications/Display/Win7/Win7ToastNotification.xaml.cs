@@ -2,7 +2,7 @@
 
 using System.Windows.Controls;
 
-namespace GroupMeClient.Wpf.Notifications.Display.Win7
+namespace GroupMeClient.WpfUI.Notifications.Display.Win7
 {
     /// <summary>
     /// Interaction logic for Win7ToastNotification.xaml

@@ -3,7 +3,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using GroupMeClient.Core.Controls.Media;
 
-namespace GroupMeClient.Wpf.Converters
+namespace GroupMeClient.WpfUI.Converters
 {
     [ValueConversion(typeof(GenericImageSource), typeof(ImageSource))]
     public class GenericImageSourceToImageSource : IValueConverter

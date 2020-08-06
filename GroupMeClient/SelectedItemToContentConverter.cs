@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
 
-namespace GroupMeClient.Wpf
+namespace GroupMeClient.WpfUI
 {
     /// <summary>
     /// <see cref="SelectedItemToContentConverter"/> provides a converter between Hamburger Menu entries and ViewModels.

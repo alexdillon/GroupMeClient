@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace GroupMeClient.Wpf.Converters
+namespace GroupMeClient.WpfUI.Converters
 {
     /// <summary>
     /// <see cref="PercentageConverter"/> provides a <see cref="IValueConverter"/> to return a percentage of the provided value.

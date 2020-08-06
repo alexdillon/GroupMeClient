@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 
-namespace GroupMeClient.Wpf.Extensions
+namespace GroupMeClient.WpfUI.Extensions
 {
     /// <summary>
     /// <see cref="TextBlockExtensions"/> provide MVVM support for binding <see cref="Inline"/>s to a TextBlock.

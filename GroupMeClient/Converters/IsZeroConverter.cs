@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace GroupMeClient.Wpf.Converters
+namespace GroupMeClient.WpfUI.Converters
 {
     /// <summary>
     /// <see cref="IsZeroConverter"/> provides a converter between Zero, Null, and Empty Strings (true), and any other value (false).

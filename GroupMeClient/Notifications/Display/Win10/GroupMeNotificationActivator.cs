@@ -3,13 +3,14 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.ViewModels;
+using GroupMeClient.WpfUI.ViewModels;
 using Microsoft.QueryStringDotNET;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
-using static GroupMeClient.Wpf.Notifications.Display.Win10.Win10ToastNotificationsProvider;
+using static GroupMeClient.WpfUI.Notifications.Display.Win10.Win10ToastNotificationsProvider;
 
-namespace GroupMeClient.Wpf.Notifications.Display.Win10
+namespace GroupMeClient.WpfUI.Notifications.Display.Win10
 {
     /// <summary>
     /// Provides a COM Interface to support activation when a user clicks on a Windows 10 Toast Notfication.

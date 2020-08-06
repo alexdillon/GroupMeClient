@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace GroupMeClient.Wpf.Extensions
+namespace GroupMeClient.WpfUI.Extensions
 {
     /// <summary>
     /// <see cref="MultiLineSendBox"/> provides support for typing MultiLine messages.

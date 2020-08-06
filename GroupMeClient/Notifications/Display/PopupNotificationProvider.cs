@@ -8,7 +8,7 @@ using GroupMeClientApi.Push.Notifications;
 using GroupMeClientPlugin.Notifications;
 using GroupMeClientPlugin.Notifications.Display;
 
-namespace GroupMeClient.Wpf.Notifications.Display
+namespace GroupMeClient.WpfUI.Notifications.Display
 {
     /// <summary>
     /// <see cref="PopupNotificationProvider"/> provides an observer to display notifications from the <see cref="NotificationRouter"/> visually.

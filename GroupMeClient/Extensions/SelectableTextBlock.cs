@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace GroupMeClient.Wpf.Extensions
+namespace GroupMeClient.WpfUI.Extensions
 {
     /// <summary>
     /// <see cref="SelectableTextBlock"/> provides a TextBlock control that supports native Windows selection and copy operations.

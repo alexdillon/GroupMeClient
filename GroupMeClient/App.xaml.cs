@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace GroupMeClient.Wpf
+namespace GroupMeClient.WpfUI
 {
     /// <summary>
     /// Interaction logic for App.xaml.

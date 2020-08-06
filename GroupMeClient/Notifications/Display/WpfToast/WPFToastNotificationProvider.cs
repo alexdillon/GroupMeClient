@@ -2,7 +2,7 @@
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin.Notifications.Display;
 
-namespace GroupMeClient.Wpf.Notifications.Display.WpfToast
+namespace GroupMeClient.WpfUI.Notifications.Display.WpfToast
 {
     /// <summary>
     /// Provides an adapter for <see cref="PopupNotificationProvider"/> to use Windows 10 Toast Notifications.

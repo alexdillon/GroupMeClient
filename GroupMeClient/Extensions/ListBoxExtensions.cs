@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace GroupMeClient.Wpf.Extensions
+namespace GroupMeClient.WpfUI.Extensions
 {
     /// <summary>
     /// Provides MVVM support for scrolling to the bottom of a list or allowing

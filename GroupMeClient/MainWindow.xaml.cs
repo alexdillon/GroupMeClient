@@ -2,7 +2,7 @@
 
 using System.Windows;
 
-namespace GroupMeClient.Wpf
+namespace GroupMeClient.WpfUI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

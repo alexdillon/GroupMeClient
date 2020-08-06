@@ -12,7 +12,7 @@ using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 
-namespace GroupMeClient.Wpf.Notifications.Display.Win10
+namespace GroupMeClient.WpfUI.Notifications.Display.Win10
 {
     /// <summary>
     /// Provides an adapter for <see cref="PopupNotificationProvider"/> to use Toast Notifications within the Client Window.

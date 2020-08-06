@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
-namespace GroupMeClient.Wpf.Extensions
+namespace GroupMeClient.WpfUI.Extensions
 {
     /// <summary>
     /// <see cref="ScrollIntoViewForListBox"/> provides a behavior to ensure a selected item in a <see cref="ListBox"/>

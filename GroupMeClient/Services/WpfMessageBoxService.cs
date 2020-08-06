@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using GroupMeClient.Core.Services;
 
-namespace GroupMeClient.Wpf.Services
+namespace GroupMeClient.WpfUI.Services
 {
     /// <summary>
     /// <see cref="WpfMessageBoxService"/> provides a platform-native dialog service for Windows/WPF.

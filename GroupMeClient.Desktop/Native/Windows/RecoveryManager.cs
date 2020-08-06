@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace GroupMeClient.Wpf.Native
+namespace GroupMeClient.Desktop.Native.Windows
 {
     /// <summary>
     /// <see cref="RecoveryManager"/> provides support for Windows Error Recovery automatic application restart.

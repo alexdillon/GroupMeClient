@@ -4,9 +4,9 @@ using System.Windows;
 using GroupMeClient.Core.Settings;
 using GroupMeClientPlugin.Notifications.Display;
 using Notification.Wpf;
-using static GroupMeClient.Wpf.Notifications.Display.Win10.Win10ToastNotificationsProvider;
+using static GroupMeClient.WpfUI.Notifications.Display.Win10.Win10ToastNotificationsProvider;
 
-namespace GroupMeClient.Wpf.Notifications.Display.Win7
+namespace GroupMeClient.WpfUI.Notifications.Display.Win7
 {
     /// <summary>
     /// Provides an adapter for <see cref="PopupNotificationProvider"/> to use Toast Notifications within the Client Window.

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
-namespace GroupMeClient.Wpf.Notifications.Display.WpfToast
+namespace GroupMeClient.WpfUI.Notifications.Display.WpfToast
 {
     /// <summary>
     /// <see cref="ToastHolderViewModel"/> provides a ViewModel for the <see cref="ToastHolder"/> control.

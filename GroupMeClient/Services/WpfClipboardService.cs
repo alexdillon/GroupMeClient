@@ -3,7 +3,7 @@ using System.Windows.Media.Imaging;
 using GroupMeClient.Core.Controls.Media;
 using GroupMeClient.Core.Services;
 
-namespace GroupMeClient.Wpf.Services
+namespace GroupMeClient.WpfUI.Services
 {
     public class WpfClipboardService : IClipboardService
     {

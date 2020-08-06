@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using GroupMeClient.Wpf.Utilities;
+using GroupMeClient.WpfUI.Utilities;
 
-namespace GroupMeClient.Wpf.Notifications.Display.Win7
+namespace GroupMeClient.WpfUI.Notifications.Display.Win7
 {
     /// <summary>
     /// <see cref="Win7ToastNotificationViewModel"/> provides a ViewModel for the <see cref="Win7.Win7ToastNotification"/> control.

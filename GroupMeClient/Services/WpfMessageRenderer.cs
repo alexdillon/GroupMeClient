@@ -8,11 +8,11 @@ using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClient.Core.ViewModels.Controls.Attachments;
-using GroupMeClient.Wpf.Utilities;
-using GroupMeClient.Wpf.Views.Controls;
+using GroupMeClient.WpfUI.Utilities;
+using GroupMeClient.WpfUI.Views.Controls;
 using GroupMeClientApi.Models;
 
-namespace GroupMeClient.Wpf.Services
+namespace GroupMeClient.WpfUI.Services
 {
     public class WpfMessageRenderer : IMessageRendererService
     {

@@ -2,7 +2,7 @@
 
 using System.Windows.Controls;
 
-namespace GroupMeClient.Wpf.Plugins.Views
+namespace GroupMeClient.WpfUI.Plugins.Views
 {
     /// <summary>
     /// Interaction logic for MultiLikeControl.xaml

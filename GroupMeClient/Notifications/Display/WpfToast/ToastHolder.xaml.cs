@@ -2,7 +2,7 @@
 
 using System.Windows.Controls;
 
-namespace GroupMeClient.Wpf.Notifications.Display.WpfToast
+namespace GroupMeClient.WpfUI.Notifications.Display.WpfToast
 {
     /// <summary>
     /// Interaction logic for ToastHolder.xaml

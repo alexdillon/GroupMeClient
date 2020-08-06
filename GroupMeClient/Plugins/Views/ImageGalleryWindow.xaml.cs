@@ -2,7 +2,7 @@
 
 using System.Windows;
 
-namespace GroupMeClient.Wpf.Plugins.Views
+namespace GroupMeClient.WpfUI.Plugins.Views
 {
     /// <summary>
     /// Interaction logic for ImageGalleryWindow.xaml

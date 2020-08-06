@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using GroupMeClient.Core.Settings;
 using MahApps.Metro;
 
-namespace GroupMeClient.Wpf.Themes
+namespace GroupMeClient.WpfUI.Themes
 {
     /// <summary>
     /// <see cref="ThemeManager"/> provides support for changing the GroupMe Desktop Client theme at runtime.
@@ -50,52 +49,6 @@ namespace GroupMeClient.Wpf.Themes
         }
 
         /// <summary>
-        /// Applies the light mode theme.
-        /// </summary>
-        public static void SetLightTheme()
-        {
-            Tuple<AppTheme, Accent> appStyle = MahApps.Metro.ThemeManager.DetectAppStyle(Application.Current);
-            MahApps.Metro.ThemeManager.ChangeAppStyle(
-                Application.Current,
-                appStyle.Item2,
-                MahApps.Metro.ThemeManager.GetAppTheme("BaseLight"));
-
-            CurrentGroupMeTheme = GroupMeLightTheme;
-        }
-
-        /// <summary>
-        /// Applies the dark mode theme.
-        /// </summary>
-        public static void SetDarkTheme()
-        {
-            Tuple<AppTheme, Accent> appStyle = MahApps.Metro.ThemeManager.DetectAppStyle(Application.Current);
-            MahApps.Metro.ThemeManager.ChangeAppStyle(
-                Application.Current,
-                appStyle.Item2,
-                MahApps.Metro.ThemeManager.GetAppTheme("BaseDark"));
-
-            CurrentGroupMeTheme = GroupMeDarkTheme;
-        }
-
-        /// <summary>
-        /// Applies the system prefered theme.
-        /// </summary>
-        public static void SetSystemTheme()
-        {
-            if (Native.WindowsThemeUtils.IsAppLightThemePreferred())
-            {
-                SetLightTheme();
-            }
-            else
-            {
-                SetDarkTheme();
-            }
-
-            Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent -= Windows_ThemeChangedEvent;
-            Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent += Windows_ThemeChangedEvent;
-        }
-
-        /// <summary>
         /// Updates the current theme of the application.
         /// </summary>
         /// <param name="theme">The new theme mode to apply.</param>
@@ -116,6 +69,52 @@ namespace GroupMeClient.Wpf.Themes
                     SetSystemTheme();
                     break;
             }
+        }
+
+        /// <summary>
+        /// Applies the light mode theme.
+        /// </summary>
+        private static void SetLightTheme()
+        {
+            Tuple<AppTheme, Accent> appStyle = MahApps.Metro.ThemeManager.DetectAppStyle(Application.Current);
+            MahApps.Metro.ThemeManager.ChangeAppStyle(
+                Application.Current,
+                appStyle.Item2,
+                MahApps.Metro.ThemeManager.GetAppTheme("BaseLight"));
+
+            CurrentGroupMeTheme = GroupMeLightTheme;
+        }
+
+        /// <summary>
+        /// Applies the dark mode theme.
+        /// </summary>
+        private static void SetDarkTheme()
+        {
+            Tuple<AppTheme, Accent> appStyle = MahApps.Metro.ThemeManager.DetectAppStyle(Application.Current);
+            MahApps.Metro.ThemeManager.ChangeAppStyle(
+                Application.Current,
+                appStyle.Item2,
+                MahApps.Metro.ThemeManager.GetAppTheme("BaseDark"));
+
+            CurrentGroupMeTheme = GroupMeDarkTheme;
+        }
+
+        /// <summary>
+        /// Applies the system prefered theme.
+        /// </summary>
+        private static void SetSystemTheme()
+        {
+            if (Native.WindowsThemeUtils.IsAppLightThemePreferred())
+            {
+                SetLightTheme();
+            }
+            else
+            {
+                SetDarkTheme();
+            }
+
+            Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent -= Windows_ThemeChangedEvent;
+            Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent += Windows_ThemeChangedEvent;
         }
 
         private static void Windows_ThemeChangedEvent()

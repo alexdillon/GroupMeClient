@@ -8,7 +8,7 @@ using GroupMeClient.Core.Services;
 using Octokit;
 using Squirrel;
 
-namespace GroupMeClient.Wpf.Updates
+namespace GroupMeClient.WpfUI.Updates
 {
     /// <summary>
     /// <see cref="UpdateAssist"/> provides automatic upgrade functionality with Squirrel.

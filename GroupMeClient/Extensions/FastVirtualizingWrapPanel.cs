@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls.Primitives;
 using WpfToolkit.Controls;
 
-namespace GroupMeClient.Wpf.Extensions
+namespace GroupMeClient.WpfUI.Extensions
 {
     /// <summary>
     /// <see cref="FastVirtualizingWrapPanel"/> provides a version of <see cref="VirtualizingWrapPanel"/> that provides

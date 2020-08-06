@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Data;
 using GroupMeClient.Core.Services;
 
-namespace GroupMeClient.Wpf.Converters
+namespace GroupMeClient.WpfUI.Converters
 {
     /// <summary>
     /// <see cref="GMDCInlineToWPFInline"/> provides conversions between GMDC Core abstract text types,

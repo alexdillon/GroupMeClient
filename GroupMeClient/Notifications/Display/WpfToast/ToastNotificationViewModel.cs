@@ -4,7 +4,7 @@ using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi;
 using GroupMeClientApi.Models;
 
-namespace GroupMeClient.Wpf.Notifications.Display.WpfToast
+namespace GroupMeClient.WpfUI.Notifications.Display.WpfToast
 {
     /// <summary>
     /// <see cref="GroupMeToastNotification"/> provides a ViewModel for the <see cref="ToastNotificationViewModel"/> control.

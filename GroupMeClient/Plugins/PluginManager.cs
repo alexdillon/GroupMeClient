@@ -10,7 +10,7 @@ using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
 using GroupMeClientPlugin.MessageCompose;
 
-namespace GroupMeClient.Wpf.Plugins
+namespace GroupMeClient.WpfUI.Plugins
 {
     /// <summary>
     /// <see cref="PluginManager"/> provides functionality to dynamically load <see cref="IPluginBase"/>-based

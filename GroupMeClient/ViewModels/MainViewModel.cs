@@ -14,16 +14,16 @@ using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.ViewModels;
 using GroupMeClient.Core.ViewModels.Controls;
-using GroupMeClient.Wpf;
-using GroupMeClient.Wpf.Notifications.Display;
-using GroupMeClient.Wpf.Notifications.Display.WpfToast;
-using GroupMeClient.Wpf.Themes;
-using GroupMeClient.Wpf.Updates;
+using GroupMeClient.WpfUI;
+using GroupMeClient.WpfUI.Notifications.Display;
+using GroupMeClient.WpfUI.Notifications.Display.WpfToast;
+using GroupMeClient.WpfUI.Themes;
+using GroupMeClient.WpfUI.Updates;
 using GroupMeClientApi.Models;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 
-namespace GroupMeClient.Wpf.ViewModels
+namespace GroupMeClient.WpfUI.ViewModels
 {
     /// <summary>
     /// <see cref="MainViewModel"/> is the top-level ViewModel for the GroupMe Desktop Client, WPF implementation.
@@ -302,8 +302,8 @@ namespace GroupMeClient.Wpf.ViewModels
                 PopupDialog = null,
             };
 
-            Wpf.Native.RecoveryManager.RegisterForRecovery();
-            Wpf.Native.RecoveryManager.RegisterForRestart();
+            Desktop.Native.Windows.RecoveryManager.RegisterForRecovery();
+            Desktop.Native.Windows.RecoveryManager.RegisterForRestart();
         }
 
         private void RegisterNotifications()

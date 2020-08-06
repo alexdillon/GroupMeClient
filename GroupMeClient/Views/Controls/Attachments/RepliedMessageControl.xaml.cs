@@ -2,7 +2,7 @@
 
 using System.Windows.Controls;
 
-namespace GroupMeClient.Wpf.Views.Controls.Attachments
+namespace GroupMeClient.WpfUI.Views.Controls.Attachments
 {
     /// <summary>
     /// Interaction logic for RepliedMessageControl.xaml.

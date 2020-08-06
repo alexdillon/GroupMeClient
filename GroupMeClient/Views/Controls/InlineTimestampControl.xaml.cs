@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace GroupMeClient.Wpf.Views.Controls
+namespace GroupMeClient.WpfUI.Views.Controls
 {
     /// <summary>
     /// Interaction logic for GroupControl.xaml.

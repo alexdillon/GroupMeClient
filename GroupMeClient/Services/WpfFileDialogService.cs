@@ -4,7 +4,7 @@ using System.Linq;
 using GroupMeClient.Core.Services;
 using Microsoft.Win32;
 
-namespace GroupMeClient.Wpf.Services
+namespace GroupMeClient.WpfUI.Services
 {
     /// <summary>
     /// <see cref="WpfFileDialogService"/> provides file-dialog services as an implementation of <see cref="IFileDialogService"/> for

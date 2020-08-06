@@ -3,9 +3,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using GroupMeClient.Core.Services;
-using GroupMeClient.Wpf.Native;
 
-namespace GroupMeClient.Wpf.Services
+namespace GroupMeClient.WpfUI.Services
 {
     /// <summary>
     /// <see cref="WpfRestoreService"/> provides support for managing the state of the application for the GMDC/WPF Client.
@@ -13,7 +12,7 @@ namespace GroupMeClient.Wpf.Services
     public class WpfRestoreService : IRestoreService
     {
         /// <inheritdoc/>
-        public bool ShouldRestoreState => Environment.GetCommandLineArgs().Contains(Native.RecoveryManager.RestartCommandLine);
+        public bool ShouldRestoreState => Environment.GetCommandLineArgs().Contains(Desktop.Native.Windows.RecoveryManager.RestartCommandLine);
 
         /// <inheritdoc/>
         public void HardApplicationRestart()
@@ -25,7 +24,7 @@ namespace GroupMeClient.Wpf.Services
         /// <inheritdoc/>
         public void SoftApplicationRestart()
         {
-            Process.Start(Application.ResourceAssembly.Location, RecoveryManager.RestartCommandLine);
+            Process.Start(Application.ResourceAssembly.Location, Desktop.Native.Windows.RecoveryManager.RestartCommandLine);
             Application.Current.Shutdown();
         }
     }

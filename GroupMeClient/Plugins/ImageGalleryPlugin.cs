@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using GroupMeClient.Core.Plugins.ViewModels;
 using GroupMeClient.Core.Services;
-using GroupMeClient.Wpf.Plugins.Views;
+using GroupMeClient.WpfUI.Plugins.Views;
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
 
-namespace GroupMeClient.Wpf.Plugins
+namespace GroupMeClient.WpfUI.Plugins
 {
     /// <summary>
     /// <see cref="ImageGalleryPlugin"/> defines a GroupMe Desktop Client Plugin that can be used

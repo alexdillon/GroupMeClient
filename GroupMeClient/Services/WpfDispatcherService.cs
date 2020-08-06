@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using GroupMeClient.Core.Services;
 
-namespace GroupMeClient.Wpf.Services
+namespace GroupMeClient.WpfUI.Services
 {
     /// <summary>
     /// <see cref="WpfDispatcherService"/> provides service support for dispatching actions onto the WPF UI Dispatcher.

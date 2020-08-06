@@ -2,7 +2,7 @@
 
 using System.Windows.Controls;
 
-namespace GroupMeClient.Wpf.Views
+namespace GroupMeClient.WpfUI.Views
 {
     /// <summary>
     /// Interaction logic for LoginView.xaml.

@@ -2,7 +2,7 @@
 using System.Windows.Documents;
 using GroupMeClient.Core.Services;
 
-namespace GroupMeClient.Wpf.Extensions
+namespace GroupMeClient.WpfUI.Extensions
 {
     /// <summary>
     /// <see cref="WebHyperlinkExtensions"/> provides extension methods to easily make HyperLinks that launch

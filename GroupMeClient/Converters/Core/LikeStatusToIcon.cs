@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using MahApps.Metro.IconPacks;
 
-namespace GroupMeClient.Wpf.Converters
+namespace GroupMeClient.WpfUI.Converters
 {
     /// <summary>
     /// <see cref="LikeStatusToIcon"/> provides a converter to get the correct

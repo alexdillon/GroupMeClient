@@ -2,7 +2,7 @@
 
 using System.Windows.Controls;
 
-namespace GroupMeClient.Wpf.Views
+namespace GroupMeClient.WpfUI.Views
 {
     public partial class UpdatingView : UserControl
     {
