@@ -407,14 +407,6 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
         }
 
-        // TODO add a client side behavior to handle only raising the click even for valid mouse buttons
-
-        // Old bla bla comment
-
-        // The only time a Like should not be performed is if the Right Mouse Button was clicked.
-        // That button is reserved for invoking star behavior instead. All other buttons (like custom
-        // buttons or side-click buttons) are acceptible.
-
         /// <summary>
         /// Likes a message and updates the Liker's Display area for the current <see cref="Message"/>.
         /// </summary>

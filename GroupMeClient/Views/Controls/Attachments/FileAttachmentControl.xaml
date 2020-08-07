@@ -6,16 +6,16 @@
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
+             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters" 
+             xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400"
              Background="Transparent">
 
     <behaviors:Interaction.Triggers>
-        <behaviors:EventTrigger EventName="MouseDown" >
-            <behaviors:InvokeCommandAction Command="{Binding Mode=OneWay, Path=Clicked}"
-                                           PassEventArgsToCommand="True" />
-        </behaviors:EventTrigger>
+        <extensions:NotRightClickTrigger >
+            <behaviors:InvokeCommandAction Command="{Binding Mode=OneWay, Path=Clicked}" />
+        </extensions:NotRightClickTrigger>
     </behaviors:Interaction.Triggers>
 
     <Grid Margin="10"

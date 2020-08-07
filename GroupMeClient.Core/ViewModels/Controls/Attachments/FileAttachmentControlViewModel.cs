@@ -109,9 +109,6 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             this.RaisePropertyChanged(string.Empty);
         }
 
-        // TODO same as in MessageControl for likers
-        // Limit to left click or other legal (aka not right) buttons
-
         private async Task ClickedAction()
         {
             this.IsLoading = true;
