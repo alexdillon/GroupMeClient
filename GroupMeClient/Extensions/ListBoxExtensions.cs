@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -53,6 +54,26 @@ namespace GroupMeClient.WpfUI.Extensions
                 typeof(ICommand),
                 typeof(ListBoxExtensions),
                 new FrameworkPropertyMetadata(null, OnScrollToTopBottomPropertyChanged));
+
+        /// <summary>
+        /// Gets a property indicating if Auto Scroll is enabled.
+        /// </summary>
+        public static readonly DependencyProperty TopLoadingSnap =
+            DependencyProperty.RegisterAttached(
+                "TopLoadingSnap",
+                typeof(int),
+                typeof(ListBoxExtensions),
+                new PropertyMetadata(0));
+
+        /// <summary>
+        /// Gets a property indicating if Auto Scroll is enabled.
+        /// </summary>
+        public static readonly DependencyProperty BottomLoadingSnap =
+            DependencyProperty.RegisterAttached(
+                "BottomLoadingSnap",
+                typeof(int),
+                typeof(ListBoxExtensions),
+                new PropertyMetadata(0));
 
         /// <summary>
         /// Gets a value indicating whether Auto Scrolling in enabled.
@@ -115,6 +136,46 @@ namespace GroupMeClient.WpfUI.Extensions
         public static void SetScrollToBottom(DependencyObject ob, ICommand value)
         {
             ob.SetValue(ScrollToBottomProperty, value);
+        }
+
+        /// <summary>
+        /// Gets the snap position when items are being loaded at the top.
+        /// </summary>
+        /// <param name="instance">The dependency object to retreive the property from.</param>
+        /// <returns>The snap position when items are being loaded at the top.</returns>
+        public static int GetTopLoadingSnap(ListBox instance)
+        {
+            return (int)instance.GetValue(TopLoadingSnap);
+        }
+
+        /// <summary>
+        /// Sets the snap position when items are being loaded at the top.
+        /// </summary>
+        /// <param name="ob">The dependency object to apply the property to.</param>
+        /// <param name="value">The snap position when items are being loaded at the top.</param>
+        public static void SetTopLoadingSnap(DependencyObject ob, int value)
+        {
+            ob.SetValue(TopLoadingSnap, value);
+        }
+
+        /// <summary>
+        /// Gets the snap position when items are being loaded at the Bottom.
+        /// </summary>
+        /// <param name="instance">The dependency object to retreive the property from.</param>
+        /// <returns>The snap position when items are being loaded at the Bottom.</returns>
+        public static int GetBottomLoadingSnap(ListBox instance)
+        {
+            return (int)instance.GetValue(BottomLoadingSnap);
+        }
+
+        /// <summary>
+        /// Sets the snap position when items are being loaded at the Bottom.
+        /// </summary>
+        /// <param name="ob">The dependency object to apply the property to.</param>
+        /// <param name="value">The snap position when items are being loaded at the Bottom.</param>
+        public static void SetBottomLoadingSnap(DependencyObject ob, int value)
+        {
+            ob.SetValue(BottomLoadingSnap, value);
         }
 
         /// <summary>
@@ -186,6 +247,31 @@ namespace GroupMeClient.WpfUI.Extensions
             var scrollViewer = (ScrollViewer)sender;
             var listBox = scrollViewer.TemplatedParent as ListBox;
 
+            var topSnap = GetTopLoadingSnap(listBox);
+            var bottomSnap = GetBottomLoadingSnap(listBox);
+
+            if (bottomSnap > 0)
+            {
+                scrollViewer.UpdateLayout();
+                scrollViewer.ScrollToVerticalOffset(bottomSnap);
+                scrollViewer.UpdateLayout();
+                SetBottomLoadingSnap(listBox, 0);
+                return;
+            }
+            else if (topSnap != 0)
+            {
+                // Calculate the offset where the last message the user was looking at is
+                // Scroll back to there so new messages appear on top, above screen
+                scrollViewer.UpdateLayout();
+
+                double newHeight = scrollViewer?.ExtentHeight ?? 0.0;
+                double difference = newHeight - topSnap;
+
+                scrollViewer.ScrollToVerticalOffset(difference);
+                SetTopLoadingSnap(listBox, 0);
+                return;
+            }
+
             // Check to see if scrolled to top
             if (scrollViewer.VerticalOffset == 0)
             {
@@ -196,26 +282,23 @@ namespace GroupMeClient.WpfUI.Extensions
                     double originalHeight = scrollViewer?.ExtentHeight ?? 0.0;
                     double originalOffset = scrollViewer?.VerticalOffset ?? 0.0;
 
-                    if (originalHeight != 0)
-                    {
-                        // prevent the At Top event from firing while we are adding new messages
-                        scrollViewer.ScrollToVerticalOffset(1);
-                    }
-
                     // Run the At-Top handler
+                    scrollViewer.CanContentScroll = false;
+                    SetTopLoadingSnap(listBox, (int)originalHeight);
                     command.Execute(scrollViewer);
+                    scrollViewer.CanContentScroll = true;
 
-                    // Restore the original position after the insert has been completed
-                    if (originalHeight != 0)
-                    {
-                        // Calculate the offset where the last message the user was looking at is
-                        // Scroll back to there so new messages appear on top, above screen
-                        scrollViewer.UpdateLayout();
-                        double newHeight = scrollViewer?.ExtentHeight ?? 0.0;
-                        double difference = newHeight - originalHeight;
+                    //// Restore the original position after the insert has been completed
+                    //if (originalHeight != 0)
+                    //{
+                    //    // Calculate the offset where the last message the user was looking at is
+                    //    // Scroll back to there so new messages appear on top, above screen
+                    //    scrollViewer.UpdateLayout();
+                    //    double newHeight = scrollViewer?.ExtentHeight ?? 0.0;
+                    //    double difference = newHeight - originalHeight;
 
-                        scrollViewer.ScrollToVerticalOffset(difference);
-                    }
+                    //    scrollViewer.ScrollToVerticalOffset(difference);
+                    //}
                 }
             }
             else if ((int)scrollViewer.VerticalOffset == (int)scrollViewer.ScrollableHeight)
@@ -229,26 +312,13 @@ namespace GroupMeClient.WpfUI.Extensions
                         double originalHeight = scrollViewer?.ExtentHeight ?? 0.0;
                         double originalOffset = scrollViewer?.VerticalOffset ?? 0.0;
 
-                        if (originalHeight != 0)
-                        {
-                            // prevent the At Top event from firing while we are adding new messages
-                            scrollViewer.ScrollToVerticalOffset(1);
-                        }
-
                         // Run the At-Bottom handler
+                        scrollViewer.CanContentScroll = false;
+                        SetBottomLoadingSnap(listBox, (int)originalOffset);
                         command.Execute(scrollViewer);
-
-                        // Restore the original position after the insert has been completed
-                        if (originalHeight != 0)
-                        {
-                            // Calculate the offset where the last message the user was looking at is
-                            // Scroll back to there so new messages appear on top, above screen
-                            scrollViewer.UpdateLayout();
-                            double newHeight = scrollViewer?.ExtentHeight ?? 0.0;
-                            double difference = newHeight - originalHeight;
-
-                            scrollViewer.ScrollToVerticalOffset(difference);
-                        }
+                        scrollViewer.CanContentScroll = true;
+                        //scrollViewer.ScrollToVerticalOffset(originalOffset - 1);
+                        //SetIsScrollFrozen(listBox, false);
                     }
                 }
             }
@@ -273,6 +343,21 @@ namespace GroupMeClient.WpfUI.Extensions
                 this.scrollViewer.ScrollToEnd();
                 this.scrollViewer.ScrollChanged += this.ScrollChanged;
                 this.scrollViewer.SizeChanged += this.SizeChanged;
+
+                // Use a One-Shot event handler to force the list to snap to the bottom when generation is finished
+                // This can safely ignore doScroll - it tends to be extraneously set to false by out-of-order scroll
+                // events before the control has actually finished loading any content.
+                EventHandler eventHandler = null;
+                eventHandler = (s, e) =>
+                    {
+                        if (listBox.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
+                        {
+                            var scrollViewer = FindSimpleVisualChild<ScrollViewer>(listBox);
+                            scrollViewer.ScrollToBottom();
+                            listBox.ItemContainerGenerator.StatusChanged -= eventHandler;
+                        }
+                    };
+                listBox.ItemContainerGenerator.StatusChanged += eventHandler;
             }
 
             /// <inheritdoc/>

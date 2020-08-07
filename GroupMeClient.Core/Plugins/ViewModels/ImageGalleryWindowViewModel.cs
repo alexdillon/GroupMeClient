@@ -42,7 +42,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             this.GroupName = this.GroupChat.Name;
 
             this.ShowImageDetailsCommand = new RelayCommand<AttachmentImageItem>(this.ShowImageDetails);
-            this.LoadMoreCommand = new RelayCommand(async () => await this.LoadNextPage(), true);
+            this.LoadMoreCommand = new RelayCommand(async() => await this.LoadNextPage(), true);
             this.ResetFilters = new RelayCommand<bool>(this.ResetFilterFields);
 
             this.Members = new ObservableCollection<Member>();
@@ -286,34 +286,41 @@ namespace GroupMeClient.Core.Plugins.ViewModels
               return;
             }
 
+            var newItems = new List<AttachmentImageItem>();
+
+            foreach (var msg in range)
+            {
+                var imageUrls = GetAttachmentContentUrls(msg.Attachments, true);
+
+                var numberOfImages = imageUrls.Length;
+                if (this.FilterReplyScreenshots)
+                {
+                    var isReply =
+                        (!string.IsNullOrEmpty(msg.Text) && System.Text.RegularExpressions.Regex.IsMatch(msg.Text, Utilities.RegexUtils.RepliedMessageRegex)) ||
+                        msg.SourceGuid.StartsWith("gmdc-r");
+
+                    if (isReply)
+                    {
+                        numberOfImages -= 1;
+                    }
+                }
+
+                for (int i = 0; i < numberOfImages; i++)
+                {
+                    if (!string.IsNullOrEmpty(imageUrls[i]))
+                    {
+                        var entry = new AttachmentImageItem(imageUrls[i], msg, i, this.GroupChat.Client.ImageDownloader);
+                        newItems.Add(entry);
+                    }
+                }
+            }
+
             var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
             await uiDispatcher.InvokeAsync(() =>
             {
-                foreach (var msg in range)
+                foreach (var item in newItems)
                 {
-                    var imageUrls = GetAttachmentContentUrls(msg.Attachments, true);
-
-                    var numberOfImages = imageUrls.Length;
-                    if (this.FilterReplyScreenshots)
-                    {
-                        var isReply =
-                            (!string.IsNullOrEmpty(msg.Text) && System.Text.RegularExpressions.Regex.IsMatch(msg.Text, Utilities.RegexUtils.RepliedMessageRegex)) ||
-                            msg.SourceGuid.StartsWith("gmdc-r");
-
-                        if (isReply)
-                        {
-                            numberOfImages -= 1;
-                        }
-                    }
-
-                    for (int i = 0; i < numberOfImages; i++)
-                    {
-                        if (!string.IsNullOrEmpty(imageUrls[i]))
-                        {
-                            var entry = new AttachmentImageItem(imageUrls[i], msg, i, this.GroupChat.Client.ImageDownloader);
-                            this.Images.Add(entry);
-                        }
-                    }
+                    this.Images.Add(item);
                 }
             });
         }
