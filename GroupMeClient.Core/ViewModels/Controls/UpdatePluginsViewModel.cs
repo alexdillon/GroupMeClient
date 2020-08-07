@@ -29,7 +29,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.UpdateAllCommand = new RelayCommand(async () => await this.UpdateAllPlugins(), true);
             this.UninstallPluginCommand = new RelayCommand(this.UninstallSelectedPlugin);
 
-            foreach (var plugin in PluginInstaller.Instance.InstalledPlugins)
+            this.PluginInstaller = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<PluginInstaller>();
+
+            foreach (var plugin in this.PluginInstaller.InstalledPlugins)
             {
                 this.AvailablePlugins.Add(plugin);
             }
@@ -99,16 +101,18 @@ namespace GroupMeClient.Core.ViewModels.Controls
             set => this.Set(() => this.SelectedToUninstall, ref this.selectedToUninstall, value);
         }
 
+        private PluginInstaller PluginInstaller { get; }
+
         private async Task UpdateAvailablePlugins()
         {
             this.AvailableUpdates.Clear();
             this.IsUpdatingPlugins = true;
 
-            foreach (var repo in PluginInstaller.Instance.AddedRepositories)
+            foreach (var repo in this.PluginInstaller.AddedRepositories)
             {
                 foreach (var plugin in await repo.GetAvailablePlugins())
                 {
-                    var installed = PluginInstaller.Instance.InstalledPlugins
+                    var installed = this.PluginInstaller.InstalledPlugins
                         .FirstOrDefault(p => p.PluginName == plugin.Name &&
                                              p.RepositoryUrl == repo.Url);
 
@@ -132,7 +136,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             {
                 this.IsUpdatingPlugins = true;
 
-                await PluginInstaller.Instance.UpdatePlugin(this.SelectedToUpdate);
+                await this.PluginInstaller.UpdatePlugin(this.SelectedToUpdate);
                 this.AvailableUpdates.Remove(this.SelectedToUpdate);
 
                 this.IsUpdatingPlugins = false;
@@ -145,7 +149,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             foreach (var update in this.AvailableUpdates)
             {
-                await PluginInstaller.Instance.UpdatePlugin(update);
+                await this.PluginInstaller.UpdatePlugin(update);
             }
 
             this.AvailableUpdates.Clear();
@@ -157,7 +161,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             if (this.SelectedToUninstall != null)
             {
-                PluginInstaller.Instance.UninstallPlugin(this.SelectedToUninstall);
+                this.PluginInstaller.UninstallPlugin(this.SelectedToUninstall);
                 this.AvailablePlugins.Remove(this.SelectedToUninstall);
             }
         }

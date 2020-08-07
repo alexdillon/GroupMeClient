@@ -17,6 +17,7 @@ namespace GroupMeClient.Core.Settings
         public SettingsManager(string databaseName)
         {
             this.SettingsFile = databaseName ?? throw new ArgumentNullException(nameof(databaseName));
+            this.LoadSettings();
         }
 
         /// <summary>

@@ -172,10 +172,12 @@ namespace GroupMeClient.WpfUI.Plugins
                     }
                 }
 
+                var pluginInstaller = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<PluginInstaller>();
+
                 foreach (var type in pluginTypes)
                 {
                     var hostedAssemblyName = Path.GetFileNameWithoutExtension(Path.GetDirectoryName(type.Module.Assembly.Location));
-                    var installedPlugin = PluginInstaller.Instance.InstalledPlugins.FirstOrDefault(p => p.InstallationGuid == hostedAssemblyName);
+                    var installedPlugin = pluginInstaller.InstalledPlugins.FirstOrDefault(p => p.InstallationGuid == hostedAssemblyName);
 
                     var plugin = (PluginBase)Activator.CreateInstance(type);
 

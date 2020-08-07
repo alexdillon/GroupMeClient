@@ -15,18 +15,15 @@ namespace GroupMeClient.Core.Plugins
     /// </summary>
     public sealed class PluginInstaller
     {
-        private static readonly Lazy<PluginInstaller> LazyPluginInstaller = new Lazy<PluginInstaller>(() => new PluginInstaller());
-        private static string pluginRoot;
-
-        private PluginInstaller()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginInstaller"/> class.
+        /// </summary>
+        /// <param name="pluginRoot">The root path for the plugin library.</param>
+        public PluginInstaller(string pluginRoot)
         {
+            this.PluginRoot = pluginRoot;
             this.LoadPluginSettings();
         }
-
-        /// <summary>
-        /// Gets the instance of the <see cref="PluginInstaller"/> for the current application.
-        /// </summary>
-        public static PluginInstaller Instance => LazyPluginInstaller.Value;
 
         /// <summary>
         /// Gets the suffix that is applied to the end of a filename to indicate that it is being staged for installation.
@@ -48,19 +45,11 @@ namespace GroupMeClient.Core.Plugins
         /// </summary>
         public IReadOnlyCollection<PluginSettings.InstalledPlugin> InstalledPlugins => this.PluginSettings.InstalledPlugins;
 
-        private string PluginSettingsFile => Path.Combine(pluginRoot, "plugins.json");
+        private string PluginSettingsFile => Path.Combine(this.PluginRoot, "plugins.json");
+
+        private string PluginRoot { get; }
 
         private PluginSettings PluginSettings { get; } = new PluginSettings();
-
-        /// <summary>
-        /// Configures the <see cref="PluginInstaller"/> for operation. This method must be called
-        /// before any <see cref="PluginInstaller"/> services can be accessed.
-        /// </summary>
-        /// <param name="pluginRoot">The root path of the Plugins folder.</param>
-        public static void SetupPluginInstaller(string pluginRoot)
-        {
-            PluginInstaller.pluginRoot = pluginRoot;
-        }
 
         /// <summary>
         /// Adds a new <see cref="Repository"/> to the list of <see cref="AddedRepositories"/>.
@@ -128,7 +117,7 @@ namespace GroupMeClient.Core.Plugins
         /// <param name="plugin">The plugin to uninstall.</param>
         public void UninstallPlugin(PluginSettings.InstalledPlugin plugin)
         {
-            var stagingDeleteFilename = Path.Combine(pluginRoot, PackagesDirectory, $"{plugin.InstallationGuid}{StagingSuffix}.rm");
+            var stagingDeleteFilename = Path.Combine(this.PluginRoot, PackagesDirectory, $"{plugin.InstallationGuid}{StagingSuffix}.rm");
             File.WriteAllBytes(stagingDeleteFilename, new byte[] { });
 
             this.PluginSettings.InstalledPlugins.Remove(plugin);
@@ -144,7 +133,7 @@ namespace GroupMeClient.Core.Plugins
             {
                 using (var zip = new ZipArchive(stream, ZipArchiveMode.Read))
                 {
-                    var targetDirectory = Path.Combine(pluginRoot, PackagesDirectory, $"{guid}{suffix}");
+                    var targetDirectory = Path.Combine(this.PluginRoot, PackagesDirectory, $"{guid}{suffix}");
                     zip.ExtractToDirectory(targetDirectory);
                 }
             }

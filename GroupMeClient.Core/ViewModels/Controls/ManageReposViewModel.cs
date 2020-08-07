@@ -6,7 +6,6 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Plugins.Repositories;
-using GroupMeClient.Core.Settings;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -35,7 +34,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.CloseGitHubRepoCommand = new RelayCommand(this.CancelAddingGitHubRepo);
             this.FinishAddGitHubRepoCommand = new RelayCommand(this.FinishAddingGitHubRepo);
 
-            foreach (var repo in PluginInstaller.Instance.AddedRepositories)
+            this.PluginInstaller = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<PluginInstaller>();
+
+            foreach (var repo in this.PluginInstaller.AddedRepositories)
             {
                 this.AddedRepos.Add(repo);
             }
@@ -123,6 +124,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
             set => this.Set(() => this.SelectedPlugin, ref this.selectedPlugin, value);
         }
 
+        private PluginInstaller PluginInstaller { get; }
+
         private async Task UpdateAvailablePlugins()
         {
             this.AvailablePlugins.Clear();
@@ -132,7 +135,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             {
                 foreach (var plugin in await repo.GetAvailablePlugins())
                 {
-                    var installed = PluginInstaller.Instance.InstalledPlugins
+                    var installed = this.PluginInstaller.InstalledPlugins
                         .FirstOrDefault(p => p.PluginName == plugin.Name &&
                                              p.RepositoryUrl == repo.Url);
 
@@ -156,8 +159,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             if (this.SelectedRepo != null)
             {
-                var settingsRepo = PluginInstaller.Instance.AddedRepositories.FirstOrDefault(r => r.Url == this.SelectedRepo.Url);
-                PluginInstaller.Instance.RemoveRepository(settingsRepo);
+                var settingsRepo = this.PluginInstaller.AddedRepositories.FirstOrDefault(r => r.Url == this.SelectedRepo.Url);
+                this.PluginInstaller.RemoveRepository(settingsRepo);
                 this.AddedRepos.Remove(this.SelectedRepo);
                 this.SelectedRepo = null;
                 _ = this.UpdateAvailablePlugins();
@@ -169,7 +172,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             if (this.SelectedPlugin != null)
             {
                 this.IsUpdatingPlugins = true;
-                await PluginInstaller.Instance.InstallPlugin(this.SelectedPlugin);
+                await this.PluginInstaller.InstallPlugin(this.SelectedPlugin);
                 await this.UpdateAvailablePlugins();
                 this.IsUpdatingPlugins = false;
             }
@@ -183,7 +186,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 if (existingRepoSource == null)
                 {
                     var repo = new GitHubRepository(this.EnteredRepoUrl);
-                    PluginInstaller.Instance.AddRepository(repo);
+                    this.PluginInstaller.AddRepository(repo);
                     this.AddedRepos.Add(repo);
                     _ = this.UpdateAvailablePlugins();
                 }
