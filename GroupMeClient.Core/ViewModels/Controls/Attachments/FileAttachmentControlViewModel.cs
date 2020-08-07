@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Services;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
@@ -117,13 +117,14 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             var tempFile = Utilities.TempFileUtils.GetTempFileName(this.FileData.FileName);
             File.WriteAllBytes(tempFile, data);
 
+            var osShellService = SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
             try
             {
-                Process.Start(tempFile);
+                osShellService.OpenFile(tempFile);
             }
             catch (Exception)
             {
-                Process.Start("explorer.exe", string.Format("/select,\"{0}\"", tempFile));
+                osShellService.ShowFileInExplorer(tempFile);
             }
 
             this.IsLoading = false;

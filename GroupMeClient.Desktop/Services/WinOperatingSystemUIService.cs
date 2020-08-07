@@ -19,5 +19,21 @@ namespace GroupMeClient.Desktop.Services
             };
             Process.Start(psi);
         }
+
+        public void OpenFile(string filePath)
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = filePath,
+                UseShellExecute = true,
+            };
+            Process.Start(psi);
+        }
+
+
+        public void ShowFileInExplorer(string filePath)
+        {
+            Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
+        }
     }
 }
