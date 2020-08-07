@@ -14,6 +14,10 @@ using GroupMeClientApi.Models;
 
 namespace GroupMeClient.WpfUI.Services
 {
+    /// <summary>
+    /// <see cref="WpfMessageRenderer"/> provides an implementation of the <see cref="IMessageRendererService"/>
+    /// for drawing messages to Bitmaps on the WPF platform.
+    /// </summary>
     public class WpfMessageRenderer : IMessageRendererService
     {
         /// <summary>

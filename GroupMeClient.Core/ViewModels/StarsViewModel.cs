@@ -41,7 +41,7 @@ namespace GroupMeClient.Core.ViewModels
 
             this.AllGroupsChats = new SourceList<GroupControlViewModel>();
             this.SortedGroupChats = new ObservableCollectionExtended<GroupControlViewModel>();
-          
+
             var updatedSort = this.AllGroupsChats
               .Connect()
               .WhenPropertyChanged(c => c.LastUpdated)

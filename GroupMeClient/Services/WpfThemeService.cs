@@ -120,8 +120,8 @@ namespace GroupMeClient.WpfUI.Services
                 this.SetDarkTheme();
             }
 
-            Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent -= Windows_ThemeChangedEvent;
-            Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent += Windows_ThemeChangedEvent;
+            Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent -= this.Windows_ThemeChangedEvent;
+            Native.WindowsThemeUtils.ThemeUpdateHook.Instance.ThemeChangedEvent += this.Windows_ThemeChangedEvent;
         }
 
         private void Windows_ThemeChangedEvent()

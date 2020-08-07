@@ -27,6 +27,12 @@ namespace GroupMeClient.Core.Plugins.ViewModels
         private DateTime filterEndDate = DateTime.Now.AddDays(1);
         private Member filterMessagesFrom;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageGalleryWindowViewModel"/> class.
+        /// </summary>
+        /// <param name="groupChat">The group or chat this gallery is for.</param>
+        /// <param name="cacheSession">The cache session which should be used to retrieve messages from.</param>
+        /// <param name="uiIntegration">The plugin UI integration object.</param>
         public ImageGalleryWindowViewModel(IMessageContainer groupChat, CacheSession cacheSession, IPluginUIIntegration uiIntegration)
         {
             this.GroupChat = groupChat;

@@ -5,6 +5,10 @@ using GroupMeClient.Core.Controls.Media;
 
 namespace GroupMeClient.WpfUI.Converters
 {
+    /// <summary>
+    /// <see cref="GenericImageSourceToImageSource"/> provides a conversion between the abstract GMDC <see cref="GenericImageSource"/> and
+    /// WPF's <see cref="ImageSource"/> type.
+    /// </summary>
     [ValueConversion(typeof(GenericImageSource), typeof(ImageSource))]
     public class GenericImageSourceToImageSource : IValueConverter
     {
