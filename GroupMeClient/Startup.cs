@@ -19,7 +19,10 @@
             GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.Register<Core.Services.IUserInterfaceDispatchService, Services.WpfDispatcherService>();
             GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.Register<Core.Services.IRestoreService, Services.WpfRestoreService>();
 
+            // Setup Themeing
+            GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.Register<Core.Services.IThemeService, Services.WpfThemeService>();
 
+            // Setup Windows services
             GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.Register<Core.Services.IOperatingSystemUIService, Desktop.Services.WinOperatingSystemUIService>();
 
             // Create Plugin Manager singleton

@@ -14,10 +14,8 @@ using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.ViewModels;
 using GroupMeClient.Core.ViewModels.Controls;
-using GroupMeClient.WpfUI;
 using GroupMeClient.WpfUI.Notifications.Display;
 using GroupMeClient.WpfUI.Notifications.Display.WpfToast;
-using GroupMeClient.WpfUI.Themes;
 using GroupMeClient.WpfUI.Updates;
 using GroupMeClientApi.Models;
 using MahApps.Metro.Controls;
@@ -236,9 +234,6 @@ namespace GroupMeClient.WpfUI.ViewModels
         {
             this.SettingsManager = new Core.Settings.SettingsManager(this.SettingsPath);
             this.SettingsManager.LoadSettings();
-
-            this.SettingsManager.UISettings.CurrentSelectedTheme.Subscribe(
-                onNext: (s) => ThemeManager.UpdateTheme(s));
 
             PluginInstaller.SetupPluginInstaller(this.PluginsPath);
 

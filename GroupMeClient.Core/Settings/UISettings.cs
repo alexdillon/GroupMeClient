@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive.Subjects;
+using GroupMeClient.Core.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -62,7 +63,12 @@ namespace GroupMeClient.Core.Settings
         public ThemeOptions Theme
         {
             get => this.theme.Value;
-            set => this.theme.OnNext(value);
+            set
+            {
+                this.theme.OnNext(value);
+                var themeService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IThemeService>();
+                themeService.UpdateTheme(value);
+            }
         }
 
         /// <summary>
