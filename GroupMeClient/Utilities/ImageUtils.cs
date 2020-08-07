@@ -35,16 +35,23 @@ namespace GroupMeClient.WpfUI.Utilities
         /// <returns>A Wpf <see cref="ImageSource"/>.</returns>
         public static ImageSource BytesToImageSource(byte[] image)
         {
-            using (var ms = new MemoryStream(image))
+            try
             {
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
+                using (var ms = new MemoryStream(image))
+                {
+                    var bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.StreamSource = ms;
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze();
 
-                return bitmapImage;
+                    return bitmapImage;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
 
@@ -57,26 +64,33 @@ namespace GroupMeClient.WpfUI.Utilities
         /// <returns>A Wpf <see cref="ImageSource"/>.</returns>
         public static ImageSource BytesToImageSource(byte[] image, int maxWidth, int maxHeight)
         {
-            using (var ms = new MemoryStream(image))
+            try
             {
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = ms;
-
-                if (maxWidth > maxHeight)
+                using (var ms = new MemoryStream(image))
                 {
-                    bitmapImage.DecodePixelWidth = maxWidth;
-                }
-                else
-                {
-                    bitmapImage.DecodePixelHeight = maxHeight;
-                }
+                    var bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.StreamSource = ms;
 
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
+                    if (maxWidth > maxHeight)
+                    {
+                        bitmapImage.DecodePixelWidth = maxWidth;
+                    }
+                    else
+                    {
+                        bitmapImage.DecodePixelHeight = maxHeight;
+                    }
 
-                return bitmapImage;
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze();
+
+                    return bitmapImage;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
 

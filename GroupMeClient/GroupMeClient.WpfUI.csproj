@@ -111,7 +111,7 @@
     <Compile Include="Services\WpfFileDialogService.cs" />
     <Compile Include="Services\WpfRestoreService.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Themes\ThemeManager.cs" />
+    <Compile Include="Services\WpfThemeService.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />
     <Compile Include="Extensions\TextBlockExtensions.cs" />
     <Compile Include="Extensions\EventFocusAttachment.cs" />
