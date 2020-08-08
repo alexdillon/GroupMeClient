@@ -287,18 +287,6 @@ namespace GroupMeClient.WpfUI.Extensions
                     SetTopLoadingSnap(listBox, (int)originalHeight);
                     command.Execute(scrollViewer);
                     scrollViewer.CanContentScroll = true;
-
-                    //// Restore the original position after the insert has been completed
-                    //if (originalHeight != 0)
-                    //{
-                    //    // Calculate the offset where the last message the user was looking at is
-                    //    // Scroll back to there so new messages appear on top, above screen
-                    //    scrollViewer.UpdateLayout();
-                    //    double newHeight = scrollViewer?.ExtentHeight ?? 0.0;
-                    //    double difference = newHeight - originalHeight;
-
-                    //    scrollViewer.ScrollToVerticalOffset(difference);
-                    //}
                 }
             }
             else if ((int)scrollViewer.VerticalOffset == (int)scrollViewer.ScrollableHeight)
@@ -317,8 +305,6 @@ namespace GroupMeClient.WpfUI.Extensions
                         SetBottomLoadingSnap(listBox, (int)originalOffset);
                         command.Execute(scrollViewer);
                         scrollViewer.CanContentScroll = true;
-                        //scrollViewer.ScrollToVerticalOffset(originalOffset - 1);
-                        //SetIsScrollFrozen(listBox, false);
                     }
                 }
             }

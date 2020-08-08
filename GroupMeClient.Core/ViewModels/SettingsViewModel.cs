@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
-// TODO this used to be CommandWpf, so fix CanExecuted as needed
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Services;
@@ -33,7 +32,7 @@ namespace GroupMeClient.Core.ViewModels
             this.ManageReposCommand = new RelayCommand(this.ManageRepos);
             this.ManageUpdatesCommand = new RelayCommand(this.ManageUpdates);
             this.ViewReleaseNotesCommand = new RelayCommand(this.ViewReleaseNotes);
-            this.CheckForUpdatesCommand = new RelayCommand(this.CheckForApplicationUpdates, canExecute: () => !this.IsUpdating);
+            this.CheckForUpdatesCommand = new RelayCommand(this.CheckForApplicationUpdates);
 
             this.DialogManager = new PopupViewModel()
             {
@@ -266,7 +265,7 @@ namespace GroupMeClient.Core.ViewModels
 
         private void CheckForApplicationUpdates()
         {
-            if (this.UpdateAssist.CanShutdown || this.IsUpdating)
+            if (this.UpdateAssist.CanShutdown && !this.IsUpdating)
             {
                 // Don't check for updates if an update is already is progress
                 this.IsUpdating = true;
