@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
-// TODO this used to be CommandWpf, so fix CanExecuted as needed
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Services;

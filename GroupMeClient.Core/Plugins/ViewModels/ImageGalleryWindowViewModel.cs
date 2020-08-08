@@ -42,7 +42,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             this.GroupName = this.GroupChat.Name;
 
             this.ShowImageDetailsCommand = new RelayCommand<AttachmentImageItem>(this.ShowImageDetails);
-            this.LoadMoreCommand = new RelayCommand(async() => await this.LoadNextPage(), true);
+            this.LoadMoreCommand = new RelayCommand(async () => await this.LoadNextPage(), true);
             this.ResetFilters = new RelayCommand<bool>(this.ResetFilterFields);
 
             this.Members = new ObservableCollection<Member>();
