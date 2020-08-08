@@ -5,22 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
-             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="500">
+    
     <UserControl.Resources>
-        <Style TargetType="extensions:MultiLineSendBox" BasedOn="{StaticResource MetroTextBox}">
-            <!--Force the watermark to apply to the custom type-->
-        </Style>
-
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
         <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
-
         <sys:Boolean x:Key="True">True</sys:Boolean>
     </UserControl.Resources>
 
@@ -62,7 +56,7 @@
             </controls:AvatarControl>
 
             <!--Group Name and Plugins Drop Down Menu Button-->
-            <ToggleButton Style="{StaticResource GroupMeClient.Wpf.Styles.GroupNameDropdownStyle}"
+            <ToggleButton Style="{StaticResource GroupMeClient.Wpf.Styles.GroupNameDropdown}"
                           Grid.Column="1"
                           Tag="{Binding Title}"
                           x:Name="toggleGroupOptionsButton"/>
@@ -304,23 +298,11 @@
             <!--Message Text Box-->
             <extensions:MultiLineSendBox
                 Grid.Row="1" Grid.Column="1"
-                MinHeight="49"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Center"
-                VerticalContentAlignment="Center"
-                BorderBrush="Transparent"
-                BorderThickness="0"
-                FontSize="15"
-                RegularTextBrush="{DynamicResource TextBrush}"
-                ErrorTextBrush="Red"
-                AcceptsReturn="True"
-                TextWrapping="Wrap"
+                Style="{StaticResource GroupMeClient.Wpf.Styles.SendTextBox}"
                 IsReadOnly="{Binding IsSending}"
-                Controls:TextBoxHelper.Watermark="Send a Message..."
-                Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 extensions:FileDragDropPasteHelper.IsFileDragDropPasteEnabled="True"
                 extensions:FileDragDropPasteHelper.FileDragDropPasteTarget="{Binding}"
-                SpellCheck.IsEnabled="True">
+                Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
 
                 <behaviors:Interaction.Triggers>
                     <behaviors:EventTrigger EventName="Send">

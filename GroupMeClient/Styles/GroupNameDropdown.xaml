@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
 
-    <Style x:Key="GroupMeClient.Wpf.Styles.GroupNameDropdownStyle" TargetType="{x:Type ToggleButton}">
+    <Style x:Key="GroupMeClient.Wpf.Styles.GroupNameDropdown" TargetType="{x:Type ToggleButton}">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />

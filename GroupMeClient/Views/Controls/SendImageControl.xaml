@@ -53,21 +53,9 @@
 
             <extensions:MultiLineSendBox
                 x:Name="ImageMessageCaption"
+                Style="{StaticResource GroupMeClient.Wpf.Styles.SendTextBox}"
                 Grid.Row="1" Grid.Column="1"
-                BorderBrush="Transparent"
-                BorderThickness="0"
-                FontSize="15"
-                RegularTextBrush="{DynamicResource TextBrush}"
-                ErrorTextBrush="Red"
-                MinHeight="49"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Center"
-                VerticalContentAlignment="Center"
-                AcceptsReturn="True"
-                TextWrapping="Wrap"
-                Controls:TextBoxHelper.Watermark="Send a Message..."
-                Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                SpellCheck.IsEnabled="True">
+                Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 
                 <behaviors:Interaction.Triggers>
                     <behaviors:EventTrigger EventName="Send">

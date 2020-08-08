@@ -101,18 +101,7 @@
             <extensions:MultiLineSendBox
                 x:Name="SourceText"
                 Grid.Row="1" Grid.Column="1"
-                BorderBrush="Transparent"
-                BorderThickness="0"
-                FontSize="15"
-                RegularTextBrush="{DynamicResource TextBrush}"
-                ErrorTextBrush="Red"
-                MinHeight="49"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Center"
-                VerticalContentAlignment="Center"
-                AcceptsReturn="True"
-                TextWrapping="Wrap"
-                Controls:TextBoxHelper.Watermark="Send a Message..."
+                Style="{StaticResource GroupMeClient.Wpf.Styles.SendTextBox}"
                 Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 
                 <behaviors:Interaction.Triggers>

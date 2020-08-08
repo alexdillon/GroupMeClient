@@ -28,9 +28,11 @@
 
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
 
-                <ResourceDictionary Source="pack://application:,,,/Styles/ScrollBarStyle.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Styles/GroupNameDropdownStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/GroupMeLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/ScrollBar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/GroupNameDropdown.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/SendTextBox.xaml" />
+                
             </ResourceDictionary.MergedDictionaries>
             
             <Style TargetType="{x:Type Controls:WindowButtonCommands}" BasedOn="{StaticResource MahApps.Metro.Styles.WindowButtonCommands.Win10}" />
