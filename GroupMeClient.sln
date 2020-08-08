@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupMeClient.WpfUI", "GroupMeClient\GroupMeClient.WpfUI.csproj", "{3648A5D4-7C27-4340-81D0-5AA1C9B1C447}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupMeClient.WpfUI", "GroupMeClient.WpfUI\GroupMeClient.WpfUI.csproj", "{3648A5D4-7C27-4340-81D0-5AA1C9B1C447}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClient.Core", "GroupMeClient.Core\GroupMeClient.Core.csproj", "{7B65EF69-3008-4741-BAE7-F764CA30B0B2}"
 EndProject
