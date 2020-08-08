@@ -1,65 +1,52 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
-using GroupMeClient.Core.Settings;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 using GroupMeClientApi.Push;
 using GroupMeClientApi.Push.Notifications;
 using GroupMeClientPlugin.Notifications;
 using GroupMeClientPlugin.Notifications.Display;
+using Octokit;
 
-namespace GroupMeClient.WpfUI.Notifications.Display
+namespace GroupMeClient.Core.Notifications.Display
 {
     /// <summary>
     /// <see cref="PopupNotificationProvider"/> provides an observer to display notifications from the <see cref="NotificationRouter"/> visually.
     /// </summary>
-    public class PopupNotificationProvider : GroupMeClientPlugin.Notifications.INotificationSink
+    public class PopupNotificationProvider : INotificationSink
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PopupNotificationProvider"/> class.
+        /// </summary>
+        public PopupNotificationProvider()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PopupNotificationProvider"/> class.
+        /// </summary>
+        /// <param name="sink">The raw notification provider to use.</param>
         private PopupNotificationProvider(IPopupNotificationSink sink)
         {
             this.PopupNotificationSink = sink;
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="GroupMeClientApi.GroupMeClient"/> that
+        /// is provided from the <see cref="Core.Notifications.NotificationRouter"/>.
+        /// </summary>
+        protected GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
+
         private IPopupNotificationSink PopupNotificationSink { get; }
 
-        private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
-
         /// <summary>
-        /// Creates a <see cref="PopupNotificationProvider"/> to display operating system level notifications.
+        /// Creates a <see cref="PopupNotificationProvider"/> that does nothing with notifications.
         /// </summary>
-        /// <param name="settingsManager">The settings instance to use.</param>
         /// <returns>A PopupNotificationProvider.</returns>
-        public static PopupNotificationProvider CreatePlatformNotificationProvider(SettingsManager settingsManager)
+        public static PopupNotificationProvider CreateDoNothingProvider()
         {
-            var osVersion = System.Environment.OSVersion.Version;
-
-            if (osVersion.Major == 10)
-            {
-                // UWP-type Toast Notifications are natively supported (modern Windows 10 builds)
-                return new PopupNotificationProvider(new Win10.Win10ToastNotificationsProvider(settingsManager));
-            }
-            else
-            {
-                // No system-level notification support (pre-Win 10)
-                if (settingsManager.UISettings.EnableNonNativeNotifications)
-                {
-                    return new PopupNotificationProvider(new Win7.Win7ToastNotificationsProvider(settingsManager));
-                }
-                else
-                {
-                    return new PopupNotificationProvider(new DummyVisualSink());
-                }
-            }
-        }
-
-        /// <summary>
-        /// Creates a <see cref="PopupNotificationProvider"/> to display internal (popup) toast notifications.
-        /// </summary>
-        /// <param name="manager">The manager to use for displaying notifications.</param>
-        /// <returns>A PopupNotificationProvider.</returns>
-        public static PopupNotificationProvider CreateInternalNotificationProvider(WpfToast.ToastHolderViewModel manager)
-        {
-            return new PopupNotificationProvider(new WpfToast.WpfToastNotificationProvider(manager));
+            return new PopupNotificationProvider(new DummyVisualSink());
         }
 
         /// <inheritdoc/>
@@ -153,6 +140,16 @@ namespace GroupMeClient.WpfUI.Notifications.Display
         {
             this.GroupMeClient = client;
             this.PopupNotificationSink.RegisterClient(client);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="PopupNotificationProvider"/> for a specific implementation.
+        /// </summary>
+        /// <param name="sink">The raw notification implementation to use.</param>
+        /// <returns>A PopupNotificationProvider.</returns>
+        protected static PopupNotificationProvider CreateProvider(IPopupNotificationSink sink)
+        {
+            return new PopupNotificationProvider(sink);
         }
 
         private bool DidISendIt(Message message)

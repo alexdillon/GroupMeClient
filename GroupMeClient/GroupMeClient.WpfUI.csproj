@@ -79,6 +79,7 @@
     <Compile Include="Extensions\NotRightClickTrigger.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />
     <Compile Include="Native\WindowsThemeUtils.cs" />
+    <Compile Include="Notifications\Display\NativeDesktopNotificationProvider.cs" />
     <Compile Include="Plugins\ImageGalleryPlugin.cs" />
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Services\WpfClipboardService.cs" />
@@ -131,7 +132,6 @@
     </Compile>
     <Compile Include="Notifications\Display\WpfToast\ToastNotificationViewModel.cs" />
     <Compile Include="Notifications\Display\WpfToast\WpfToastNotificationProvider.cs" />
-    <Compile Include="Notifications\Display\PopupNotificationProvider.cs" />
     <Compile Include="Notifications\Display\Win10\Win10ToastNotificationsProvider.cs" />
     <Compile Include="SelectedItemToContentConverter.cs" />
     <Compile Include="Updates\UpdateAssist.cs" />

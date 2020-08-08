@@ -158,6 +158,11 @@ namespace GroupMeClient.WpfUI.ViewModels
         /// </summary>
         public ToastHolderViewModel ToastHolderManager { get; private set; }
 
+        /// <summary>
+        /// Gets the Task Manager in use for this application.
+        /// </summary>
+        public TaskManager TaskManager { get; private set; }
+
         private string DataRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicroCube", "GroupMe Desktop Client");
 
         private string SettingsPath => Path.Combine(this.DataRoot, "settings.json");
@@ -251,7 +256,8 @@ namespace GroupMeClient.WpfUI.ViewModels
 
             this.RebootApplication = new RelayCommand(this.RestartCommand);
 
-            SimpleIoc.Default.GetInstance<TaskManager>().TaskCountChanged += this.TaskManager_TaskCountChanged;
+            this.TaskManager = SimpleIoc.Default.GetInstance<TaskManager>();
+            this.TaskManager.TaskCountChanged += this.TaskManager_TaskCountChanged;
 
             if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
             {
@@ -307,8 +313,8 @@ namespace GroupMeClient.WpfUI.ViewModels
             this.ToastHolderManager = new ToastHolderViewModel();
 
             this.NotificationRouter.RegisterNewSubscriber(this.ChatsViewModel);
-            this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreatePlatformNotificationProvider(this.SettingsManager));
-            this.NotificationRouter.RegisterNewSubscriber(PopupNotificationProvider.CreateInternalNotificationProvider(this.ToastHolderManager));
+            this.NotificationRouter.RegisterNewSubscriber(NativeDesktopNotificationProvider.CreatePlatformNotificationProvider(this.SettingsManager));
+            this.NotificationRouter.RegisterNewSubscriber(NativeDesktopNotificationProvider.CreateInternalNotificationProvider(this.ToastHolderManager));
         }
 
         private void CreateMenuItemsRegular()
@@ -466,24 +472,20 @@ namespace GroupMeClient.WpfUI.ViewModels
 
         private void UpdateDisconnectedComponentsCount(Core.Messaging.DisconnectedRequestMessage update)
         {
-            var taskManager = SimpleIoc.Default.GetInstance<TaskManager>();
-
             this.DisconnectedComponentCount += update.Disconnected ? 1 : -1;
             this.DisconnectedComponentCount = Math.Max(this.DisconnectedComponentCount, 0); // make sure it never goes negative
-            taskManager.UpdateNumberOfBackgroundLoads(this.DisconnectedComponentCount);
+            this.TaskManager.UpdateNumberOfBackgroundLoads(this.DisconnectedComponentCount);
             Application.Current.Dispatcher.Invoke(() =>
             {
-                this.IsReconnecting = this.DisconnectedComponentCount > 0 || taskManager.RunningTasks.Count > 0;
+                this.IsReconnecting = this.DisconnectedComponentCount > 0 || this.TaskManager.RunningTasks.Count > 0;
             });
         }
 
         private void TaskManager_TaskCountChanged(object sender, EventArgs e)
         {
-            var taskManager = SimpleIoc.Default.GetInstance<TaskManager>();
-
             Application.Current.Dispatcher.Invoke(() =>
             {
-                this.IsReconnecting = this.DisconnectedComponentCount > 0 || taskManager.RunningTasks.Count > 0;
+                this.IsReconnecting = this.DisconnectedComponentCount > 0 || this.TaskManager.RunningTasks.Count > 0;
             });
         }
 
