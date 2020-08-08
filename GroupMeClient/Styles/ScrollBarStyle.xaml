@@ -3,7 +3,7 @@
     
     <!-- Adapted from https://stackoverflow.com/questions/10969292/apple-style-scrollbar-wpf-->
     <!--Scrollbar Thumbs-->
-    <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+    <Style x:Key="GroupMeClient.Wpf.Styles.ScrollThumbs" TargetType="{x:Type Thumb}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">

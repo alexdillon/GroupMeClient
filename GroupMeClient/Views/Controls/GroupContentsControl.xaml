@@ -62,7 +62,7 @@
             </controls:AvatarControl>
 
             <!--Group Name and Plugins Drop Down Menu Button-->
-            <ToggleButton Style="{StaticResource ToggleDropdownGroupName}"
+            <ToggleButton Style="{StaticResource GroupMeClient.Wpf.Styles.GroupNameDropdownStyle}"
                           Grid.Column="1"
                           Tag="{Binding Title}"
                           x:Name="toggleGroupOptionsButton"/>

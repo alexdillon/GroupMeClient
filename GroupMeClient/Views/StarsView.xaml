@@ -118,7 +118,7 @@
                             DataContext="{Binding TopBarAvatar}" />
 
                         <!--Group Name and Drop Down Menu Button-->
-                        <ToggleButton Style="{StaticResource ToggleDropdownGroupName}"
+                        <ToggleButton Style="{StaticResource GroupMeClient.Wpf.Styles.GroupNameDropdownStyle}"
                                       Grid.Column="1"
                                       Margin="0,4,0,0"
                                       Tag="{Binding Path=MessageContainer.Name}"

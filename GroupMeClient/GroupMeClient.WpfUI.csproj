@@ -230,7 +230,7 @@
     <Compile Include="Views\SearchView.xaml.cs">
       <DependentUpon>SearchView.xaml</DependentUpon>
     </Compile>
-    <Page Include="Styles\ToggleDropdownGroupName.xaml">
+    <Page Include="Styles\GroupNameDropdownStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
