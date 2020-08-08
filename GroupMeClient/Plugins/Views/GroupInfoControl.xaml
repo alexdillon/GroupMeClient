@@ -16,17 +16,15 @@
 
     <UserControl.Resources>
         <Style x:Key="tabStyle" 
-               BasedOn="{StaticResource MetroTabItem}" 
+               BasedOn="{StaticResource MahApps.Styles.TabItem}" 
                TargetType="{x:Type TabItem}">
-            <Setter Property="Controls:ControlsHelper.HeaderFontSize" Value="15" />
+            <Setter Property="Controls:HeaderedControlHelper.HeaderFontSize" Value="15" />
             <Setter Property="Background" Value="Black" />
         </Style>
 
-        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MetroTextBox}">
-            <Setter Property="Controls:ControlsHelper.FocusBorderBrush"
-                    Value="White" />
-            <Setter Property="Controls:ControlsHelper.MouseOverBorderBrush"
-                    Value="White" />
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MahApps.Styles.TextBox}">
+            <Setter Property="Controls:ControlsHelper.FocusBorderBrush"  Value="White" />
+            <Setter Property="Controls:ControlsHelper.MouseOverBorderBrush" Value="White" />
         </Style>
 
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
@@ -392,7 +390,7 @@
                         <Controls:ToggleSwitch Content="Mute Group"
                                                Grid.Row="1"
                                                Foreground="White"
-                                               IsChecked="{Binding IsMuted}"
+                                               IsOn="{Binding IsMuted}"
                                                HorizontalAlignment="Center"/>
                     </Grid>
                 </Grid>

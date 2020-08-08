@@ -31,7 +31,7 @@ namespace GroupMeClient.WpfUI.Services
                 {
                     foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
                     {
-                        if (dictionary.Source.ToString().Contains("GroupMe"))
+                        if (dictionary.Source?.ToString().Contains("GroupMe") ?? false)
                         {
                             this.currentGroupMeTheme = dictionary;
                         }
@@ -83,12 +83,7 @@ namespace GroupMeClient.WpfUI.Services
         /// </summary>
         private void SetLightTheme()
         {
-            Tuple<AppTheme, Accent> appStyle = MahApps.Metro.ThemeManager.DetectAppStyle(Application.Current);
-            MahApps.Metro.ThemeManager.ChangeAppStyle(
-                Application.Current,
-                appStyle.Item2,
-                MahApps.Metro.ThemeManager.GetAppTheme("BaseLight"));
-
+            ControlzEx.Theming.ThemeManager.Current.ChangeTheme(Application.Current, "Light.Cyan");
             this.CurrentGroupMeTheme = this.groupMeLightTheme;
         }
 
@@ -97,12 +92,7 @@ namespace GroupMeClient.WpfUI.Services
         /// </summary>
         private void SetDarkTheme()
         {
-            Tuple<AppTheme, Accent> appStyle = MahApps.Metro.ThemeManager.DetectAppStyle(Application.Current);
-            MahApps.Metro.ThemeManager.ChangeAppStyle(
-                Application.Current,
-                appStyle.Item2,
-                MahApps.Metro.ThemeManager.GetAppTheme("BaseDark"));
-
+            ControlzEx.Theming.ThemeManager.Current.ChangeTheme(Application.Current, "Dark.Cyan");
             this.CurrentGroupMeTheme = this.groupMeDarkTheme;
         }
 

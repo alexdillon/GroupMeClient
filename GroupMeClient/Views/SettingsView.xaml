@@ -11,14 +11,6 @@
              d:DesignWidth="768"
              mc:Ignorable="d">
 
-    <UserControl.Resources>
-        <Style x:Key="MyColumnHeader" 
-               BasedOn="{StaticResource MetroGridViewColumnHeader}" 
-               TargetType="{x:Type GridViewColumnHeader}">
-            <Setter Property="controls:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
-        </Style>
-    </UserControl.Resources>
-
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Orientation="Vertical">
@@ -160,7 +152,7 @@
                             ItemsSource="{Binding Source={StaticResource ListBoxItems}}"
                             IsHitTestVisible="False">
                             <ListView.View>
-                                <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
+                                <GridView>
                                     <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Name}" />
                                     <GridViewColumn Header="Version" Width="70" DisplayMemberBinding="{Binding Version}" />
                                     <GridViewColumn Header="Source" Width="130" DisplayMemberBinding="{Binding Source}" />

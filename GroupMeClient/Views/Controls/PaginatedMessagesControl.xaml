@@ -6,7 +6,7 @@
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
              mc:Ignorable="d"
-             Background="{DynamicResource ControlBackgroundBrush}"
+             Background="{DynamicResource MahApps.Brushes.Control.Background}"
              d:DesignHeight="700" d:DesignWidth="500">
 
     <Grid>
@@ -29,7 +29,7 @@
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding CurrentPage}"
                  BorderThickness="0"
-                 Background="{DynamicResource ControlBackgroundBrush}"
+                 Background="{DynamicResource MahApps.Brushes.Control.Background}"
                  ScrollViewer.VerticalScrollBarVisibility="Visible"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.CanContentScroll="True" 

@@ -31,7 +31,7 @@
         </Grid.RowDefinitions>
 
         <!--Top Bar-->
-        <Grid Grid.Column="0" Grid.Row="0" Background="{DynamicResource ControlBackgroundBrush}">
+        <Grid Grid.Column="0" Grid.Row="0" Background="{DynamicResource MahApps.Brushes.Control.Background}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -81,7 +81,7 @@
             ItemsSource="{Binding MessagesSorted}"
             Grid.Row="2" Grid.Column="0"
             BorderThickness="0"
-            Background="{DynamicResource ControlBackgroundBrush}"
+            Background="{DynamicResource MahApps.Brushes.Control.Background}"
             UseLayoutRounding="True"
             SelectionMode="Multiple"
             ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -156,7 +156,7 @@
 
         <!--Scroll-To-Bottom Button-->
         <Button Grid.Row="2"
-                Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
+                Style="{DynamicResource MahApps.Styles.Button.Circle}"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Margin="0,0,30,20"
@@ -236,7 +236,7 @@
 
         <!--Send Message Bar-->
         <Grid Grid.Row="3"
-              Background="{DynamicResource ControlBackgroundBrush}">
+              Background="{DynamicResource MahApps.Brushes.Control.Background}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />
@@ -260,7 +260,7 @@
                   HorizontalAlignment="Stretch" 
                   MaxHeight="100" 
                   Visibility="{Binding MessageBeingRepliedTo, Converter={StaticResource nullToVisibilityConverter}, ConverterParameter={StaticResource True}}"
-                  Background="{DynamicResource ControlBackgroundBrush}">
+                  Background="{DynamicResource MahApps.Brushes.Control.Background}">
           
                 <Border CornerRadius="2" BorderBrush="#637182" BorderThickness="2,2,2,0">
                     <Border CornerRadius="3" BorderBrush="{DynamicResource InProgressReplyBrush}" Margin="5,5,5,3" BorderThickness="2,2,2,2">
@@ -284,7 +284,7 @@
                                         VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"
                                         Width="15" Height="15" 
-                                        Background="{DynamicResource ControlBackgroundBrush}"
+                                        Background="{DynamicResource MahApps.Brushes.Control.Background}"
                                         Foreground="#637182"
                                         Kind="React"
                                         Margin="0">
@@ -316,7 +316,7 @@
                                         VerticalAlignment="Center" 
                                         HorizontalAlignment="Center"
                                         Width="15" Height="15"
-                                        Background="{DynamicResource ControlBackgroundBrush}"
+                                        Background="{DynamicResource MahApps.Brushes.Control.Background}"
                                         Foreground="{DynamicResource DividerLineBrush}" 
                                         Kind="Plus"
                                         Margin="0,0,20,0">

@@ -34,7 +34,7 @@
         
 
         <Grid Grid.Column="0" Grid.Row="3"
-              Background="{DynamicResource ControlBackgroundBrush}">
+              Background="{DynamicResource MahApps.Brushes.Control.Background}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*" />

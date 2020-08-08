@@ -32,7 +32,7 @@ namespace GroupMeClient.WpfUI.ViewModels
     {
         private HamburgerMenuItemCollection menuItems = new HamburgerMenuItemCollection();
         private HamburgerMenuItemCollection menuOptionItems = new HamburgerMenuItemCollection();
-        private HamburgerMenuItem selectedItem;
+        private HamburgerMenuItemBase selectedItem;
         private int unreadCount;
         private bool isReconnecting;
         private bool isRefreshing;
@@ -90,7 +90,7 @@ namespace GroupMeClient.WpfUI.ViewModels
         /// <summary>
         /// Gets or sets the currently selected Hamburger Menu Tab.
         /// </summary>
-        public HamburgerMenuItem SelectedItem
+        public HamburgerMenuItemBase SelectedItem
         {
             get => this.selectedItem;
             set => this.Set(() => this.SelectedItem, ref this.selectedItem, value);

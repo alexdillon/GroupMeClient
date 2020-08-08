@@ -36,7 +36,7 @@
 
         <!--Chats Header-->
         <Grid Grid.Column="0" Grid.Row="0"
-              Background="{DynamicResource ControlBackgroundBrush}">
+              Background="{DynamicResource MahApps.Brushes.Control.Background}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -165,8 +165,8 @@
                                 BorderBrush="{DynamicResource PluginMenuBrush}">
                             <StackPanel Orientation="Vertical" 
                                         Background="{DynamicResource PluginMenuBrush}">
-                                <RadioButton Content="Show Starred Messages" FontSize="16" Margin="5" IsChecked="{Binding IsShowingStars}" />
-                                <RadioButton Content="Show Hidden Messages" FontSize="16" Margin="5" IsChecked="{Binding IsShowingHidden}" />
+                                <RadioButton Content="Show Starred Messages" FontSize="16" Margin="5" IsChecked="{Binding IsShowingStars}" Background="Transparent" />
+                                <RadioButton Content="Show Hidden Messages" FontSize="16" Margin="5" IsChecked="{Binding IsShowingHidden}" Background="Transparent"/>
                             </StackPanel>
                         </Border>
                     </Grid>

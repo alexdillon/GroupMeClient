@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200">
 
-    <Grid ForceCursor="true" Cursor="Hand" Background="{DynamicResource ControlBackgroundBrush}">
+    <Grid ForceCursor="true" Cursor="Hand" Background="{DynamicResource MahApps.Brushes.Control.Background}">
         <behaviors:Interaction.Triggers>
             <behaviors:EventTrigger EventName="MouseLeftButtonDown" >
                 <behaviors:InvokeCommandAction Command="{Binding Clicked}" />

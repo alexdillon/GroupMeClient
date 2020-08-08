@@ -17,9 +17,9 @@
             <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
             
             <Style TargetType="{x:Type ToggleButton}" 
-                   BasedOn="{StaticResource MahApps.Metro.Styles.MetroButton}"
+                   BasedOn="{StaticResource MahApps.Styles.Button}"
                    x:Key="FlatButtonNoCaps">
-                <Setter Property="Controls:ButtonHelper.PreserveTextCase" Value="True"/>
+                <Setter Property="Controls:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -54,7 +54,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Background="{DynamicResource ControlBackgroundBrush}">
+            <Grid Grid.Row="0" Background="{DynamicResource MahApps.Brushes.Control.Background}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -71,7 +71,7 @@
                               Margin="15,0,0,0"
                               Height="Auto" FontSize="17" FontWeight="SemiBold"
                               BorderThickness="0"
-                              Background="{DynamicResource ControlBackgroundBrush}"
+                              Background="{DynamicResource MahApps.Brushes.Control.Background}"
                               Focusable="False"
                               Content="Chats" 
                               Style="{StaticResource FlatButtonNoCaps}"
@@ -108,7 +108,7 @@
                         Width="35" Height="35"
                         BorderThickness="0"
                         Foreground="#637182"
-                        Style="{DynamicResource MahApps.Metro.Styles.MetroButton}"
+                        Style="{DynamicResource MahApps.Styles.Button}"
                         ToolTip="Mark All Messages as Read"
                         Margin="5,0,0,0"
                         Command="{Binding Path=MarkAllAsRead}"

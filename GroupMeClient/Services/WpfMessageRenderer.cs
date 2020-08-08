@@ -68,7 +68,7 @@ namespace GroupMeClient.WpfUI.Services
             {
                 DataContext = viewModel,
                 Background = (Brush)Application.Current.FindResource("MessageTheySentBackdropBrush"),
-                Foreground = (Brush)Application.Current.FindResource("BlackBrush"),
+                Foreground = (Brush)Application.Current.FindResource("MahApps.Brushes.ThemeForeground"),
             };
         }
 

@@ -3,7 +3,7 @@
                     xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
                     xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions">
 
-    <Style x:Key="GroupMeClient.Wpf.Styles.SendTextBox" TargetType="{x:Type extensions:MultiLineSendBox}" BasedOn="{StaticResource MetroTextBox}">
+    <Style x:Key="GroupMeClient.Wpf.Styles.SendTextBox" TargetType="{x:Type extensions:MultiLineSendBox}" BasedOn="{StaticResource MahApps.Styles.TextBox}">
         <Setter Property="MinHeight" Value="49" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -11,7 +11,7 @@
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FontSize" Value="15" />
-        <Setter Property="RegularTextBrush" Value="{DynamicResource TextBrush}" />
+        <Setter Property="RegularTextBrush" Value="{DynamicResource MahApps.Brushes.Text}" />
         <Setter Property="ErrorTextBrush" Value="Red" />
         <Setter Property="AcceptsReturn" Value="True" />
         <Setter Property="TextWrapping" Value="Wrap" />

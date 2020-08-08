@@ -8,7 +8,7 @@
              xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
-             Background="{DynamicResource ControlBackgroundBrush}">
+             Background="{DynamicResource MahApps.Brushes.Control.Background}">
 
     <Grid ForceCursor="true" Cursor="Hand">
         <behaviors:Interaction.Triggers>

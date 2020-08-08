@@ -13,7 +13,7 @@
                  xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls" 
                  xmlns:sys="clr-namespace:System;assembly=mscorlib"
                  Title="GroupMe Desktop Client"
-                 TitleCaps="False"
+                 TitleCharacterCasing="Normal"
                  Width="1024"
                  Height="768"
                  WindowTitleBrush="{DynamicResource SidebarBrush}"

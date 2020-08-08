@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:MahControls="http://metro.mahapps.com/winfx/xaml/controls" 
              xmlns:views="clr-namespace:GroupMeClient.WpfUI.Views"
              xmlns:vm="clr-namespace:GroupMeClient.Core.ViewModels;assembly=GroupMeClient.Core"
              xmlns:ctrlviews="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
@@ -21,12 +21,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
-                
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.FlatButton.xaml" />
 
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
 
                 <ResourceDictionary Source="pack://application:,,,/Styles/GroupMeLight.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/ScrollBar.xaml" />
@@ -34,9 +31,6 @@
                 <ResourceDictionary Source="pack://application:,,,/Styles/SendTextBox.xaml" />
                 
             </ResourceDictionary.MergedDictionaries>
-            
-            <Style TargetType="{x:Type Controls:WindowButtonCommands}" BasedOn="{StaticResource MahApps.Metro.Styles.WindowButtonCommands.Win10}" />
-            <Style TargetType="{x:Type Controls:ToggleSwitch}" BasedOn="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
 
             <!--
             We define the data templates here so we can apply them across the

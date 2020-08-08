@@ -9,13 +9,13 @@
              Background="Black" >
 
     <UserControl.Resources>
-        <Style x:Key="MyColumnHeader" 
+        <!--<Style x:Key="MyColumnHeader" 
                BasedOn="{StaticResource MetroGridViewColumnHeader}" 
                TargetType="{x:Type GridViewColumnHeader}">
             <Setter Property="controls:ControlsHelper.ContentCharacterCasing" Value="Normal"/>
-        </Style>
+        </Style>-->
 
-        <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MetroListViewItem}">
+        <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MahApps.Styles.ListViewItem}">
             <Setter Property="Background" Value="#252525" />
             <Setter Property="Foreground" Value="White" />
         </Style>
@@ -62,7 +62,7 @@
                         ItemsSource="{Binding AvailableUpdates}"
                         SelectedItem="{Binding SelectedToUpdate}">
                         <ListView.View>
-                            <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
+                            <GridView>
                                 <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Name}" />
                                 <GridViewColumn Header="Version" Width="60" DisplayMemberBinding="{Binding Version}" />
                                 <GridViewColumn Header="Source" Width="200" DisplayMemberBinding="{Binding Source}" />
@@ -116,7 +116,7 @@
                         ItemsSource="{Binding AvailablePlugins}"
                         SelectedItem="{Binding SelectedToUninstall}">
                         <ListView.View>
-                            <GridView ColumnHeaderContainerStyle="{StaticResource MyColumnHeader}">
+                            <GridView >
                                 <GridViewColumn Header="PluginName" Width="250" DisplayMemberBinding="{Binding PluginName}" />
                             </GridView>
                         </ListView.View>

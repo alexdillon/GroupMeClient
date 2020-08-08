@@ -8,7 +8,7 @@
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
              xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
              mc:Ignorable="d" 
-             Background="{DynamicResource ControlBackgroundBrush}"
+             Background="{DynamicResource MahApps.Brushes.Control.Background}"
              d:DesignHeight="150" d:DesignWidth="400">
 
     <behaviors:Interaction.Triggers>

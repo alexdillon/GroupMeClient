@@ -35,7 +35,7 @@
                   Header="Filter Options"
                   Margin="15,5,25,0"
                   Controls:ControlsHelper.ContentCharacterCasing="Normal"
-                  Background="{DynamicResource ControlBackgroundBrush}"
+                  Background="{DynamicResource MahApps.Brushes.Control.Background}"
                   BorderBrush="Transparent"
                   HorizontalAlignment="Center">
 
@@ -77,7 +77,7 @@
             Grid.Row="2"
             ItemsSource="{Binding Images}"
             BorderThickness="0"
-            Background="{DynamicResource ControlBackgroundBrush}"
+            Background="{DynamicResource MahApps.Brushes.Control.Background}"
             UseLayoutRounding="True"
             ScrollViewer.VerticalScrollBarVisibility="Visible"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"

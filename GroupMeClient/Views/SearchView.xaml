@@ -5,7 +5,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
-             xmlns:views="clr-namespace:GroupMeClient.WpfUI.Views"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -38,7 +37,7 @@
 
         <!--Chats Header-->
         <Grid Grid.Column="0" Grid.Row="0"
-              Background="{DynamicResource ControlBackgroundBrush}">
+              Background="{DynamicResource MahApps.Brushes.Control.Background}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -66,7 +65,7 @@
                  ScrollViewer.CanContentScroll="True" 
                  ScrollViewer.PanningMode="VerticalOnly" 
                  VirtualizingPanel.ScrollUnit="Pixel"
-                 Background="{DynamicResource ControlBackgroundBrush}">
+                 Background="{DynamicResource MahApps.Brushes.Control.Background}">
 
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
@@ -137,7 +136,7 @@
                      FontSize="16"
                      Text="{Binding SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}" >
                 <TextBox.Style>
-                    <Style BasedOn="{StaticResource SearchMetroTextBox}" TargetType="{x:Type TextBox}">
+                    <Style BasedOn="{StaticResource MahApps.Styles.TextBox.Search}" TargetType="{x:Type TextBox}">
                         <Style.Triggers>
                             <Trigger Property="Controls:TextBoxHelper.HasText" Value="True">
                                 <Setter Property="Controls:TextBoxHelper.ButtonContent" Value="r" />
@@ -152,7 +151,8 @@
                       DockPanel.Dock="Top"
                       Margin="15,5,25,0"
                       Controls:ControlsHelper.ContentCharacterCasing="Normal"
-                      Background="{DynamicResource ControlBackgroundBrush}"
+                      Controls:HeaderedControlHelper.HeaderBackground="{DynamicResource MahApps.Brushes.Control.Background}"
+                      Background="{DynamicResource MahApps.Brushes.Control.Background}"
                       BorderBrush="Transparent"
                       HorizontalAlignment="Stretch">
                 <StackPanel>
