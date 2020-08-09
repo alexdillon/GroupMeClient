@@ -27,6 +27,7 @@
 
                 <ResourceDictionary Source="pack://application:,,,/Styles/GroupMeLight.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/ScrollBar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/Hyperlink.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/GroupNameDropdown.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/SendTextBox.xaml" />
                 

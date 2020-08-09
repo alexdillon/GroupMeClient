@@ -40,13 +40,15 @@ namespace GroupMeClient.WpfUI.Converters
             {
                 return this.GMDCRunToWpfRun(run);
             }
-            else if (value is Core.Controls.Documents.Span span)
-            {
-                return this.GMDCSpanToWpfSpan(span);
-            }
             else if (value is Core.Controls.Documents.Hyperlink hyperlink)
             {
+                // Hyperlinks are a special type of Span, so check them first
                 return this.GMDCHyperlinkToWpfHyperlink(hyperlink);
+            }
+            else if (value is Core.Controls.Documents.Span span)
+            {
+                // Check plain Span last
+                return this.GMDCSpanToWpfSpan(span);
             }
 
             return null;

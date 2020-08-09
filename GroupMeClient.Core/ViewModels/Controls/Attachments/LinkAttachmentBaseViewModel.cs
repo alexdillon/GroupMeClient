@@ -67,7 +67,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
                 if (Uri.TryCreate(this.url, UriKind.Absolute, out var uri))
                 {
                     this.Uri = uri;
-                    this.HiddenText = this.Uri.ToString();
+                    this.HiddenText = this.url;
                 }
             }
         }
