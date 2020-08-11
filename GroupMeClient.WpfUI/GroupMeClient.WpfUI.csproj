@@ -511,10 +511,6 @@
     </Squirrel>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\GroupMeClientPluginApi\GroupMeClientPluginApi\GroupMeClientPlugin.csproj">
-      <Project>{70a5ac4c-5c25-460f-b1db-ed9bc898303f}</Project>
-      <Name>GroupMeClientPlugin</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GroupMeClient.Core\GroupMeClient.Core.csproj">
       <Project>{7b65ef69-3008-4741-bae7-f764ca30b0b2}</Project>
       <Name>GroupMeClient.Core</Name>
