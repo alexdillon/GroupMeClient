@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.SendFileControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:microcube="clr-namespace:MicroCubeAvalonia.Controls;assembly=MicroCubeAvalonia"
+             xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+             xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
+             mc:Ignorable="d" d:DesignHeight="200" d:DesignWidth="200"
+             Background="Black">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <i:Interaction.Behaviors>
+      <extensions:FocusOnLoadBehavior FocusControl="{Binding #FileMessageCaption}" />
+    </i:Interaction.Behaviors>
+
+    <Grid ColumnDefinitions="55, *">
+      <iconPack:IconControl Kind="PackIconOcticonsKind.File"
+                            Foreground="White"
+                            Background="Transparent"
+                            VerticalAlignment="Center"
+                            Margin="5"
+                            Width="45" Height="45"/>
+
+      <TextBlock Grid.Column="1"
+                 VerticalAlignment="Center"
+                 FontSize="14"
+                 TextWrapping="Wrap"
+                 Foreground="White"
+                 Text="{Binding FileName}" />
+    </Grid>
+
+    <microcube:ProgressRing IsVisible="{Binding IsSending}"
+                            Foreground="{DynamicResource LoadingSpinnerDarkBrush}"
+                            Width="60" Height="60"
+                            HorizontalAlignment="Center"/>
+
+    <Grid Grid.Column="0" Grid.Row="3"
+          Background="{DynamicResource ThemeBackgroundBrush}">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="40" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto" MinHeight="50"/>
+      </Grid.RowDefinitions>
+
+      <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"
+              BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1"
+              Height="4"
+              Margin="0,0,0,0"
+              VerticalAlignment="Bottom"/>
+
+      <TextBox x:Name="ImageMessageCaption"
+               Grid.Row="1" Grid.Column="1"
+               MinHeight="49"
+               Classes="verticalCenter"
+               HorizontalAlignment="Stretch"
+               VerticalAlignment="Center"
+               BorderBrush="Transparent"
+               BorderThickness="0"
+               FontSize="15"
+               Watermark="Send a Message..."
+               Text="{Binding Path=TypedMessageContents, Mode=TwoWay}">
+
+        <i:Interaction.Behaviors>
+          <extensions:TextBoxSendBehavior SendCommand="{Binding SendButtonClicked}" />
+        </i:Interaction.Behaviors>
+      </TextBox>
+
+      <Button Grid.Row="1" Grid.Column="2"
+              Classes="styleless"
+              Width="35" Height="35"
+              Margin="0,0,30,0"
+              Background="{DynamicResource ThemeBackgroundBrush}"
+              HorizontalAlignment="Right"
+              BorderThickness="0"
+              Command="{Binding Path=SendButtonClicked}">
+        <iconPack:IconControl Width="15" Height="15"
+                              Foreground="{DynamicResource DividerLineBrush}"
+                              Background="{DynamicResource ThemeBackgroundBrush}"
+                              Kind="PackIconMaterialKind.Send"/>
+      </Button>
+    </Grid>
+  </Grid>
+</UserControl>

@@ -1,0 +1,154 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:MicroCubeAvalonia.Controls"
+        xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <controls:HamburgerMenu Width="400" Height="300" Background="Yellow" SidebarBrush="#1873BA" SidebarForeground="White" >
+      </controls:HamburgerMenu>
+    </Border>
+  </Design.PreviewWith>
+
+  <Style Selector="controls|HamburgerMenu">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Margin="{TemplateBinding Margin}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                VerticalAlignment="{TemplateBinding VerticalAlignment}">
+          <DockPanel>
+            <DockPanel Name="PART_Sidebar"
+                       Background="{TemplateBinding SidebarBrush}"
+                       DockPanel.Dock="Left">
+
+              <DockPanel.Styles>
+                <Style Selector="controls|HamburgerMenu[IsPaneOpen=True] DockPanel#PART_Sidebar">
+                  <Setter Property="Width" Value="240" />
+                </Style>
+
+                <Style Selector="controls|HamburgerMenu[IsPaneOpen=False] DockPanel#PART_Sidebar">
+                  <Setter Property="Width" Value="48" />
+                </Style>
+              </DockPanel.Styles>
+              
+              <ToggleButton Name="PART_HamburgerButton"
+                            Width="48" Height="48"
+                            IsChecked="{TemplateBinding IsPaneOpen, Mode=TwoWay}"
+                            Foreground="{TemplateBinding SidebarForeground}"
+                            Background="{Binding #PART_Sidebar.Background}"
+                            BorderThickness="0"
+                            HorizontalAlignment="Left"
+                            DockPanel.Dock="Top"
+                            Margin="0,0,0,8">
+                <ToggleButton.Styles>
+                  <Style Selector="ToggleButton:checked /template/ ContentPresenter">
+                    <Setter Property="Background" Value="{Binding #PART_Sidebar.Background}" />
+                  </Style>
+                  <Style Selector="ToggleButton:pressed /template/ ContentPresenter">
+                    <Setter Property="Background" Value="{Binding #PART_Sidebar.Background}" />
+                  </Style>
+                  <Style Selector="ToggleButton:pressed /template/ ContentPresenter">
+                    <Setter Property="Background" Value="{Binding #PART_Sidebar.Background}" />
+                  </Style>
+                  <Style Selector="ToggleButton:pointerover /template/ ContentPresenter">
+                    <Setter Property="Background" Value="Black" />
+                    <Setter Property="Opacity" Value="0.3" />
+                  </Style>
+                </ToggleButton.Styles>
+
+                <iconPack:IconControl Kind="PackIconMaterialKind.Menu" Width="22" Height="22" />
+              </ToggleButton>
+
+              <ListBox Items="{TemplateBinding Items}"
+                       Foreground="{TemplateBinding SidebarForeground}"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       VerticalAlignment="Top"
+                       HorizontalAlignment="Stretch"
+                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                       SelectionMode="Single"
+                       SelectedItem="{TemplateBinding SelectedItem, Mode=TwoWay}"
+                       DockPanel.Dock="Top"
+                       Padding="0">
+                <ListBox.Styles>
+                  <Style Selector="ListBoxItem">
+                    <Setter Property="Template">
+                      <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                          <ContentPresenter Name="PART_ContentPresenter2"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="Transparent"
+                                            BorderThickness="0"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                                            Content="{TemplateBinding Content}"
+                                            Padding="0"
+                                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            HorizontalContentAlignment="Stretch">
+                            <ContentPresenter.Styles>
+                              <Style Selector="ContentPresenter:pointerover">
+                                <Setter Property="Background" Value="{Binding $parent[controls:HamburgerMenu].HoverHighlightBrush}" />
+                              </Style>
+                            </ContentPresenter.Styles>
+                          </ContentPresenter>
+                        </ControlTemplate>
+                      </Setter.Value>
+                    </Setter>
+                  </Style>
+                </ListBox.Styles>
+              </ListBox>
+
+              <ListBox Items="{TemplateBinding OptionItems}"
+                       Foreground="{TemplateBinding SidebarForeground}"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       VerticalAlignment="Bottom"
+                       HorizontalAlignment="Stretch"
+                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                       SelectionMode="Single"
+                       SelectedItem="{TemplateBinding SelectedItem, Mode=TwoWay}"
+                       DockPanel.Dock="Bottom"
+                       Padding="0">
+                <ListBox.Styles>
+                  <Style Selector="ListBoxItem">
+                    <Setter Property="Template">
+                      <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                          <ContentPresenter Name="PART_ContentPresenter"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="Transparent"
+                                            BorderThickness="0"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                                            Content="{TemplateBinding Content}"
+                                            Padding="0"
+                                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            HorizontalContentAlignment="Stretch">
+                            <ContentPresenter.Styles>
+                              <Style Selector="ContentPresenter:pointerover">
+                                <Setter Property="Background" Value="{Binding $parent[controls:HamburgerMenu].HoverHighlightBrush}" />
+                              </Style>
+                            </ContentPresenter.Styles>
+                          </ContentPresenter>
+                        </ControlTemplate>
+                      </Setter.Value>
+                    </Setter>
+                  </Style>
+                </ListBox.Styles>
+              </ListBox>
+            </DockPanel>
+
+            <ContentPresenter
+                Name="PART_SelectedContentHost"
+                DockPanel.Dock="Right"
+                Background="{TemplateBinding Background}"
+                Margin="{TemplateBinding Padding}"
+                Content="{TemplateBinding SelectedContent}"
+                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+            </ContentPresenter>
+          </DockPanel>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+</Styles>

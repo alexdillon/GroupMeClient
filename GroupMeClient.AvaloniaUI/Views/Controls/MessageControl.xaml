@@ -1,0 +1,228 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.MessageControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+             xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
+             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
+             ClipToBounds="False"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="200">
+
+  <UserControl.Resources>
+    <converters:IsZeroConverter x:Key="isZeroConverter" />
+    <converters:GMDCInlineToWPFInline x:Key="inlineConverter" />
+    <converters:LikeStatusToBool x:Key="likeStatusToBoolConverter" />
+    <converters:LikeStatusToIcon x:Key="likeStatusToIconConverter" />
+  </UserControl.Resources>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="55" />
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="10"/>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <i:Interaction.Behaviors>
+      <extensions:BackgroundBinaryChangerBehavior Condition="{Binding DidISendIt}"
+                                                  TrueValue="{DynamicResource MessageISentBackdropBrush}"
+                                                  FalseValue="{DynamicResource MessageTheySentBackdropBrush}" />
+    </i:Interaction.Behaviors>
+
+    <controls:AvatarControl
+            Grid.Column="0" Grid.Row="1"
+            Width="40" Height="40" VerticalAlignment="Top"
+            DataContext="{Binding Avatar}">
+
+      <i:Interaction.Behaviors>
+        <ia:EventTriggerBehavior EventName="PointerPressed">
+          <ia:InvokeCommandAction Command="{Binding Path=DataContext.ToggleMessageDetails, RelativeSource={RelativeSource AncestorType=controls:MessageControl}}" />
+        </ia:EventTriggerBehavior>
+      </i:Interaction.Behaviors>
+    </controls:AvatarControl>
+
+    <StackPanel Grid.Column="1" Grid.Row="1">
+      <TextBlock Text="{Binding Sender}" FontSize="12" Foreground="{DynamicResource MessageFontBrush}" />
+
+      <ItemsControl Items="{Binding AttachedItems}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <UserControl
+                MaxWidth="700"
+                HorizontalAlignment="Left"
+                Content="{Binding Path=.}"/>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+
+      <TextBlock Margin="0,0,0,20"
+                 FontSize="15"
+                 Text="{Binding Inlines, Converter={StaticResource inlineConverter}}"
+                 TextWrapping="Wrap">
+        <!--<extensions:SelectableTextBlock
+            FontSize="15"
+            TextWrapping="Wrap"
+            extensions:TextBlockExtensions.InlineList="{Binding Inlines}"/>-->
+      </TextBlock>
+    </StackPanel>
+
+    <Grid Grid.Column="2" Grid.Row="1"
+          MaxHeight="60"
+          VerticalAlignment="Top"
+          Background="Transparent"
+          x:Name="likeButtonArea">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="15" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="10" />
+        <RowDefinition Height="10" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="3"/>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="12"/>
+      </Grid.ColumnDefinitions>
+
+      <!--Foreground=""-->
+      <iconPack:IconControl  Width="17" Height="17"
+                             Grid.Row="1" Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             BindableKind="{Binding LikeStatus, Converter={StaticResource likeStatusToIconConverter}}"
+                             Name="likeIcon"
+                             
+                             Background="Transparent">
+        <i:Interaction.Behaviors>
+          <extensions:ForegroundBinaryChangerBehavior Condition="{Binding LikeStatus, Converter={StaticResource likeStatusToBoolConverter}}"
+                                                      TrueValue="{DynamicResource MessageILikedBrush}"
+                                                      FalseValue="{DynamicResource MessageTheyLikedBrush}" />
+        </i:Interaction.Behaviors>
+        <!--<i:Interaction.Behaviors>
+          <ia:DataTriggerBehavior Binding="{Binding LikeStatus, Converter={StaticResource likeStatusToBoolConverter}}" Value="True">
+            <ia:ChangePropertyAction TargetObject="{Binding #likeIcon}" PropertyName="Foreground" Value="" />
+          </ia:DataTriggerBehavior>
+          <ia:DataTriggerBehavior Binding="{Binding LikeStatus, Converter={StaticResource likeStatusToBoolConverter}}" Value="False">
+            <ia:ChangePropertyAction TargetObject="{Binding #likeIcon}" PropertyName="Foreground" Value="" />
+          </ia:DataTriggerBehavior>
+        </i:Interaction.Behaviors>-->
+      </iconPack:IconControl>
+
+      <TextBlock Grid.Row="2" Grid.Column="1"
+                 HorizontalAlignment="Center"
+                 ClipToBounds="False"
+                 Margin="2,0,0,0"
+                 Foreground="{DynamicResource MessageFontBrush}" 
+                 FontSize="10" FontWeight="Thin"
+                 Text="{Binding LikeCount}" />  
+
+      <i:Interaction.Behaviors>
+        <ia:EventTriggerBehavior EventName="PointerPressed">
+          <ia:InvokeCommandAction Command="{Binding LikeAction}" />
+        </ia:EventTriggerBehavior>
+      </i:Interaction.Behaviors>
+    </Grid>
+
+    <Canvas x:Name="likesCanvas"
+            Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-45,20,0"
+            IsVisible="True"
+            IsHitTestVisible="False"
+            Background="Transparent">
+
+      <!--Without MultiDataTriggers, this is tricky to do in Avalonia....-->
+      <i:Interaction.Behaviors>
+        <!--Make the Liker's Area invisible when the message has no likes-->
+        <ia:DataTriggerBehavior Binding="{Binding LikeCount, Converter={StaticResource isZeroConverter}}" Value="True">
+          <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsVisible" Value="False" />
+          <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="False" />
+        </ia:DataTriggerBehavior>
+        <ia:DataTriggerBehavior Binding="{Binding LikeCount, Converter={StaticResource isZeroConverter}}" Value="False">
+          <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsVisible" Value="True" />
+          <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="True" />
+        </ia:DataTriggerBehavior>
+
+        <!--Show Liker's Area when hoving over the Like Button Area. Also include the Bubble Area to prevent flickering.-->
+        <ia:DataTriggerBehavior Binding="{Binding #likeButtonArea.IsPointerOver}" Value="True">
+          <ia:ChangePropertyAction TargetObject="{Binding #likesBubble}" PropertyName="IsVisible" Value="True" />
+          <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="True" />
+        </ia:DataTriggerBehavior>
+        <ia:DataTriggerBehavior Binding="{Binding #likesBubble.IsPointerOver}" Value="True">
+          <ia:ChangePropertyAction TargetObject="{Binding #likesBubble}" PropertyName="IsVisible" Value="True" />
+          <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="True" />
+        </ia:DataTriggerBehavior>
+
+        <!--Hide the Liker's Area when leaving-->
+        <ia:DataTriggerBehavior Binding="{Binding #likeButtonArea.IsPointerOver}" Value="False">
+          <ia:ChangePropertyAction TargetObject="{Binding #likesBubble}" PropertyName="IsVisible" Value="False" />
+          <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="False" />
+        </ia:DataTriggerBehavior>
+        <ia:DataTriggerBehavior Binding="{Binding #likesBubble.IsPointerOver}" Value="False">
+          <ia:ChangePropertyAction TargetObject="{Binding #likesBubble}" PropertyName="IsVisible" Value="False" />
+          <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="False" />
+        </ia:DataTriggerBehavior>
+      </i:Interaction.Behaviors>
+
+      <Grid Width="{Binding $parent[Canvas].Bounds.Width}">
+        <Border BorderThickness="1" CornerRadius="5"
+                BorderBrush="{DynamicResource MessageFontBrush}" 
+                Background="{DynamicResource LikerAreaBackgroundBrush}"
+                Height="65" HorizontalAlignment="Right"
+                IsVisible="False"
+                x:Name="likesBubble">
+
+          <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                        Margin="7"
+                        Items="{Binding LikedByAvatars}">
+
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <ContentControl Content="{Binding Avatar}" 
+                                Width="35" Height="35" 
+                                Margin="3,0,3,0" 
+                                ToolTip.Tip="{Binding Name}"/>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
+        </Border>
+      </Grid>
+    </Canvas>
+
+    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
+                Orientation="Vertical"
+                Background="{DynamicResource MessageDetailsBrush}"
+                Height="45"
+                IsVisible="{Binding ShowDetails}">
+
+      <TextBlock Text="{Binding SentTimeString, StringFormat=Sent: \{0\}}"
+                 FontWeight="Regular"
+                 FontSize="11"
+                 Foreground="{DynamicResource MessageFontBrush}"
+                 Margin="20,0,0,0" />
+
+      <TextBlock Text="{Binding SenderPlatform, StringFormat=Client: \{0\}}"
+                 FontWeight="Regular"
+                 FontSize="11"
+                 Margin="20,0,0,0"
+                 Foreground="{DynamicResource MessageFontBrush}" />
+    </StackPanel>
+  </Grid>
+</UserControl>

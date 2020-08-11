@@ -1,0 +1,9 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <StyleInclude Source="avares://MicroCubeAvalonia/Controls/ProgressRing.xaml" />
+  <StyleInclude Source="avares://MicroCubeAvalonia/Controls/HamburgerMenuItem.xaml" />
+  <StyleInclude Source="avares://MicroCubeAvalonia/Controls/HamburgerMenu.xaml" />
+  
+  <StyleInclude Source="avares://MicroCubeAvalonia/IconPack/IconControl.xaml" />
+</Styles>

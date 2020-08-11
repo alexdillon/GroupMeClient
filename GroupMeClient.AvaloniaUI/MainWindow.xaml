@@ -1,0 +1,106 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:GroupMeClient.AvaloniaUI.ViewModels"
+        xmlns:views="clr-namespace:GroupMeClient.AvaloniaUI.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+        xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+        xmlns:controls="clr-namespace:GroupMeClient.AvalonaUI.Views.Controls"
+        xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+        xmlns:microcube="clr-namespace:MicroCubeAvalonia.Controls;assembly=MicroCubeAvalonia"
+        xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="GroupMeClient.AvaloniaUI.Views.MainWindow"
+        FontFamily="{DynamicResource GroupMeFont}"
+        Title="GroupMe Desktop Client"
+        >
+<!--Icon="avares://GroupMeClient.Avalonia/Assets/groupme.ico"-->
+  <Design.DataContext>
+        <vm:MainViewModel/>
+    </Design.DataContext>
+
+  <Grid>
+    <Grid.Resources>
+      <ResourceDictionary>
+        <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
+      </ResourceDictionary>
+    </Grid.Resources>
+    
+    <microcube:HamburgerMenu Items="{Binding MenuItems}" 
+                             OptionItems="{Binding MenuOptionItems}"
+                             SelectedItem="{Binding SelectedItem}"
+                             SidebarBrush="{DynamicResource SidebarBrush}" 
+                             SidebarForeground="White"
+                             HoverHighlightBrush="{DynamicResource SidebarHoverBrush}"
+                             x:Name="hamburgerMenu"/>
+
+    <microcube:ProgressRing IsVisible="{Binding IsReconnecting}"
+                            Width="20" Height="20"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Margin="15,175,0,0"
+                            Foreground="White" />
+    <Button Width="48" Height="48"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            HorizontalContentAlignment="Left"
+            Padding="0"
+            Classes="styleless"
+            Background="Transparent"
+            Margin="0,0,0,50"
+            Command="{Binding RefreshEverythingCommand}"
+            IsVisible="{Binding Path=IsEffectivelyEnabled, RelativeSource={RelativeSource Self}, Mode=OneWay}">
+
+      <i:Interaction.Behaviors>
+        <ia:DataTriggerBehavior Binding="{Binding #hamburgerMenu.IsPaneOpen}" ComparisonCondition="Equal" Value="True">
+          <ia:ChangePropertyAction PropertyName="Width" Value="240"/>
+        </ia:DataTriggerBehavior>
+        <ia:DataTriggerBehavior Binding="{Binding #hamburgerMenu.IsPaneOpen}" ComparisonCondition="NotEqual" Value="True">
+          <ia:ChangePropertyAction PropertyName="Width" Value="48"/>
+        </ia:DataTriggerBehavior>
+      </i:Interaction.Behaviors>
+
+      <Button.Styles>
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+          <Setter Property="Background" Value="{DynamicResource SidebarHoverBrush}"/>
+        </Style>
+      </Button.Styles>
+
+      <Button.Content>
+        <Grid ColumnDefinitions="48, *">
+          <iconPack:IconControl Kind="PackIconMaterialKind.Refresh"
+                                Grid.Column="0"
+                                Foreground="White"
+                                Width="16" Height="16"
+                                IsVisible="{Binding IsRefreshing, Converter={StaticResource inverseBoolConverter}}"/>
+
+          <microcube:ProgressRing IsVisible="{Binding IsRefreshing}"
+                                  Grid.Column="0"
+                                  Width="16" Height="16"
+                                  Foreground="White"/>
+
+          <TextBlock Text="Refresh"
+                     Grid.Column="1"
+                     VerticalAlignment="Center"
+                     Foreground="White"
+                     FontSize="16" />
+        </Grid>
+      </Button.Content>
+    </Button>
+
+    <!--Big Dialog Popup-->
+    <ContentControl Content="{Binding DialogManagerRegular}" />
+
+    <!--Top Most Dialog Popup-->
+    <ContentControl Content="{Binding DialogManagerTopMost}" />
+
+
+    <!--In-App Toast Area-->
+    <UserControl HorizontalAlignment="Right"
+                 VerticalAlignment="Top"
+                 Width="250"
+                 Margin="0,60,5,0"
+                 Content="{Binding ToastHolderManager}" />
+  </Grid>
+</Window>

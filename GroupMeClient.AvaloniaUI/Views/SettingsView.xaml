@@ -1,0 +1,191 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.SettingsView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
+             xmlns:settings="clr-namespace:GroupMeClient.Core.Settings;assembly=GroupMeClient.Core"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450">
+  <UserControl.Styles>
+    <Style Selector="HeaderedContentControl">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate>
+            <Border>
+              <StackPanel>
+                <ContentPresenter TextBlock.FontWeight="Regular"
+                                  TextBlock.Foreground="White"
+                                  Padding="8,4,4,4"
+                                  Content="{TemplateBinding Header}"
+                                  Background="{DynamicResource LoadingSpinnerDarkBrush}" />
+                <Border BorderBrush="{DynamicResource LoadingSpinnerDarkBrush}"
+                        BorderThickness="2"
+                        CornerRadius="0"
+                        Padding="7">
+                  <ContentPresenter Content="{TemplateBinding Content}" />
+                </Border>
+              </StackPanel>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </UserControl.Styles>
+
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Orientation="Vertical"
+                Width="{Binding $parent[0].Viewport.Width}">
+      <!--Settings Header-->
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="55"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Margin="15,0,0,0"
+                       FontSize="17" FontWeight="SemiBold"
+                       Text="Settings" />
+
+        <Border Grid.Column="0" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+      </Grid>
+
+      <!--Settings Area-->
+      <HeaderedContentControl Margin="10" Header="UI Settings">
+        <StackPanel>
+          <CheckBox Content="Show Only Previews When Multiple Images Are Attached to a Single Message"
+                    IsChecked="{Binding ShowPreviewsForMultiImages, Mode=TwoWay}" Margin="0,5,0,0"/>
+
+          <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+            <TextBlock Text="Maximum Number of Multi-Chats with Full Sidebar: " VerticalAlignment="Center"/>
+            <NumericUpDown Minimum="1" Maximum="6" Width="45"
+                           Value="{Binding MaximumNumberOfMultiChats}"/>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+            <TextBlock Text="Maximum Number of Multi-Chats in MiniBar Mode: " VerticalAlignment="Center"/>
+            <NumericUpDown Minimum="1" Maximum="6" Width="45"
+                           Value="{Binding MaximumNumberOfMultiChatsMiniBar}"/>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+            <TextBlock Text="Theme: " VerticalAlignment="Center" />
+            <ComboBox MinWidth="150"
+                      Items="{Binding Source={extensions:EnumBindingSource {x:Type settings:ThemeOptions}}}"
+                      SelectedItem="{Binding Theme}"/>
+          </StackPanel>
+
+        </StackPanel>
+      </HeaderedContentControl>
+
+      <!--About Area-->
+      <HeaderedContentControl Margin="10" Padding="10" Header="About">
+        <StackPanel>
+          <TextBlock FontWeight="SemiBold">GroupMe Desktop Client Avalonia is a modular, cross-platform client for accessing GroupMe.</TextBlock>
+          <TextBlock>By Alex Dillon, 2019</TextBlock>
+          <TextBlock Text=" "/>
+          <TextBlock Text="{Binding ApplicationVersion, Mode=OneWay, StringFormat='Version: \{0\}'}" />
+          <TextBlock Text="{Binding ApplicationCommit, Mode=OneWay, StringFormat='Build: \{0\}'}" />
+        </StackPanel>
+      </HeaderedContentControl>
+
+      <!--Plugins Area-->
+      <HeaderedContentControl Margin="10" Padding="10" Header="Plugins" >
+        <DataGrid Items="{Binding InstalledPlugins}"
+                  Background="{DynamicResource ThemeBackgroundBrush}"
+                  CanUserReorderColumns="False"
+                  CanUserResizeColumns="True"
+                  IsReadOnly="True"
+                  HeadersVisibility="None">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Plugin" Binding="{Binding Name}" Width="350" />
+            <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="100" />
+          </DataGrid.Columns>
+
+          <DataGrid.Styles>
+            <Style Selector="DataGridRow">
+              <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
+            </Style>
+            <Style Selector="DataGridRow /template/ Rectangle#BackgroundRectangle">
+              <Setter Property="Fill" Value="{DynamicResource ThemeBackgroundBrush}" />
+            </Style>
+            <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+              <Setter Property="Fill" Value="{DynamicResource ThemeBackgroundBrush}" />
+            </Style>
+
+            <Style Selector="DataGridRowGroupHeader">
+              <Setter Property="FontWeight" Value="SemiBold" />
+              <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
+            </Style>
+            <Style Selector="DataGridRowGroupHeader /template/ ToggleButton#ExpanderButton">
+              <Setter Property="IsVisible" Value="False" />
+            </Style>
+          </DataGrid.Styles>
+        </DataGrid>
+      </HeaderedContentControl>
+
+      <!--Credits and License Area-->
+      <HeaderedContentControl Margin="10" Padding="10" Header="Open Source Credits">
+        <TextBlock TextWrapping="Wrap">
+          GroupMe Desktop Client uses a lot of open source technologies. We would like to send a big thank you to the following projects and the thousands of contributors that help make this program possible!
+          <!--<LineBreak />
+          <LineBreak />-->
+
+          <!--<Hyperlink
+              NavigateUri="https://mahapps.com/"
+              extensions:WebHyperlinkExtensions.IsWebLink="True">
+            MahApps Metro UI Toolkit
+          </Hyperlink>
+          <LineBreak />
+
+          <Hyperlink
+              NavigateUri="http://www.mvvmlight.net/"
+              extensions:WebHyperlinkExtensions.IsWebLink="True">
+            MVVMLight
+          </Hyperlink>
+          <LineBreak />
+
+          <Hyperlink
+              NavigateUri="https://github.com/ericsink/SQLitePCL.raw"
+              extensions:WebHyperlinkExtensions.IsWebLink="True">
+            SQLitePCLRaw
+          </Hyperlink>
+          <LineBreak />
+
+          <Hyperlink
+              NavigateUri="https://github.com/aspnet/EntityFrameworkCore"
+              extensions:WebHyperlinkExtensions.IsWebLink="True">
+            Entity Framework Core
+          </Hyperlink>
+          <LineBreak />
+
+          <Hyperlink
+              NavigateUri="https://github.com/Squirrel/Squirrel.Windows"
+              extensions:WebHyperlinkExtensions.IsWebLink="True">
+            Squirrel for Windows
+          </Hyperlink>
+          <LineBreak />
+
+          <Hyperlink
+              NavigateUri="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
+              extensions:WebHyperlinkExtensions.IsWebLink="True">
+            XAML Animated Gif
+          </Hyperlink>-->
+          <!--<LineBreak />-->
+
+          <!--<LineBreak />
+          Main application icon made by
+          <Hyperlink NavigateUri="https://www.flaticon.com/authors/freepik" extensions:WebHyperlinkExtensions.IsWebLink="True">Freepik</Hyperlink>
+          from
+          <Hyperlink NavigateUri="https://www.flaticon.com/" extensions:WebHyperlinkExtensions.IsWebLink="True">www.flaticon.com</Hyperlink>
+          is licensed by
+          <Hyperlink NavigateUri="http://creativecommons.org/licenses/by/3.0/" extensions:WebHyperlinkExtensions.IsWebLink="True">CC 3.0 BY</Hyperlink>-->
+        </TextBlock>
+      </HeaderedContentControl>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

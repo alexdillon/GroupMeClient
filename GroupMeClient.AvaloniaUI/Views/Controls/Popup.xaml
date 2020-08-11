@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.Popup"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450">
+  
+  <Grid Background="#7f000000"
+        IsVisible="{Binding IsShowingDialog}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Grid Grid.Row="0">
+        <Button Width="35" Height="35"
+                HorizontalAlignment="Right"
+                BorderThickness="0"
+                Background="Transparent"
+                Command="{Binding Path=ClosePopup}">
+          <iconPack:IconControl Width="15" Height="15" Foreground="DarkGray" Background="Transparent" Kind="PackIconMaterialKind.Close" />
+        </Button>
+      </Grid>
+
+      <Grid Grid.Row="1">
+        <ContentControl Content="{Binding PopupDialog}"
+                        ClipToBounds="False"/>
+      </Grid>
+    </Grid>
+
+    <i:Interaction.Behaviors>
+      <ia:EventTriggerBehavior EventName="PointerPressed">
+        <ia:InvokeCommandAction Command="{Binding EasyClosePopup}"/>
+      </ia:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+  </Grid>
+</UserControl>

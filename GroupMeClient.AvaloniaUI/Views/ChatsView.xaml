@@ -1,0 +1,171 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:GroupMeClient.AvaloniaUI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="GroupMeClient.AvaloniaUI.Views.ChatsView">
+
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
+    </ResourceDictionary>
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <Style Selector="Button.RoundedMenu">
+      <Setter Property="Background" Value="{DynamicResource MenuButtonLightBrush}" />
+    </Style>
+    <Style Selector="Button.RoundedMenu /template/ ContentPresenter">
+      <Setter Property="CornerRadius" Value="5"/>
+    </Style>
+    
+    <Style Selector="ToggleButton.RoundedMenu">
+      <Setter Property="Background" Value="{DynamicResource MenuButtonLightBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.RoundedMenu /template/ ContentPresenter">
+      <Setter Property="CornerRadius" Value="5"/>
+    </Style>
+  </UserControl.Styles>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <!--Chats Header-->
+    <Grid Grid.Column="0" Grid.Row="0"
+          ColumnDefinitions="*"
+          RowDefinitions="Auto, *">
+
+      <i:Interaction.Behaviors>
+        <ia:DataTriggerBehavior Binding="{Binding #toggleMiniSidebar.IsChecked}" ComparisonCondition="Equal" Value="True">
+          <ia:ChangePropertyAction PropertyName="Width" Value="90"/>
+        </ia:DataTriggerBehavior>
+        <ia:DataTriggerBehavior Binding="{Binding #toggleMiniSidebar.IsChecked}" ComparisonCondition="NotEqual" Value="True">
+          <ia:ChangePropertyAction PropertyName="Width" Value="350"/>
+        </ia:DataTriggerBehavior>
+      </i:Interaction.Behaviors>
+      
+      <Grid Grid.Row="0" Background="{DynamicResource ThemeBackgroundBrush}"
+            ColumnDefinitions="Auto,*,Auto,Auto"
+            RowDefinitions="55">
+
+        <ToggleButton Grid.Column="0"
+                      IsChecked="{Binding MiniBarModeEnabled, Mode=TwoWay}"
+                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                      Margin="15,0,0,0"
+                      FontSize="17" FontWeight="SemiBold"
+                      BorderThickness="0"
+                      Background="{DynamicResource ThemeBackgroundBrush}"
+                      Focusable="False"
+                      Content="Chats"
+                      x:Name="toggleMiniSidebar">
+          <ToggleButton.Styles>
+            <Style Selector="ToggleButton:checked /template/ ContentPresenter">
+              <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
+            </Style>
+            <Style Selector="ToggleButton:pressed /template/ ContentPresenter">
+              <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
+            </Style>
+          </ToggleButton.Styles>
+        </ToggleButton>
+
+        <TextBox Grid.Column="1"
+                 IsVisible="{Binding #toggleSearchBox.IsChecked}"
+                 AcceptsReturn="False"
+                 Height="35"
+                 Margin="10,10,0,0"
+                 BorderThickness="0"
+                 Watermark="Search..."
+                 Text="{Binding GroupChatFilter, Mode=TwoWay}"
+                 x:Name="searchTextBox"/>
+
+        <!--extensions:EventFocusAttachment.ElementToFocus="{Binding ElementName=searchTextBox}"-->
+        <ToggleButton Grid.Column="2"
+                      Width="35" Height="35"
+                      Classes="RoundedMenu"
+                      BorderThickness="0"
+                      Foreground="{DynamicResource DividerLineBrush}"
+                      HorizontalAlignment="Left"
+                      x:Name="toggleSearchBox"
+                      IsVisible="{Binding #toggleMiniSidebar.IsChecked, Converter={StaticResource inverseBoolConverter}}"
+                      Command="{Binding SearchToggled}"
+                      CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">
+          <iconPack:IconControl Width="15" Height="15" Kind="PackIconMaterialKind.Magnify" />
+        </ToggleButton>
+
+        <Button Grid.Column="3"
+                Width="35" Height="35"
+                Classes="RoundedMenu"
+                BorderThickness="0"
+                Foreground="{DynamicResource DividerLineBrush}"
+                Margin="5,0,0,0"
+                IsVisible="{Binding #toggleMiniSidebar.IsChecked, Converter={StaticResource inverseBoolConverter}}"
+                Command="{Binding Path=MarkAllAsRead}"
+                CommandParameter="{Binding Path=.}">
+          <iconPack:IconControl Width="15" Height="15" Kind="PackIconEntypoKind.Unread" />
+        </Button>
+
+        <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+      </Grid>
+
+      <!--All Groups and Chats List-->
+      <ScrollViewer Grid.Row="1"
+                    VerticalScrollBarVisibility="Visible"
+                    VerticalAlignment="Stretch"
+                    HorizontalScrollBarVisibility="Disabled">
+        <ItemsControl Items="{Binding SortedFilteredGroupChats}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel>
+                <!--<i:Interaction.Behaviors>
+                  <ic:FluidMoveBehavior AppliesTo="Children" Duration="0:0:00.5" Tag="DataContext">
+                    <ic:FluidMoveBehavior.EaseX>
+                      <BackEase EasingMode="EaseInOut" Amplitude="0.5"/>
+                    </ic:FluidMoveBehavior.EaseX>
+                    <ic:FluidMoveBehavior.EaseY>
+                      <BackEase EasingMode="EaseInOut" Amplitude="0.5"/>
+                    </ic:FluidMoveBehavior.EaseY>
+                  </ic:FluidMoveBehavior>
+                </i:Interaction.Behaviors>-->
+              </StackPanel>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <ContentControl Content="{Binding Path=.}"/>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Grid>
+
+    <!--Opened Groups and Chats-->
+    <ItemsControl Items="{Binding Path=ActiveGroupsChats}" Grid.Column="1" Grid.Row="0">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <UniformGrid Rows="1" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <ContentControl Content="{Binding Path=.}"
+                          HorizontalAlignment="Stretch"
+                          Margin="5,5,5,5" />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </Grid>
+
+</UserControl>

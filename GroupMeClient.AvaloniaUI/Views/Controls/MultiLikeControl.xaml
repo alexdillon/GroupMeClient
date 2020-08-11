@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.MultiLikeControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="200"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <Button Grid.Row="0"
+            Content="Enable Multi-Like Mode"
+            IsVisible="{Binding IsDisabled}"
+            Command="{Binding EnableMultiLikeCommand}"/>
+
+    <Button Grid.Row="1"
+            Content="Disable Multi-Like Mode"
+            IsVisible="{Binding IsEnabled}"
+            Command="{Binding DisableMultiLikeCommand}"/>
+
+    <Button Grid.Row="2"
+            Content="Like Message Range"
+            IsVisible="{Binding AnyMessagesSelected}"
+            Command="{Binding PerformMultiLikeCommand}"/>
+  </Grid>
+</UserControl>

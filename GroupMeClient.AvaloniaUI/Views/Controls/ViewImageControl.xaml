@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.ViewImageControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
+             xmlns:microcube="clr-namespace:MicroCubeAvalonia.Controls;assembly=MicroCubeAvalonia"
+             xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
+             ClipToBounds="False"
+             Background="Transparent">
+
+  <Grid ClipToBounds="False">
+    <Grid.Resources>
+      <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
+      <converters:StreamToImageSourceConverter x:Key="imageSourceConverter" />
+    </Grid.Resources>
+
+    <microcube:ProgressRing IsVisible="{Binding IsLoading}"
+                            Width="60" Height="60"
+                            HorizontalAlignment="Center"
+                            Background="Transparent"
+                            Foreground="{DynamicResource LoadingSpinnerDarkBrush}"/>
+
+    <extensions:ZoomBorder >
+      <!--gif:AnimationBehavior.SourceStream="{Binding ImageStream}"-->
+      <Image
+         MaxWidth="{Binding $parent[6].Bounds.Width}"
+         MaxHeight="{Binding $parent[6].Bounds.Height}"
+         Stretch="Uniform"
+         Source="{Binding ImageStream, Converter={StaticResource imageSourceConverter}}"
+         HorizontalAlignment="Center">
+      </Image>
+    </extensions:ZoomBorder>
+
+    <Button Width="30"
+            Height="30"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Margin="0,-30,0,0"
+            Foreground="White"
+            Background="Transparent"
+            BorderThickness="0"
+            Command="{Binding Path=SaveImage}"
+            IsVisible="{Binding IsLoading, Converter={StaticResource inverseBoolConverter}}">
+      <iconPack:IconControl Width="15" Height="15"
+                            Background="Transparent"
+                            Kind="PackIconEntypoKind.Save" />
+    </Button>
+
+    <Button Width="30"
+            Height="30"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Margin="30,-30,0,0"
+            Foreground="White"
+            Background="Transparent"
+            BorderThickness="0"
+            Command="{Binding Path=CopyImage}"
+            IsVisible="{Binding IsLoading, Converter={StaticResource inverseBoolConverter}}">
+      <iconPack:IconControl Width="15" Height="15"
+                            Background="Transparent"
+                            Kind="PackIconFontAwesomeKind.CopySolid" />
+    </Button>
+  </Grid>
+</UserControl>

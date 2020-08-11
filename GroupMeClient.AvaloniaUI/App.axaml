@@ -1,0 +1,39 @@
+﻿<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:GroupMeClient.AvaloniaUI"
+             x:Class="GroupMeClient.AvaloniaUI.App"
+             Name="GroupMe Desktop Client">
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="About GroupMe Desktop Client" Command="{Binding AboutCommand}" />
+        </NativeMenu>
+    </NativeMenu.Menu>
+
+    <Application.Styles>
+        <StyleInclude Source="avares://Avalonia.Themes.Default/Accents/BaseLight.xaml"/>
+        <StyleInclude Source="avares://GroupMeClient.AvaloniaUI/GroupMeLight.xaml"/>
+
+        <StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml"/>
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml"/>
+        <StyleInclude Source="avares://MicroCubeAvalonia/DefaultTheme.xaml"/>
+
+        <Style Selector="TextBox.verticalCenter /template/ Panel">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Button.styleless">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <Style Selector="Button.styleless:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{TemplateBinding Background}"/>
+        </Style>
+    </Application.Styles>
+</Application>

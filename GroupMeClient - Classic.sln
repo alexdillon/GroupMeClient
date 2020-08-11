@@ -9,10 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClient.Core", "Group
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClient.Desktop", "GroupMeClient.Desktop\GroupMeClient.Desktop.csproj", "{ABF76E74-20EE-402A-A96C-DA569466F689}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClient.AvaloniaUI", "GroupMeClient.AvaloniaUI\GroupMeClient.AvaloniaUI.csproj", "{AC305049-DD23-4530-9A2E-5168B234B023}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCubeAvalonia", "MicroCubeAvalonia\MicroCubeAvalonia.csproj", "{2FB0DDFD-D2A4-47E6-99DC-37A70594192B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,14 +27,6 @@ Global
 		{ABF76E74-20EE-402A-A96C-DA569466F689}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABF76E74-20EE-402A-A96C-DA569466F689}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABF76E74-20EE-402A-A96C-DA569466F689}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AC305049-DD23-4530-9A2E-5168B234B023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC305049-DD23-4530-9A2E-5168B234B023}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC305049-DD23-4530-9A2E-5168B234B023}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC305049-DD23-4530-9A2E-5168B234B023}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2FB0DDFD-D2A4-47E6-99DC-37A70594192B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2FB0DDFD-D2A4-47E6-99DC-37A70594192B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2FB0DDFD-D2A4-47E6-99DC-37A70594192B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2FB0DDFD-D2A4-47E6-99DC-37A70594192B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

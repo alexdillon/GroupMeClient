@@ -1,0 +1,101 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.GroupControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
+             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             Background="{DynamicResource ThemeBackgroundBrush}"
+             mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="150">
+
+  <i:Interaction.Behaviors>
+    <ia:EventTriggerBehavior EventName="PointerPressed">
+      <ia:InvokeCommandAction Command="{Binding Path=GroupSelected}" CommandParameter="{Binding Path=.}"/>
+    </ia:EventTriggerBehavior>
+  </i:Interaction.Behaviors>
+  
+  <Grid ColumnDefinitions="80,185,60"
+        RowDefinitions="Auto, *"
+        Margin="0,15,15,0">
+
+    <Grid.Resources>
+      <converters:GMDCInlineToWPFInline x:Key="inlineConverter" />
+    </Grid.Resources>
+
+    <controls:AvatarControl
+            Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+            Width="55" Height="55" Margin="0, -10, 0, 0"
+            DataContext="{Binding Avatar}"/>
+
+    <!--TextTrimming="CharacterEllipsis"-->
+    <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+               FontSize="16"
+               TextWrapping="NoWrap"
+               Text="{Binding Title}"
+               Name="TitleTextBlock">
+
+      <i:Interaction.Behaviors>
+        <ia:DataTriggerBehavior Binding="{Binding TotalUnreadCount}" ComparisonCondition="GreaterThan" Value="0">
+          <ia:ChangePropertyAction TargetObject="{Binding #TitleTextBlock}" PropertyName="FontWeight" Value="SemiBold"/>
+        </ia:DataTriggerBehavior>
+        <ia:DataTriggerBehavior Binding="{Binding TotalUnreadCount}" ComparisonCondition="Equal" Value="0">
+          <ia:ChangePropertyAction TargetObject="{Binding #TitleTextBlock}" PropertyName="FontWeight" Value="Regular"/>
+        </ia:DataTriggerBehavior>
+      </i:Interaction.Behaviors>
+    </TextBlock>
+
+    <TextBlock Text="{Binding LastUpdatedFriendlyTime}" 
+               Grid.Column="2" Grid.Row="0" 
+               HorizontalAlignment="Right"  VerticalAlignment="Center" 
+               FontSize="14" 
+               Foreground="{DynamicResource GroupsSidebarFontBrush}"/>
+
+    <!--TextTrimming="CharacterEllipsis"-->
+    <TextBlock Grid.Column="1" Grid.Row="2" 
+               HorizontalAlignment="Left" VerticalAlignment="Center"
+               Height="40" 
+               FontSize="13" 
+               Foreground="{DynamicResource GroupsSidebarFontBrush}"
+               TextWrapping="Wrap"
+               Text="{Binding QuickPreview, Converter={StaticResource inlineConverter}}"/>
+
+    <Border Grid.Column="2" Grid.Row="1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Height="30"
+            Width="30"
+            Name="UnreadBubble"
+            Padding="0,7,0,0">
+
+      <TextBlock Grid.Column="2" Grid.Row="1"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Top"
+              TextAlignment="Center"
+              Text="{Binding TotalUnreadCount}"
+              Foreground="{DynamicResource UnreadBubbleForegroundBrush}"
+              FontWeight="Bold"/>
+
+        <i:Interaction.Behaviors>
+          <ia:DataTriggerBehavior Binding="{Binding TotalUnreadCount}" ComparisonCondition="GreaterThan" Value="0">
+            <ia:ChangePropertyAction TargetObject="{Binding #UnreadBubble}" PropertyName="IsVisible" Value="True"/>
+          </ia:DataTriggerBehavior>
+          <ia:DataTriggerBehavior Binding="{Binding TotalUnreadCount}" ComparisonCondition="Equal" Value="0">
+            <ia:ChangePropertyAction TargetObject="{Binding #UnreadBubble}" PropertyName="IsVisible" Value="False"/>
+          </ia:DataTriggerBehavior>
+        </i:Interaction.Behaviors>
+
+      <Border.Background>
+        <VisualBrush>
+          <VisualBrush.Visual>
+            <Ellipse Height="30"
+                     Width="30"
+                     Fill="#1873BA" />
+          </VisualBrush.Visual>
+        </VisualBrush>
+      </Border.Background>
+    </Border>
+   
+  </Grid>
+</UserControl>

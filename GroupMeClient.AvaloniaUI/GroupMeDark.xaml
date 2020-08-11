@@ -1,0 +1,54 @@
+﻿<Style xmlns="https://github.com/avaloniaui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:sys="clr-namespace:System;assembly=netstandard">
+
+  <Style.Resources>
+    <FontFamily x:Key="GroupMeFont">avares://GroupMeClient.AvaloniaUI/Assets/Fonts/Webly*.ttf#WeblySleek UI</FontFamily>
+    
+    <Color x:Key="LoadingSpinnerDarkColor">#CC119EDA</Color>
+    <Color x:Key="MenuButtonLightColor">#FF505050</Color>
+    <Color x:Key="GroupsSidebarFontColor">#637182</Color>
+    <Color x:Key="MessageFontColor">#637182</Color>
+    <Color x:Key="MessageDetailsColor">#FFD3D3D3</Color>
+    <Color x:Key="DividerLineColor">#637182</Color>
+    <Color x:Key="UnreadBubbleForegroundColor">#FFFFFF</Color>
+    <Color x:Key="ScrollToBottomButtonColor">#637182</Color>
+    <Color x:Key="SidebarColor">#125A91</Color>
+    <Color x:Key="SidebarHoverColor">#1584C7</Color>
+    <Color x:Key="MessageISentBackdropColor">#09304C</Color>
+    <Color x:Key="MessageTheySentBackdropColor">#252525</Color>
+    <Color x:Key="MessageILikedColor">#F77070</Color>
+    <Color x:Key="MessageTheyLikedColor">#999999</Color>
+    <Color x:Key="LikerAreaBackgroundColor">#000000</Color>
+    <Color x:Key="TweetBackgroundColor">#000000</Color>
+    <Color x:Key="NotificationBackgroundColor">#000000</Color>
+    <Color x:Key="NotificationBorder1Color">#191919</Color>
+    <Color x:Key="NotificationBorder2Color">#222222</Color>
+    <Color x:Key="PluginButtonBackgroundColor">#D5D5D5</Color>
+    <Color x:Key="PluginButtonFontColor">#414A59</Color>
+    <Color x:Key="PluginMenuColor">#000000</Color>
+
+    <SolidColorBrush x:Key="LoadingSpinnerDarkBrush" Color="{DynamicResource LoadingSpinnerDarkColor}" />
+    <SolidColorBrush x:Key="MenuButtonLightBrush" Color="{DynamicResource MenuButtonLightColor}"/>
+    <SolidColorBrush x:Key="GroupsSidebarFontBrush" Color="{DynamicResource GroupsSidebarFontColor}" />
+    <SolidColorBrush x:Key="MessageFontBrush" Color="{DynamicResource MessageFontColor}" />
+    <SolidColorBrush x:Key="MessageDetailsBrush" Color="{DynamicResource MessageDetailsColor}" />
+    <SolidColorBrush x:Key="DividerLineBrush" Color="{DynamicResource DividerLineColor}" />
+    <SolidColorBrush x:Key="UnreadBubbleForegroundBrush" Color="{DynamicResource UnreadBubbleForegroundColor}"/>
+    <SolidColorBrush x:Key="ScrollToBottomButtonBrush" Color="{DynamicResource ScrollToBottomButtonColor}"/>
+    <SolidColorBrush x:Key="SidebarBrush" Color="{DynamicResource SidebarColor}"/>
+    <SolidColorBrush x:Key="SidebarHoverBrush" Color="{DynamicResource SidebarHoverColor}"/>
+    <SolidColorBrush x:Key="MessageISentBackdropBrush" Color="{DynamicResource MessageISentBackdropColor}"/>
+    <SolidColorBrush x:Key="MessageTheySentBackdropBrush" Color="{DynamicResource MessageTheySentBackdropColor}"/>
+    <SolidColorBrush x:Key="MessageILikedBrush" Color="{DynamicResource MessageILikedColor}"/>
+    <SolidColorBrush x:Key="MessageTheyLikedBrush" Color="{DynamicResource MessageTheyLikedColor}"/>
+    <SolidColorBrush x:Key="LikerAreaBackgroundBrush" Color="{DynamicResource LikerAreaBackgroundColor}"/>
+    <SolidColorBrush x:Key="TweetBackgroundBrush" Color="{DynamicResource TweetBackgroundColor}"/>
+    <SolidColorBrush x:Key="NotificationBackgroundBrush" Color="{DynamicResource NotificationBackgroundColor}"/>
+    <SolidColorBrush x:Key="NotificationBorder1Brush" Color="{DynamicResource NotificationBorder1Color}"/>
+    <SolidColorBrush x:Key="NotificationBorder2Brush" Color="{DynamicResource NotificationBorder2Color}"/>
+    <SolidColorBrush x:Key="PluginButtonBackgroundBrush" Color="{DynamicResource PluginButtonBackgroundColor}" />
+    <SolidColorBrush x:Key="PluginButtonFontBrush" Color="{DynamicResource PluginButtonFontColor}" />
+    <SolidColorBrush x:Key="PluginMenuBrush" Color="{DynamicResource PluginMenuColor}" />
+  </Style.Resources>
+</Style>

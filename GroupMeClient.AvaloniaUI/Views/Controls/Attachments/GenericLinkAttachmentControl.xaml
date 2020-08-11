@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.Attachments.GenericLinkAttachmentControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             Background="White"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450">
+
+  <i:Interaction.Behaviors>
+    <ia:EventTriggerBehavior EventName="PointerPressed">
+      <ia:InvokeCommandAction Command="{Binding Clicked}"/>
+    </ia:EventTriggerBehavior>
+  </i:Interaction.Behaviors>
+
+  <Grid Cursor="Hand">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <Grid.Resources>
+      <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
+    </Grid.Resources>
+
+    <Image Grid.Row="0"
+           Grid.RowSpan="2"
+           MaxWidth="300"
+           MaxHeight="250"
+           MinWidth="200"
+           MinHeight="200"
+           VerticalAlignment="Stretch"
+           HorizontalAlignment="Stretch"
+           Source="{Binding RenderedImage, Converter={StaticResource imageSourceConverter}}" />
+
+    <Grid Grid.Row="1"
+          Height="55"
+          RowDefinitions="20,30"
+          ColumnDefinitions="Auto, *">
+      <Grid.Background>
+        <SolidColorBrush Color="Black" Opacity="0.4" />
+      </Grid.Background>
+
+      <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                 TextWrapping="NoWrap"
+                 Text="{Binding Title}"
+                 Foreground="White" FontWeight="SemiBold"
+                 Margin="15,0,0,0"/>
+
+      <Image Grid.Row="1" Grid.Column="0"
+             Width="15"
+             HorizontalAlignment="Left"
+             VerticalAlignment="Center"
+             Source="{Binding FaviconImage, Converter={StaticResource imageSourceConverter}}"
+             Margin="10,0,0,0"/>
+
+      <TextBlock Grid.Row="1" Grid.Column="1"
+                 Text="{Binding Site}"
+                 VerticalAlignment="Center"
+                 Foreground="White"
+                 Margin="5,0,0,0"/>
+    </Grid>
+  </Grid>
+</UserControl>

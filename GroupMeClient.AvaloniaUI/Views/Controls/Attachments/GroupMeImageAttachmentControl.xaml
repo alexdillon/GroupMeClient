@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.Attachments.GroupMeImageAttachmentControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:microcube="clr-namespace:MicroCubeAvalonia.Controls;assembly=MicroCubeAvalonia"
+             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="200" d:DesignWidth="200"
+             Background="{DynamicResource ThemeBackgroundBrush}">
+
+  <Border BorderThickness="8" BorderBrush="{DynamicResource ThemeBackgroundBrush}">
+    <Grid>
+      <Grid.Resources>
+        <converters:StreamToImageSourceConverter x:Key="imageSourceConverter" />
+      </Grid.Resources>
+      
+      <!--gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}"-->
+      <Image MaxWidth="500"
+             MaxHeight="600"
+             StretchDirection="DownOnly"
+             Stretch="Uniform"
+             HorizontalAlignment="Left"
+             UseLayoutRounding="True"
+             Source="{Binding ImageAttachmentStream, Converter={StaticResource imageSourceConverter}}">
+
+        <i:Interaction.Behaviors>
+          <ia:EventTriggerBehavior EventName="PointerPressed">
+            <ia:InvokeCommandAction Command="{Binding Clicked}"/>
+          </ia:EventTriggerBehavior>
+        </i:Interaction.Behaviors>
+      </Image>
+
+      <microcube:ProgressRing IsVisible="{Binding IsLoading}"
+                              Width="60" Height="60"
+                              HorizontalAlignment="Center"
+                              Background="Transparent"
+                              Foreground="{DynamicResource LoadingSpinnerDarkBrush}"/>
+    </Grid>
+  </Border>
+</UserControl>

@@ -1,0 +1,35 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:MicroCubeAvalonia.Controls">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <controls:HamburgerMenuItem Label="Test" IsEnabled="True"/>
+    </Border>
+  </Design.PreviewWith>
+
+  <Style Selector="controls|HamburgerMenuItem">
+      <Setter Property="Template">
+      <ControlTemplate TargetType="controls:HamburgerMenuItem">
+        <Grid x:Name="RootGrid"
+              Height="48"
+              Background="Transparent">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="48" />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          
+          <ContentControl Grid.Column="0"
+                          Width="16" Height="16"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Content="{TemplateBinding Icon}"
+                          Focusable="False" />
+          <TextBlock Grid.Column="1"
+                     VerticalAlignment="Center"
+                     FontSize="16"
+                     Text="{TemplateBinding Label}" />
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+</Styles>

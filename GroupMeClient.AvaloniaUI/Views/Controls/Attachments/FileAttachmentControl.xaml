@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.Attachments.FileAttachmentControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:microcube="clr-namespace:MicroCubeAvalonia.Controls;assembly=MicroCubeAvalonia"
+             xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="100" d:DesignWidth="400">
+
+  <i:Interaction.Behaviors>
+    <ia:EventTriggerBehavior EventName="PointerPressed">
+      <ia:InvokeCommandAction Command="{Binding Clicked}"/>
+    </ia:EventTriggerBehavior>
+  </i:Interaction.Behaviors>
+
+  <Grid Margin="10"
+        Cursor="Hand">
+
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="40" />
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="40"/>
+    </Grid.RowDefinitions>
+
+    <Grid.Resources>
+      <converters:InverseBoolConverter x:Key="inverseBooleanConverter" />
+    </Grid.Resources>
+
+    <Grid.ContextMenu>
+      <ContextMenu>
+        <MenuItem Header="Open Document" Command="{Binding Clicked}" CommandParameter="{x:Null}" />
+        <Separator/>
+        <MenuItem Header="Save Document"  Command="{Binding SaveAs}" />
+      </ContextMenu>
+    </Grid.ContextMenu>
+
+    <iconPack:IconControl Kind="PackIconOcticonsKind.File"
+                          Foreground="{DynamicResource FileIconBrush}"
+                          Background="Transparent"
+                          Grid.Column="0" Grid.Row="0"
+                          VerticalAlignment="Center"
+                          IsVisible="{Binding IsLoading, Converter={StaticResource inverseBooleanConverter}}"
+                          Width="30" Height="30"/>
+
+    <microcube:ProgressRing IsVisible="{Binding IsLoading}"
+                            Grid.Column="0" Grid.Row="0"
+                            Width="30" Height="30"
+                            HorizontalAlignment="Center"
+                            Foreground="{DynamicResource LoadingSpinnerDarkBrush}"/>
+
+    <TextBlock Grid.Column="1" Grid.Row="1"
+               VerticalAlignment="Center"
+               FontSize="14"
+               TextWrapping="Wrap"
+               Text="{Binding Text}" />
+  </Grid>
+</UserControl>

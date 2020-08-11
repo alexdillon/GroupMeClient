@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.LoginView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400">
+  <Grid ColumnDefinitions="*"
+        RowDefinitions="Auto, *">
+
+    <Grid.Background>
+      <LinearGradientBrush StartPoint="50%,0%" EndPoint="50%,100%">
+        <GradientStop Color="White" Offset="0"/>
+        <GradientStop Color="LightSteelBlue" Offset="1"/>
+      </LinearGradientBrush>
+    </Grid.Background>
+
+    <TextBlock Grid.Row="0"
+               FontSize="18"
+               FontWeight="SemiBold"
+               HorizontalAlignment="Center"
+               Text="Login to GroupMe" />
+
+    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+      <TextBlock Text="GroupMe's Login Process can be completed in your web browser. " />
+      <Button Command="{Binding LoginButtonClicked}"
+              Content="Login Now"
+              Width="150"
+              Height="30"/>
+    </StackPanel>
+  </Grid>
+</UserControl>

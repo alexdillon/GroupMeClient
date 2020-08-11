@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Notifications.Display.WpfToast.ToastNotification"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+             xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="100">
+  
+  <Grid ColumnDefinitions="Auto,*,Auto">
+    <Border Grid.ColumnSpan="3" Height="65" Background="{DynamicResource NotificationBackgroundBrush}"
+            BorderBrush="{DynamicResource NotificationBorder1Brush}" BorderThickness="2,2,2,0" />
+    <Border Grid.ColumnSpan="3" Height="65" Background="Transparent"
+            BorderBrush="{DynamicResource NotificationBorder2Brush}" BorderThickness="0,0,0,2" />
+
+    <controls:AvatarControl Width="25" Height="25"
+                            Margin="5,0,0,0"
+                            Content="{Binding Avatar}"/>
+    <!--TextTrimming="CharacterEllipsis"-->
+    <TextBlock Grid.Column="1"
+               FontSize="11"
+               FontWeight="Regular"
+               Text="{Binding Message}"
+               TextWrapping="Wrap"
+               MaxHeight="50"
+               VerticalAlignment="Center"
+               Margin="5"/>
+
+    <Button Grid.Column="2"
+            Margin="1"
+            VerticalAlignment="Top"
+            Width="20"
+            Height="20"
+            BorderThickness="0"
+            Background="{DynamicResource NotificationBackgroundBrush}"
+            Classes="styleless"
+            Command="{Binding Path=CloseAction}"
+            CommandParameter="{Binding Path=.}">
+      <iconPack:IconControl Kind="PackIconMaterialKind.Close" Width="8" Height="8" />
+    </Button>
+  </Grid>
+</UserControl>
