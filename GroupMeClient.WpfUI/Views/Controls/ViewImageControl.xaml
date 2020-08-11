@@ -20,6 +20,17 @@
                 <converters:InverseBoolConverter />
                 <BooleanToVisibilityConverter />
             </converters:ValueConverterGroup>
+
+            <Style x:Key="popupDialogButton" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button">
+                <Setter Property="Width" Value="30" />
+                <Setter Property="Height" Value="30" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Visibility" Value="{Binding Path=IsLoading, Converter={StaticResource VisibleIfFalseConverter}}" />
+            </Style>
         </Grid.Resources>
         
         <Controls:ProgressRing IsActive="True"
@@ -29,74 +40,43 @@
                                Background="Transparent"/>
 
         <extensions:ZoomBorder x:Name="border" ClipToBounds="False" IsManipulationEnabled="true" RenderTransformOrigin="0.5, 0.5">
+            <extensions:ZoomBorder.RenderTransform>
+                <RotateTransform Angle="{Binding RotateAngle}" CenterX="0" CenterY="0" />
+            </extensions:ZoomBorder.RenderTransform>
+            
             <Image
                 MaxWidth="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}"
                 MaxHeight="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualHeight}"
                 Stretch="Uniform"
                 HorizontalAlignment="Center"
-                gif:AnimationBehavior.SourceStream="{Binding ImageStream}">
-            </Image>
-
-            <extensions:ZoomBorder.RenderTransform>
-                <RotateTransform Angle="{Binding RotateAngle}" CenterX="0" CenterY="0" />
-            </extensions:ZoomBorder.RenderTransform>
+                gif:AnimationBehavior.SourceStream="{Binding ImageStream}" />
         </extensions:ZoomBorder>
-        
-        <Button Width="30"
-                Height="30"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
+
+        <!--Save Image Button-->
+        <Button Style="{StaticResource popupDialogButton}"
                 Margin="0,-30,0,0"
-                Foreground="White"
-                BorderThickness="0"
-                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                Command="{Binding Path=SaveImage}"
-                Visibility="{Binding Path=IsLoading, Converter={StaticResource VisibleIfFalseConverter}}">
-            <Button.ContentTemplate>
-                <DataTemplate>
-                    <iconPacks:PackIconEntypo Width="15"
-                                              Height="15"
-                                              Kind="Save" />
-                </DataTemplate>
-            </Button.ContentTemplate>
+                Command="{Binding Path=SaveImage}">
+            <iconPacks:PackIconEntypo Width="15"
+                                      Height="15"
+                                      Kind="Save" />
         </Button>
 
-        <Button Width="30"
-                Height="30"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
+        <!--Copy Image Button-->
+        <Button Style="{StaticResource popupDialogButton}"
                 Margin="30,-30,0,0"
-                Foreground="White"
-                BorderThickness="0"
-                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                Command="{Binding Path=CopyImage}"
-                Visibility="{Binding Path=IsLoading, Converter={StaticResource VisibleIfFalseConverter}}">
-            <Button.ContentTemplate>
-                <DataTemplate>
-                    <iconPacks:PackIconFontAwesome Width="15"
-                                                   Height="15"
-                                                   Kind="CopySolid" />
-                </DataTemplate>
-            </Button.ContentTemplate>
+                Command="{Binding Path=CopyImage}">
+            <iconPacks:PackIconFontAwesome Width="15"
+                                           Height="15"
+                                           Kind="CopySolid" />
         </Button>
 
-        <Button Width="30"
-                Height="30"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
+        <!--Rotate Image Button-->
+        <Button Style="{StaticResource popupDialogButton}"
                 Margin="60,-30,0,0"
-                Foreground="White"
-                BorderThickness="0"
-                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                Command="{Binding Path=RotateImage}"
-                Visibility="{Binding Path=IsLoading, Converter={StaticResource VisibleIfFalseConverter}}">
-            <Button.ContentTemplate>
-                <DataTemplate>
-                    <iconPacks:PackIconMaterial Width="15"
-                                                Height="15"
-                                                Kind="RotateRight" />
-                </DataTemplate>
-            </Button.ContentTemplate>
+                Command="{Binding Path=RotateImage}" >
+            <iconPacks:PackIconMaterial Width="15"
+                                        Height="15"
+                                        Kind="RotateRight" />
         </Button>
     </Grid>
 </UserControl>
