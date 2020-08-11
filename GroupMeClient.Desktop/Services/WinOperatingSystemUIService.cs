@@ -30,7 +30,6 @@ namespace GroupMeClient.Desktop.Services
             Process.Start(psi);
         }
 
-
         public void ShowFileInExplorer(string filePath)
         {
             Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
