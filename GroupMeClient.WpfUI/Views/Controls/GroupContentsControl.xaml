@@ -16,6 +16,24 @@
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
         <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
         <sys:Boolean x:Key="True">True</sys:Boolean>
+
+        <Style x:Key="bottomBarButtonStyle" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Width" Value="25" />
+            <Setter Property="Height" Value="25" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource DividerLineBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            
+            <Style.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Text}" />
+                    <Setter Property="Opacity" Value="0.80" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -280,20 +298,14 @@
             </Grid>
 
             <!--Message Effects Button-->
-            <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="0"
-                                        VerticalAlignment="Center" 
-                                        HorizontalAlignment="Center"
-                                        Width="15" Height="15" 
-                                        Background="{DynamicResource MahApps.Brushes.Control.Background}"
-                                        Foreground="#637182"
-                                        Kind="React"
-                                        Margin="0">
-                <behaviors:Interaction.Triggers>
-                    <behaviors:EventTrigger EventName="MouseDown" >
-                        <behaviors:InvokeCommandAction Command="{Binding OpenMessageSuggestions}" />
-                    </behaviors:EventTrigger>
-                </behaviors:Interaction.Triggers>
-            </iconPacks:PackIconMaterial>
+            <Button Grid.Row="1" Grid.Column="0"
+                    Style="{StaticResource bottomBarButtonStyle}"
+                    Background="Transparent"
+                    Margin="0"
+                    Command="{Binding OpenMessageSuggestions}" >
+
+                <iconPacks:PackIconMaterial Kind="React" Width="15" Height="15" />
+            </Button>
 
             <!--Message Text Box-->
             <extensions:MultiLineSendBox
@@ -312,34 +324,24 @@
             </extensions:MultiLineSendBox>
 
             <!--Plus Button-->
-            <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="2"
-                                        VerticalAlignment="Center" 
-                                        HorizontalAlignment="Center"
-                                        Width="15" Height="15"
-                                        Background="{DynamicResource MahApps.Brushes.Control.Background}"
-                                        Foreground="{DynamicResource DividerLineBrush}" 
-                                        Kind="Plus"
-                                        Margin="0,0,20,0">
-                <behaviors:Interaction.Triggers>
-                    <behaviors:EventTrigger EventName="MouseDown" >
-                        <behaviors:InvokeCommandAction Command="{Binding SendAttachment}" />
-                    </behaviors:EventTrigger>
-                </behaviors:Interaction.Triggers>
-            </iconPacks:PackIconMaterial>
+            <Button Grid.Row="1" Grid.Column="2"
+                    Style="{StaticResource bottomBarButtonStyle}"
+                    Background="Transparent"
+                    Margin="0,0,10,0"
+                    Command="{Binding SendAttachment}" >
+
+                <iconPacks:PackIconMaterial Kind="Plus" Width="15" Height="15" />
+            </Button>
 
             <!--Send Message Button-->
-            <iconPacks:PackIconMaterial Grid.Row="1" Grid.Column="3"
-                                        VerticalAlignment="Center" 
-                                        HorizontalAlignment="Center"
-                                        Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" 
-                                        Kind="Send"
-                                        Margin="0,0,30,0">
-                <behaviors:Interaction.Triggers>
-                    <behaviors:EventTrigger EventName="MouseDown" >
-                        <behaviors:InvokeCommandAction Command="{Binding SendMessage}" />
-                    </behaviors:EventTrigger>
-                </behaviors:Interaction.Triggers>
-            </iconPacks:PackIconMaterial>
+            <Button Grid.Row="1" Grid.Column="3"
+                    Style="{StaticResource bottomBarButtonStyle}"
+                    Background="Transparent"
+                    Margin="0,0,24,0"
+                    Command="{Binding SendMessage}" >
+
+                <iconPacks:PackIconMaterial Kind="Send" Width="15" Height="15" />
+            </Button>
         </Grid>
 
         <!--Popup Dialog-->
