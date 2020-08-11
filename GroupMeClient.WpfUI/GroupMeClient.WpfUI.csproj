@@ -518,6 +518,8 @@
     <ProjectReference Include="..\GroupMeClient.Core\GroupMeClient.Core.csproj">
       <Project>{7b65ef69-3008-4741-bae7-f764ca30b0b2}</Project>
       <Name>GroupMeClient.Core</Name>
+      <PrivateAssets>none</PrivateAssets>
+      <ExcludeAssets>none</ExcludeAssets>
     </ProjectReference>
     <ProjectReference Include="..\GroupMeClient.Desktop\GroupMeClient.Desktop.csproj">
       <Project>{abf76e74-20ee-402a-a96c-da569466f689}</Project>
