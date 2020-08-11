@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="GroupMeClient.WpfUI.Views.Controls.GroupControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
+             xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
+             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
+             mc:Ignorable="d" 
+             Background="{DynamicResource MahApps.Brushes.Control.Background}"
+             d:DesignHeight="150" d:DesignWidth="400">
+
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="MouseLeftButtonDown">
+            <behaviors:InvokeCommandAction Command="{Binding Path=GroupSelected}" CommandParameter="{Binding Path=.}"/>
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
+
+    <UserControl.Resources>
+        <converters:IsZeroConverter x:Key="isZeroConverter"/>
+        <converters:GMDCInlineToWPFInline x:Key="inlineConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80" />
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <controls:AvatarControl 
+                Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                Width="55" Height="55" Margin="0, -10, 0, 0"
+                DataContext="{Binding Avatar}"/>
+
+        <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                Height="Auto" FontSize="16"
+                TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                Text="{Binding Title}">
+            
+            <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="FontWeight" Value="Regular" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=TotalUnreadCount, Converter={StaticResource isZeroConverter}}" Value="False">
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <Label Content="{Binding LastUpdatedFriendlyTime}" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource GroupsSidebarFontBrush}"/>
+
+        <TextBlock  Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
+                Height="50" FontSize="13" Foreground="{DynamicResource GroupsSidebarFontBrush}"
+                TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
+                extensions:TextBlockExtensions.InlineList="{Binding QuickPreview, Converter={StaticResource inlineConverter}}"/>
+
+        <TextBlock Grid.Column="2" Grid.Row="1"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top"
+                   TextAlignment="Center"
+                   Height="30"
+                   Width="30"
+                   Padding="0,7,0,0"
+                   Text="{Binding TotalUnreadCount}"
+                   Foreground="White"
+                   FontWeight="Bold" >
+
+            <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Visibility" Value="Hidden" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=TotalUnreadCount, Converter={StaticResource isZeroConverter}}" Value="False">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+            
+            <TextBlock.Background>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Ellipse Height="30"
+                                 Width="30"
+                                 Fill="#1873BA" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </TextBlock.Background>
+        </TextBlock>
+    </Grid>
+</UserControl>

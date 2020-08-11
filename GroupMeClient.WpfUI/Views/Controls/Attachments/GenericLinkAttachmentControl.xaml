@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="GroupMeClient.WpfUI.Views.Controls.Attachments.GenericLinkAttachmentControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors" 
+             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="400">
+
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="MouseLeftButtonDown" >
+            <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
+    
+
+    <Grid ForceCursor="true" Cursor="Hand" Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.Resources>
+            <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
+        </Grid.Resources>
+
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Copy Link" Command="{Binding CopyLink}" CommandParameter="{x:Null}" />
+            </ContextMenu>
+        </Grid.ContextMenu>
+
+        <Image Grid.Row="0"
+               Grid.RowSpan="2"
+               MaxWidth="300"
+               MaxHeight="250"
+               MinWidth="200"
+               MinHeight="200"
+               VerticalAlignment="Stretch"
+               HorizontalAlignment="Stretch"
+               Source="{Binding RenderedImage, Converter={StaticResource imageSourceConverter}}" />
+
+        <StackPanel Grid.Row="1">
+            <StackPanel.Background>
+                <SolidColorBrush Color="Black" Opacity="0.4"/>
+            </StackPanel.Background>
+
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center"
+                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                       Text="{Binding Title}"
+                       Foreground="White" FontWeight="SemiBold"
+                       Padding="5" 
+                       Margin="10,0,0,0"/>
+            <Grid Margin="10,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Image Grid.Row="0" Grid.Column="0"
+                       Width="15"
+                       HorizontalAlignment="Left"
+                       Source="{Binding FaviconImage, Converter={StaticResource imageSourceConverter}}" />
+
+                <Label Grid.Row="0" Grid.Column="1" 
+                       Content="{Binding Site}"
+                       Foreground="White"/>
+
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

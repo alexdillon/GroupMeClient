@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="GroupMeClient.WpfUI.Views.Controls.InlineReadSentMarkerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="20" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <ContextMenu x:Key="emptyContextMenu" Width="0" Height="0" IsEnabled="False"/>
+    </UserControl.Resources>
+
+    <Grid ContextMenu="{StaticResource emptyContextMenu}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DidISendIt}" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource MessageISentBackdropBrush}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding DidISendIt}" Value="False">
+                        <Setter Property="Background" Value="{DynamicResource MessageTheySentBackdropBrush}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+
+        <Label Content="{Binding LabelString, Mode=OneTime}"
+               HorizontalAlignment="Left"
+               FontWeight="Regular"
+               FontSize="11"
+               Foreground="{DynamicResource MessageFontBrush}"
+               Padding="0,0,0,0"
+               Margin="55,-15,0,0"/>
+    </Grid>
+</UserControl>

@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                    xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions">
+
+    <Style x:Key="GroupMeClient.Wpf.Styles.SendTextBox" TargetType="{x:Type extensions:MultiLineSendBox}" BasedOn="{StaticResource MahApps.Styles.TextBox}">
+        <Setter Property="MinHeight" Value="49" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="RegularTextBrush" Value="{DynamicResource MahApps.Brushes.Text}" />
+        <Setter Property="ErrorTextBrush" Value="Red" />
+        <Setter Property="AcceptsReturn" Value="True" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="SpellCheck.IsEnabled" Value="True" />
+        <Setter Property="Controls:TextBoxHelper.Watermark" Value="Send a Message..." />
+    </Style>
+</ResourceDictionary>

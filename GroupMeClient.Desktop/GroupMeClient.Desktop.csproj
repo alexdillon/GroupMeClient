@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Native\Mac\" />
+    <Folder Include="Native\Linux\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GroupMeClient.Core\GroupMeClient.Core.csproj" />
+  </ItemGroup>
+
+</Project>

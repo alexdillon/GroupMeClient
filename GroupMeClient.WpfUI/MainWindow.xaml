@@ -1,0 +1,375 @@
+﻿<mah:MetroWindow x:Class="GroupMeClient.WpfUI.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:local="clr-namespace:GroupMeClient.WpfUI"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:viewModels="clr-namespace:GroupMeClient.WpfUI.ViewModels"
+                 xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
+                 xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
+                 xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
+                 xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                 xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls" 
+                 xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                 Title="GroupMe Desktop Client"
+                 TitleCharacterCasing="Normal"
+                 Width="1024"
+                 Height="768"
+                 WindowTitleBrush="{DynamicResource SidebarBrush}"
+                 FontFamily="{DynamicResource GroupMeFont}"
+                 WindowStartupLocation="CenterScreen"
+                 WindowTransitionsEnabled="False"
+                 BorderThickness="0"
+                 GlowBrush="Black"
+                 mc:Ignorable="d">
+
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
+
+    <Window.Resources>
+        <DataTemplate x:Key="OverlayIcon">
+            <Grid Width="16" Height="16">
+                <Ellipse 
+                    Fill="Red" 
+                    Stroke="White" 
+                    StrokeThickness=".5" />
+                <TextBlock 
+                    Text="{Binding}" 
+                    TextAlignment="Center" 
+                    Foreground="White" 
+                    FontWeight="Bold" 
+                    Height="16" 
+                    VerticalAlignment="Center" 
+                    FontSize="10"/>
+            </Grid>
+        </DataTemplate>
+
+        <converters:ValueConverterGroup x:Key="isGreaterThanZeroToVisibleConverter">
+            <converters:IsGreaterThanConverter />
+            <BooleanToVisibilityConverter />
+        </converters:ValueConverterGroup>
+
+        <sys:Int32 x:Key="zeroStatic">0</sys:Int32>
+
+    </Window.Resources>
+
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands ShowLastSeparator="False">
+
+            <ToggleButton HorizontalAlignment="Center"
+                          VerticalAlignment="Top"
+                          Background="#FFAB00"
+                          Margin="0,0,10,0"
+                          Width="35" Height="30"
+                          BorderThickness="0"
+                          Visibility="{Binding RebootReasons.Count, Converter={StaticResource isGreaterThanZeroToVisibleConverter}, ConverterParameter={StaticResource zeroStatic}}"
+                          x:Name="rebootOptionsToggle">
+                <iconPacks:PackIconModern Width="15" Height="15" Foreground="White" Kind="Flag"/>
+            </ToggleButton>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+
+    <Grid>
+        <Grid.Resources>
+            <local:SelectedItemToContentConverter x:Key="SelectedItemToContentConverter" />
+            <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+            <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+
+            <converters:ValueConverterGroup x:Key="inverseBooleanToVisibilityConverter">
+                <converters:InverseBoolConverter />
+                <BooleanToVisibilityConverter />
+            </converters:ValueConverterGroup>
+
+            <!--  this is the template for the items (options too)  -->
+            <DataTemplate x:Key="MenuItemTemplate" DataType="{x:Type mah:HamburgerMenuIconItem}">
+                <Grid x:Name="RootGrid"
+                      Height="48"
+                      Background="Transparent">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="48" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Grid.Column="0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Content="{Binding Icon}"
+                                    Focusable="False" />
+                    <TextBlock Grid.Column="1"
+                               VerticalAlignment="Center"
+                               FontSize="16"
+                               Text="{Binding Label}" />
+                </Grid>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type mah:HamburgerMenu}}, Path=IsPaneOpen}" Value="False">
+                        <Setter TargetName="RootGrid" Property="ToolTip" Value="{Binding ToolTip, Mode=OneWay}" />
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <mah:HamburgerMenu x:Name="HamburgerMenuControl"
+                           DisplayMode="CompactInline"
+                           IsPaneOpen="False"
+                           ItemTemplate="{StaticResource MenuItemTemplate}"
+                           ItemsSource="{Binding MenuItems}"
+                           OptionsItemTemplate="{StaticResource MenuItemTemplate}"
+                           OptionsItemsSource="{Binding MenuOptionItems}"
+                           SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                           PaneBackground="{DynamicResource SidebarBrush}">
+
+            <!--  select the tag (ViewModel) of the selected item (options item)  -->
+            <mah:HamburgerMenu.Content>
+                <MultiBinding Converter="{StaticResource SelectedItemToContentConverter}">
+                    <Binding FallbackValue="{x:Null}"
+                             Mode="OneWay"
+                             Path="SelectedItem.Tag"
+                             RelativeSource="{RelativeSource Self}" />
+                    <Binding FallbackValue="{x:Null}"
+                             Mode="OneWay"
+                             Path="SelectedOptionsItem.Tag"
+                             RelativeSource="{RelativeSource Self}" />
+                </MultiBinding>
+            </mah:HamburgerMenu.Content>
+        </mah:HamburgerMenu>
+
+        <!--Reconnecting Spinner-->
+        <ToggleButton Height="48"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Top"
+                      Margin="0,200,0,0"
+                      BorderThickness="0"
+                      BorderBrush="Transparent"
+                      Focusable="False" 
+                      IsHitTestVisible="{Binding IsReconnecting}"
+                      x:Name="loadingSpinnerButton">
+
+            <ToggleButton.Style>
+                <Style TargetType="{x:Type ToggleButton}">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Width" Value="48"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                <Border Background="{TemplateBinding Background}">
+                                    <ContentPresenter />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#1584C7"/>
+                        </Trigger>
+
+                        <DataTrigger Binding="{Binding IsPaneOpen, ElementName=HamburgerMenuControl}" Value="True">
+                            <Setter Property="Width" Value="240"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ToggleButton.Style>
+
+            <Controls:ProgressRing IsActive="{Binding IsReconnecting}" 
+                                   Width="20" Height="20"
+                                   Margin="14,0,0,0"
+                                   HorizontalAlignment="Left"
+                                   Foreground="White" />
+        </ToggleButton>
+
+        <!--Running Tasks List-->
+        <ListBox Visibility="{Binding IsMouseOver, ElementName=loadingSpinnerButton, Converter={StaticResource booleanToVisibilityConverter}}"
+                 ItemsSource="{Binding TaskManager.RunningTasks}"
+                 Width="230"
+                 Height="300"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Top"
+                 Margin="48,170,0,0"
+                 Background="Transparent"
+                 Opacity="0.80"
+                 BorderThickness="0">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="#252525" BorderThickness="2">
+                        <Grid Height="50" Background="Black">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="175" />
+                            </Grid.ColumnDefinitions>
+
+                            <Controls:ProgressRing Grid.Column="0"
+                                               IsActive="True"
+                                               Margin="10,0,10,0"
+                                               Width="20" Height="20"
+                                               Foreground="White" />
+
+                            <TextBlock Grid.Column="1"
+                                       Foreground="White"
+                                       TextTrimming="CharacterEllipsis"
+                                       Text="{Binding Name}"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                 <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+
+        <!--Refresh Button-->
+        <Button Height="48"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="0,0,0,55"
+                BorderThickness="0"
+                Command="{Binding RefreshEverythingCommand}"
+                Visibility="{Binding Path=IsEnabled, RelativeSource={RelativeSource Self}, Mode=OneWay, Converter={StaticResource booleanToVisibilityConverter}}" >
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Width" Value="48"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}">
+                                    <ContentPresenter />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#1584C7"/>
+                        </Trigger>
+
+                        <DataTrigger Binding="{Binding IsPaneOpen, ElementName=HamburgerMenuControl}" Value="True">
+                            <Setter Property="Width" Value="240"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+         
+            <Button.Content>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="48" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <iconPacks:PackIconMaterial Kind="Refresh"
+                                                Grid.Column="0"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Foreground="White"
+                                                Width="16" Height="16"
+                                                Visibility="{Binding IsRefreshing, Converter={StaticResource inverseBooleanToVisibilityConverter}}" />
+
+                    <Controls:ProgressRing Width="16" Height="16"
+                                           Grid.Column="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="White"
+                                           IsActive="{Binding IsRefreshing}" />
+
+                    <TextBlock Text="Refresh" 
+                               Foreground="White"
+                               Grid.Column="1"
+                               VerticalAlignment="Center"
+                               FontSize="16"/>
+                </Grid>
+            </Button.Content>
+        </Button>
+
+        <!--Big Dialog Popup-->
+        <controls:Popup Grid.Row="0" Grid.Column="0"
+                        Grid.RowSpan="1"
+                        Grid.ColumnSpan="2"
+                        DataContext="{Binding DialogManagerRegular}" />
+
+        <!--Top Most Dialog Popup-->
+        <controls:Popup Grid.Row="0" Grid.Column="0"
+                        Grid.RowSpan="1"
+                        Grid.ColumnSpan="2"
+                        DataContext="{Binding DialogManagerTopMost}" />
+
+        <!--In-App Toast Area-->
+        <UserControl HorizontalAlignment="Right" 
+                        VerticalAlignment="Top"
+                        Width="250"
+                        Margin="0,60,5,0"
+                        Content="{Binding ToastHolderManager}" />
+        
+        <!--Reboot Options Area-->
+        <StackPanel Orientation="Vertical"
+                    Visibility="{Binding IsChecked, ElementName=rebootOptionsToggle, Converter={StaticResource booleanToVisibilityConverter}}"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Width="275"
+                    Margin="0,0,25,0"
+                    Background="{DynamicResource LikerAreaBackgroundBrush}">
+            <ListBox ItemsSource="{Binding RebootReasons}"
+                     Background="{DynamicResource LikerAreaBackgroundBrush}">
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Height="50">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="175" />
+                            </Grid.ColumnDefinitions>
+
+                            <iconPacks:PackIconMaterial Kind="Update"
+                                                    Grid.Column="0"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Margin="10,0,10,0"
+                                                    Width="16" Height="16" />
+
+                            <TextBlock Grid.Column="1"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="Wrap"
+                                    Text="{Binding}"
+                                    FontSize="14"
+                                    VerticalAlignment="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+
+            <Button Width="150"
+                    Height="30"
+                    Content="Reboot Now"
+                    Command="{Binding RebootApplication}"
+                    Margin="0,0,0,10"/>
+        </StackPanel>
+    </Grid>
+
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo 
+            extensions:TaskbarItemOverlayExtensions.Content="{Binding UnreadCount}" 
+            extensions:TaskbarItemOverlayExtensions.Template="{StaticResource OverlayIcon}" />
+    </Window.TaskbarItemInfo>
+</mah:MetroWindow>

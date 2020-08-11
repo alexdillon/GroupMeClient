@@ -1,0 +1,178 @@
+﻿<UserControl x:Class="GroupMeClient.WpfUI.Views.StarsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
+             xmlns:views="clr-namespace:GroupMeClient.WpfUI.Views"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
+             d:DesignHeight="500"
+             d:DesignWidth="700"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="Loaded">
+            <behaviors:InvokeCommandAction Command="{Binding Loaded}" />
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="350" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="55" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--Chats Header-->
+        <Grid Grid.Column="0" Grid.Row="0"
+              Background="{DynamicResource MahApps.Brushes.Control.Background}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="55"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Margin="20,0,0,0"                        
+                       Height="Auto" FontSize="17" FontWeight="SemiBold"
+                       Text="Starred Messages" />
+
+            <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+        </Grid>
+
+        <!--All Groups and Chats List-->
+        <ScrollViewer Grid.Column="0" Grid.Row="1"
+                          VerticalScrollBarVisibility="Visible" PanningMode="VerticalOnly" CanContentScroll="True"
+                          VerticalAlignment="Stretch">
+            <ItemsControl ItemsSource="{Binding SortedGroupChats}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel>
+                            <behaviors:Interaction.Behaviors>
+                                <behaviors:FluidMoveBehavior AppliesTo="Children" Duration="0:0:00.5" Tag="DataContext">
+                                    <behaviors:FluidMoveBehavior.EaseX>
+                                        <BackEase EasingMode="EaseInOut" Amplitude="0.5"/>
+                                    </behaviors:FluidMoveBehavior.EaseX>
+                                    <behaviors:FluidMoveBehavior.EaseY>
+                                        <BackEase EasingMode="EaseInOut" Amplitude="0.5"/>
+                                    </behaviors:FluidMoveBehavior.EaseY>
+                                </behaviors:FluidMoveBehavior>
+                            </behaviors:Interaction.Behaviors>
+                        </StackPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:GroupControl Content="{Binding Path=.}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!--Opened Groups and Chats-->
+        <ItemsControl ItemsSource="{Binding Path=ActiveGroupsChats}" 
+                      Grid.Row="0"
+                      Grid.RowSpan="2"
+                      Grid.Column="1">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="5,0,5,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="55"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!--Top Bar Avatar-->
+                        <controls:AvatarControl 
+                            Grid.Column="0"
+                            Width="40" Height="40"
+                            Margin="10,5,10,0"
+                            DataContext="{Binding TopBarAvatar}" />
+
+                        <!--Group Name and Drop Down Menu Button-->
+                        <ToggleButton Style="{StaticResource GroupMeClient.Wpf.Styles.GroupNameDropdown}"
+                                      Grid.Column="1"
+                                      Margin="0,4,0,0"
+                                      Tag="{Binding Path=MessageContainer.Name}"
+                                      x:Name="toggleGroupOptionsButton"/>
+
+                        <!--Close Group Button-->
+                        <Button Grid.Column="2"
+                                HorizontalAlignment="Right"
+                                Width="35" Height="35"
+                                BorderThickness="0"
+                                Margin="0,5,0,0"
+                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                Command="{Binding Path=DataContext.CloseGroup, RelativeSource={RelativeSource AncestorType=views:StarsView}}"
+                                CommandParameter="{Binding Path=.}">
+                            <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
+                        </Button>
+
+                        <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,0,0"/>
+
+                        <ContentControl Grid.Row="1" 
+                                        Grid.Column="0" 
+                                        Grid.ColumnSpan="3"
+                                        Content="{Binding Path=MessagesList}" />
+
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="3"
+                                   HorizontalAlignment="Center"
+                                   FontSize="16"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   Foreground="{DynamicResource GroupsSidebarFontBrush}"
+                                   Margin="0,20,0,0"
+                                   Text="{Binding Type, StringFormat=No {0} Messages Found}"
+                                   Visibility="{Binding IsEmpty, Converter={StaticResource boolToVisibilityConverter}}"/>
+
+                        <!--Plugins Dropdown List-->
+                        <Border Grid.Row="1" 
+                                Grid.Column="0" 
+                                Grid.ColumnSpan="3"
+                                Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
+                                VerticalAlignment="Top"
+                                BorderThickness="20,10,20,30"
+                                BorderBrush="{DynamicResource PluginMenuBrush}">
+                            <StackPanel Orientation="Vertical" 
+                                        Background="{DynamicResource PluginMenuBrush}">
+                                <RadioButton Content="Show Starred Messages" FontSize="16" Margin="5" IsChecked="{Binding IsShowingStars}" Background="Transparent" />
+                                <RadioButton Content="Show Hidden Messages" FontSize="16" Margin="5" IsChecked="{Binding IsShowingHidden}" Background="Transparent"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>
+

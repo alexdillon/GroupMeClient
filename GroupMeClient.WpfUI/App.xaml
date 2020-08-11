@@ -1,0 +1,157 @@
+﻿<Application x:Class="GroupMeClient.WpfUI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:MahControls="http://metro.mahapps.com/winfx/xaml/controls" 
+             xmlns:views="clr-namespace:GroupMeClient.WpfUI.Views"
+             xmlns:vm="clr-namespace:GroupMeClient.Core.ViewModels;assembly=GroupMeClient.Core"
+             xmlns:ctrlviews="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
+             xmlns:ctrlvm="clr-namespace:GroupMeClient.Core.ViewModels.Controls;assembly=GroupMeClient.Core"
+             xmlns:attachviews="clr-namespace:GroupMeClient.WpfUI.Views.Controls.Attachments"
+             xmlns:attachvm="clr-namespace:GroupMeClient.Core.ViewModels.Controls.Attachments;assembly=GroupMeClient.Core"
+             xmlns:pluginviews="clr-namespace:GroupMeClient.WpfUI.Plugins.Views"
+             xmlns:pluginvm="clr-namespace:GroupMeClient.Core.Plugins.ViewModels;assembly=GroupMeClient.Core"
+             xmlns:toast="clr-namespace:GroupMeClient.WpfUI.Notifications.Display.WpfToast"
+             xmlns:win7="clr-namespace:GroupMeClient.WpfUI.Notifications.Display.Win7"
+             StartupUri="MainWindow.xaml"
+             mc:Ignorable="d">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.FlatButton.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/Styles/GroupMeLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/ScrollBar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/Hyperlink.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/GroupNameDropdown.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/SendTextBox.xaml" />
+                
+            </ResourceDictionary.MergedDictionaries>
+
+            <!--
+            We define the data templates here so we can apply them across the
+            entire application.
+            
+            The data template just says that if our data type is of a particular
+            view-model type, then render the appropriate view.  The framework
+            takes care of this dynamically.  Note that the DataContext for
+            the underlying view is already set at this point, so the
+            view (UserControl), doesn't need to have it's DataContext set
+            directly.
+            -->
+            <DataTemplate DataType="{x:Type vm:ChatsViewModel}">
+                <views:ChatsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SearchViewModel}">
+                <views:SearchView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:StarsViewModel}">
+                <views:StarsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                <views:SettingsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:LoginViewModel}">
+                <views:LoginView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:UpdatingViewModel}">
+                <views:UpdatingView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type ctrlvm:AvatarControlViewModel}">
+                <ctrlviews:AvatarControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:GroupControlViewModel}">
+                <ctrlviews:GroupControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:GroupContentsControlViewModel}">
+                <ctrlviews:GroupContentsControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:MessageControlViewModel}">
+                <ctrlviews:MessageControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:InlineTimestampControlViewModel}">
+                <ctrlviews:InlineTimestampControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:InlineReadSentMarkerControlViewModel}">
+                <ctrlviews:InlineReadSentMarkerControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:PaginatedMessagesControlViewModel}">
+                <ctrlviews:PaginatedMessagesControl />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type attachvm:GenericLinkAttachmentControlViewModel}">
+                <attachviews:GenericLinkAttachmentControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:TwitterAttachmentControlViewModel}">
+                <attachviews:TwitterAttachmentControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:VideoAttachmentControlViewModel}">
+                <attachviews:VideoAttachmentControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:ImageLinkAttachmentControlViewModel}">
+                <attachviews:ImageLinkAttachmentControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:GroupMeImageAttachmentControlViewModel}">
+                <attachviews:GroupMeImageAttachmentControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:FileAttachmentControlViewModel}">
+                <attachviews:FileAttachmentControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type attachvm:RepliedMessageControlViewModel}">
+                <attachviews:RepliedMessageControl />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type ctrlvm:SendImageControlViewModel}">
+                <ctrlviews:SendImageControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:SendFileControlViewModel}">
+                <ctrlviews:SendFileControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:ViewImageControlViewModel}">
+                <ctrlviews:ViewImageControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:MessageEffectsControlViewModel}">
+                <ctrlviews:MessageEffectsControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:LoadingControlViewModel}">
+                <ctrlviews:LoadingControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:ManageReposViewModel}">
+                <ctrlviews:ManageReposControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:UpdatePluginsViewModel}">
+                <ctrlviews:UpdatePluginsControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:ViewReleaseNotesControlViewModel}">
+                <ctrlviews:ViewReleaseNotesControl />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type toast:ToastNotificationViewModel}">
+                <toast:ToastNotification />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type toast:ToastHolderViewModel}">
+                <toast:ToastHolder />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type win7:Win7ToastNotificationViewModel}">
+                <win7:Win7ToastNotification />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type pluginvm:MultiLikeControlViewModel}">
+                <pluginviews:MultiLikeControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type pluginvm:GroupInfoControlViewModel}">
+                <pluginviews:GroupInfoControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type pluginvm:ImageDetailsControlViewModel}">
+                <pluginviews:ImageDetailsControl />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
