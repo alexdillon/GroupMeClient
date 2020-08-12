@@ -32,23 +32,23 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <i:Interaction.Behaviors>
+    <!--<i:Interaction.Behaviors>
       <extensions:BackgroundBinaryChangerBehavior Condition="{Binding DidISendIt}"
                                                   TrueValue="{DynamicResource MessageISentBackdropBrush}"
                                                   FalseValue="{DynamicResource MessageTheySentBackdropBrush}" />
-    </i:Interaction.Behaviors>
+    </i:Interaction.Behaviors>-->
 
     <controls:AvatarControl
             Grid.Column="0" Grid.Row="1"
             Width="40" Height="40" VerticalAlignment="Top"
             DataContext="{Binding Avatar}">
 
-      <i:Interaction.Behaviors>
+      <!--<i:Interaction.Behaviors>
         <ia:EventTriggerBehavior EventName="PointerPressed">
           <ia:InvokeCommandAction Command="{Binding Path=DataContext.ToggleMessageDetails, RelativeSource={RelativeSource AncestorType=controls:MessageControl}}" />
         </ia:EventTriggerBehavior>
-      </i:Interaction.Behaviors>
-    </controls:AvatarControl>
+      </i:Interaction.Behaviors>-->
+      </controls:AvatarControl>
 
     <StackPanel Grid.Column="1" Grid.Row="1">
       <TextBlock Text="{Binding Sender}" FontSize="12" Foreground="{DynamicResource MessageFontBrush}" />
@@ -106,11 +106,12 @@
                              Name="likeIcon"
                              
                              Background="Transparent">
-        <i:Interaction.Behaviors>
+        <!--<i:Interaction.Behaviors>
           <extensions:ForegroundBinaryChangerBehavior Condition="{Binding LikeStatus, Converter={StaticResource likeStatusToBoolConverter}}"
                                                       TrueValue="{DynamicResource MessageILikedBrush}"
                                                       FalseValue="{DynamicResource MessageTheyLikedBrush}" />
-        </i:Interaction.Behaviors>
+        </i:Interaction.Behaviors>-->
+        
         <!--<i:Interaction.Behaviors>
           <ia:DataTriggerBehavior Binding="{Binding LikeStatus, Converter={StaticResource likeStatusToBoolConverter}}" Value="True">
             <ia:ChangePropertyAction TargetObject="{Binding #likeIcon}" PropertyName="Foreground" Value="" />
@@ -129,11 +130,11 @@
                  FontSize="10" FontWeight="Thin"
                  Text="{Binding LikeCount}" />  
 
-      <i:Interaction.Behaviors>
+      <!--<i:Interaction.Behaviors>
         <ia:EventTriggerBehavior EventName="PointerPressed">
           <ia:InvokeCommandAction Command="{Binding LikeAction}" />
         </ia:EventTriggerBehavior>
-      </i:Interaction.Behaviors>
+      </i:Interaction.Behaviors>-->
     </Grid>
 
     <Canvas x:Name="likesCanvas"
@@ -143,8 +144,8 @@
             Background="Transparent">
 
       <!--Without MultiDataTriggers, this is tricky to do in Avalonia....-->
-      <i:Interaction.Behaviors>
-        <!--Make the Liker's Area invisible when the message has no likes-->
+      <!--<i:Interaction.Behaviors>
+        --><!--Make the Liker's Area invisible when the message has no likes--><!--
         <ia:DataTriggerBehavior Binding="{Binding LikeCount, Converter={StaticResource isZeroConverter}}" Value="True">
           <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsVisible" Value="False" />
           <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="False" />
@@ -154,7 +155,7 @@
           <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="True" />
         </ia:DataTriggerBehavior>
 
-        <!--Show Liker's Area when hoving over the Like Button Area. Also include the Bubble Area to prevent flickering.-->
+        --><!--Show Liker's Area when hoving over the Like Button Area. Also include the Bubble Area to prevent flickering.--><!--
         <ia:DataTriggerBehavior Binding="{Binding #likeButtonArea.IsPointerOver}" Value="True">
           <ia:ChangePropertyAction TargetObject="{Binding #likesBubble}" PropertyName="IsVisible" Value="True" />
           <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="True" />
@@ -164,7 +165,7 @@
           <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="True" />
         </ia:DataTriggerBehavior>
 
-        <!--Hide the Liker's Area when leaving-->
+        --><!--Hide the Liker's Area when leaving--><!--
         <ia:DataTriggerBehavior Binding="{Binding #likeButtonArea.IsPointerOver}" Value="False">
           <ia:ChangePropertyAction TargetObject="{Binding #likesBubble}" PropertyName="IsVisible" Value="False" />
           <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="False" />
@@ -173,7 +174,7 @@
           <ia:ChangePropertyAction TargetObject="{Binding #likesBubble}" PropertyName="IsVisible" Value="False" />
           <ia:ChangePropertyAction TargetObject="{Binding #likesCanvas}" PropertyName="IsHitTestVisible" Value="False" />
         </ia:DataTriggerBehavior>
-      </i:Interaction.Behaviors>
+      </i:Interaction.Behaviors>-->
 
       <Grid Width="{Binding $parent[Canvas].Bounds.Width}">
         <Border BorderThickness="1" CornerRadius="5"
