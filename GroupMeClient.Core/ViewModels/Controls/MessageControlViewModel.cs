@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Controls.Documents;
+using GroupMeClient.Core.Services;
+using GroupMeClient.Core.Utilities;
 using GroupMeClient.Core.ViewModels.Controls.Attachments;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
@@ -224,21 +227,25 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             get
             {
-                if (this.Message.SourceGuid.StartsWith("gmdc-"))
+                if (this.Message.SourceGuid.StartsWith($"{Services.KnownClients.GMDC.GMDCGuidPrefix}-"))
                 {
-                    return "GroupMe Desktop Client";
+                    // GroupMe Desktop Client
+                    return Services.KnownClients.GMDC.GMDCFriendlyName;
                 }
-                else if (this.Message.SourceGuid.StartsWith("gmdctoast-"))
+                else if (this.Message.SourceGuid.StartsWith($"{Services.KnownClients.GMDC.GMDCGuidQuickResponsePrefix}-"))
                 {
-                    return "GroupMe Desktop Client (Quick Reply)";
+                    // GroupMe Desktop Client (Quick Reply)
+                    return Services.KnownClients.GMDC.GMDCQuickResponseFriendlyName;
                 }
-                else if (this.Message.SourceGuid.StartsWith("gmdca-"))
+                else if (this.Message.SourceGuid.StartsWith($"{Services.KnownClients.GMDCA.GMDCAGuidPrefix}-"))
                 {
-                    return "GroupMe Desktop Client Avalonia";
+                    // GroupMe Desktop Client Avalonia
+                    return Services.KnownClients.GMDCA.GMDCAFriendlyName;
                 }
-                else if (this.Message.SourceGuid.StartsWith("gmdcatoast-"))
+                else if (this.Message.SourceGuid.StartsWith($"{Services.KnownClients.GMDCA.GMDCAGuidQuickResponsePrefix}-"))
                 {
-                    return "GroupMe Desktop Client Avalonia (Quick Reply)";
+                    // GroupMe Desktop Client Avalonia (Quick Reply)
+                    return Services.KnownClients.GMDCA.GMDCAQuickResponseFriendlyName;
                 }
                 else if (this.message.SourceGuid.StartsWith("android"))
                 {
@@ -480,15 +487,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             // Check if this is a GroupMe Desktop Client Reply-extension message
             var repliedMessageId = string.Empty;
-            if (!string.IsNullOrEmpty(this.Message.Text) && Regex.IsMatch(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex))
+            if (MessageUtils.IsReplyGen1(this.Message))
             {
                 // Method 1, where /rmid:<message-id> is appended to the end of the message body
-                var token = Regex.Match(this.Message.Text, Utilities.RegexUtils.RepliedMessageRegex).Value;
+                var token = Regex.Match(this.Message.Text, MessageUtils.RepliedMessageRegex).Value;
                 this.HiddenText = token + this.HiddenText;
                 repliedMessageId = token.Replace("\n/rmid:", string.Empty);
                 totalAttachedImages--; // Don't count the preview bitmap as an image
             }
-            else if (this.Message.SourceGuid.StartsWith("gmdc-r"))
+            else if (MessageUtils.IsReplyGen2(this.Message))
             {
                 // Method 2, where gmdc-r<message-id> is included as the prefix of the message GUID
                 var parts = this.Message.SourceGuid.Split('-');

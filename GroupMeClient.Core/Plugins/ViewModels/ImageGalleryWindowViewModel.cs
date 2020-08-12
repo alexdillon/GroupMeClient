@@ -8,6 +8,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
+using GroupMeClient.Core.Utilities;
 using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi;
 using GroupMeClientApi.Models;
@@ -293,16 +294,9 @@ namespace GroupMeClient.Core.Plugins.ViewModels
                 var imageUrls = GetAttachmentContentUrls(msg.Attachments, true);
 
                 var numberOfImages = imageUrls.Length;
-                if (this.FilterReplyScreenshots)
+                if (this.FilterReplyScreenshots && MessageUtils.IsGMDCReply(msg))
                 {
-                    var isReply =
-                        (!string.IsNullOrEmpty(msg.Text) && System.Text.RegularExpressions.Regex.IsMatch(msg.Text, Utilities.RegexUtils.RepliedMessageRegex)) ||
-                        msg.SourceGuid.StartsWith("gmdc-r");
-
-                    if (isReply)
-                    {
-                        numberOfImages -= 1;
-                    }
+                    numberOfImages -= 1;
                 }
 
                 for (int i = 0; i < numberOfImages; i++)

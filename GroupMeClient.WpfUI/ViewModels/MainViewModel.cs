@@ -45,9 +45,10 @@ namespace GroupMeClient.WpfUI.ViewModels
         {
             Directory.CreateDirectory(this.DataRoot);
 
+            this.ClientIdentity = new Core.Services.KnownClients.GMDC();
             Core.Startup.StartupCoreServices(new Core.Startup.StartupParameters()
             {
-                ClientIdentity = new Core.Services.KnownClients.GMDC(),
+                ClientIdentity = this.ClientIdentity,
                 CacheFilePath = this.CachePath,
                 SettingsFilePath = this.SettingsPath,
                 PluginPath = this.PluginsPath,
@@ -173,6 +174,8 @@ namespace GroupMeClient.WpfUI.ViewModels
 
         private string PluginsPath => Path.Combine(this.DataRoot, "Plugins");
 
+        private IClientIdentityService ClientIdentity { get; }
+
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
         private SettingsManager SettingsManager { get; set; }
@@ -205,7 +208,7 @@ namespace GroupMeClient.WpfUI.ViewModels
             var group = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
             var msg = Message.CreateMessage(
                 body: messageText,
-                guidPrefix: "gmdctoast");
+                guidPrefix: this.ClientIdentity.ClientGuidQuickResponsePrefix);
 
             if (msg == null)
             {

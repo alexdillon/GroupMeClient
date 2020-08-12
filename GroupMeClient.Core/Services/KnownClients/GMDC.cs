@@ -13,7 +13,7 @@
         /// <summary>
         /// Gets the guid prefix applied to all messages sent from GMDC.
         /// </summary>
-        public static string GMDCGuidPrefix => "gmdc-";
+        public static string GMDCGuidPrefix => "gmdc";
 
         /// <summary>
         /// Gets the guid prefix applied to all messages sent as responses from GMDC.
@@ -23,7 +23,7 @@
         /// <summary>
         /// Gets the guid prefix applied to all messages sent from GMDC Toast Notifications.
         /// </summary>
-        public static string GMDCGuidQuickResponsePrefix => "gmdctoast-";
+        public static string GMDCGuidQuickResponsePrefix => "gmdctoast";
 
         /// <summary>
         /// Gets the friendly display name for GMDC Quick Response messages.
