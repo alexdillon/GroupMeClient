@@ -28,13 +28,14 @@
         <TextBlock Text="{Binding GroupName, StringFormat='Gallery for &quot;{0}&quot;'}"
                    HorizontalAlignment="Center"
                    FontSize="18"
-                   Foreground="{DynamicResource BlackBrush}"
+                   Foreground="{DynamicResource MahApps.Brushes.Text}"
                    Grid.Row="0"/>
 
         <Expander Grid.Row="1"
                   Header="Filter Options"
                   Margin="15,5,25,0"
                   Controls:ControlsHelper.ContentCharacterCasing="Normal"
+                  Controls:HeaderedControlHelper.HeaderBackground="{DynamicResource MahApps.Brushes.Control.Background}"
                   Background="{DynamicResource MahApps.Brushes.Control.Background}"
                   BorderBrush="Transparent"
                   HorizontalAlignment="Center">
