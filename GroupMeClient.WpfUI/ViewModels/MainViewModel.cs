@@ -60,6 +60,8 @@ namespace GroupMeClient.WpfUI.ViewModels
             Core.Startup.RegisterTopLevelViewModels();
             Startup.StartupServices();
 
+            Desktop.MigrationAssistant.MigrationManager.EnsureMigration(starupParams);
+
             this.SettingsManager = SimpleIoc.Default.GetInstance<SettingsManager>();
 
             // Create a throw-away DbContext to allow EF Core to begin allocating resouces
