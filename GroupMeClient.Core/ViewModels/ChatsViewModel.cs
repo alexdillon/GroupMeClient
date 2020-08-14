@@ -397,6 +397,7 @@ namespace GroupMeClient.Core.ViewModels
                 // mark all messages as read
                 var groupChatState = persistContext.GroupChatStates.FirstOrDefault(g => g.GroupOrChatId == groupChatVm.Id);
                 groupChatState.LastTotalMessageCount = groupChatVm.MessageContainer.TotalMessageCount;
+                persistContext.SaveChanges();
             }
 
             // clear the notification bubble
