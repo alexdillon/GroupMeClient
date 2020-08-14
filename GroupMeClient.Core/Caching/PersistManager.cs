@@ -34,13 +34,13 @@ namespace GroupMeClient.Core.Caching
         /// that are cached in the database.
         /// </summary>
         /// <param name="group">The <see cref="IMessageContainer"/> which to return starred messages for.</param>
-        /// <param name="cacheContext">The cache instance messages should be retreived from.</param>
+        /// <param name="persistContext">The persistance instance mnessages should be retreived from.</param>
         /// <returns>Returns a <see cref="Queryable"/> collection of all the starred messages in a given <see cref="IMessageContainer"/>.</returns>
-        public static IQueryable<StarredMessage> GetStarredMessagesForGroup(IMessageContainer group, PersistContext cacheContext)
+        public static IQueryable<StarredMessage> GetStarredMessagesForGroup(IMessageContainer group, PersistContext persistContext)
         {
             if (group is Group g)
             {
-                return cacheContext.StarredMessages
+                return persistContext.StarredMessages
                     .AsNoTracking()
                     .Where(m => m.ConversationId == g.Id);
             }
@@ -51,7 +51,7 @@ namespace GroupMeClient.Core.Caching
                 // Conversation IDs are user1+user2.
                 var conversationId = c.LatestMessage.ConversationId;
 
-                return cacheContext.StarredMessages
+                return persistContext.StarredMessages
                     .AsNoTracking()
                     .Where(m => m.ConversationId == conversationId);
             }
@@ -66,13 +66,13 @@ namespace GroupMeClient.Core.Caching
         /// that are cached in the database.
         /// </summary>
         /// <param name="group">The <see cref="IMessageContainer"/> which to return hidden messages for.</param>
-        /// <param name="cacheContext">The cache instance messages should be retreived from.</param>
+        /// <param name="persistContext">The persistance instance mnessages should be retreived from.</param>
         /// <returns>Returns a <see cref="Queryable"/> collection of all the hidden messages in a given <see cref="IMessageContainer"/>.</returns>
-        public static IQueryable<HiddenMessage> GetHiddenMessagesForGroup(IMessageContainer group, PersistContext cacheContext)
+        public static IQueryable<HiddenMessage> GetHiddenMessagesForGroup(IMessageContainer group, PersistContext persistContext)
         {
             if (group is Group g)
             {
-                return cacheContext.HiddenMessages
+                return persistContext.HiddenMessages
                     .AsNoTracking()
                     .Where(m => m.ConversationId == g.Id);
             }
@@ -83,7 +83,7 @@ namespace GroupMeClient.Core.Caching
                 // Conversation IDs are user1+user2.
                 var conversationId = c.LatestMessage.ConversationId;
 
-                return cacheContext.HiddenMessages
+                return persistContext.HiddenMessages
                     .AsNoTracking()
                     .Where(m => m.ConversationId == conversationId);
             }
