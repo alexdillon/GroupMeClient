@@ -134,13 +134,13 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         {
             var extension = FileAttachment.GroupMeDocumentMimeTypeMapper.MimeTypeToExtension(this.FileData.MimeType);
 
-            var fileDialogService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IFileDialogService>();
+            var fileDialogService = SimpleIoc.Default.GetInstance<IFileDialogService>();
             var filters = new List<FileFilter>
             {
                 new FileFilter() { Name = "Document", Extensions = { extension } },
             };
 
-            var filename = fileDialogService.ShowOpenFileDialog("Save Document", filters);
+            var filename = fileDialogService.ShowSaveFileDialog("Save Document", filters, this.FileData.FileName);
             if (!string.IsNullOrEmpty(filename))
             {
                 this.IsLoading = true;
