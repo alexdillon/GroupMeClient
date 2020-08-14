@@ -57,13 +57,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Caching\Migrations\20200629053659_InitialCreate.Designer.cs">
+    <Compile Update="Caching\MigrationsCache\20200629053659_InitialCreate.Designer.cs">
       <DependentUpon>20200629053659_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Update="Caching\Migrations\20200630021510_StarMessageSupport.Designer.cs">
+    <Compile Update="Caching\MigrationsCache\20200630021510_StarMessageSupport.Designer.cs">
       <DependentUpon>20200630021510_StarMessageSupport.cs</DependentUpon>
     </Compile>
-    <Compile Update="Caching\Migrations\20200726203522_HiddenMessageSupport.Designer.cs">
+    <Compile Update="Caching\MigrationsCache\20200726203522_HiddenMessageSupport.Designer.cs">
       <DependentUpon>20200726203522_HiddenMessageSupport.cs</DependentUpon>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
