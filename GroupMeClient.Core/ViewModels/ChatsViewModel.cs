@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -366,11 +367,7 @@ namespace GroupMeClient.Core.ViewModels
                 }
             }
 
-            this.SettingsManager.ChatsSettings.OpenChats.Clear();
-            this.SettingsManager.ChatsSettings.OpenChats.AddRange(this.ActiveGroupsChats.Select(x => x.Id));
-
-            // Save both the updated read status and the currently opened list
-            this.SettingsManager.SaveSettings();
+            this.SaveRestoreState();
         }
 
         private void CloseChat(GroupContentsControlViewModel groupContentsControlViewModel)
@@ -379,10 +376,7 @@ namespace GroupMeClient.Core.ViewModels
             this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
 
             ((IDisposable)groupContentsControlViewModel).Dispose();
-
-            this.SettingsManager.ChatsSettings.OpenChats.Clear();
-            this.SettingsManager.ChatsSettings.OpenChats.AddRange(this.ActiveGroupsChats.Select(x => x.Id));
-            this.SettingsManager.SaveSettings();
+            this.SaveRestoreState();
         }
 
         private void MarkAllGroupsChatsRead()
@@ -427,14 +421,29 @@ namespace GroupMeClient.Core.ViewModels
             var restoreService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IRestoreService>();
             if (restoreService.ShouldRestoreState)
             {
-                var openChats = this.SettingsManager.ChatsSettings.OpenChats.ToList();
-                openChats.Reverse();
-
-                foreach (var chatId in openChats)
+                using (var persistContext = this.PersistManager.OpenNewContext())
                 {
-                    var chat = this.AllGroupsChats.Items.First(c => c.Id == chatId);
-                    this.OpenNewGroupChat(chat);
+                    var state = this.PersistManager.GetDefaultRecoveryState(persistContext);
+
+                    var openChats = state.OpenChats.ToList();
+                    openChats.Reverse();
+
+                    foreach (var chatId in openChats)
+                    {
+                        var chat = this.AllGroupsChats.Items.First(c => c.Id == chatId);
+                        this.OpenNewGroupChat(chat);
+                    }
                 }
+            }
+        }
+
+        private void SaveRestoreState()
+        {
+            using (var persistContext = this.PersistManager.OpenNewContext())
+            {
+                var state = this.PersistManager.GetDefaultRecoveryState(persistContext);
+                state.OpenChats = new List<string>(this.ActiveGroupsChats.Select(x => x.Id));
+                persistContext.SaveChanges();
             }
         }
     }

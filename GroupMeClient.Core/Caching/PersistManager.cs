@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GroupMeClient.Core.Caching.Models;
 using GroupMeClientApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace GroupMeClient.Core.Caching
 {
@@ -92,6 +94,29 @@ namespace GroupMeClient.Core.Caching
         }
 
         /// <summary>
+        /// Returns the generic recovery state instance (shared across all GMDC instances).
+        /// If a default state has not been saved, a blank one will be created.
+        /// </summary>
+        /// <param name="persistContext">The persistance instance state data should be retreived from.</param>
+        /// <returns>A recovery state.</returns>
+        public RecoveryState GetDefaultRecoveryState(PersistContext persistContext)
+        {
+            const int DefaultInstanceId = 1;
+            var state = persistContext.RecoveryStates.Find(DefaultInstanceId);
+
+            if (state == null)
+            {
+                state = new RecoveryState()
+                {
+                    WindowId = DefaultInstanceId,
+                };
+                persistContext.RecoveryStates.Add(state);
+            }
+
+            return state;
+        }
+
+        /// <summary>
         /// Creates a new instance of the persistant storage context.
         /// </summary>
         /// <returns>A new <see cref="PersistContext"/>.</returns>
@@ -143,6 +168,11 @@ namespace GroupMeClient.Core.Caching
             /// Gets or sets the the Group/Chat persistant storage state.
             /// </summary>
             public DbSet<GroupOrChatState> GroupChatStates { get; set; }
+
+            /// <summary>
+            /// Gets or sets the Recovery State for instances of GMDC.
+            /// </summary>
+            public DbSet<RecoveryState> RecoveryStates { get; set; }
 
             private string DatabaseName { get; set; }
 
@@ -218,6 +248,13 @@ namespace GroupMeClient.Core.Caching
                 // Index HiddenMessages to improve lookup speed
                 modelBuilder.Entity<HiddenMessage>()
                     .HasIndex(p => p.ConversationId);
+
+                // Provide JSON serialization for Open Window list
+                modelBuilder.Entity<RecoveryState>()
+                    .Property(x => x.OpenChats)
+                    .HasConversion(
+                        v => string.Join(",", v),
+                        v => new List<string>(v.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)));
             }
         }
     }
