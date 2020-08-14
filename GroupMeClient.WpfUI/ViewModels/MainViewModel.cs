@@ -46,13 +46,16 @@ namespace GroupMeClient.WpfUI.ViewModels
             Directory.CreateDirectory(this.DataRoot);
 
             this.ClientIdentity = new Core.Services.KnownClients.GMDC();
-            Core.Startup.StartupCoreServices(new Core.Startup.StartupParameters()
+
+            var starupParams = new Core.Startup.StartupParameters()
             {
                 ClientIdentity = this.ClientIdentity,
                 CacheFilePath = this.CachePath,
+                PersistFilePath = this.PersistPath,
                 SettingsFilePath = this.SettingsPath,
                 PluginPath = this.PluginsPath,
-            });
+            };
+            Core.Startup.StartupCoreServices(starupParams);
 
             Core.Startup.RegisterTopLevelViewModels();
             Startup.StartupServices();
@@ -169,6 +172,8 @@ namespace GroupMeClient.WpfUI.ViewModels
         private string SettingsPath => Path.Combine(this.DataRoot, "settings.json");
 
         private string CachePath => Path.Combine(this.DataRoot, "cache.db");
+
+        private string PersistPath => Path.Combine(this.DataRoot, "persist.db");
 
         private string ImageCachePath => Path.Combine(this.DataRoot, "ImageCache");
 

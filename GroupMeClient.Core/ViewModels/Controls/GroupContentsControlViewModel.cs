@@ -83,6 +83,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(this.MessagesSorted)
                 .Subscribe();
+
+            this.CacheManager = SimpleIoc.Default.GetInstance<CacheManager>();
+            this.PersistManager = SimpleIoc.Default.GetInstance<PersistManager>();
         }
 
         /// <summary>
@@ -91,11 +94,10 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <param name="messageContainer">The Group or Chat to bind to.</param>
         /// <param name="cacheManager">The caching context in which messages are archived.</param>
         /// <param name="settings">The settings instance to use.</param>
-        public GroupContentsControlViewModel(IMessageContainer messageContainer, CacheManager cacheManager, Settings.SettingsManager settings)
+        public GroupContentsControlViewModel(IMessageContainer messageContainer, Settings.SettingsManager settings)
             : this()
         {
             this.MessageContainer = messageContainer;
-            this.CacheManager = cacheManager;
             this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
 
@@ -277,6 +279,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private CacheManager CacheManager { get; }
 
+        private PersistManager PersistManager { get; }
+
         private SemaphoreSlim ReloadSem { get; }
 
         private SourceList<MessageControlViewModelBase> AllMessages { get; }
@@ -428,7 +432,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             {
                 var maxTimeDifference = TimeSpan.FromMinutes(15);
 
-                using (var cacheContext = this.CacheManager.OpenNewContext())
+                using (var persistContext = this.PersistManager.OpenNewContext())
                 {
                     // Messages retrieved with the before_id parameter are returned in descending order
                     // Reverse iterate through the messages collection to go newest->oldest
@@ -437,7 +441,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                         var msg = messages.ElementAt(i);
 
                         var oldMsg = this.AllMessages.Items.FirstOrDefault(m => m.Id == msg.Id);
-                        var messageHidden = cacheContext.HiddenMessages.Find(msg.Id);
+                        var messageHidden = persistContext.HiddenMessages.Find(msg.Id);
 
                         if (oldMsg == null)
                         {
@@ -447,7 +451,6 @@ namespace GroupMeClient.Core.ViewModels.Controls
                                 // add new message
                                 var msgVm = new MessageControlViewModel(
                                     msg,
-                                    this.CacheManager,
                                     showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages);
                                 this.AllMessages.Add(msgVm);
 
@@ -770,12 +773,13 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void InitiateReplyCommand(MessageControlViewModel message)
         {
-            this.MessageBeingRepliedTo = new MessageControlViewModel(message.Message, this.CacheManager, false, true, 1);
+            this.MessageBeingRepliedTo = new MessageControlViewModel(message.Message, false, true, 1);
         }
 
         private void HideMessageCommand(MessageControlViewModel message)
         {
-            using (var context = this.CacheManager.OpenNewContext())
+            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            using (var context = persistManager.OpenNewContext())
             {
                 context.HideMessage(message.Message);
                 this.AllMessages.Remove(message);

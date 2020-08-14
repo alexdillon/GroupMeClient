@@ -65,14 +65,14 @@ namespace GroupMeClient.Core.ViewModels
                 .Bind(this.SortedGroupChats)
                 .Subscribe();
 
-            this.ResultsView = new PaginatedMessagesControlViewModel(this.CacheManager)
+            this.ResultsView = new PaginatedMessagesControlViewModel()
             {
                 MessageSelectedCommand = new RelayCommand<MessageControlViewModelBase>(this.MessageSelected),
                 ShowLikers = false,
                 NewestAtBottom = false,
             };
 
-            this.ContextView = new PaginatedMessagesControlViewModel(this.CacheManager)
+            this.ContextView = new PaginatedMessagesControlViewModel()
             {
                 ShowTitle = false,
                 ShowLikers = true,

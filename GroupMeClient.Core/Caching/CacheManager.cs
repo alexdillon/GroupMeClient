@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using GroupMeClient.Core.Caching.Models;
-using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Tasks;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
@@ -71,70 +70,6 @@ namespace GroupMeClient.Core.Caching
         }
 
         /// <summary>
-        /// Returns a <see cref="Queryable"/> collection of all the starred messages in a given <see cref="IMessageContainer"/>
-        /// that are cached in the database.
-        /// </summary>
-        /// <param name="group">The <see cref="IMessageContainer"/> which to return starred messages for.</param>
-        /// <param name="cacheContext">The cache instance messages should be retreived from.</param>
-        /// <returns>Returns a <see cref="Queryable"/> collection of all the starred messages in a given <see cref="IMessageContainer"/>.</returns>
-        public static IQueryable<StarredMessage> GetStarredMessagesForGroup(IMessageContainer group, CacheContext cacheContext)
-        {
-            if (group is Group g)
-            {
-                return cacheContext.StarredMessages
-                    .AsNoTracking()
-                    .Where(m => m.ConversationId == g.Id);
-            }
-            else if (group is Chat c)
-            {
-                // Chat.Id returns the Id of the other user
-                // However, GroupMe messages are natively returned with a Conversation Id instead
-                // Conversation IDs are user1+user2.
-                var conversationId = c.LatestMessage.ConversationId;
-
-                return cacheContext.StarredMessages
-                    .AsNoTracking()
-                    .Where(m => m.ConversationId == conversationId);
-            }
-            else
-            {
-                return Enumerable.Empty<StarredMessage>().AsQueryable();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="Queryable"/> collection of all the hidden messages in a given <see cref="IMessageContainer"/>
-        /// that are cached in the database.
-        /// </summary>
-        /// <param name="group">The <see cref="IMessageContainer"/> which to return hidden messages for.</param>
-        /// <param name="cacheContext">The cache instance messages should be retreived from.</param>
-        /// <returns>Returns a <see cref="Queryable"/> collection of all the hidden messages in a given <see cref="IMessageContainer"/>.</returns>
-        public static IQueryable<HiddenMessage> GetHiddenMessagesForGroup(IMessageContainer group, CacheContext cacheContext)
-        {
-            if (group is Group g)
-            {
-                return cacheContext.HiddenMessages
-                    .AsNoTracking()
-                    .Where(m => m.ConversationId == g.Id);
-            }
-            else if (group is Chat c)
-            {
-                // Chat.Id returns the Id of the other user
-                // However, GroupMe messages are natively returned with a Conversation Id instead
-                // Conversation IDs are user1+user2.
-                var conversationId = c.LatestMessage.ConversationId;
-
-                return cacheContext.HiddenMessages
-                    .AsNoTracking()
-                    .Where(m => m.ConversationId == conversationId);
-            }
-            else
-            {
-                return Enumerable.Empty<HiddenMessage>().AsQueryable();
-            }
-        }
-
-        /// <summary>
         /// Creates a new instance of the message cache context.
         /// </summary>
         /// <returns>A new <see cref="CacheContext"/>.</returns>
@@ -147,6 +82,16 @@ namespace GroupMeClient.Core.Caching
                 this.HasBeenUpgradeChecked = true;
             }
 
+            return context;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the message cache context without performing EF Migrations.
+        /// </summary>
+        /// <returns>A new <see cref="CacheContext"/>.</returns>
+        public CacheContext OpenUnmigratedContext()
+        {
+            var context = new CacheContext(this.Path, doDatabaseUpgrade: false);
             return context;
         }
 
@@ -189,21 +134,11 @@ namespace GroupMeClient.Core.Caching
             public DbSet<Message> Messages { get; set; }
 
             /// <summary>
-            /// Gets or sets the <see cref="Message"/>s stored in the database that have been starred.
-            /// </summary>
-            public DbSet<StarredMessage> StarredMessages { get; set; }
-
-            /// <summary>
-            /// Gets or sets the <see cref="Message"/>s stored in the database that have been hidden.
-            /// </summary>
-            public DbSet<HiddenMessage> HiddenMessages { get; set; }
-
-            /// <summary>
             /// Gets or sets index status for each <see cref="Group"/> or <see cref="Chat"/> stored in this cache.
             /// </summary>
             public DbSet<GroupIndexStatus> IndexStatus { get; set; }
 
-            private string DatabaseName { get; set; } = "cache.db";
+            private string DatabaseName { get; set; }
 
             /// <summary>
             /// Adds a collection of <see cref="Message"/>s to the cache.
@@ -218,62 +153,6 @@ namespace GroupMeClient.Core.Caching
                     {
                         this.Messages.Add(msg);
                     }
-                }
-            }
-
-            /// <summary>
-            /// Adds a <see cref="Message"/> to the star list.
-            /// </summary>
-            /// <param name="message">The message to star.</param>
-            public void StarMessage(Message message)
-            {
-                var starMessage = new StarredMessage()
-                {
-                    ConversationId = string.IsNullOrEmpty(message.GroupId) ? message.ConversationId : message.GroupId,
-                    MessageId = message.Id,
-                };
-
-                this.StarredMessages.Add(starMessage);
-            }
-
-            /// <summary>
-            /// Removes a <see cref="Message"/> from the star list.
-            /// </summary>
-            /// <param name="message">The message to star.</param>
-            public void DeStarMessage(Message message)
-            {
-                var star = this.StarredMessages.FirstOrDefault(m => m.MessageId == message.Id);
-                if (star != null)
-                {
-                    this.StarredMessages.Remove(star);
-                }
-            }
-
-            /// <summary>
-            /// Adds a <see cref="Message"/> to the hidden list.
-            /// </summary>
-            /// <param name="message">The message to star.</param>
-            public void HideMessage(Message message)
-            {
-                var hiddenMessage = new HiddenMessage()
-                {
-                    ConversationId = string.IsNullOrEmpty(message.GroupId) ? message.ConversationId : message.GroupId,
-                    MessageId = message.Id,
-                };
-
-                this.HiddenMessages.Add(hiddenMessage);
-            }
-
-            /// <summary>
-            /// Removes a <see cref="Message"/> from the hidden list.
-            /// </summary>
-            /// <param name="message">The message to star.</param>
-            public void DeHideMessage(Message message)
-            {
-                var hidden = this.HiddenMessages.FirstOrDefault(m => m.MessageId == message.Id);
-                if (hidden != null)
-                {
-                    this.HiddenMessages.Remove(hidden);
                 }
             }
 
@@ -312,10 +191,6 @@ namespace GroupMeClient.Core.Caching
 
                 // Index on ConversationId to improve lookup speed
                 modelBuilder.Entity<Message>()
-                    .HasIndex(p => p.ConversationId);
-
-                // Index StarredMessages to improve lookup speed
-                modelBuilder.Entity<StarredMessage>()
                     .HasIndex(p => p.ConversationId);
 
                 // Provide mapping for the Message.ICollection<FavoritedBy>

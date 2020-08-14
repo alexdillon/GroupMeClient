@@ -34,7 +34,7 @@ namespace GroupMeClient.WpfUI.Services
         /// <inheritdoc/>
         public byte[] RenderMessageToPngImage(Message message, MessageControlViewModelBase displayedMessage)
         {
-            var messageDataContext = new MessageControlViewModel(message, this.CacheManager, false, true, 1);
+            var messageDataContext = new MessageControlViewModel(message, false, true, 1);
 
             // Copy the attachments from the version of the message that is already rendered and displayed.
             // These attachments already have previews downloaded and ready-to-render.

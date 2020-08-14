@@ -30,11 +30,13 @@ namespace GroupMeClient.Core.ViewModels
         /// </summary>
         /// <param name="groupMeClient">The client to use.</param>
         /// <param name="cacheManager">The cache database to use.</param>
+        /// <param name="persistManager">The persistant storage database to use.</param>
         /// <param name="settingsManager">The SettingsManager instance to load settings from.</param>
-        public StarsViewModel(GroupMeClientApi.GroupMeClient groupMeClient, Caching.CacheManager cacheManager, SettingsManager settingsManager)
+        public StarsViewModel(GroupMeClientApi.GroupMeClient groupMeClient, CacheManager cacheManager, PersistManager persistManager, SettingsManager settingsManager)
         {
             this.GroupMeClient = groupMeClient ?? throw new ArgumentNullException(nameof(groupMeClient));
             this.CacheManager = cacheManager ?? throw new ArgumentNullException(nameof(cacheManager));
+            this.PersistManager = persistManager ?? throw new ArgumentNullException(nameof(persistManager));
             this.SettingsManager = settingsManager ?? throw new ArgumentNullException(nameof(settingsManager));
 
             this.ActiveGroupsChats = new ObservableCollection<StarredMessageGroup>();
@@ -95,6 +97,8 @@ namespace GroupMeClient.Core.ViewModels
 
         private CacheManager CacheManager { get; }
 
+        private PersistManager PersistManager { get; }
+
         private SettingsManager SettingsManager { get; }
 
         private ReliabilityStateMachine ReliabilityStateMachine { get; } = new ReliabilityStateMachine();
@@ -147,7 +151,7 @@ namespace GroupMeClient.Core.ViewModels
             else
             {
                 // open a new group or chat
-                var starGroup = new StarredMessageGroup(group, this.CacheManager);
+                var starGroup = new StarredMessageGroup(group, this.CacheManager, this.PersistManager);
                 this.ActiveGroupsChats.Insert(0, starGroup);
             }
 
@@ -184,12 +188,13 @@ namespace GroupMeClient.Core.ViewModels
             /// </summary>
             /// <param name="messageContainer">The container to display starred messages for.</param>
             /// <param name="cacheManager">The CacheManager instance to load messages from.</param>
-            public StarredMessageGroup(IMessageContainer messageContainer, CacheManager cacheManager)
+            /// <param name="persistManager">The PersistManager instance to load star and hide data from.</param>
+            public StarredMessageGroup(IMessageContainer messageContainer, CacheManager cacheManager, PersistManager persistManager)
             {
                 this.TopBarAvatar = new AvatarControlViewModel(messageContainer, messageContainer.Client.ImageDownloader);
                 this.MessageContainer = messageContainer;
 
-                this.MessagesList = new PaginatedMessagesControlViewModel(cacheManager)
+                this.MessagesList = new PaginatedMessagesControlViewModel()
                 {
                     AssociateWith = messageContainer,
                     ShowLikers = null,
@@ -199,6 +204,7 @@ namespace GroupMeClient.Core.ViewModels
                 };
 
                 this.CacheManager = cacheManager;
+                this.PersistManager = persistManager;
 
                 this.IsShowingStars = true;
                 this.IsShowingHidden = false;
@@ -271,50 +277,59 @@ namespace GroupMeClient.Core.ViewModels
 
             private CacheManager CacheManager { get; }
 
+            private PersistManager PersistManager { get; }
+
             private void LoadStarredMessages()
             {
-                var context = this.CacheManager.OpenNewContext();
-                var starList = CacheManager.GetStarredMessagesForGroup(this.MessageContainer, context);
-                var messagesList = new List<Message>();
-
-                foreach (var star in starList)
+                using (var persistContext = this.PersistManager.OpenNewContext())
                 {
-                    var msg = context.Messages.FirstOrDefault(m => m.Id == star.MessageId);
-                    messagesList.Add(msg);
+                    var cacheContext = this.CacheManager.OpenNewContext();
+                    var starList = PersistManager.GetStarredMessagesForGroup(this.MessageContainer, persistContext);
+                    var messagesList = new List<Message>();
+
+                    foreach (var star in starList)
+                    {
+                        var msg = cacheContext.Messages.FirstOrDefault(m => m.Id == star.MessageId);
+                        messagesList.Add(msg);
+                    }
+
+                    this.IsEmpty = messagesList.Count == 0;
+                    this.Type = "Starred";
+
+                    var sortedMessages = messagesList
+                        .AsQueryable()
+                        .OrderBy(m => m.CreatedAtUnixTime);
+
+                    this.MessagesList.DisplayMessages(sortedMessages, cacheContext);
+                    _ = this.MessagesList.LoadPage(0);
                 }
-
-                this.IsEmpty = messagesList.Count == 0;
-                this.Type = "Starred";
-
-                var sortedMessages = messagesList
-                    .AsQueryable()
-                    .OrderBy(m => m.CreatedAtUnixTime);
-
-                this.MessagesList.DisplayMessages(sortedMessages, context);
-                _ = this.MessagesList.LoadPage(0);
             }
 
             private void LoadHiddenMessages()
             {
-                var context = this.CacheManager.OpenNewContext();
-                var hiddenList = CacheManager.GetHiddenMessagesForGroup(this.MessageContainer, context);
-                var messagesList = new List<Message>();
-
-                foreach (var hidden in hiddenList)
+                using (var persistContext = this.PersistManager.OpenNewContext())
                 {
-                    var msg = context.Messages.FirstOrDefault(m => m.Id == hidden.MessageId);
-                    messagesList.Add(msg);
+                    var cacheContext = this.CacheManager.OpenNewContext();
+
+                    var hiddenList = PersistManager.GetHiddenMessagesForGroup(this.MessageContainer, persistContext);
+                    var messagesList = new List<Message>();
+
+                    foreach (var hidden in hiddenList)
+                    {
+                        var msg = cacheContext.Messages.FirstOrDefault(m => m.Id == hidden.MessageId);
+                        messagesList.Add(msg);
+                    }
+
+                    this.IsEmpty = messagesList.Count == 0;
+                    this.Type = "Hidden";
+
+                    var sortedMessages = messagesList
+                        .AsQueryable()
+                        .OrderBy(m => m.CreatedAtUnixTime);
+
+                    this.MessagesList.DisplayMessages(sortedMessages, cacheContext);
+                    _ = this.MessagesList.LoadPage(0);
                 }
-
-                this.IsEmpty = messagesList.Count == 0;
-                this.Type = "Hidden";
-
-                var sortedMessages = messagesList
-                    .AsQueryable()
-                    .OrderBy(m => m.CreatedAtUnixTime);
-
-                this.MessagesList.DisplayMessages(sortedMessages, context);
-                _ = this.MessagesList.LoadPage(0);
             }
         }
     }
