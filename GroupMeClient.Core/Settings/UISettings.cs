@@ -74,6 +74,7 @@ namespace GroupMeClient.Core.Settings
         /// <summary>
         /// Gets an observable for the currently selected theme.
         /// </summary>
+        [JsonIgnore]
         public IObservable<ThemeOptions> CurrentSelectedTheme => this.theme;
     }
 }
