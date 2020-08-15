@@ -93,8 +93,8 @@
                                                 </behaviors:EventTrigger>
                                             </behaviors:Interaction.Triggers>
                                         </ContentControl>
-                                        
-                                        <Label Grid.Column="1" Content="{Binding MemberInfo.Name}" Foreground="White" />
+
+                                        <TextBlock Grid.Column="1" Text="{Binding MemberInfo.Name}" Foreground="White" Padding="5" />
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

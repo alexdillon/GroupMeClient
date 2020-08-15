@@ -22,16 +22,17 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <Label Grid.Row="0"
+        <TextBlock Grid.Row="0"
                    FontFamily="Segoe UI"
                    FontSize="18"
                    FontWeight="SemiBold"
                    HorizontalAlignment="Center"
-                   Content="Updating" />
+                   Padding="5"
+                   Text="Updating" />
 
         <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Label Content="Updates are being installed. GroupMe Desktop Client will shutdown when fully updated."
-                   Foreground="Black"/>
+            <TextBlock Text="Updates are being installed. GroupMe Desktop Client will shutdown when fully updated."
+                       Foreground="{DynamicResource MahApps.Brushes.Text}"/>
         </StackPanel>
     </Grid>
 

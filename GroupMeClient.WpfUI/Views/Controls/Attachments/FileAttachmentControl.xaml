@@ -57,8 +57,11 @@
                                Width="30" Height="30"
                                HorizontalAlignment="Center"/>
 
-        <Label Grid.Column="1" Grid.Row="1" Padding="0" VerticalAlignment="Center">
-            <TextBlock FontSize="14" TextWrapping="Wrap" Text="{Binding Text}" />
-        </Label>
+        <TextBlock Grid.Column="1" 
+                   Grid.Row="1" 
+                   VerticalAlignment="Center" 
+                   FontSize="14" 
+                   TextWrapping="Wrap" 
+                   Text="{Binding Text}" />
     </Grid>
 </UserControl>

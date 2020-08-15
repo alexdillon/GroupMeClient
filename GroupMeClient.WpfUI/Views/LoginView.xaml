@@ -23,14 +23,14 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <Label Grid.Row="0"
-               FontSize="18"
-               FontWeight="SemiBold"
-               HorizontalAlignment="Center"
-               Content="Login to GroupMe" />
+        <TextBlock Grid.Row="0"
+                   FontSize="18"
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Center"
+                   Text="Login to GroupMe" />
 
         <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Label Content="GroupMe's Login Process can be completed in your web browser. " />
+            <TextBlock Text="GroupMe's Login Process can be completed in your web browser. " />
             <Button Command="{Binding LoginButtonClicked}"
                     Content="Login Now"
                     Width="150"

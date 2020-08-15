@@ -47,13 +47,13 @@
                                   IsChecked="{Binding EnableNotificationInteractions, Mode=TwoWay}" Margin="0,5,0,0"/>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Label Content="Maximum Number of Multi-Chats with Full Sidebar: " />
+                            <TextBlock Text="Maximum Number of Multi-Chats with Full Sidebar: " Padding="5" />
                             <controls:NumericUpDown Minimum="1" Maximum="6" Width="30"
                                                     Value="{Binding MaximumNumberOfMultiChats}"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Label Content="Maximum Number of Multi-Chats in MiniBar Mode: " />
+                            <TextBlock Text="Maximum Number of Multi-Chats in MiniBar Mode: " Padding="5" />
                             <controls:NumericUpDown Minimum="1" Maximum="6" Width="30"
                                                     Value="{Binding MaximumNumberOfMultiChatsMiniBar}"/>
                         </StackPanel>
@@ -65,7 +65,7 @@
 
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Label Content="Theme: " />
+                            <TextBlock Text="Theme: " Padding="5" />
                             <ComboBox MinWidth="150"
                                       ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type settings:ThemeOptions}}}"
                                       SelectedValue="{Binding Theme}"/> 

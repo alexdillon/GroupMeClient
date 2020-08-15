@@ -166,9 +166,9 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         
-                        <Label Content="Starting Date" Grid.Row="0" Grid.Column="0"/>
+                        <TextBlock Text="Starting Date" Grid.Row="0" Grid.Column="0" Padding="5"/>
                         <DatePicker SelectedDate="{Binding FilterStartDate, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" />
-                        <Label Content="Ending Date" Grid.Row="1" Grid.Column="0" />
+                        <TextBlock Text="Ending Date" Grid.Row="1" Grid.Column="0" Padding="5" />
                         <DatePicker SelectedDate="{Binding FilterEndDate, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" />
                     </Grid>
                     
@@ -179,7 +179,7 @@
                     <CheckBox Content="Mentions Other Group Members" IsChecked="{Binding FilterHasAttachedMentions, Mode=TwoWay}" />
 
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Sent By: " VerticalAlignment="Center" />
+                        <TextBlock Text="Sent By: " VerticalAlignment="Center" Padding="5" />
                         <ComboBox ItemsSource="{Binding Members}" 
                                   SelectedItem="{Binding FilterMessagesFrom, Mode=TwoWay}" 
                                   DisplayMemberPath="Name" 
