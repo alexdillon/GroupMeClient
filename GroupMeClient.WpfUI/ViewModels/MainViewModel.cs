@@ -67,6 +67,7 @@ namespace GroupMeClient.WpfUI.ViewModels
             // Create a throw-away DbContext to allow EF Core to begin allocating resouces
             // in the background, allowing for faster access later.
             Task.Run(() => SimpleIoc.Default.GetInstance<CacheManager>().OpenNewContext());
+            Task.Run(() => SimpleIoc.Default.GetInstance<PersistManager>().OpenNewContext());
 
             Core.Utilities.TempFileUtils.InitializeTempStorage();
 
