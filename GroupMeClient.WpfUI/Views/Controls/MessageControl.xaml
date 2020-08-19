@@ -82,13 +82,13 @@
                 </controls:AvatarControl>
 
                 <StackPanel Grid.Column="1" Grid.Row="1">
-                    <Label Content="{Binding Sender}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" Padding="0" />
+                    <TextBlock Text="{Binding Sender}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" />
 
                     <ContentControl Content="{Binding RepliedMessage}" 
                                     HorizontalAlignment="Left"
                                     Margin="0,0,10,10" 
                                     Visibility="{Binding RepliedMessage, Converter={StaticResource nullToVisabilityConverter}, ConverterParameter={StaticResource True}}" />
-                    
+
                     <ItemsControl ItemsSource="{Binding AttachedItems}">
                        <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -202,13 +202,13 @@
                         </iconPacks:PackIconFontAwesome.Style>
                     </iconPacks:PackIconFontAwesome>
 
-                    <Label
+                    <TextBlock
                         Grid.Row="1"
                         Grid.Column="1"
                         Padding="0,17,0,0"
                         HorizontalAlignment="Center" 
                         Foreground="{DynamicResource MessageFontBrush}" FontSize="10" FontWeight="Thin"
-                        Content="{Binding LikeCount}" />
+                        Text="{Binding LikeCount}" />
 
                     <behaviors:Interaction.Triggers>
                         <extensions:NotRightClickTrigger >
@@ -312,19 +312,17 @@
                         </behaviors:EventTrigger>
                     </behaviors:Interaction.Triggers>
                     
-                    <Label Content="{Binding SentTimeString}"
-                           ContentStringFormat="Sent: {0}"
-                           FontWeight="Regular"
-                           FontSize="11"
-                           Foreground="{DynamicResource MessageFontBrush}"
-                           Padding="20,0,0,0"/>
+                    <TextBlock Text="{Binding SentTimeString, StringFormat=Sent {0}}"
+                               FontWeight="Regular"
+                               FontSize="11"
+                               Foreground="{DynamicResource MessageFontBrush}"
+                               Padding="20,0,0,0"/>
 
-                    <Label Content="{Binding SenderPlatform}"
-                           ContentStringFormat="Client: {0}"
-                           FontWeight="Regular"
-                           FontSize="11"
-                           Foreground="{DynamicResource MessageFontBrush}"
-                           Padding="20,0,0,0"/>
+                    <TextBlock Text="{Binding SenderPlatform, StringFormat=Client: {0}}"
+                               FontWeight="Regular"
+                               FontSize="11"
+                               Foreground="{DynamicResource MessageFontBrush}"
+                               Padding="20,0,0,0"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>

@@ -69,10 +69,10 @@
                        HorizontalAlignment="Left"
                        Source="{Binding FaviconImage, Converter={StaticResource imageSourceConverter}}" />
 
-                <Label Grid.Row="0" Grid.Column="1" 
-                       Content="{Binding Site}"
-                       Foreground="White"/>
-
+                <TextBlock Grid.Row="0" Grid.Column="1" 
+                           Text="{Binding Site}"
+                           Padding="5"
+                           Foreground="White"/>
             </Grid>
         </StackPanel>
     </Grid>

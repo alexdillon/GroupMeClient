@@ -31,11 +31,10 @@
             </Style>
         </Grid.Style>
 
-        <Label Content="{Binding TimestampString, Mode=OneTime}"
-               HorizontalAlignment="Center"
-               FontWeight="SemiBold"
-               FontSize="11"
-               Padding="0"
-               Margin="0, 8, 0, 5"/>
+        <TextBlock Text="{Binding TimestampString, Mode=OneTime}"
+                   HorizontalAlignment="Center"
+                   FontWeight="SemiBold"
+                   FontSize="11"
+                   Margin="0, 8, 0, 5"/>
     </Grid>
 </UserControl>

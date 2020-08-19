@@ -21,9 +21,7 @@
 
         <Viewbox Grid.Row="0"
                  StretchDirection="DownOnly" Stretch="Uniform">
-            <Label Content="{Binding Title}"
-                   HorizontalContentAlignment="Center"
-                   VerticalContentAlignment="Center"/>
+            <TextBlock Text="{Binding Title}" Padding="5" />
         </Viewbox>
 
         <ListBox Grid.Row="1"

@@ -40,15 +40,17 @@
                 Source="{Binding RenderedImage, Converter={StaticResource imageSourceConverter}}" />
 
             <StackPanel Orientation="Horizontal"  Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
-                <Label Content="{Binding Sender}" FontSize="14" FontWeight="SemiBold" Padding="0" />
+                <TextBlock Text="{Binding Sender}" FontSize="14" FontWeight="SemiBold" />
 
                 <TextBlock Margin="4,1,0,0">@</TextBlock>
-                <Label Content="{Binding Handle}" FontSize="12" FontWeight="Light" Padding="0,1,0,0"/>
+                <TextBlock Text="{Binding Handle}" FontSize="12" FontWeight="Light" Padding="0,1,0,0"/>
             </StackPanel>
 
-            <Label Grid.Column="1" Grid.Row="1" Padding="0">
-                <TextBlock FontSize="14" TextWrapping="Wrap" Text="{Binding Text}" />
-            </Label>
+            <TextBlock Grid.Column="1"
+                       Grid.Row="1"
+                       FontSize="14"
+                       TextWrapping="Wrap"
+                       Text="{Binding Text}" />
         </Grid>
     </Border>
 </UserControl>

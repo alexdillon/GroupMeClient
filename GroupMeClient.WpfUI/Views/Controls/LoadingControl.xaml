@@ -15,10 +15,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0"
-               Content="{Binding Message}"
-               FontSize="16"
-               FontWeight="SemiBold"/>
+        <TextBlock Grid.Row="0"
+                   Text="{Binding Message}"
+                   Padding="5"
+                   FontSize="16"
+                   FontWeight="SemiBold"/>
         
         <Controls:ProgressRing Grid.Row="1"
                                Width="60" Height="60"
