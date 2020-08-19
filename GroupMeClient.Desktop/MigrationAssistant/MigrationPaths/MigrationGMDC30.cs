@@ -21,7 +21,7 @@ namespace GroupMeClient.Desktop.MigrationAssistant
             // - Last Read State has been removed from settings.json and moved into persist.db
             // - Starred and Hidden messages have been moved from cache.db to persist.db
 
-            this.FixPluginFile(Path.Combine(parameters.PluginPath, "plugin.json"));
+            this.FixPluginFile(Path.Combine(parameters.PluginPath, "plugins.json"));
             this.FixReadStatus(parameters.PersistFilePath, parameters.SettingsFilePath);
             this.FixStarredHiddenMessages(parameters.PersistFilePath, parameters.CacheFilePath);
             this.SetMigrationVersion(parameters.SettingsFilePath);
