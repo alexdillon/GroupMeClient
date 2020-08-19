@@ -113,8 +113,12 @@ namespace GroupMeClient.Desktop.MigrationAssistant
                                 var reader = getStars.ExecuteReader();
                                 while (reader.Read())
                                 {
-                                    var starMessage = new StarredMessage() { ConversationId = (string)reader["ConversationId"], MessageId = (string)reader["MessageId"] };
-                                    persistContext.StarredMessages.Add(starMessage);
+                                    var messageId = (string)reader["MessageId"];
+                                    if (persistContext.StarredMessages.Find(messageId) == null)
+                                    {
+                                        var starMessage = new StarredMessage() { ConversationId = (string)reader["ConversationId"], MessageId = (string)reader["MessageId"] };
+                                        persistContext.StarredMessages.Add(starMessage);
+                                    }
                                 }
                             }
                         }
@@ -134,8 +138,12 @@ namespace GroupMeClient.Desktop.MigrationAssistant
                                 var reader = getHidden.ExecuteReader();
                                 while (reader.Read())
                                 {
-                                    var hiddenMessage = new HiddenMessage() { ConversationId = (string)reader["ConversationId"], MessageId = (string)reader["MessageId"] };
-                                    persistContext.HiddenMessages.Add(hiddenMessage);
+                                    var messageId = (string)reader["MessageId"];
+                                    if (persistContext.HiddenMessages.Find(messageId) == null)
+                                    {
+                                        var hiddenMessage = new HiddenMessage() { ConversationId = (string)reader["ConversationId"], MessageId = messageId };
+                                        persistContext.HiddenMessages.Add(hiddenMessage);
+                                    }
                                 }
                             }
                         }
