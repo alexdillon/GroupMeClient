@@ -262,7 +262,6 @@ namespace GroupMeClient.WpfUI.ViewModels
             // Setup updating
             Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
             var updateService = SimpleIoc.Default.GetInstance<IUpdateService>();
-            updateService.BeginCheckForUpdates();
             updateService.StartUpdateTimer(TimeSpan.FromMinutes(this.SettingsManager.CoreSettings.ApplicationUpdateFrequencyMinutes));
 
             this.RebootApplication = new RelayCommand(this.RestartCommand);
@@ -417,31 +416,40 @@ namespace GroupMeClient.WpfUI.ViewModels
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
             var updateService = SimpleIoc.Default.GetInstance<IUpdateService>();
-            if (!updateService.CanShutdown)
+
+            updateService.CanShutdown.Subscribe(canShutDown =>
             {
-                updateService.UpdateMonitor.Task.ContinueWith(this.UpdateCompleted);
-                e.Cancel = true;
-
-                var updatingTab = new HamburgerMenuIconItem()
+                if (!canShutDown)
                 {
-                    Icon = this.UpdatingSpinner,
-                    Label = "Updating",
-                    ToolTip = "Updating",
-                    Tag = new UpdatingViewModel(),
-                };
+                    // Cancel the shutdown and show the updating indicator
+                    e.Cancel = true;
 
-                this.MenuItems.Add(updatingTab);
-                this.SelectedItem = updatingTab;
-            }
+                    var updatingTab = new HamburgerMenuIconItem()
+                    {
+                        Icon = this.UpdatingSpinner,
+                        Label = "Updating",
+                        ToolTip = "Updating",
+                        Tag = new UpdatingViewModel(),
+                    };
+
+                    this.MenuItems.Add(updatingTab);
+                    this.SelectedItem = updatingTab;
+
+                    updateService.CanShutdown.Subscribe(this.CanShutdownChanged);
+                }
+            }).Dispose();
         }
 
-        private void UpdateCompleted(Task<bool?> result)
+        private void CanShutdownChanged(bool canShutdown)
         {
-            // safe to shutdown now.
-            Application.Current.Dispatcher.Invoke(() =>
+            if (canShutdown)
             {
-                Application.Current.MainWindow.Close();
-            });
+                // safe to shutdown now.
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Application.Current.MainWindow.Close();
+                });
+            }
         }
 
         private void OpenBigPopup(Core.Messaging.DialogRequestMessage dialog)
