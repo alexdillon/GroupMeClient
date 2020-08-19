@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GroupMeClient.Core.Services
 {
+    /// <summary>
+    /// <see cref="IUpdateService"/> defines a platform-independent service for updating the GMDC Application.
+    /// </summary>
     public interface IUpdateService
     {
         /// <summary>
-        /// Gets a value indicating whether the application can be safely closed.
+        /// Gets a observable value indicating whether the application can be safely closed.
         /// Terminating during an update operation can result in a crash.
         /// </summary>
-        bool CanShutdown { get; }
+        IObservable<bool> CanShutdown { get; }
 
         /// <summary>
         /// Gets a value indicating whether the application running from the installation path.
@@ -19,11 +21,6 @@ namespace GroupMeClient.Core.Services
         /// updates cannot be accurately installed.
         /// </summary>
         bool IsInstalled { get; }
-
-        /// <summary>
-        /// Gets an awaitable object to monitor the status of an ongoing update operation.
-        /// </summary>
-        TaskCompletionSource<bool?> UpdateMonitor { get; }
 
         /// <summary>
         /// Gets all versions of the GMDC application that are currently published.
@@ -43,8 +40,13 @@ namespace GroupMeClient.Core.Services
         void CancelUpdateTimer();
 
         /// <summary>
-        /// Begins checking for updates, and automatically installing and applicable updates in the background.
+        /// Checks for updates and automatically installs any applicable updates.
         /// </summary>
-        void BeginCheckForUpdates();
+        /// <returns>
+        /// A <see cref="Task"/> representing the asynchronous operation.
+        /// A return value of true indicates that updates were successfully installed.
+        /// A return value of false indicates that updates were not required because the current version is up-to-date.
+        /// A return value of null indicates that the update service was unavailable.</returns>
+        Task<bool?> CheckForUpdatesAsync();
     }
 }

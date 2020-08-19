@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -265,14 +266,18 @@ namespace GroupMeClient.Core.ViewModels
 
         private void CheckForApplicationUpdates()
         {
-            if (this.UpdateAssist.CanShutdown && !this.IsUpdating)
+            this.UpdateAssist.CanShutdown.Subscribe(canShutDown =>
             {
-                // Don't check for updates if an update is already is progress
-                this.IsUpdating = true;
-                this.UpdateStatus = "Checking for Updates";
-                this.UpdateAssist.BeginCheckForUpdates();
-                this.UpdateAssist.UpdateMonitor.Task.ContinueWith(this.UpdateCheckDone);
-            }
+                if (canShutDown && !this.IsUpdating)
+                {
+                    // Don't check for updates if an update is already is progress
+                    this.IsUpdating = true;
+                    this.UpdateStatus = "Checking for Updates";
+
+                    var updateTask = this.UpdateAssist.CheckForUpdatesAsync();
+                    updateTask.ContinueWith(this.UpdateCheckDone);
+                }
+            }).Dispose();
         }
 
         private void UpdateCheckDone(Task<bool?> t)
@@ -280,20 +285,13 @@ namespace GroupMeClient.Core.ViewModels
             this.IsUpdating = false;
             if (t.Result == true)
             {
-                // An update was found and installed
-                var uiDispatchService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
-                uiDispatchService.Invoke(() =>
-                {
-                    Messenger.Default.Send(new Messaging.RebootRequestMessage($"Reboot to Finish Updating GMDC"));
-                });
-
                 this.UpdateStatus = string.Empty;
             }
             else if (t.Result == false)
             {
                 this.UpdateStatus = "Up To Date!";
             }
-            else if (t.Result == false)
+            else if (t.Result == null)
             {
                 this.UpdateStatus = "Update Service Not Available.";
             }
