@@ -37,6 +37,6 @@ jobs:
     - name: Upload Assets to Release with a wildcard
       uses: csexton/release-asset-action@v2
       with:
-        pattern: "GroupMeClient/bin/Publish/*"
+        pattern: "GroupMeClient.WpfUI/bin/Publish/*"
         github-token: ${{ secrets.GITHUB_TOKEN }}
         release-url: ${{ steps.create_release.outputs.upload_url }}
