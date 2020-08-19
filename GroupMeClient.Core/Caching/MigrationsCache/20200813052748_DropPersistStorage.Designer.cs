@@ -5,19 +5,19 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace GroupMeClient.Core.Caching.Migrations
+namespace GroupMeClient.Core.Caching.MigrationsCache
 {
     [DbContext(typeof(CacheManager.CacheContext))]
-    [Migration("20200629053659_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20200813052748_DropPersistStorage")]
+    partial class DropPersistStorage
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.5");
+                .HasAnnotation("ProductVersion", "3.1.6");
 
-            modelBuilder.Entity("GroupMeClient.Core.Caching.CacheManager+CacheContext+GroupIndexStatus", b =>
+            modelBuilder.Entity("GroupMeClient.Core.Caching.Models.GroupIndexStatus", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace GroupMeClient.Core.Caching.Migrations
+namespace GroupMeClient.Core.Caching.MigrationsCache
 {
     [DbContext(typeof(CacheManager.CacheContext))]
     [Migration("20200630021510_StarMessageSupport")]

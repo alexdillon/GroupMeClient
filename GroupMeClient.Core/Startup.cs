@@ -22,6 +22,7 @@ namespace GroupMeClient.Core
             SimpleIoc.Default.Register<TaskManager>();
             SimpleIoc.Default.Register(() => startupParameters.ClientIdentity);
             SimpleIoc.Default.Register(() => new CacheManager(startupParameters.CacheFilePath, SimpleIoc.Default.GetInstance<TaskManager>()));
+            SimpleIoc.Default.Register(() => new PersistManager(startupParameters.PersistFilePath));
             SimpleIoc.Default.Register(() => new SettingsManager(startupParameters.SettingsFilePath));
             SimpleIoc.Default.Register(() => new PluginInstaller(startupParameters.PluginPath));
         }
@@ -52,6 +53,11 @@ namespace GroupMeClient.Core
             /// Gets or sets the location of the caching database file.
             /// </summary>
             public string CacheFilePath { get; set; }
+
+            /// <summary>
+            /// Gets or sets the location of the persistant storage file.
+            /// </summary>
+            public string PersistFilePath { get; set; }
 
             /// <summary>
             /// Gets or sets the location of the application settings file.

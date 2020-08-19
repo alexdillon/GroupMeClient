@@ -26,11 +26,6 @@ namespace GroupMeClient.Core.Settings
         public CoreSettings CoreSettings { get; set; } = new CoreSettings();
 
         /// <summary>
-        /// Gets or sets the Grous and Chats settings instance.
-        /// </summary>
-        public ChatsSettings ChatsSettings { get; set; } = new ChatsSettings();
-
-        /// <summary>
         /// Gets or sets the UI Settings instance.
         /// </summary>
         public UISettings UISettings { get; set; } = new UISettings();

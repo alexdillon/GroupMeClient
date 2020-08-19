@@ -19,6 +19,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;SA1633;SA0001</NoWarn>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;SA1633;SA0001</NoWarn>
+  </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.16.3" />
@@ -28,11 +32,11 @@
     </PackageReference>
     <PackageReference Include="GroupMeClientApi" Version="1.0.6" />
     <PackageReference Include="GroupMeClientPlugin" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.6">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.7">
       <PrivateAssets>none</PrivateAssets>
       <ExcludeAssets>none</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.6">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -53,13 +57,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Caching\Migrations\20200629053659_InitialCreate.Designer.cs">
+    <Compile Update="Caching\MigrationsCache\20200629053659_InitialCreate.Designer.cs">
       <DependentUpon>20200629053659_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Update="Caching\Migrations\20200630021510_StarMessageSupport.Designer.cs">
+    <Compile Update="Caching\MigrationsCache\20200630021510_StarMessageSupport.Designer.cs">
       <DependentUpon>20200630021510_StarMessageSupport.cs</DependentUpon>
     </Compile>
-    <Compile Update="Caching\Migrations\20200726203522_HiddenMessageSupport.Designer.cs">
+    <Compile Update="Caching\MigrationsCache\20200726203522_HiddenMessageSupport.Designer.cs">
       <DependentUpon>20200726203522_HiddenMessageSupport.cs</DependentUpon>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">

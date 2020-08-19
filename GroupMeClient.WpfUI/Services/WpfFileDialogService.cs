@@ -32,12 +32,13 @@ namespace GroupMeClient.WpfUI.Services
         }
 
         /// <inheritdoc/>
-        public string ShowSaveFileDialog(string title, IEnumerable<FileFilter> filters)
+        public string ShowSaveFileDialog(string title, IEnumerable<FileFilter> filters, string defaultFileName = "")
         {
             var saveFileDialog = new SaveFileDialog
             {
                 Filter = this.MakeWin32Filters(filters),
                 Title = title,
+                FileName = defaultFileName,
             };
 
             if (saveFileDialog.ShowDialog() == true)

@@ -15,5 +15,11 @@
         /// updates.
         /// </summary>
         public int ApplicationUpdateFrequencyMinutes { get; set; } = 60;
+
+        /// <summary>
+        /// Gets or sets the migration version number for the entire GMDC Application saved state, including
+        /// settings, plugins, cache, and persist data.
+        /// </summary>
+        public int MigrationVersion { get; set; } = 0;
     }
 }

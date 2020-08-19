@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -12,6 +13,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Caching;
+using GroupMeClient.Core.Caching.Models;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Utilities;
@@ -38,11 +40,13 @@ namespace GroupMeClient.Core.ViewModels
         /// <param name="groupMeClient">The API client that should be used.</param>
         /// <param name="settingsManager">The application settings manager.</param>
         /// <param name="cacheManager">The caching context for messages that should be used.</param>
-        public ChatsViewModel(GroupMeClientApi.GroupMeClient groupMeClient, SettingsManager settingsManager, CacheManager cacheManager)
+        /// <param name="persistManager">The persistant storage should be used.</param>
+        public ChatsViewModel(GroupMeClientApi.GroupMeClient groupMeClient, SettingsManager settingsManager, CacheManager cacheManager, PersistManager persistManager)
         {
             this.GroupMeClient = groupMeClient;
             this.SettingsManager = settingsManager;
             this.CacheManager = cacheManager;
+            this.PersistManager = persistManager;
 
             this.AllGroupsChats = new SourceList<GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<GroupContentsControlViewModel>();
@@ -122,6 +126,8 @@ namespace GroupMeClient.Core.ViewModels
         private SettingsManager SettingsManager { get; }
 
         private CacheManager CacheManager { get; }
+
+        private PersistManager PersistManager { get; }
 
         private PushClient PushClient { get; set; }
 
@@ -214,6 +220,8 @@ namespace GroupMeClient.Core.ViewModels
         {
             await this.ReloadGroupsSem.WaitAsync();
 
+            var persistContext = this.PersistManager.OpenNewContext();
+
             try
             {
                 await this.GroupMeClient.GetGroupsAsync();
@@ -230,15 +238,15 @@ namespace GroupMeClient.Core.ViewModels
                 foreach (var group in groupsAndChats)
                 {
                     // check the last-read message status from peristant storage
-                    var groupState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == group.Id);
+                    var groupState = persistContext.GroupChatStates.FirstOrDefault(g => g.GroupOrChatId == group.Id);
                     if (groupState == null)
                     {
-                        groupState = new ChatsSettings.GroupOrChatState()
+                        groupState = new GroupOrChatState()
                         {
                             GroupOrChatId = group.Id,
                             LastTotalMessageCount = group.TotalMessageCount,
                         };
-                        this.SettingsManager.ChatsSettings.GroupChatStates.Add(groupState);
+                        persistContext.GroupChatStates.Add(groupState);
                     }
 
                     // Code to update the UI needs to be run on the Application Dispatcher
@@ -286,7 +294,7 @@ namespace GroupMeClient.Core.ViewModels
                     });
                 }
 
-                this.SettingsManager.SaveSettings();
+                await persistContext.SaveChangesAsync();
                 this.PublishTotalUnreadCount();
 
                 // if everything was successful, reset the reliability monitor
@@ -300,6 +308,7 @@ namespace GroupMeClient.Core.ViewModels
             }
             finally
             {
+                persistContext.Dispose();
                 this.ReloadGroupsSem.Release();
             }
         }
@@ -327,7 +336,7 @@ namespace GroupMeClient.Core.ViewModels
             else
             {
                 // open a new group or chat
-                var groupContentsDisplay = new GroupContentsControlViewModel(group.MessageContainer, this.CacheManager, this.SettingsManager)
+                var groupContentsDisplay = new GroupContentsControlViewModel(group.MessageContainer, this.SettingsManager)
                 {
                     CloseGroup = new RelayCommand<GroupContentsControlViewModel>(this.CloseChat),
                 };
@@ -358,11 +367,7 @@ namespace GroupMeClient.Core.ViewModels
                 }
             }
 
-            this.SettingsManager.ChatsSettings.OpenChats.Clear();
-            this.SettingsManager.ChatsSettings.OpenChats.AddRange(this.ActiveGroupsChats.Select(x => x.Id));
-
-            // Save both the updated read status and the currently opened list
-            this.SettingsManager.SaveSettings();
+            this.SaveRestoreState();
         }
 
         private void CloseChat(GroupContentsControlViewModel groupContentsControlViewModel)
@@ -371,10 +376,7 @@ namespace GroupMeClient.Core.ViewModels
             this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
 
             ((IDisposable)groupContentsControlViewModel).Dispose();
-
-            this.SettingsManager.ChatsSettings.OpenChats.Clear();
-            this.SettingsManager.ChatsSettings.OpenChats.AddRange(this.ActiveGroupsChats.Select(x => x.Id));
-            this.SettingsManager.SaveSettings();
+            this.SaveRestoreState();
         }
 
         private void MarkAllGroupsChatsRead()
@@ -390,9 +392,13 @@ namespace GroupMeClient.Core.ViewModels
 
         private void MarkGroupChatAsRead(GroupControlViewModel groupChatVm)
         {
-            // mark all messages as read
-            var groupChatState = this.SettingsManager.ChatsSettings.GroupChatStates.Find(g => g.GroupOrChatId == groupChatVm.Id);
-            groupChatState.LastTotalMessageCount = groupChatVm.MessageContainer.TotalMessageCount;
+            using (var persistContext = this.PersistManager.OpenNewContext())
+            {
+                // mark all messages as read
+                var groupChatState = persistContext.GroupChatStates.FirstOrDefault(g => g.GroupOrChatId == groupChatVm.Id);
+                groupChatState.LastTotalMessageCount = groupChatVm.MessageContainer.TotalMessageCount;
+                persistContext.SaveChanges();
+            }
 
             // clear the notification bubble
             groupChatVm.TotalUnreadCount = 0;
@@ -416,14 +422,29 @@ namespace GroupMeClient.Core.ViewModels
             var restoreService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IRestoreService>();
             if (restoreService.ShouldRestoreState)
             {
-                var openChats = this.SettingsManager.ChatsSettings.OpenChats.ToList();
-                openChats.Reverse();
-
-                foreach (var chatId in openChats)
+                using (var persistContext = this.PersistManager.OpenNewContext())
                 {
-                    var chat = this.AllGroupsChats.Items.First(c => c.Id == chatId);
-                    this.OpenNewGroupChat(chat);
+                    var state = this.PersistManager.GetDefaultRecoveryState(persistContext);
+
+                    var openChats = state.OpenChats.ToList();
+                    openChats.Reverse();
+
+                    foreach (var chatId in openChats)
+                    {
+                        var chat = this.AllGroupsChats.Items.First(c => c.Id == chatId);
+                        this.OpenNewGroupChat(chat);
+                    }
                 }
+            }
+        }
+
+        private void SaveRestoreState()
+        {
+            using (var persistContext = this.PersistManager.OpenNewContext())
+            {
+                var state = this.PersistManager.GetDefaultRecoveryState(persistContext);
+                state.OpenChats = new List<string>(this.ActiveGroupsChats.Select(x => x.Id));
+                persistContext.SaveChanges();
             }
         }
     }

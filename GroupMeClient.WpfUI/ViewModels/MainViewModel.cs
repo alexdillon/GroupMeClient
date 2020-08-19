@@ -45,22 +45,29 @@ namespace GroupMeClient.WpfUI.ViewModels
         {
             Directory.CreateDirectory(this.DataRoot);
 
-            Core.Startup.StartupCoreServices(new Core.Startup.StartupParameters()
+            this.ClientIdentity = new Core.Services.KnownClients.GMDC();
+
+            var starupParams = new Core.Startup.StartupParameters()
             {
-                ClientIdentity = new Core.Services.KnownClients.GMDC(),
+                ClientIdentity = this.ClientIdentity,
                 CacheFilePath = this.CachePath,
+                PersistFilePath = this.PersistPath,
                 SettingsFilePath = this.SettingsPath,
                 PluginPath = this.PluginsPath,
-            });
+            };
+            Core.Startup.StartupCoreServices(starupParams);
 
             Core.Startup.RegisterTopLevelViewModels();
             Startup.StartupServices();
+
+            Desktop.MigrationAssistant.MigrationManager.EnsureMigration(starupParams);
 
             this.SettingsManager = SimpleIoc.Default.GetInstance<SettingsManager>();
 
             // Create a throw-away DbContext to allow EF Core to begin allocating resouces
             // in the background, allowing for faster access later.
             Task.Run(() => SimpleIoc.Default.GetInstance<CacheManager>().OpenNewContext());
+            Task.Run(() => SimpleIoc.Default.GetInstance<PersistManager>().OpenNewContext());
 
             Core.Utilities.TempFileUtils.InitializeTempStorage();
 
@@ -169,9 +176,13 @@ namespace GroupMeClient.WpfUI.ViewModels
 
         private string CachePath => Path.Combine(this.DataRoot, "cache.db");
 
+        private string PersistPath => Path.Combine(this.DataRoot, "persist.db");
+
         private string ImageCachePath => Path.Combine(this.DataRoot, "ImageCache");
 
         private string PluginsPath => Path.Combine(this.DataRoot, "Plugins");
+
+        private IClientIdentityService ClientIdentity { get; }
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
@@ -205,7 +216,7 @@ namespace GroupMeClient.WpfUI.ViewModels
             var group = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
             var msg = Message.CreateMessage(
                 body: messageText,
-                guidPrefix: "gmdctoast");
+                guidPrefix: this.ClientIdentity.ClientGuidQuickResponsePrefix);
 
             if (msg == null)
             {

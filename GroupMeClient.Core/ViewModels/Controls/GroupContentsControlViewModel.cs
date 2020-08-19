@@ -11,6 +11,7 @@ using DynamicData;
 using DynamicData.Binding;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Controls;
@@ -19,6 +20,7 @@ using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Utilities;
 using GroupMeClientApi.Models;
 using ReactiveUI;
+using RestSharp.Authenticators;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -67,7 +69,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.ReliabilityStateMachine = new ReliabilityStateMachine();
 
             this.GroupChatPlugins = new ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>();
-            var pluginManager = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IPluginManagerService>();
+            var pluginManager = SimpleIoc.Default.GetInstance<IPluginManagerService>();
             foreach (var plugin in pluginManager.GroupChatPlugins)
             {
                 this.GroupChatPlugins.Add(plugin);
@@ -81,6 +83,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(this.MessagesSorted)
                 .Subscribe();
+
+            this.CacheManager = SimpleIoc.Default.GetInstance<CacheManager>();
+            this.PersistManager = SimpleIoc.Default.GetInstance<PersistManager>();
         }
 
         /// <summary>
@@ -89,11 +94,10 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <param name="messageContainer">The Group or Chat to bind to.</param>
         /// <param name="cacheManager">The caching context in which messages are archived.</param>
         /// <param name="settings">The settings instance to use.</param>
-        public GroupContentsControlViewModel(IMessageContainer messageContainer, CacheManager cacheManager, Settings.SettingsManager settings)
+        public GroupContentsControlViewModel(IMessageContainer messageContainer, Settings.SettingsManager settings)
             : this()
         {
             this.MessageContainer = messageContainer;
-            this.CacheManager = cacheManager;
             this.Settings = settings;
             this.TopBarAvatar = new AvatarControlViewModel(this.MessageContainer, this.MessageContainer.Client.ImageDownloader);
 
@@ -275,6 +279,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private CacheManager CacheManager { get; }
 
+        private PersistManager PersistManager { get; }
+
         private SemaphoreSlim ReloadSem { get; }
 
         private SourceList<MessageControlViewModelBase> AllMessages { get; }
@@ -421,12 +427,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 return;
             }
 
-            var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+            var uiDispatcher = SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
             await uiDispatcher.InvokeAsync(() =>
             {
                 var maxTimeDifference = TimeSpan.FromMinutes(15);
 
-                using (var cacheContext = this.CacheManager.OpenNewContext())
+                using (var persistContext = this.PersistManager.OpenNewContext())
                 {
                     // Messages retrieved with the before_id parameter are returned in descending order
                     // Reverse iterate through the messages collection to go newest->oldest
@@ -435,7 +441,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                         var msg = messages.ElementAt(i);
 
                         var oldMsg = this.AllMessages.Items.FirstOrDefault(m => m.Id == msg.Id);
-                        var messageHidden = cacheContext.HiddenMessages.Find(msg.Id);
+                        var messageHidden = persistContext.HiddenMessages.Find(msg.Id);
 
                         if (oldMsg == null)
                         {
@@ -445,7 +451,6 @@ namespace GroupMeClient.Core.ViewModels.Controls
                                 // add new message
                                 var msgVm = new MessageControlViewModel(
                                     msg,
-                                    this.CacheManager,
                                     showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages);
                                 this.AllMessages.Add(msgVm);
 
@@ -536,10 +541,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             if (!string.IsNullOrEmpty(this.TypedMessageContents))
             {
+                var clientIdentity = SimpleIoc.Default.GetInstance<IClientIdentityService>();
+
                 this.IsSending = true;
                 var newMessage = Message.CreateMessage(
                     this.TypedMessageContents,
-                    guidPrefix: "gmdc",
+                    guidPrefix: clientIdentity.ClientGuidPrefix,
                     guid: this.SendingMessageGuid);
                 await this.SendMessageAsync(newMessage);
             }
@@ -550,7 +557,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             var supportedImages = GroupMeClientApi.Models.Attachments.ImageAttachment.SupportedExtensions.ToList();
             var supportedFiles = GroupMeClientApi.Models.Attachments.FileAttachment.GroupMeDocumentMimeTypeMapper.SupportedExtensions.ToList();
 
-            var fileDialogService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IFileDialogService>();
+            var fileDialogService = SimpleIoc.Default.GetInstance<IFileDialogService>();
             var filters = new List<FileFilter>
             {
                 new FileFilter() { Name = "Images", Extensions = supportedImages },
@@ -592,10 +599,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
             var contents = contentSendDialog.TypedMessageContents;
             var attachmentsList = new List<GroupMeClientApi.Models.Attachments.Attachment> { attachment };
 
+            var clientIdentity = SimpleIoc.Default.GetInstance<IClientIdentityService>();
+
             var message = Message.CreateMessage(
                 contents,
                 attachmentsList,
-                guidPrefix: "gmdc",
+                guidPrefix: clientIdentity.ClientGuidPrefix,
                 guid: this.SendingMessageGuid);
             bool success = await this.SendMessageAsync(message);
 
@@ -611,7 +620,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private async Task<Message> InjectReplyData(Message responseMessage)
         {
-            var renderingService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IMessageRendererService>();
+            var renderingService = SimpleIoc.Default.GetInstance<IMessageRendererService>();
             var currentlyDisplayedVersion = this.AllMessages.Items.First(m => m.Id == this.MessageBeingRepliedTo.Id);
             var renderedOriginalMessage = renderingService.RenderMessageToPngImage(this.MessageBeingRepliedTo.Message, currentlyDisplayedVersion);
             var renderedImageAttachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(renderedOriginalMessage, this.MessageContainer);
@@ -619,10 +628,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
             var attachments = responseMessage.Attachments.ToList();
             attachments.Add(renderedImageAttachment);
 
+            var clientIdentity = SimpleIoc.Default.GetInstance<IClientIdentityService>();
+
             var amendedMessage = Message.CreateMessage(
                 responseMessage.Text,
                 attachments,
-                guidPrefix: $"gmdc-r{this.MessageBeingRepliedTo.Message.Id}",
+                guidPrefix: $"{clientIdentity.ClientGuidReplyPrefix}{this.MessageBeingRepliedTo.Message.Id}",
                 guid: this.SendingMessageGuid);
 
             return amendedMessage;
@@ -649,7 +660,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
             else
             {
-                var messageBoxService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IMessageBoxService>();
+                var messageBoxService = SimpleIoc.Default.GetInstance<IMessageBoxService>();
                 messageBoxService.ShowMessageBox(new MessageBoxParams()
                 {
                     Title = "GroupMe Desktop Client",
@@ -695,7 +706,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 {
                     // When many files hosted on OneDrive are opened, they are hardlocked
                     // and cannot be opened for reading. Copying them to tmp typically is allowed though.
-                    var tempFile = Utilities.TempFileUtils.GetTempFileName(fileName);
+                    var tempFile = TempFileUtils.GetTempFileName(fileName);
                     File.Copy(fileName, tempFile, true);
                     fileStream = File.Open(tempFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
@@ -709,7 +720,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             var dialog = new SendFileControlViewModel()
             {
                 ContentStream = fileStream,
-                FileName = System.IO.Path.GetFileName(fileName),
+                FileName = Path.GetFileName(fileName),
                 MessageContainer = this.MessageContainer,
                 TypedMessageContents = this.TypedMessageContents,
                 SendMessage = new RelayCommand<GroupMeClientApi.Models.Attachments.Attachment>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
@@ -762,12 +773,13 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void InitiateReplyCommand(MessageControlViewModel message)
         {
-            this.MessageBeingRepliedTo = new MessageControlViewModel(message.Message, this.CacheManager, false, true, 1);
+            this.MessageBeingRepliedTo = new MessageControlViewModel(message.Message, false, true, 1);
         }
 
         private void HideMessageCommand(MessageControlViewModel message)
         {
-            using (var context = this.CacheManager.OpenNewContext())
+            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            using (var context = persistManager.OpenNewContext())
             {
                 context.HideMessage(message.Message);
                 this.AllMessages.Remove(message);

@@ -2,20 +2,22 @@
 using GroupMeClient.Core.Caching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace GroupMeClient.Core.Caching.Migrations
+namespace GroupMeClient.Core.Caching.MigrationsCache
 {
     [DbContext(typeof(CacheManager.CacheContext))]
-    partial class CacheContextModelSnapshot : ModelSnapshot
+    [Migration("20200629053659_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.6");
+                .HasAnnotation("ProductVersion", "3.1.5");
 
-            modelBuilder.Entity("GroupMeClient.Core.Caching.Models.GroupIndexStatus", b =>
+            modelBuilder.Entity("GroupMeClient.Core.Caching.CacheManager+CacheContext+GroupIndexStatus", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -26,34 +28,6 @@ namespace GroupMeClient.Core.Caching.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("IndexStatus");
-                });
-
-            modelBuilder.Entity("GroupMeClient.Core.Caching.Models.HiddenMessage", b =>
-                {
-                    b.Property<string>("MessageId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ConversationId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("MessageId");
-
-                    b.ToTable("HiddenMessages");
-                });
-
-            modelBuilder.Entity("GroupMeClient.Core.Caching.Models.StarredMessage", b =>
-                {
-                    b.Property<string>("MessageId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ConversationId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("MessageId");
-
-                    b.HasIndex("ConversationId");
-
-                    b.ToTable("StarredMessages");
                 });
 
             modelBuilder.Entity("GroupMeClientApi.Models.Message", b =>

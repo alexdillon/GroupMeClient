@@ -2,16 +2,14 @@
 using GroupMeClient.Core.Caching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace GroupMeClient.Core.Caching.Migrations
+namespace GroupMeClient.Core.Caching.MigrationsCache
 {
     [DbContext(typeof(CacheManager.CacheContext))]
-    [Migration("20200726203522_HiddenMessageSupport")]
-    partial class HiddenMessageSupport
+    partial class CacheContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,34 +26,6 @@ namespace GroupMeClient.Core.Caching.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("IndexStatus");
-                });
-
-            modelBuilder.Entity("GroupMeClient.Core.Caching.Models.HiddenMessage", b =>
-                {
-                    b.Property<string>("MessageId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ConversationId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("MessageId");
-
-                    b.ToTable("HiddenMessages");
-                });
-
-            modelBuilder.Entity("GroupMeClient.Core.Caching.Models.StarredMessage", b =>
-                {
-                    b.Property<string>("MessageId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ConversationId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("MessageId");
-
-                    b.HasIndex("ConversationId");
-
-                    b.ToTable("StarredMessages");
                 });
 
             modelBuilder.Entity("GroupMeClientApi.Models.Message", b =>

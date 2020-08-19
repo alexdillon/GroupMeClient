@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Caching;
 using GroupMeClientApi.Models;
 
@@ -16,10 +17,10 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         /// </summary>
         /// <param name="originalMessageId">The message id of the original message that is being replied to.</param>
         /// <param name="messageContainer">The message container in which the original message is contained.</param>
-        /// <param name="cacheManager">The caching context in which messages are stored.</param>
         /// <param name="nestLevel">The number of attachment deeply nested this <see cref="Message"/> is.</param>
-        public RepliedMessageControlViewModel(string originalMessageId, IMessageContainer messageContainer, CacheManager cacheManager, int nestLevel)
+        public RepliedMessageControlViewModel(string originalMessageId, IMessageContainer messageContainer, int nestLevel)
         {
+            var cacheManager = SimpleIoc.Default.GetInstance<CacheManager>();
             using (var context = cacheManager.OpenNewContext())
             {
                 var originalMessage = context.Messages.Find(originalMessageId);
@@ -38,7 +39,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
                         originalMessage.AssociateWithChat(c);
                     }
 
-                    this.Message = new MessageControlViewModel(originalMessage, cacheManager, false, true, nestLevel + 1);
+                    this.Message = new MessageControlViewModel(originalMessage, false, true, nestLevel + 1);
                 }
             }
         }

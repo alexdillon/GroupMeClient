@@ -2,7 +2,7 @@
 
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace GroupMeClient.Core.Caching.Migrations
+namespace GroupMeClient.Core.Caching.MigrationsCache
 {
     public partial class InitialCreate : Migration
     {
