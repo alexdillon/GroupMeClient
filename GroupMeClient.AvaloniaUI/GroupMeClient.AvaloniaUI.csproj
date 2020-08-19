@@ -19,6 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Controls\DefaultTheme.xaml" />
+    <None Remove="Controls\LikeIcon.xaml" />
     <None Remove="GroupMeDark.xaml" />
     <None Remove="GroupMeLight.xaml" />
     <None Remove="MainWindow.xaml" />
@@ -55,6 +57,10 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Include="Controls\DefaultTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaResource>
     <AvaloniaResource Include="GroupMeDark.xaml">
       <Generator>MSBuild:Compile</Generator>
     </AvaloniaResource>
