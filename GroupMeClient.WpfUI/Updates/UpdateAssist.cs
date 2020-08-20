@@ -154,8 +154,7 @@ namespace GroupMeClient.WpfUI.Updates
         {
             var github = this.GetGitHubClient();
             var releases = await github.Repository.Release.GetAll(this.GMDCRepoUser, this.GMDCRepoName);
-
-            return releases.FirstOrDefault();
+            return releases.FirstOrDefault(r => r.Prerelease == false);
         }
 
         private async Task<bool?> CheckForSquirrelUpdates()
