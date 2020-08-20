@@ -57,16 +57,16 @@
 
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands ShowLastSeparator="False">
-
+            
             <ToggleButton HorizontalAlignment="Center"
                           VerticalAlignment="Top"
                           Background="#FFAB00"
                           Margin="0,0,10,0"
                           Width="35" Height="30"
                           BorderThickness="0"
-                          Visibility="{Binding RebootReasons.Count, Converter={StaticResource isGreaterThanZeroToVisibleConverter}, ConverterParameter={StaticResource zeroStatic}}"
+                          Visibility="{Binding RebootReasons.Count, Converter={StaticResource isGreaterThanZeroToVisibleConverter}, ConverterParameter={StaticResource zeroStatic}}"              
                           x:Name="rebootOptionsToggle">
-                <iconPacks:PackIconModern Width="15" Height="15" Foreground="White" Kind="Flag"/>
+                <iconPacks:PackIconMaterial Width="16" Height="16" Foreground="White" Kind="FlagTriangle"/>
             </ToggleButton>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
