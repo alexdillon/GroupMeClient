@@ -38,7 +38,7 @@ namespace GroupMeClient.WpfUI.Services
                     "..",
                     "Update.exe");
 
-                var gmdcClientName = Path.GetFileName(Application.ResourceAssembly.FullName);
+                var gmdcClientName = Path.GetFileName(Application.ResourceAssembly.Location);
 
                 var psi = new ProcessStartInfo
                 {
