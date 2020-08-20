@@ -1,6 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <FontFamily x:Key="GroupMeFont">Segoe UI</FontFamily>
+
+    <sys:Boolean x:Key="IsLightTheme">False</sys:Boolean>
+    <sys:Boolean x:Key="IsDarkTheme">True</sys:Boolean>
 
     <Color x:Key="DividerLineColor">#637182</Color>
     <Color x:Key="MessageFontColor">#637182</Color>
