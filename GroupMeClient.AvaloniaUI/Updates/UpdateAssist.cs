@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using GroupMeClient.Core.Services;
-using Octokit;
 
 namespace GroupMeClient.AvaloniaUI.Updates
 {
@@ -22,28 +19,24 @@ namespace GroupMeClient.AvaloniaUI.Updates
         {
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the application can be safely closed.
-        /// Terminating during an update operation can result in a crash.
-        /// </summary>
-        public bool CanShutdown { get; private set; }
+        /// <inheritdoc/>
+        public IObservable<bool> CanShutdown => this.CanShutdownSource;
 
-        /// <summary>
-        /// Gets a value indicating whether the application running from the installation path.
-        /// If false, this is typically caused by running a debug copy from a build directory, indicating that
-        /// updates cannot be accurately installed.
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsInstalled { get; private set; }
 
-        /// <summary>
-        /// Gets an awaitable object to monitor the status of an ongoing update operation.
-        /// </summary>
-        public TaskCompletionSource<bool?> UpdateMonitor { get; private set; }
+        private BehaviorSubject<bool> CanShutdownSource { get; } = new BehaviorSubject<bool>(true);
 
         /// <inheritdoc/>
         public Task<IEnumerable<ReleaseInfo>> GetVersionsAsync()
         {
             return Task.FromResult(Enumerable.Empty<ReleaseInfo>());
+        }
+
+        /// <inheritdoc/>
+        public Task<bool?> CheckForUpdatesAsync()
+        {
+            return Task.FromResult<bool?>(null);
         }
 
         /// <inheritdoc/>
@@ -53,11 +46,6 @@ namespace GroupMeClient.AvaloniaUI.Updates
 
         /// <inheritdoc/>
         public void CancelUpdateTimer()
-        {
-        }
-
-        /// <inheritdoc/>
-        public void BeginCheckForUpdates()
         {
         }
     }

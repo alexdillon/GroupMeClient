@@ -20,18 +20,17 @@ namespace GroupMeClient.AvaloniaUI.Services
             var openFileDialog = new OpenFileDialog();
             openFileDialog.Title = title;
             openFileDialog.Filters = this.MakeAvaloniaFilters(filters);
-            //saveFileDialog.InitialFileName = this.FileData.FileName;
 
-            return Task.Run(async() => await openFileDialog.ShowAsync(Program.GroupMeMainWindow)).Result.First();
+            return Task.Run(async () => await openFileDialog.ShowAsync(Program.GroupMeMainWindow)).Result.First();
         }
 
         /// <inheritdoc/>
-        public string ShowSaveFileDialog(string title, IEnumerable<FileFilter> filters)
+        public string ShowSaveFileDialog(string title, IEnumerable<FileFilter> filters, string defaultFileName = "")
         {
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Title = title;
             saveFileDialog.Filters = this.MakeAvaloniaFilters(filters);
-            //saveFileDialog.InitialFileName = this.FileData.FileName;
+            saveFileDialog.InitialFileName = defaultFileName;
 
             return Task.Run(async () => await saveFileDialog.ShowAsync(Program.GroupMeMainWindow).ConfigureAwait(false)).Result;
         }
