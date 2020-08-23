@@ -343,12 +343,20 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
                 Tag = this.ChatsViewModel,
             };
 
-            var secondTab = new HamburgerMenuItem()
+            var searchTab = new HamburgerMenuItem()
             {
                 Icon = new IconControl() { BindableKind = PackIconMaterialKind.EmailSearch },
                 Label = "Search",
                 ToolTip = "Search all Groups and Chats.",
                 Tag = this.SearchViewModel,
+            };
+
+            var starsTab = new HamburgerMenuItem()
+            {
+                Icon = new IconControl() { BindableKind = PackIconMaterialKind.Star },
+                Label = "Starred Messages",
+                ToolTip = "View Stars in Groups and Chats.",
+                Tag = this.StarsViewModel,
             };
 
             var settingsTab = new HamburgerMenuItem()
@@ -361,7 +369,8 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
 
             // Add new Tabs
             this.MenuItems.Add(chatsTab);
-            this.MenuItems.Add(secondTab);
+            this.MenuItems.Add(searchTab);
+            this.MenuItems.Add(starsTab);
 
             // Add new Options
             this.MenuOptionItems.Add(settingsTab);
