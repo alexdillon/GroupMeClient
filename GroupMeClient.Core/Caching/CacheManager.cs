@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using GroupMeClient.Core.Caching.Models;
 using GroupMeClient.Core.Tasks;
@@ -224,29 +225,52 @@ namespace GroupMeClient.Core.Caching
                     conn.Open();
                 }
 
-                using (var command = conn.CreateCommand())
+                var doesMigrationHistoryExist = this.DoesTableExist(conn, "__EFMigrationsHistory");
+                var doesMessagesTableExist = this.DoesTableExist(conn, "Messages");
+
+                if (!doesMessagesTableExist)
                 {
-                    command.CommandText = @"SELECT name FROM sqlite_master WHERE type='table' AND name='__EFMigrationsHistory';";
+                    // If the messages table does not exist, just wipe the whole DB out and start clean
+                    // There is no usable data existing, so the best path forward is treating it as a clean
+                    // installation and not using any of the migration or compatibility paths
+
+                    // Just delete the file
+                    conn.Close();
+                    System.IO.File.Delete(this.DatabaseName);
+                }
+                else if (!doesMigrationHistoryExist && doesMessagesTableExist)
+                {
+                    // If the DB has already been established with the Messages table, but is not migration compatible,
+                    // it is from a pre-GMDC 27 installation.
+
+                    // Databases created prior to GMDC 27 were created with EnsureCreated,
+                    // and do not support migrations. The InitialCreate Migration
+                    // is schema compatible with the legacy database format, so just mark
+                    // it as being compliant with "20200629053659_InitialCreate" under EF "3.1.5"
+
+                    // The messages table exists so mark this as migration ready
+                    using (var createTableCmd = conn.CreateCommand())
+                    {
+                        createTableCmd.CommandText = "CREATE TABLE \"__EFMigrationsHistory\" ( \"MigrationId\" TEXT NOT NULL CONSTRAINT \"PK___EFMigrationsHistory\" PRIMARY KEY, \"ProductVersion\" TEXT NOT NULL )";
+                        createTableCmd.ExecuteNonQuery();
+                    }
+
+                    using (var insertHistoryCmd = conn.CreateCommand())
+                    {
+                        insertHistoryCmd.CommandText = "INSERT INTO __EFMigrationsHistory (MigrationId, ProductVersion) VALUES (\"20200629053659_InitialCreate\", \"3.1.5\")";
+                        insertHistoryCmd.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            private bool DoesTableExist(DbConnection connection, string tableName)
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = $@"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
                     var exists = command.ExecuteScalar() != null;
 
-                    if (!exists)
-                    {
-                        // Databases created prior to GMDC 27 were created with EnsureCreated,
-                        // and do not support migrations. The InitialCreate Migration
-                        // is schema compatible with the legacy database format, so just mark
-                        // it as being compliant with "20200629053659_InitialCreate" under EF "3.1.5"
-                        using (var createTableCmd = conn.CreateCommand())
-                        {
-                            createTableCmd.CommandText = "CREATE TABLE \"__EFMigrationsHistory\" ( \"MigrationId\" TEXT NOT NULL CONSTRAINT \"PK___EFMigrationsHistory\" PRIMARY KEY, \"ProductVersion\" TEXT NOT NULL )";
-                            createTableCmd.ExecuteNonQuery();
-                        }
-
-                        using (var insertHistoryCmd = conn.CreateCommand())
-                        {
-                            insertHistoryCmd.CommandText = "INSERT INTO __EFMigrationsHistory (MigrationId, ProductVersion) VALUES (\"20200629053659_InitialCreate\", \"3.1.5\")";
-                            insertHistoryCmd.ExecuteNonQuery();
-                        }
-                    }
+                    return exists;
                 }
             }
         }
