@@ -177,7 +177,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 lock (this.messageLock)
                 {
                     this.message = value;
-                    this.UpdateDisplay();
+                    this.RedrawMessage();
                 }
             }
         }
@@ -402,14 +402,6 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private bool ShowPreviewsOnlyForMultiImages { get; }
 
         /// <summary>
-        /// Redraw the message immediately.
-        /// </summary>
-        public void UpdateDisplay()
-        {
-            this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
-        }
-
-        /// <summary>
         /// Likes a message and updates the Liker's Display area for the current <see cref="Message"/>.
         /// </summary>
         /// <param name="e">The event arguments from the action triggering the like.</param>
@@ -442,7 +434,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 }
             }
 
-            this.UpdateDisplay();
+            this.RedrawLikers();
         }
 
         /// <summary>
@@ -463,7 +455,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                     this.Message.FavoritedBy.Add(liker);
                 }
 
-                this.UpdateDisplay();
+                this.RedrawLikers();
             }
         }
 
@@ -823,6 +815,24 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 context.SaveChanges();
                 this.RaisePropertyChanged(nameof(this.IsMessageHidden));
             }
+        }
+
+        private void RedrawMessage()
+        {
+            this.RaisePropertyChanged(nameof(this.Sender));
+            this.RaisePropertyChanged(nameof(this.SentTimeString));
+            this.RaisePropertyChanged(nameof(this.SenderPlatform));
+            this.RaisePropertyChanged(nameof(this.DidISendItColoring));
+            this.RaisePropertyChanged(nameof(this.DidISendIt));
+
+            this.RedrawLikers();
+        }
+
+        private void RedrawLikers()
+        {
+            this.RaisePropertyChanged(nameof(this.LikeStatus));
+            this.RaisePropertyChanged(nameof(this.LikeCount));
+            this.RaisePropertyChanged(nameof(this.LikedByAvatars));
         }
 
         /// <summary>

@@ -15,7 +15,7 @@
     <UserControl.Resources>
         <converters:IsZeroConverter x:Key="isZeroConverter"/>
         <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
-        <converters:NullToVisibilityConverter x:Key="nullToVisabilityConverter" />
+        <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter" />
 
         <converters:ValueConverterGroup x:Key="isDeeplyNestedConverter">
             <converters:IsGreaterThanConverter />
@@ -28,7 +28,6 @@
         </converters:ValueConverterGroup>
 
         <converters:IsGreaterThanConverter x:Key="isGreaterThanConverter" />
-        <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter" />
 
         <sys:Int32 x:Key="collapseNestLevel">1</sys:Int32>
         <sys:Boolean x:Key="True">True</sys:Boolean>
@@ -58,10 +57,10 @@
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding DidISendItColoring}" Value="True">
+                            <DataTrigger Binding="{Binding DidISendItColoring, Mode=OneTime}" Value="True">
                                 <Setter Property="Background" Value="{DynamicResource MessageISentBackdropBrush}" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding DidISendItColoring}" Value="False">
+                            <DataTrigger Binding="{Binding DidISendItColoring, Mode=OneTime}" Value="False">
                                 <Setter Property="Background" Value="{DynamicResource MessageTheySentBackdropBrush}" />
                             </DataTrigger>
                         </Style.Triggers>
@@ -71,7 +70,7 @@
                 <controls:AvatarControl 
                     Grid.Column="0" Grid.Row="1"
                     Width="40" Height="40" VerticalAlignment="Top"
-                    DataContext="{Binding Avatar}"
+                    DataContext="{Binding Avatar, Mode=OneTime}"
                     ContextMenu="{StaticResource emptyContextMenu}">
 
                     <behaviors:Interaction.Triggers>
@@ -82,12 +81,12 @@
                 </controls:AvatarControl>
 
                 <StackPanel Grid.Column="1" Grid.Row="1">
-                    <TextBlock Text="{Binding Sender}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" />
+                    <TextBlock Text="{Binding Sender, Mode=OneTime}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" />
 
                     <ContentControl Content="{Binding RepliedMessage}" 
                                     HorizontalAlignment="Left"
                                     Margin="0,0,10,10" 
-                                    Visibility="{Binding RepliedMessage, Converter={StaticResource nullToVisabilityConverter}, ConverterParameter={StaticResource True}}" />
+                                    Visibility="{Binding RepliedMessage, Converter={StaticResource nullToVisibilityConverter}, ConverterParameter={StaticResource True}}" />
 
                     <ItemsControl ItemsSource="{Binding AttachedItems}">
                        <ItemsControl.ItemTemplate>
@@ -110,7 +109,7 @@
                         Margin="0,0,0,20"
                         FontSize="15" 
                         TextWrapping="Wrap" 
-                        extensions:TextBlockExtensions.InlineList="{Binding Inlines, Converter={StaticResource inlineConverter}}">
+                        extensions:TextBlockExtensions.InlineList="{Binding Inlines, Converter={StaticResource inlineConverter}, Mode=OneWay}">
 
                         <extensions:SelectableTextBlock.ContextMenu>
                             <ContextMenu>
@@ -312,13 +311,13 @@
                         </behaviors:EventTrigger>
                     </behaviors:Interaction.Triggers>
                     
-                    <TextBlock Text="{Binding SentTimeString, StringFormat=Sent {0}}"
+                    <TextBlock Text="{Binding SentTimeString, StringFormat=Sent {0}, Mode=OneTime}"
                                FontWeight="Regular"
                                FontSize="11"
                                Foreground="{DynamicResource MessageFontBrush}"
                                Padding="20,0,0,0"/>
 
-                    <TextBlock Text="{Binding SenderPlatform, StringFormat=Client: {0}}"
+                    <TextBlock Text="{Binding SenderPlatform, StringFormat=Client: {0}, Mode=OneTime}"
                                FontWeight="Regular"
                                FontSize="11"
                                Foreground="{DynamicResource MessageFontBrush}"
