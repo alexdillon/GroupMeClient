@@ -21,9 +21,9 @@
 
   <Grid
     
-    extensions:MessageColorExtensions.MessageISentColor="{DynamicResource MessageISentBackdropBrush}"
-    extensions:MessageColorExtensions.MessageTheySentColor="{DynamicResource MessageTheySentBackdropBrush}"
-    extensions:MessageColorExtensions.MessageSender="{Binding DidISendIt}">
+    extensions:MessageBrushExtensions.MessageISentBrush="{DynamicResource MessageISentBackdropBrush}"
+    extensions:MessageBrushExtensions.MessageTheySentBrush="{DynamicResource MessageTheySentBackdropBrush}"
+    extensions:MessageBrushExtensions.MessageSender="{Binding DidISendIt}">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="55" />
       <ColumnDefinition Width="*"/>

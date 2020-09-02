@@ -2,31 +2,30 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using MicroCubeAvalonia.IconPack;
 
 namespace GroupMeClient.AvaloniaUI.Extensions
 {
     /// <summary>
-    /// <see cref="MessageColorExtensions"/> provides extension methods for <see cref="Grid"/> for displaying correct background color.
+    /// <see cref="MessageBrushExtensions"/> provides extension methods for <see cref="Grid"/> for displaying correct background Brush.
     /// </summary>
-    public class MessageColorExtensions
+    public class MessageBrushExtensions
     {
         /// <summary>
-        /// An Avalonia Attached property to represent the rendering color of the message background when the user is the sender.
+        /// An Avalonia Attached property to represent the rendering Brush of the message background when the user is the sender.
         /// </summary>
-        public static readonly AvaloniaProperty<IBrush> MessageISentColorProperty =
+        public static readonly AvaloniaProperty<IBrush> MessageISentBrushProperty =
                AvaloniaProperty.RegisterAttached<Grid, IBrush>(
-                "MessageISentColor",
-                typeof(MessageColorExtensions),
+                "MessageISentBrush",
+                typeof(MessageBrushExtensions),
                 defaultValue: default(SolidColorBrush));
 
         /// <summary>
-        /// An Avalonia Attached property to represent the rendering color of the message background when another user is the sender.
+        /// An Avalonia Attached property to represent the rendering Brush of the message background when another user is the sender.
         /// </summary>
-        public static readonly AvaloniaProperty<IBrush> MessageTheySentColorProperty =
+        public static readonly AvaloniaProperty<IBrush> MessageTheySentBrushProperty =
                AvaloniaProperty.RegisterAttached<Grid, IBrush>(
-                "MessageTheySentColor",
-                typeof(MessageColorExtensions),
+                "MessageTheySentBrush",
+                typeof(MessageBrushExtensions),
                 defaultValue: default(SolidColorBrush));
 
         /// <summary>
@@ -35,58 +34,58 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         public static readonly AvaloniaProperty<bool> MessageSenderProperty =
                AvaloniaProperty.RegisterAttached<Grid, bool>(
                 "MessageSender",
-                typeof(MessageColorExtensions),
+                typeof(MessageBrushExtensions),
                 defaultValue: default(bool));
 
         /// <summary>
-        /// Initializes static members of the <see cref="MessageColorExtensions"/> class.
+        /// Initializes static members of the <see cref="MessageBrushExtensions"/> class.
         /// </summary>
-        static MessageColorExtensions()
+        static MessageBrushExtensions()
         {
-            MessageISentColorProperty.Changed.Subscribe(PropertyChanged);
-            MessageTheySentColorProperty.Changed.Subscribe(PropertyChanged);
+            MessageISentBrushProperty.Changed.Subscribe(PropertyChanged);
+            MessageTheySentBrushProperty.Changed.Subscribe(PropertyChanged);
             MessageSenderProperty.Changed.Subscribe(PropertyChanged);
         }
 
         /// <summary>
-        /// Gets the color for when a message is sent by the user.
+        /// Gets the Brush for when a message is sent by the user.
         /// </summary>
         /// <param name="element">The <see cref="Control"/ to assign the property value to.</param>
         /// <returns>Returns the <see cref="IBrush"/> used for user message sent.</returns>
-        public static IBrush GetMessageISentColor(Control element)
+        public static IBrush GetMessageISentBrush(Control element)
         {
-            return element.GetValue(MessageISentColorProperty);
+            return element.GetValue(MessageISentBrushProperty);
         }
 
         /// <summary>
-        /// Sets the color for when a message is sent by the user.
+        /// Sets the Brush for when a message is sent by the user.
         /// </summary>
         /// <param name="element">The <see cref="Control"/ to assign the property value to.</param>
-        /// <param name="brush">The <see cref="Brush"/> to set.</param>
-        public static void SetMessageISentColor(Control element, IBrush brush)
+        /// <param name="value">The <see cref="Brush"/> to set.</param>
+        public static void SetMessageISentBrush(Control element, IBrush value)
         {
-            element.SetValue(MessageISentColorProperty, brush);
+            element.SetValue(MessageISentBrushProperty, value);
             UpdateData(element);
         }
 
         /// <summary>
-        /// Gets the color for when a message is sent by another user.
+        /// Gets the Brush for when a message is sent by another user.
         /// </summary>
         /// <param name="element">The <see cref="Control"/ to assign the property value to.</param>
         /// <returns>Returns the <see cref="IBrush"/> used for other users message sent.</returns>
-        public static IBrush GetMessageTheySentColor(Control element)
+        public static IBrush GetMessageTheySentBrush(Control element)
         {
-            return element.GetValue(MessageTheySentColorProperty);
+            return element.GetValue(MessageTheySentBrushProperty);
         }
 
         /// <summary>
-        /// Sets the color for when a message is sent by another user.
+        /// Sets the Brush for when a message is sent by another user.
         /// </summary>
         /// <param name="element">The <see cref="Control"/ to assign the property value to.</param>
-        /// <param name="brush">The brush to change the color to.</param>
-        public static void SetMessageTheySentColor(Control element, IBrush brush)
+        /// <param name="value">The brush to change the Brush to.</param>
+        public static void SetMessageTheySentBrush(Control element, IBrush value)
         {
-            element.SetValue(MessageTheySentColorProperty, brush);
+            element.SetValue(MessageTheySentBrushProperty, value);
             UpdateData(element);
         }
 
@@ -126,11 +125,11 @@ namespace GroupMeClient.AvaloniaUI.Extensions
             {
                 if (GetMessageSender(element))
                 {
-                    Grid.Background = GetMessageISentColor(element);
+                    Grid.Background = GetMessageISentBrush(element);
                 }
                 else
                 {
-                    Grid.Background = GetMessageTheySentColor(element);
+                    Grid.Background = GetMessageTheySentBrush(element);
                 }
             }
         }
