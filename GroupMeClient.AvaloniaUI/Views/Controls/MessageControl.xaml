@@ -100,8 +100,8 @@
                             Grid.Row="1" Grid.Column="1"
                             HorizontalAlignment="Center"
                             Background="Transparent"
-                            extensions:LikeIconExtensions.ColorWhenILiked="{DynamicResource MessageILikedBrush}"
-                            extensions:LikeIconExtensions.ColorWhenTheyLiked="{DynamicResource MessageTheyLikedBrush}"
+                            extensions:LikeIconExtensions.BrushWhenILiked="{DynamicResource MessageILikedBrush}"
+                            extensions:LikeIconExtensions.BrushWhenTheyLiked="{DynamicResource MessageTheyLikedBrush}"
                             extensions:LikeIconExtensions.LikeStatus="{Binding LikeStatus}"
                             Name="likeIcon"/>
         
