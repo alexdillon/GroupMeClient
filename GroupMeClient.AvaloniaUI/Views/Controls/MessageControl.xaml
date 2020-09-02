@@ -19,7 +19,11 @@
     <converters:LikeStatusToIcon x:Key="likeStatusToIconConverter" />
   </UserControl.Resources>
 
-  <Grid>
+  <Grid
+    
+    extensions:MessageColorExtensions.MessageISentColor="{DynamicResource MessageISentBackdropBrush}"
+    extensions:MessageColorExtensions.MessageTheySentColor="{DynamicResource MessageTheySentBackdropBrush}"
+    extensions:MessageColorExtensions.MessageSender="{Binding DidISendIt}">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="55" />
       <ColumnDefinition Width="*"/>
@@ -31,12 +35,6 @@
       <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
-
-    <!--<i:Interaction.Behaviors>
-      <extensions:BackgroundBinaryChangerBehavior Condition="{Binding DidISendIt}"
-                                                  TrueValue="{DynamicResource MessageISentBackdropBrush}"
-                                                  FalseValue="{DynamicResource MessageTheySentBackdropBrush}" />
-    </i:Interaction.Behaviors>-->
 
     <controls:AvatarControl
             Grid.Column="0" Grid.Row="1"
@@ -105,6 +103,7 @@
                             extensions:LikeIconExtensions.ColorWhenILiked="{DynamicResource MessageILikedBrush}"
                             extensions:LikeIconExtensions.ColorWhenTheyLiked="{DynamicResource MessageTheyLikedBrush}"
                             extensions:LikeIconExtensions.LikeStatus="{Binding LikeStatus}"
+                            
                             Name="likeIcon"/>
         
       <TextBlock Grid.Row="2" Grid.Column="1"
