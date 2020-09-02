@@ -20,6 +20,8 @@ namespace GroupMeClient.Core.Caching
         public PersistManager(string databasePath)
         {
             this.Path = databasePath;
+
+            this.SharedContext = new Lazy<PersistContext>(() => new PersistContext(this.Path), isThreadSafe: true);
         }
 
         /// <summary>
@@ -28,6 +30,8 @@ namespace GroupMeClient.Core.Caching
         public SuperIndexer SuperIndexer { get; }
 
         private string Path { get; }
+
+        private Lazy<PersistContext> SharedContext { get; }
 
         /// <summary>
         /// Returns a <see cref="Queryable"/> collection of all the starred messages in a given <see cref="IMessageContainer"/>
@@ -124,6 +128,16 @@ namespace GroupMeClient.Core.Caching
         {
             var context = new PersistContext(this.Path);
             return context;
+        }
+
+        /// <summary>
+        /// Returns a shared context instance for persistant storage that can be
+        /// used for lookups. This context should NOT be disposed.
+        /// </summary>
+        /// <returns>A shared <see cref="PersistContext"/>.</returns>
+        public PersistContext OpenSharedReadOnlyContext()
+        {
+            return this.SharedContext.Value;
         }
 
         /// <summary>

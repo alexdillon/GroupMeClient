@@ -373,11 +373,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
             get
             {
                 var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
-                using (var cache = persistManager.OpenNewContext())
-                {
-                    var result = cache.StarredMessages.Find(this.Message.Id);
-                    return result != null;
-                }
+                var cache = persistManager.OpenSharedReadOnlyContext();
+                var result = cache.StarredMessages.Find(this.Message.Id);
+                return result != null;
             }
         }
 
@@ -389,11 +387,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
             get
             {
                 var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
-                using (var cache = persistManager.OpenNewContext())
-                {
-                    var result = cache.HiddenMessages.Find(this.Message.Id);
-                    return result != null;
-                }
+                var cache = persistManager.OpenSharedReadOnlyContext();
+                var result = cache.HiddenMessages.Find(this.Message.Id);
+                return result != null;
             }
         }
 
