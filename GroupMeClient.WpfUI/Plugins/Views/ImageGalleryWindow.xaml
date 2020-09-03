@@ -4,13 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
-        xmlns:controls="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
         xmlns:controls1="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
-        xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
         Title="Image Gallery" Height="600" Width="920">
@@ -20,10 +17,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <Grid.Resources>
-            <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
-        </Grid.Resources>
 
         <TextBlock Text="{Binding GroupName, StringFormat='Gallery for &quot;{0}&quot;'}"
                    HorizontalAlignment="Center"

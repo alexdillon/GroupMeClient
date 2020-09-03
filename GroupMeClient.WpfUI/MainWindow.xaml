@@ -8,10 +8,8 @@
                  xmlns:viewModels="clr-namespace:GroupMeClient.WpfUI.ViewModels"
                  xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
                  xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
-                 xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
                  xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                  xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls" 
-                 xmlns:sys="clr-namespace:System;assembly=mscorlib"
                  Title="GroupMe Desktop Client"
                  TitleCharacterCasing="Normal"
                  Width="1024"
@@ -45,14 +43,6 @@
                     FontSize="10"/>
             </Grid>
         </DataTemplate>
-
-        <converters:ValueConverterGroup x:Key="isGreaterThanZeroToVisibleConverter">
-            <converters:IsGreaterThanConverter />
-            <BooleanToVisibilityConverter />
-        </converters:ValueConverterGroup>
-
-        <sys:Int32 x:Key="zeroStatic">0</sys:Int32>
-
     </Window.Resources>
 
     <Controls:MetroWindow.RightWindowCommands>
@@ -64,7 +54,7 @@
                           Margin="0,0,10,0"
                           Width="35" Height="30"
                           BorderThickness="0"
-                          Visibility="{Binding RebootReasons.Count, Converter={StaticResource isGreaterThanZeroToVisibleConverter}, ConverterParameter={StaticResource zeroStatic}}"              
+                          Visibility="{Binding RebootReasons.Count, Converter={StaticResource isGreaterThanZeroToVisibleConverter}, ConverterParameter={StaticResource Zero}}"              
                           x:Name="rebootOptionsToggle">
                 <iconPacks:PackIconMaterial Width="16" Height="16" Foreground="White" Kind="FlagTriangle"/>
             </ToggleButton>
@@ -74,13 +64,6 @@
     <Grid>
         <Grid.Resources>
             <local:SelectedItemToContentConverter x:Key="SelectedItemToContentConverter" />
-            <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
-            <BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
-
-            <converters:ValueConverterGroup x:Key="inverseBooleanToVisibilityConverter">
-                <converters:InverseBoolConverter />
-                <BooleanToVisibilityConverter />
-            </converters:ValueConverterGroup>
 
             <!--  this is the template for the items (options too)  -->
             <DataTemplate x:Key="MenuItemTemplate" DataType="{x:Type mah:HamburgerMenuIconItem}">
@@ -178,7 +161,7 @@
         </ToggleButton>
 
         <!--Running Tasks List-->
-        <ListBox Visibility="{Binding IsMouseOver, ElementName=loadingSpinnerButton, Converter={StaticResource booleanToVisibilityConverter}}"
+        <ListBox Visibility="{Binding IsMouseOver, ElementName=loadingSpinnerButton, Converter={StaticResource boolToVisibilityConverter}}"
                  ItemsSource="{Binding TaskManager.RunningTasks}"
                  Width="230"
                  Height="300"
@@ -235,7 +218,7 @@
                 Margin="0,0,0,55"
                 BorderThickness="0"
                 Command="{Binding RefreshEverythingCommand}"
-                Visibility="{Binding Path=IsEnabled, RelativeSource={RelativeSource Self}, Mode=OneWay, Converter={StaticResource booleanToVisibilityConverter}}" >
+                Visibility="{Binding Path=IsEnabled, RelativeSource={RelativeSource Self}, Mode=OneWay, Converter={StaticResource boolToVisibilityConverter}}" >
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Background" Value="Transparent"/>
@@ -312,7 +295,7 @@
         
         <!--Reboot Options Area-->
         <StackPanel Orientation="Vertical"
-                    Visibility="{Binding IsChecked, ElementName=rebootOptionsToggle, Converter={StaticResource booleanToVisibilityConverter}}"
+                    Visibility="{Binding IsChecked, ElementName=rebootOptionsToggle, Converter={StaticResource boolToVisibilityConverter}}"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Right"
                     Width="275"

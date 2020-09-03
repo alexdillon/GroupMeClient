@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400"
              Background="{DynamicResource TweetBackgroundBrush}">
@@ -27,10 +26,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-
-            <Grid.Resources>
-                <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
-            </Grid.Resources>
 
             <Image 
                 Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"

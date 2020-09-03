@@ -6,7 +6,6 @@
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters" 
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400"
@@ -28,13 +27,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-
-        <Grid.Resources>
-            <converters:ValueConverterGroup x:Key="inverseBooleanToVisibilityConverter">
-                <converters:InverseBoolConverter />
-                <BooleanToVisibilityConverter />
-            </converters:ValueConverterGroup>
-        </Grid.Resources>
 
         <Grid.ContextMenu>
             <ContextMenu>

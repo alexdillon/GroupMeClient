@@ -6,7 +6,6 @@
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
-             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
              mc:Ignorable="d" 
              Background="{DynamicResource MahApps.Brushes.Control.Background}"
              d:DesignHeight="150" d:DesignWidth="400">
@@ -16,11 +15,6 @@
             <behaviors:InvokeCommandAction Command="{Binding Path=GroupSelected}" CommandParameter="{Binding Path=.}"/>
         </behaviors:EventTrigger>
     </behaviors:Interaction.Triggers>
-
-    <UserControl.Resources>
-        <converters:IsZeroConverter x:Key="isZeroConverter"/>
-        <converters:GMDCInlineToWPFInline x:Key="inlineConverter" />
-    </UserControl.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>

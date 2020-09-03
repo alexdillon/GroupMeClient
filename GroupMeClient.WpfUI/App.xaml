@@ -25,6 +25,7 @@
 
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
 
+                <ResourceDictionary Source="pack://application:,,,/Styles/GMDCGlobalResources.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/GroupMeLight.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/ScrollBar.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/Hyperlink.xaml" />

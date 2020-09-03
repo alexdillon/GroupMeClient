@@ -6,36 +6,14 @@
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400">
 
     <UserControl.Resources>
-        <converters:IsZeroConverter x:Key="isZeroConverter"/>
-        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
-        <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter" />
-
-        <converters:ValueConverterGroup x:Key="isDeeplyNestedConverter">
-            <converters:IsGreaterThanConverter />
-            <converters:InverseBoolConverter />
-        </converters:ValueConverterGroup>
-
-        <converters:ValueConverterGroup x:Key="invertedBoolToVisibilityConverter">
-            <converters:InverseBoolConverter />
-            <BooleanToVisibilityConverter />
-        </converters:ValueConverterGroup>
-
-        <converters:IsGreaterThanConverter x:Key="isGreaterThanConverter" />
-
         <sys:Int32 x:Key="collapseNestLevel">1</sys:Int32>
-        <sys:Boolean x:Key="True">True</sys:Boolean>
-
-        <converters:LikeStatusToIcon x:Key="likeStatusToIcon" />
-        <converters:LikeStatusToBool x:Key="likeStatusToBool" />
-        <converters:GMDCInlineToWPFInline x:Key="inlineConverter" />
-
+        
         <ContextMenu x:Key="emptyContextMenu" Width="0" Height="0" IsEnabled="False"/>
 
         <DataTemplate x:Key="MessageBody">
@@ -155,7 +133,7 @@
                     <iconPacks:PackIconFontAwesome.ContextMenu>
                         <ContextMenu>
                             <MenuItem Command="{Binding StarAction}"
-                                      Visibility="{Binding IsMessageStarred, Converter={StaticResource invertedBoolToVisibilityConverter}}"
+                                      Visibility="{Binding IsMessageStarred, Converter={StaticResource inverseBooleanToVisibilityConverter}}"
                                       Header="Star Message" />
 
                             <MenuItem Command="{Binding StarAction}"
@@ -218,7 +196,7 @@
                     <Grid.ContextMenu>
                         <ContextMenu>
                             <MenuItem Command="{Binding StarAction}"
-                                      Visibility="{Binding IsMessageStarred, Converter={StaticResource invertedBoolToVisibilityConverter}}"
+                                      Visibility="{Binding IsMessageStarred, Converter={StaticResource inverseBooleanToVisibilityConverter}}"
                                       Header="Star Message" />
 
                             <MenuItem Command="{Binding StarAction}"

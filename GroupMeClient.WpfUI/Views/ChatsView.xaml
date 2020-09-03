@@ -14,8 +14,6 @@
     
     <UserControl.Resources>
         <ResourceDictionary>
-            <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
-            
             <Style TargetType="{x:Type ToggleButton}" 
                    BasedOn="{StaticResource MahApps.Styles.Button}"
                    x:Key="FlatButtonNoCaps">
