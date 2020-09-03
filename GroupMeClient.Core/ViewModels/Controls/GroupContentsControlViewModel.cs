@@ -445,6 +445,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                         var oldMsg = this.AllMessages.Items.FirstOrDefault(m => m.Id == msg.Id);
                         var messageHidden = persistContext.HiddenMessages.Find(msg.Id);
+                        var messageStarred = persistContext.StarredMessages.Find(msg.Id);
 
                         if (oldMsg == null)
                         {
@@ -454,7 +455,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
                                 // add new message
                                 var msgVm = new MessageControlViewModel(
                                     msg,
-                                    showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages);
+                                    showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages,
+                                    isHidden: messageHidden != null,
+                                    isStarred: messageStarred != null);
                                 this.AllMessages.Add(msgVm);
 
                                 // add an inline timestamp if needed

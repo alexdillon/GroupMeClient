@@ -131,16 +131,6 @@ namespace GroupMeClient.Core.Caching
         }
 
         /// <summary>
-        /// Returns a shared context instance for persistant storage that can be
-        /// used for lookups. This context should NOT be disposed.
-        /// </summary>
-        /// <returns>A shared <see cref="PersistContext"/>.</returns>
-        public PersistContext OpenSharedReadOnlyContext()
-        {
-            return this.SharedContext.Value;
-        }
-
-        /// <summary>
         /// <see cref="PersistContext"/> provides an interface to the SQLite Database for persistant application storage.
         /// </summary>
         public class PersistContext : DbContext
@@ -257,11 +247,15 @@ namespace GroupMeClient.Core.Caching
             {
                 // Index StarredMessages to improve lookup speed
                 modelBuilder.Entity<StarredMessage>()
+                    .HasIndex(p => p.MessageId);
+                modelBuilder.Entity<StarredMessage>()
                     .HasIndex(p => p.ConversationId);
 
                 // Index HiddenMessages to improve lookup speed
                 modelBuilder.Entity<HiddenMessage>()
-                    .HasIndex(p => p.ConversationId);
+                    .HasIndex(p => p.MessageId);
+                modelBuilder.Entity<HiddenMessage>()
+                   .HasIndex(p => p.ConversationId);
 
                 // Provide JSON serialization for Open Window list
                 modelBuilder.Entity<RecoveryState>()
