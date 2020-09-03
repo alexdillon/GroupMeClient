@@ -15,12 +15,12 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Controls;
+using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Plugins.ViewModels;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Utilities;
 using GroupMeClientApi.Models;
 using ReactiveUI;
-using RestSharp.Authenticators;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -86,6 +86,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.CacheManager = SimpleIoc.Default.GetInstance<CacheManager>();
             this.PersistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            this.PluginHost = SimpleIoc.Default.GetInstance<PluginHost>();
         }
 
         /// <summary>
@@ -280,6 +281,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private CacheManager CacheManager { get; }
 
         private PersistManager PersistManager { get; }
+
+        private PluginHost PluginHost { get; }
 
         private SemaphoreSlim ReloadSem { get; }
 
@@ -737,8 +740,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
         {
-            var command = new Messaging.RunPluginRequestMessage(this.MessageContainer, plugin);
-            Messenger.Default.Send(command);
+            this.PluginHost.RunPlugin(this.MessageContainer, plugin);
         }
 
         private void OpenMessageSuggestionsDialog()

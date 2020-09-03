@@ -232,32 +232,6 @@ namespace GroupMeClient.Core.ViewModels
 
         private Timer RetryTimer { get; set; }
 
-        /// <summary>
-        /// Provides cleanup services after a plugin terminates with a specific <see cref="CacheSession"/>.
-        /// </summary>
-        /// <param name="cacheSession">The session used by the terminated plugin.</param>
-        public static void CleanupPlugin(CacheSession cacheSession)
-        {
-            (cacheSession.Tag as Caching.CacheManager.CacheContext).Dispose();
-        }
-
-        /// <summary>
-        /// Begins execution of a GroupMe plugin (<see cref="IGroupChatPlugin"/>) for a specific <see cref="IMessageContainer"/>.
-        /// </summary>
-        /// <param name="group">The <see cref="IMessageContainer"/> to execute the plugin on.</param>
-        /// <param name="plugin">The plugin that should be executed.</param>
-        public void RunPlugin(IMessageContainer group, IGroupChatPlugin plugin)
-        {
-            var cacheContext = this.CacheManager.OpenNewContext();
-
-            var cacheSession = new CacheSession(
-                 Caching.CacheManager.GetMessagesForGroup(group, cacheContext),
-                 cacheContext.Messages.AsNoTracking(),
-                 cacheContext);
-
-            _ = plugin.Activated(group, cacheSession, this, CleanupPlugin);
-        }
-
         /// <inheritdoc/>
         void IPluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
         {
