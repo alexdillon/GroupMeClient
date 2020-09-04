@@ -77,7 +77,8 @@ namespace GroupMeClient.Core.ViewModels
                 .Bind(this.SortedFilteredGroupChats)
                 .Subscribe();
 
-            _ = this.Loaded();
+            Task.Run(async () => await this.Loaded());
+            //_ = this.Loaded();
         }
 
         /// <summary>

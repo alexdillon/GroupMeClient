@@ -249,7 +249,8 @@ namespace GroupMeClient.WpfUI.ViewModels
         private void InitializeClient()
         {
             // Setup plugins
-            SimpleIoc.Default.GetInstance<IPluginManagerService>().LoadPlugins(this.PluginsPath);
+            Task.Run(() =>
+                SimpleIoc.Default.GetInstance<IPluginManagerService>().LoadPlugins(this.PluginsPath));
 
             // Setup messaging
             Messenger.Default.Register<Core.Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
