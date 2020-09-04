@@ -31,6 +31,8 @@
         <BooleanToVisibilityConverter />
     </converters:ValueConverterGroup>
 
+    <ContextMenu x:Key="emptyContextMenu" Width="0" Height="0" IsEnabled="False"/>
+
     <sys:Int32 x:Key="Zero">0</sys:Int32>
     <sys:Boolean x:Key="True">True</sys:Boolean>
 

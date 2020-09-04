@@ -60,10 +60,6 @@
                             </GridView>
                         </ListView.View>
 
-                        <ListView.Resources>
-                      
-                        </ListView.Resources>
-
                         <ListView.Template>
                             <ControlTemplate>
                                 <ItemsPresenter/>
