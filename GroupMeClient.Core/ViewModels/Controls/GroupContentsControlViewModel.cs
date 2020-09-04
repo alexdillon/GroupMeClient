@@ -334,8 +334,6 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <inheritdoc />
         void IDisposable.Dispose()
         {
-            this.AllMessages.Clear();
-
             this.RetryTimer?.Dispose();
 
             try
@@ -348,6 +346,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
             catch (Exception)
             {
             }
+
+            this.AllMessages.Clear();
         }
 
         /// <inheritdoc />
