@@ -5,21 +5,21 @@ using System.Windows.Controls.Primitives;
 namespace GroupMeClient.WpfUI.Extensions
 {
     /// <summary>
-    /// <see cref="EventFocusAttachment"/> provides support for assigning focus after a <see cref="ToggleButton"/> is clicked.
+    /// <see cref="EventButtonFocusExtensions"/> provides support for assigning focus after a <see cref="ButtonBase"/> is clicked.
     /// </summary>
     /// <remarks>
     /// Adapted from https://stackoverflow.com/a/2212927.
     /// </remarks>
-    public class EventFocusAttachment
+    public class EventButtonFocusExtensions
     {
         /// <summary>
-        /// Gets a property indicating which element should be focused when the <see cref="ToggleButton"/> is activated.
+        /// Gets a property indicating which element should be focused when the <see cref="ButtonBase"/> is activated.
         /// </summary>
         public static readonly DependencyProperty ElementToFocusProperty =
             DependencyProperty.RegisterAttached(
               "ElementToFocus",
               typeof(Control),
-              typeof(EventFocusAttachment),
+              typeof(EventButtonFocusExtensions),
               new UIPropertyMetadata(null, ElementToFocusPropertyChanged));
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace GroupMeClient.WpfUI.Extensions
         /// </summary>
         /// <param name="button">The dependency object to retreive the property from.</param>
         /// <returns>The control that will receive focus.</returns>
-        public static Control GetElementToFocus(ToggleButton button)
+        public static Control GetElementToFocus(ButtonBase button)
         {
             return (Control)button.GetValue(ElementToFocusProperty);
         }
@@ -37,14 +37,14 @@ namespace GroupMeClient.WpfUI.Extensions
         /// </summary>
         /// <param name="button">The dependency object to apply the property to.</param>
         /// <param name="value">The control that will receive focus.</param>
-        public static void SetElementToFocus(ToggleButton button, Control value)
+        public static void SetElementToFocus(ButtonBase button, Control value)
         {
             button.SetValue(ElementToFocusProperty, value);
         }
 
         private static void ElementToFocusPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (sender is ToggleButton button)
+            if (sender is ButtonBase button)
             {
                 button.Click += (s, args) =>
                 {

@@ -96,7 +96,7 @@
                               x:Name="toggleSearchBox"
                               Command="{Binding SearchToggled}"
                               CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"
-                              extensions:EventFocusAttachment.ElementToFocus="{Binding ElementName=searchTextBox}">
+                              extensions:EventButtonFocusExtensions.ElementToFocus="{Binding ElementName=searchTextBox}">
                     <ToggleButton.ContentTemplate>
                         <DataTemplate>
                             <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="#637182" Kind="Magnify"/>
