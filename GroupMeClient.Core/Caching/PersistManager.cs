@@ -20,6 +20,8 @@ namespace GroupMeClient.Core.Caching
         public PersistManager(string databasePath)
         {
             this.Path = databasePath;
+
+            this.SharedContext = new Lazy<PersistContext>(() => new PersistContext(this.Path), isThreadSafe: true);
         }
 
         /// <summary>
@@ -28,6 +30,8 @@ namespace GroupMeClient.Core.Caching
         public SuperIndexer SuperIndexer { get; }
 
         private string Path { get; }
+
+        private Lazy<PersistContext> SharedContext { get; }
 
         /// <summary>
         /// Returns a <see cref="Queryable"/> collection of all the starred messages in a given <see cref="IMessageContainer"/>
@@ -243,11 +247,15 @@ namespace GroupMeClient.Core.Caching
             {
                 // Index StarredMessages to improve lookup speed
                 modelBuilder.Entity<StarredMessage>()
+                    .HasIndex(p => p.MessageId);
+                modelBuilder.Entity<StarredMessage>()
                     .HasIndex(p => p.ConversationId);
 
                 // Index HiddenMessages to improve lookup speed
                 modelBuilder.Entity<HiddenMessage>()
-                    .HasIndex(p => p.ConversationId);
+                    .HasIndex(p => p.MessageId);
+                modelBuilder.Entity<HiddenMessage>()
+                   .HasIndex(p => p.ConversationId);
 
                 // Provide JSON serialization for Open Window list
                 modelBuilder.Entity<RecoveryState>()

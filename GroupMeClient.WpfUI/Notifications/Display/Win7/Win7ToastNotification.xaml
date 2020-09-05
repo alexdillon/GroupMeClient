@@ -30,8 +30,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <BooleanToVisibilityConverter x:Key="boolToVisiblityConverter" />
     </UserControl.Resources>
     
     <Border Padding="12" MinHeight="20" Background="#FF444444">
@@ -53,13 +51,13 @@
                     <!--<Button x:Name="Ok"
                             Content="{Binding RightButtonContent}"
                             DockPanel.Dock="Right"
-                            Visibility="{Binding RightButtonVisibility, Converter={StaticResource boolToVisiblityConverter}}"/>
+                            Visibility="{Binding RightButtonVisibility, Converter={StaticResource boolToVisibilityConverter}}"/>
                     
                     <Button x:Name="Cancel"
                             Content="{Binding LeftButtonContent}"
                             DockPanel.Dock="Right" Margin="0,0,8,0"
                             controls:Notification.CloseOnClick="True"
-                            Visibility="{Binding LeftButtonVisibility, Converter={StaticResource boolToVisiblityConverter}}"/>-->
+                            Visibility="{Binding LeftButtonVisibility, Converter={StaticResource boolToVisibilityConverter}}"/>-->
                 </DockPanel>
                 
                 <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Opacity="0.8" Margin="0,8,0,0"/>

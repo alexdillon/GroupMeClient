@@ -7,20 +7,12 @@
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
-             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
              Background="Transparent">
 
     <Grid>
         <Grid.Resources>
-            <BooleanToVisibilityConverter x:Key="VisibleIfTrueConverter" />
-            
-            <converters:ValueConverterGroup x:Key="VisibleIfFalseConverter">
-                <converters:InverseBoolConverter />
-                <BooleanToVisibilityConverter />
-            </converters:ValueConverterGroup>
-
             <Style x:Key="popupDialogButton" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button">
                 <Setter Property="Width" Value="30" />
                 <Setter Property="Height" Value="30" />
@@ -29,12 +21,12 @@
                 <Setter Property="Foreground" Value="White" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Padding" Value="0" />
-                <Setter Property="Visibility" Value="{Binding Path=IsLoading, Converter={StaticResource VisibleIfFalseConverter}}" />
+                <Setter Property="Visibility" Value="{Binding Path=IsLoading, Converter={StaticResource inverseBooleanToVisibilityConverter}}" />
             </Style>
         </Grid.Resources>
         
         <Controls:ProgressRing IsActive="True"
-                               Visibility="{Binding Path=IsLoading, Converter={StaticResource VisibleIfTrueConverter}}"
+                               Visibility="{Binding Path=IsLoading, Converter={StaticResource boolToVisibilityConverter}}"
                                Width="60" Height="60"
                                HorizontalAlignment="Center"
                                Background="Transparent"/>

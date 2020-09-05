@@ -12,15 +12,14 @@ using DynamicData.Binding;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Controls;
+using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Plugins.ViewModels;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Utilities;
 using GroupMeClientApi.Models;
 using ReactiveUI;
-using RestSharp.Authenticators;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -86,6 +85,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.CacheManager = SimpleIoc.Default.GetInstance<CacheManager>();
             this.PersistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            this.PluginHost = SimpleIoc.Default.GetInstance<PluginHost>();
         }
 
         /// <summary>
@@ -281,6 +281,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private PersistManager PersistManager { get; }
 
+        private PluginHost PluginHost { get; }
+
         private SemaphoreSlim ReloadSem { get; }
 
         private SourceList<MessageControlViewModelBase> AllMessages { get; }
@@ -332,8 +334,6 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <inheritdoc />
         void IDisposable.Dispose()
         {
-            this.AllMessages.Clear();
-
             this.RetryTimer?.Dispose();
 
             try
@@ -346,6 +346,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
             catch (Exception)
             {
             }
+
+            this.AllMessages.Clear();
         }
 
         /// <inheritdoc />
@@ -432,103 +434,109 @@ namespace GroupMeClient.Core.ViewModels.Controls
             {
                 var maxTimeDifference = TimeSpan.FromMinutes(15);
 
-                using (var persistContext = this.PersistManager.OpenNewContext())
+                this.AllMessages.Edit(innerList =>
                 {
-                    // Messages retrieved with the before_id parameter are returned in descending order
-                    // Reverse iterate through the messages collection to go newest->oldest
-                    for (int i = messages.Count - 1; i >= 0; i--)
+                    using (var persistContext = this.PersistManager.OpenNewContext())
                     {
-                        var msg = messages.ElementAt(i);
-
-                        var oldMsg = this.AllMessages.Items.FirstOrDefault(m => m.Id == msg.Id);
-                        var messageHidden = persistContext.HiddenMessages.Find(msg.Id);
-
-                        if (oldMsg == null)
+                        // Messages retrieved with the before_id parameter are returned in descending order
+                        // Reverse iterate through the messages collection to go newest->oldest
+                        for (int i = messages.Count - 1; i >= 0; i--)
                         {
-                            // Skip hidden messages
-                            if (messageHidden == null)
+                            var msg = messages.ElementAt(i);
+
+                            var oldMsg = innerList.FirstOrDefault(m => m.Id == msg.Id);
+                            var messageHidden = persistContext.HiddenMessages.Find(msg.Id);
+                            var messageStarred = persistContext.StarredMessages.Find(msg.Id);
+
+                            if (oldMsg == null)
                             {
-                                // add new message
-                                var msgVm = new MessageControlViewModel(
-                                    msg,
-                                    showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages);
-                                this.AllMessages.Add(msgVm);
-
-                                // add an inline timestamp if needed
-                                if (msg.CreatedAtTime.Subtract(this.LastMarkerTime) > maxTimeDifference)
+                                // Skip hidden messages
+                                if (messageHidden == null)
                                 {
-                                    var messageId = long.Parse(msg.Id);
-                                    var timeStampId = (messageId - 1).ToString();
+                                    // add new message
+                                    var msgVm = new MessageControlViewModel(
+                                        msg,
+                                        showPreviewsOnlyForMultiImages: this.Settings.UISettings.ShowPreviewsForMultiImages,
+                                        isHidden: messageHidden != null,
+                                        isStarred: messageStarred != null);
+                                    innerList.Add(msgVm);
 
-                                    this.AllMessages.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, timeStampId, msgVm.DidISendIt));
-                                    this.LastMarkerTime = msg.CreatedAtTime;
+                                    // add an inline timestamp if needed
+                                    if (msg.CreatedAtTime.Subtract(this.LastMarkerTime) > maxTimeDifference)
+                                    {
+                                        var messageId = long.Parse(msg.Id);
+                                        var timeStampId = (messageId - 1).ToString();
+
+                                        innerList.Add(new InlineTimestampControlViewModel(msg.CreatedAtTime, timeStampId, msgVm.DidISendIt));
+                                        this.LastMarkerTime = msg.CreatedAtTime;
+                                    }
                                 }
                             }
+                            else
+                            {
+                                // update an existing one if needed
+                                oldMsg.Message = msg;
+                            }
                         }
-                        else
+                    }
+
+                    // process read receipt and sent receipts
+                    if (this.MessageContainer.ReadReceipt != null)
+                    {
+                        // Remove old markers
+                        var toRemove = innerList.OfType<InlineReadSentMarkerControlViewModel>().ToList();
+                        foreach (var marker in toRemove)
                         {
-                            // update an existing one if needed
-                            oldMsg.Message = msg;
+                            innerList.Remove(marker);
+                        }
+
+                        // Attach a "Read Receipt" if the read message is displayed.
+                        var matchedMessage = innerList.FirstOrDefault(m => m.Id == this.MessageContainer.ReadReceipt.MessageId);
+                        if (matchedMessage != null)
+                        {
+                            var msgId = long.Parse(matchedMessage.Id);
+
+                            var readMarker = new InlineReadSentMarkerControlViewModel(
+                                this.MessageContainer.ReadReceipt.ReadAtTime,
+                                true,
+                                (msgId + 1).ToString(),
+                                (matchedMessage as MessageControlViewModel).DidISendIt);
+
+                            innerList.Add(readMarker);
+                        }
+
+                        // Attach a "Sent Receipt" to the last message confirmed sent by GroupMe
+                        var me = this.MessageContainer.WhoAmI();
+                        var lastSentMessage = innerList
+                            .OfType<MessageControlViewModel>()
+                            .OrderByDescending(m => m.Id)
+                            .FirstOrDefault(m => m.Message.UserId == me.Id);
+
+                        if (lastSentMessage != null && lastSentMessage != matchedMessage)
+                        {
+                            var msgId = long.Parse(lastSentMessage.Id);
+
+                            var sentMarker = new InlineReadSentMarkerControlViewModel(
+                                lastSentMessage.Message.CreatedAtTime,
+                                false,
+                                (msgId + 1).ToString(),
+                                (lastSentMessage as MessageControlViewModel).DidISendIt);
+
+                            innerList.Add(sentMarker);
+                        }
+
+                        // Send a Read Receipt for the last message received
+                        var lastReceivedMessage = innerList
+                            .OfType<MessageControlViewModel>()
+                            .OrderByDescending(m => m.Id)
+                            .FirstOrDefault(m => m.Message.UserId != me.Id);
+
+                        if (lastReceivedMessage != null && this.MessageContainer is Chat c)
+                        {
+                            var result = Task.Run(async () => await c.SendReadReceipt(lastReceivedMessage.Message)).Result;
                         }
                     }
-                }
-
-                // process read receipt and sent receipts
-                if (this.MessageContainer.ReadReceipt != null)
-                {
-                    // Remove old markers
-                    var toRemove = this.AllMessages.Items.OfType<InlineReadSentMarkerControlViewModel>().ToList();
-                    foreach (var marker in toRemove)
-                    {
-                        this.AllMessages.Remove(marker);
-                    }
-
-                    // Attach a "Read Receipt" if the read message is displayed.
-                    var matchedMessage = this.AllMessages.Items.FirstOrDefault(m => m.Id == this.MessageContainer.ReadReceipt.MessageId);
-                    if (matchedMessage != null)
-                    {
-                        var msgId = long.Parse(matchedMessage.Id);
-
-                        var readMarker = new InlineReadSentMarkerControlViewModel(
-                            this.MessageContainer.ReadReceipt.ReadAtTime,
-                            true,
-                            (msgId + 1).ToString(),
-                            (matchedMessage as MessageControlViewModel).DidISendIt);
-
-                        this.AllMessages.Add(readMarker);
-                    }
-
-                    // Attach a "Sent Receipt" to the last message confirmed sent by GroupMe
-                    var me = this.MessageContainer.WhoAmI();
-                    var lastSentMessage = this.AllMessages.Items
-                        .OfType<MessageControlViewModel>()
-                        .OrderByDescending(m => m.Id)
-                        .FirstOrDefault(m => m.Message.UserId == me.Id);
-
-                    if (lastSentMessage != null && lastSentMessage != matchedMessage)
-                    {
-                        var msgId = long.Parse(lastSentMessage.Id);
-
-                        var sentMarker = new InlineReadSentMarkerControlViewModel(
-                            lastSentMessage.Message.CreatedAtTime,
-                            false,
-                            (msgId + 1).ToString(),
-                            (lastSentMessage as MessageControlViewModel).DidISendIt);
-
-                        this.AllMessages.Add(sentMarker);
-                    }
-
-                    // Send a Read Receipt for the last message received
-                    var lastReceivedMessage = this.AllMessages.Items
-                        .OfType<MessageControlViewModel>()
-                        .OrderByDescending(m => m.Id)
-                        .FirstOrDefault(m => m.Message.UserId != me.Id);
-
-                    if (lastReceivedMessage != null && this.MessageContainer is Chat c)
-                    {
-                        var result = Task.Run(async () => await c.SendReadReceipt(lastReceivedMessage.Message)).Result;
-                    }
-                }
+                });
 
                 if (messages.Count > 0)
                 {
@@ -737,8 +745,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
         {
-            var command = new Messaging.RunPluginRequestMessage(this.MessageContainer, plugin);
-            Messenger.Default.Send(command);
+            this.PluginHost.RunPlugin(this.MessageContainer, plugin);
         }
 
         private void OpenMessageSuggestionsDialog()

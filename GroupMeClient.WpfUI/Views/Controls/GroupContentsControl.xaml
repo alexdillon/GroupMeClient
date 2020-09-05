@@ -7,16 +7,10 @@
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="500">
-    
-    <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
-        <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
-        <sys:Boolean x:Key="True">True</sys:Boolean>
 
+    <UserControl.Resources>
         <Style x:Key="bottomBarButtonStyle" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />

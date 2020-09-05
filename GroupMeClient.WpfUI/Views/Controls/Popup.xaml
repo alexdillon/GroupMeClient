@@ -6,13 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-    xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
     mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="300">
 
-    <UserControl.Resources>
-        <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter" />
-    </UserControl.Resources>
-    
     <Grid Background="#7f000000"
           Visibility="{Binding PopupDialog, Converter={StaticResource nullToVisibilityConverter}}">
         <Grid.RowDefinitions>
