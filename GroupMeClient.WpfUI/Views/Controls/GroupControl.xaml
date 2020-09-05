@@ -17,39 +17,40 @@
     </behaviors:Interaction.Triggers>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <controls:AvatarControl 
+            <controls:AvatarControl 
                 Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
                 Width="55" Height="55" Margin="0, -10, 0, 0"
                 DataContext="{Binding Avatar}"/>
 
-        <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+            <TextBlock Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                 Height="Auto" FontSize="16"
                 TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
                 Text="{Binding Title}">
-            
-            <TextBlock.Style>
-                <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="FontWeight" Value="Regular" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Path=TotalUnreadCount, Converter={StaticResource isZeroConverter}}" Value="False">
-                            <Setter Property="FontWeight" Value="SemiBold" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
-        </TextBlock>
 
-        <TextBlock Text="{Binding LastUpdatedFriendlyTime}"
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="FontWeight" Value="Regular" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=TotalUnreadCount, Converter={StaticResource isZeroConverter}}" Value="False">
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <TextBlock Text="{Binding LastUpdatedFriendlyTime}"
                    Padding="5"
                    Grid.Column="2" 
                    Grid.Row="0" 
@@ -58,17 +59,20 @@
                    FontSize="14"
                    Foreground="{DynamicResource GroupsSidebarFontBrush}"/>
 
-        <TextBlock  Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
-                Height="50" FontSize="13" Foreground="{DynamicResource GroupsSidebarFontBrush}"
-                TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
-                extensions:TextBlockExtensions.InlineList="{Binding QuickPreview, Converter={StaticResource inlineConverter}}"/>
+            <TextBlock Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"
+                   Height="50" FontSize="13" Foreground="{DynamicResource GroupsSidebarFontBrush}"
+                   TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
+                   extensions:TextBlockExtensions.InlineList="{Binding QuickPreview, Converter={StaticResource inlineConverter}}"/>
+        </Grid>
 
+        <!--Unread Item Bubble-->
         <TextBlock Grid.Column="2" Grid.Row="1"
                    HorizontalAlignment="Right"
                    VerticalAlignment="Top"
                    TextAlignment="Center"
                    Height="30"
                    Width="30"
+                   
                    Padding="0,7,0,0"
                    Text="{Binding TotalUnreadCount}"
                    Foreground="White"
@@ -77,14 +81,22 @@
             <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}">
                     <Setter Property="Visibility" Value="Hidden" />
+                    <Setter Property="Margin" Value="0,29,0,0" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Path=TotalUnreadCount, Converter={StaticResource isZeroConverter}}" Value="False">
                             <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
+
+                        <DataTrigger Binding="{Binding 
+                                        Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:GroupControl},
+                                        Converter={StaticResource isGreaterThanConverter}, ConverterParameter=100}"
+                                     Value="False">
+                            <Setter Property="Margin" Value="0,0,0,0" />
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </TextBlock.Style>
-            
+
             <TextBlock.Background>
                 <VisualBrush>
                     <VisualBrush.Visual>
@@ -96,4 +108,5 @@
             </TextBlock.Background>
         </TextBlock>
     </Grid>
+
 </UserControl>

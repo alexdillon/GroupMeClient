@@ -24,46 +24,76 @@
     
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition>
-                <ColumnDefinition.Style>
-                    <Style TargetType="{x:Type ColumnDefinition}">
-                        <Setter Property="Width" Value="350" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsChecked, ElementName=toggleMiniSidebar}" Value="True">
-                                <Setter Property="Width" Value="100" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ColumnDefinition.Style>
-            </ColumnDefinition>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!--Chats Header-->
-        <Grid Grid.Column="0" Grid.Row="0" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <!--First Column SubGrid-->
+        <Grid HorizontalAlignment="Left">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Background="{DynamicResource MahApps.Brushes.Control.Background}">
+            <!--MiniBar Trigger-->
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Setter Property="Width" Value="350" />
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding MiniBarModeEnabled}" Value="True">
+                            <Setter Property="Width" Value="100" />
+
+                            <!--<DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                         From="350"
+                                                         To="100"
+                                                         Duration="0:00:00.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                         From="100"
+                                                         To="350"
+                                                         Duration="0:00:00.1" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>-->
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <!--Chats Header-->
+            <Grid Grid.Row="0" >
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="55"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <ToggleButton Grid.Column="0"
+                <Grid Grid.Row="0" Background="{DynamicResource MahApps.Brushes.Control.Background}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="55"/>
+                    </Grid.RowDefinitions>
+
+                    <ToggleButton Grid.Column="0"
                               IsChecked="{Binding MiniBarModeEnabled, Mode=TwoWay}"
                               HorizontalAlignment="Left" VerticalAlignment="Center"
                               Margin="15,0,0,0"
@@ -75,7 +105,7 @@
                               Style="{StaticResource FlatButtonNoCaps}"
                               x:Name="toggleMiniSidebar" />
 
-                <TextBox Grid.Column="1"
+                    <TextBox Grid.Column="1"
                          Visibility="{Binding IsChecked, ElementName=toggleSearchBox, Converter={StaticResource boolToVisibilityConverter}}"
                          Controls:TextBoxHelper.Watermark="Search..."
                          AcceptsReturn="False"
@@ -86,7 +116,7 @@
                          Text="{Binding GroupChatFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                          x:Name="searchTextBox"/>
 
-                <ToggleButton Grid.Column="2"
+                    <ToggleButton Grid.Column="2"
                               Width="35" Height="35"
                               BorderThickness="0"
                               ToolTip="Search Chats"
@@ -95,14 +125,14 @@
                               Command="{Binding SearchToggled}"
                               CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"
                               extensions:EventButtonFocusExtensions.ElementToFocus="{Binding ElementName=searchTextBox}">
-                    <ToggleButton.ContentTemplate>
-                        <DataTemplate>
-                            <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="#637182" Kind="Magnify"/>
-                        </DataTemplate>
-                    </ToggleButton.ContentTemplate>
-                </ToggleButton>
-                
-                <Button Grid.Column="3"
+                        <ToggleButton.ContentTemplate>
+                            <DataTemplate>
+                                <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="#637182" Kind="Magnify"/>
+                            </DataTemplate>
+                        </ToggleButton.ContentTemplate>
+                    </ToggleButton>
+
+                    <Button Grid.Column="3"
                         Width="35" Height="35"
                         BorderThickness="0"
                         Foreground="#637182"
@@ -111,17 +141,18 @@
                         Margin="5,0,0,0"
                         Command="{Binding Path=MarkAllAsRead}"
                         CommandParameter="{Binding Path=.}">
-                    
-                    <Button.ContentTemplate>
-                        <DataTemplate>
-                            <iconPacks:PackIconEntypo Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" Kind="Unread"/>
-                        </DataTemplate>
-                    </Button.ContentTemplate>
-                </Button>
 
-                <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+                        <Button.ContentTemplate>
+                            <DataTemplate>
+                                <iconPacks:PackIconEntypo Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" Kind="Unread"/>
+                            </DataTemplate>
+                        </Button.ContentTemplate>
+                    </Button>
+
+                    <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+                </Grid>
             </Grid>
-
+            
             <!--All Groups and Chats List-->
             <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Visible" PanningMode="VerticalOnly" CanContentScroll="True"
