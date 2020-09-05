@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace GroupMeClient.WpfUI.Extensions
@@ -16,8 +12,7 @@ namespace GroupMeClient.WpfUI.Extensions
         /// <inheritdoc/>
         protected override void OnEvent(System.EventArgs eventArgs)
         {
-            var routedEventArgs = eventArgs as RoutedEventArgs;
-            if (routedEventArgs != null)
+            if (eventArgs is RoutedEventArgs routedEventArgs)
             {
                 routedEventArgs.Handled = true;
             }

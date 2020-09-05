@@ -76,7 +76,9 @@
     <Compile Include="Converters\Core\LikeStatusToBool.cs" />
     <Compile Include="Converters\Core\GMDCInlineToWPFInline.cs" />
     <Compile Include="Converters\Core\LikeStatusToIcon.cs" />
+    <Compile Include="Extensions\EventButtonFocusExtensions.cs" />
     <Compile Include="Extensions\NotRightClickTrigger.cs" />
+    <Compile Include="Extensions\SetFocusBehavior.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />
     <Compile Include="Native\WindowsThemeUtils.cs" />
     <Compile Include="Notifications\Display\NativeDesktopNotificationProvider.cs" />
@@ -116,7 +118,6 @@
     <Compile Include="Services\WpfThemeService.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />
     <Compile Include="Extensions\TextBlockExtensions.cs" />
-    <Compile Include="Extensions\EventFocusAttachment.cs" />
     <Compile Include="Extensions\FileDragDropPasteHelper.cs" />
     <Compile Include="Converters\InverseBoolConverter.cs" />
     <Compile Include="Converters\IsZeroConverter.cs" />
