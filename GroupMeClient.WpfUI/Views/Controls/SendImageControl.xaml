@@ -12,6 +12,7 @@
              d:DesignHeight="200" d:DesignWidth="200"
              Background="Black"
              FocusManager.FocusedElement="{Binding ElementName=ImageMessageCaption}">
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -21,19 +22,75 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0"
-               MaxWidth="900" 
-               Stretch="Uniform"
-               StretchDirection="DownOnly"
-               HorizontalAlignment="Center"
-               gif:AnimationBehavior.SourceStream="{Binding ContentStream}" />
+        <!--Add Image Button-->
+        <Button Style="{StaticResource PopupDialogButton}"
+                Margin="0,-30,0,0"
+                Command="{Binding AddImage}"
+                extensions:EventButtonFocusExtensions.ElementToFocus="{Binding ElementName=ImageMessageCaption}">
+            <iconPacks:PackIconEntypo Width="15" Height="15" Kind="Plus" />
+        </Button>
 
-        <Controls:ProgressRing IsActive="{Binding IsSending}" 
-                               Width="60" Height="60"
-                               HorizontalAlignment="Center"/>
-        
+        <TabControl Grid.Row="0"
+                    SelectedIndex="0"
+                    SelectedItem="{Binding SelectedImage, Mode=TwoWay}"
+                    Padding="0"
+                    AlternationCount="10000"
+                    BorderThickness="0"
+                    Background="Black"
+                    ItemsSource="{Binding ImagesCollection}">
 
-        <Grid Grid.Column="0" Grid.Row="3"
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding 
+                                        Path=(ItemsControl.AlternationIndex), 
+                                        StringFormat=Image {0},
+                                        Converter={StaticResource plusOneConverter},
+                                        RelativeSource={RelativeSource AncestorType=TabItem, Mode=FindAncestor}}"
+                               FontSize="14"
+                               Foreground="White"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Image MaxWidth="900" 
+                               Stretch="Uniform"
+                               StretchDirection="DownOnly"
+                               HorizontalAlignment="Center"
+                               gif:AnimationBehavior.SourceStream="{Binding ImageStream}" />
+
+                        <Button Content="Select or Paste an Image"
+                                Visibility="{Binding ImageStream, Converter={StaticResource inverseNullToVisibilityConverter}}"
+                                Command="{Binding SelectImageFile}"/>
+                    </Grid>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MahApps.Styles.TabItem}">
+                    <Setter Property="Visibility" Value="Visible"/>
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding DataContext.ImagesCollection.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Value="1">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#ABABAB" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TabControl.ItemContainerStyle>
+        </TabControl>
+
+        <Controls:ProgressRing 
+            Grid.Row="0"
+            IsActive="{Binding IsSending}"
+            Width="60" Height="60"
+            HorizontalAlignment="Center"/>
+
+        <Grid Grid.Column="0" Grid.Row="1"
               Background="{DynamicResource MahApps.Brushes.Control.Background}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
@@ -55,6 +112,8 @@
                 x:Name="ImageMessageCaption"
                 Style="{StaticResource GroupMeClient.Wpf.Styles.SendTextBox}"
                 Grid.Row="1" Grid.Column="1"
+                extensions:FileDragDropPasteHelper.IsFileDragDropPasteEnabled="True"
+                extensions:FileDragDropPasteHelper.FileDragDropPasteTarget="{Binding}"
                 Text="{Binding Path=TypedMessageContents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 
                 <behaviors:Interaction.Triggers>

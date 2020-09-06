@@ -24,9 +24,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public IMessageContainer MessageContainer { get; set; }
 
         /// <summary>
-        /// Gets or sets the data stream for the content that is being sent.
+        ///  Gets a value indicating whether this dialog has contents ready to send.
         /// </summary>
-        public Stream ContentStream { get; set; }
+        public abstract bool HasContents { get; }
 
         /// <summary>
         /// Gets or sets the message the user has composed to send.
@@ -47,10 +47,6 @@ namespace GroupMeClient.Core.ViewModels.Controls
         }
 
         /// <inheritdoc/>
-        public virtual void Dispose()
-        {
-            this.ContentStream?.Close();
-            this.ContentStream?.Dispose();
-        }
+        public abstract void Dispose();
     }
 }

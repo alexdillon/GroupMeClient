@@ -19,6 +19,7 @@ using GroupMeClient.Core.Plugins.ViewModels;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Utilities;
 using GroupMeClientApi.Models;
+using GroupMeClientApi.Models.Attachments;
 using ReactiveUI;
 
 namespace GroupMeClient.Core.ViewModels.Controls
@@ -587,7 +588,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
         }
 
-        private async Task SendContentMessageAsync(GroupMeClientApi.Models.Attachments.Attachment attachment)
+        private async Task SendContentMessageAsync(List<Attachment> attachmentsList)
         {
             if (!(this.SmallDialogManager.PopupDialog is SendContentControlViewModelBase))
             {
@@ -596,7 +597,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             var contentSendDialog = this.SmallDialogManager.PopupDialog as SendContentControlViewModelBase;
 
-            if (contentSendDialog.ContentStream == null)
+            if (!contentSendDialog.HasContents)
             {
                 return;
             }
@@ -605,7 +606,6 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.IsSending = true;
 
             var contents = contentSendDialog.TypedMessageContents;
-            var attachmentsList = new List<GroupMeClientApi.Models.Attachments.Attachment> { attachment };
 
             var clientIdentity = SimpleIoc.Default.GetInstance<IClientIdentityService>();
 
@@ -692,11 +692,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             var dialog = new SendImageControlViewModel()
             {
-                ContentStream = imageData,
                 MessageContainer = this.MessageContainer,
                 TypedMessageContents = this.TypedMessageContents,
-                SendMessage = new RelayCommand<GroupMeClientApi.Models.Attachments.Attachment>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
+                SendMessage = new RelayCommand<List<Attachment>>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
             };
+
+            dialog.ImagesCollection.Add(new SendImageControlViewModel.SendableImage(imageData));
 
             this.SmallDialogManager.PopupDialog = dialog;
         }
@@ -731,7 +732,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 FileName = Path.GetFileName(fileName),
                 MessageContainer = this.MessageContainer,
                 TypedMessageContents = this.TypedMessageContents,
-                SendMessage = new RelayCommand<GroupMeClientApi.Models.Attachments.Attachment>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
+                SendMessage = new RelayCommand<List<Attachment>>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
             };
 
             this.SmallDialogManager.PopupDialog = dialog;
