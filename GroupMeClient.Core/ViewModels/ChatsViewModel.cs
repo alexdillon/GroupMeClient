@@ -78,7 +78,6 @@ namespace GroupMeClient.Core.ViewModels
                 .Subscribe();
 
             Task.Run(async () => await this.Loaded());
-            //_ = this.Loaded();
         }
 
         /// <summary>

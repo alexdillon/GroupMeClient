@@ -129,7 +129,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             if (removeIndex > 0)
             {
-                this.SelectedImage = this.ImagesCollection[removeIndex - 1]; 
+                this.SelectedImage = this.ImagesCollection[removeIndex - 1];
             }
             else
             {
