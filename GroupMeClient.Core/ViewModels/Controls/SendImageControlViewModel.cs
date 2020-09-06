@@ -126,7 +126,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             int removeIndex = this.ImagesCollection.IndexOf(this.SelectedImage);
             this.ImagesCollection.RemoveAt(removeIndex);
-            this.SelectedImage = this.ImagesCollection[removeIndex - 1];
+
+            if (removeIndex > 0)
+            {
+                this.SelectedImage = this.ImagesCollection[removeIndex - 1];
+            }
+            else
+            {
+                this.SelectedImage = this.ImagesCollection[0];
+            }
         }
 
         /// <summary>

@@ -78,7 +78,6 @@ namespace GroupMeClient.Core.ViewModels
                 .Subscribe();
 
             Task.Run(async () => await this.Loaded());
-            //_ = this.Loaded();
         }
 
         /// <summary>
@@ -143,7 +142,7 @@ namespace GroupMeClient.Core.ViewModels
         {
             this.CacheManager.SuperIndexer.BeginAsyncTransaction();
 
-            _ = this.LoadGroupsAndChats(true);
+            _ = Task.Run(async () => await this.LoadGroupsAndChats(true));
 
             var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
             if (groupVm != null)
@@ -157,7 +156,7 @@ namespace GroupMeClient.Core.ViewModels
         /// <inheritdoc/>
         async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
         {
-            _ = this.LoadGroupsAndChats(true);
+            _ = Task.Run(async () => await this.LoadGroupsAndChats(true));
             var chatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
             if (chatVm != null)
             {
