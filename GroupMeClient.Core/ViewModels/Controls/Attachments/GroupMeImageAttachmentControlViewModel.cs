@@ -31,7 +31,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             this.PreviewMode = previewMode;
 
             this.IsLoading = true;
-            _ = this.LoadImageAttachment();
+            Task.Run(this.LoadImageAttachment);
         }
 
         /// <summary>

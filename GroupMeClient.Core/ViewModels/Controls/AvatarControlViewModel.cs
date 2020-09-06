@@ -26,7 +26,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.ImageDownloader = imageDownloader;
             this.IsFullQuality = fullQuality;
 
-            _ = this.LoadAvatarAsync();
+            Task.Run(this.LoadAvatarAsync);
         }
 
         /// <summary>

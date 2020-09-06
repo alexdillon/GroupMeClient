@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GroupMeClient.Core.Controls.Documents;
@@ -63,7 +64,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 if (this.Avatar != null && this.MessageContainer.ImageOrAvatarUrl != this.Avatar.CurrentlyRenderedUrl)
                 {
                     // Reload the avatar if the latest URL returned doesn't match what's currently rendered.
-                    _ = this.Avatar.LoadAvatarAsync();
+                    Task.Run(this.Avatar.LoadAvatarAsync);
                 }
 
                 this.RaisePropertyChangeForAll();
