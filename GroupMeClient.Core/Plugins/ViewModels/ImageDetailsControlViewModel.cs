@@ -43,7 +43,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             this.SenderAvatar = new AvatarControlViewModel(this.Message, this.ImageDownloader);
             this.ImageUrl = ImageGalleryWindowViewModel.GetAttachmentContentUrls(this.Message.Attachments, false)[this.ImageIndex];
 
-            _ = this.LoadImage();
+            Task.Run(this.LoadImage);
         }
 
         /// <summary>
