@@ -30,6 +30,25 @@
             <iconPacks:PackIconEntypo Width="15" Height="15" Kind="Plus" />
         </Button>
 
+        <!--Delete Image Button-->
+        <Button Margin="30,-30,0,0"
+                Command="{Binding DeleteImage}"
+                extensions:EventButtonFocusExtensions.ElementToFocus="{Binding ElementName=ImageMessageCaption}">
+            <iconPacks:FontAwesome Width="15" Height="15" Kind="TrashAltSolid" />
+            
+            <Button.Style>
+                <Style TargetType="Button" BasedOn="{StaticResource PopupDialogButton}">
+                    <Setter Property="Visibility" Value="Visible"/>
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding DataContext.ImagesCollection.Count, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}" Value="1">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
         <TabControl Grid.Row="0"
                     SelectedIndex="0"
                     SelectedItem="{Binding SelectedImage, Mode=TwoWay}"

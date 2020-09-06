@@ -30,6 +30,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.ImagesCollection = new ObservableCollection<SendableImage>();
             this.AddImage = new RelayCommand(this.AddBlankImage);
+            this.DeleteImage = new RelayCommand(this.DeleteSelectedImage);
         }
 
         /// <summary>
@@ -46,6 +47,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// Gets the command to be executed to attach another image.
         /// </summary>
         public ICommand AddImage { get; }
+
+        /// <summary>
+        /// Gets the command to be executed to remove the selected image.
+        /// </summary>
+        public ICommand DeleteImage { get; }
 
         /// <summary>
         /// Gets or sets the image that is currently selected.
@@ -114,6 +120,13 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             this.ImagesCollection.Add(new SendableImage());
             this.SelectedImage = this.ImagesCollection.Last();
+        }
+
+        private void DeleteSelectedImage()
+        {
+            int removeIndex = this.ImagesCollection.IndexOf(this.SelectedImage);
+            this.ImagesCollection.RemoveAt(removeIndex);
+            this.SelectedImage = this.ImagesCollection[removeIndex - 1];
         }
 
         /// <summary>
