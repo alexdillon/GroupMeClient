@@ -12,7 +12,7 @@ namespace GroupMeClient.WpfUI.Converters
         /// <inheritdoc/>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var valStr = value.ToString();
+            var valStr = value?.ToString();
             return valStr == "0" || string.IsNullOrEmpty(valStr);
         }
 

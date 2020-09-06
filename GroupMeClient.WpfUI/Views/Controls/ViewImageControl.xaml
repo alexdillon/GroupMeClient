@@ -12,26 +12,13 @@
              Background="Transparent">
 
     <Grid>
-        <Grid.Resources>
-            <Style x:Key="popupDialogButton" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button">
-                <Setter Property="Width" Value="30" />
-                <Setter Property="Height" Value="30" />
-                <Setter Property="HorizontalAlignment" Value="Left" />
-                <Setter Property="VerticalAlignment" Value="Top" />
-                <Setter Property="Foreground" Value="White" />
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="Visibility" Value="{Binding Path=IsLoading, Converter={StaticResource inverseBooleanToVisibilityConverter}}" />
-            </Style>
-        </Grid.Resources>
-        
         <Controls:ProgressRing IsActive="True"
                                Visibility="{Binding Path=IsLoading, Converter={StaticResource boolToVisibilityConverter}}"
                                Width="60" Height="60"
                                HorizontalAlignment="Center"
                                Background="Transparent"/>
 
-        <extensions:ZoomBorder x:Name="border" ClipToBounds="False" IsManipulationEnabled="true" RenderTransformOrigin="0.5, 0.5">
+        <extensions:ZoomBorder x:Name="border" ClipToBounds="False" IsManipulationEnabled="True" RenderTransformOrigin="0.5, 0.5">
             <extensions:ZoomBorder.RenderTransform>
                 <RotateTransform Angle="{Binding RotateAngle}" CenterX="0" CenterY="0" />
             </extensions:ZoomBorder.RenderTransform>
@@ -45,8 +32,9 @@
         </extensions:ZoomBorder>
 
         <!--Save Image Button-->
-        <Button Style="{StaticResource popupDialogButton}"
+        <Button Style="{StaticResource PopupDialogButton}"
                 Margin="0,-30,0,0"
+                Visibility="{Binding Path=IsLoading, Converter={StaticResource inverseBooleanToVisibilityConverter}}"
                 Command="{Binding Path=SaveImage}">
             <iconPacks:PackIconEntypo Width="15"
                                       Height="15"
@@ -54,8 +42,9 @@
         </Button>
 
         <!--Copy Image Button-->
-        <Button Style="{StaticResource popupDialogButton}"
+        <Button Style="{StaticResource PopupDialogButton}"
                 Margin="30,-30,0,0"
+                Visibility="{Binding Path=IsLoading, Converter={StaticResource inverseBooleanToVisibilityConverter}}"
                 Command="{Binding Path=CopyImage}">
             <iconPacks:PackIconFontAwesome Width="15"
                                            Height="15"
@@ -63,8 +52,9 @@
         </Button>
 
         <!--Rotate Image Button-->
-        <Button Style="{StaticResource popupDialogButton}"
+        <Button Style="{StaticResource PopupDialogButton}"
                 Margin="60,-30,0,0"
+                Visibility="{Binding Path=IsLoading, Converter={StaticResource inverseBooleanToVisibilityConverter}}"
                 Command="{Binding Path=RotateImage}" >
             <iconPacks:PackIconMaterial Width="15"
                                         Height="15"

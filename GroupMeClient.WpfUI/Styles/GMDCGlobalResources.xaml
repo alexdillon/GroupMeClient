@@ -10,6 +10,7 @@
     <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
     <converters:IsZeroConverter x:Key="isZeroConverter"/>
     <converters:IsGreaterThanConverter x:Key="isGreaterThanConverter" />
+    <converters:PlusOneConverter x:Key="plusOneConverter" />
 
     <converters:GMDCInlineToWPFInline x:Key="inlineConverter" />
     <converters:LikeStatusToIcon x:Key="likeStatusToIcon" />
@@ -28,6 +29,11 @@
 
     <converters:ValueConverterGroup x:Key="inverseBooleanToVisibilityConverter">
         <converters:InverseBoolConverter />
+        <BooleanToVisibilityConverter />
+    </converters:ValueConverterGroup>
+
+    <converters:ValueConverterGroup x:Key="inverseNullToVisibilityConverter">
+        <converters:IsZeroConverter />
         <BooleanToVisibilityConverter />
     </converters:ValueConverterGroup>
 
