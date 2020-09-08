@@ -257,7 +257,6 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
             // Setup messaging
             Messenger.Default.Register<UnreadRequestMessage>(this, this.UpdateNotificationCount);
             Messenger.Default.Register<DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
-            Messenger.Default.Register<RunPluginRequestMessage>(this, this.IndexAndRunCommand);
             Messenger.Default.Register<SwitchToPageRequestMessage>(this, this.SwitchToPageCommand);
             Messenger.Default.Register<RebootRequestMessage>(this, (r) => this.RebootReasons.Add(r.Reason), true);
             Messenger.Default.Register<DialogRequestMessage>(this, this.OpenBigPopup);
@@ -495,11 +494,6 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
             {
                 this.IsReconnecting = this.DisconnectedComponentCount > 0 || this.TaskManager.RunningTasks.Count > 0;
             });
-        }
-
-        private void IndexAndRunCommand(RunPluginRequestMessage cmd)
-        {
-            this.SearchViewModel.RunPlugin(cmd.MessageContainer, cmd.Plugin);
         }
 
         private void SwitchToPageCommand(SwitchToPageRequestMessage cmd)
