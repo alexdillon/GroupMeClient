@@ -26,6 +26,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private Message message;
         private AvatarControlViewModel avatar;
         private RepliedMessageControlViewModel repliedMessage;
+        private bool isStarred;
+        private bool isHidden;
 
         private bool showDetails;
 
@@ -36,7 +38,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <param name="showLikers">Indicates whether the like status for a message should be displayed.</param>
         /// <param name="showPreviewsOnlyForMultiImages">Indicates whether only previews, or full images, should be shown for multi-images.</param>
         /// <param name="nestLevel">The number of <see cref="MessageControlViewModel"/>s deeply nested this is. Top level messages are 0.</param>
-        public MessageControlViewModel(Message message, bool? showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0)
+        /// <param name="isHidden">A boolean value indicating whether this message is hidden. Null indicated the status is unknown.</param>
+        /// <param name="isStarred">A boolean value indicating whether this message is starred. Null indicated the status is unknown.</param>
+        public MessageControlViewModel(Message message, bool? showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0, bool? isHidden = null, bool? isStarred = null)
         {
             this.Message = message;
 
@@ -54,6 +58,17 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.LoadAttachments();
             this.LoadInlinesForMessageBody();
+
+            // If starred and hidden status was pre-determined by the hosting control, don't re-query it.
+            if (isStarred != null && isHidden != null)
+            {
+                this.IsMessageStarred = isStarred ?? false;
+                this.IsMessageHidden = isHidden ?? false;
+            }
+            else
+            {
+                this.LoadStarAndHiddenStatus();
+            }
         }
 
         /// <summary>
@@ -177,7 +192,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 lock (this.messageLock)
                 {
                     this.message = value;
-                    this.UpdateDisplay();
+                    this.RedrawMessage();
                 }
             }
         }
@@ -370,15 +385,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public bool IsMessageStarred
         {
-            get
-            {
-                var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
-                using (var cache = persistManager.OpenNewContext())
-                {
-                    var result = cache.StarredMessages.Find(this.Message.Id);
-                    return result != null;
-                }
-            }
+            get => this.isStarred;
+            private set => this.Set(() => this.IsMessageStarred, ref this.isStarred, value);
         }
 
         /// <summary>
@@ -386,28 +394,13 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public bool IsMessageHidden
         {
-            get
-            {
-                var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
-                using (var cache = persistManager.OpenNewContext())
-                {
-                    var result = cache.HiddenMessages.Find(this.Message.Id);
-                    return result != null;
-                }
-            }
+            get => this.isHidden;
+            private set => this.Set(() => this.IsMessageHidden, ref this.isHidden, value);
         }
 
         private string HiddenText { get; set; } = string.Empty;
 
         private bool ShowPreviewsOnlyForMultiImages { get; }
-
-        /// <summary>
-        /// Redraw the message immediately.
-        /// </summary>
-        public void UpdateDisplay()
-        {
-            this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
-        }
 
         /// <summary>
         /// Likes a message and updates the Liker's Display area for the current <see cref="Message"/>.
@@ -442,7 +435,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 }
             }
 
-            this.UpdateDisplay();
+            this.RedrawLikers();
         }
 
         /// <summary>
@@ -463,7 +456,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                     this.Message.FavoritedBy.Add(liker);
                 }
 
-                this.UpdateDisplay();
+                this.RedrawLikers();
             }
         }
 
@@ -806,7 +799,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 }
 
                 context.SaveChanges();
-                this.RaisePropertyChanged(nameof(this.IsMessageStarred));
+                this.LoadStarAndHiddenStatus();
             }
         }
 
@@ -821,7 +814,35 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 }
 
                 context.SaveChanges();
-                this.RaisePropertyChanged(nameof(this.IsMessageHidden));
+                this.LoadStarAndHiddenStatus();
+            }
+        }
+
+        private void RedrawMessage()
+        {
+            this.RaisePropertyChanged(nameof(this.Sender));
+            this.RaisePropertyChanged(nameof(this.SentTimeString));
+            this.RaisePropertyChanged(nameof(this.SenderPlatform));
+            this.RaisePropertyChanged(nameof(this.DidISendItColoring));
+            this.RaisePropertyChanged(nameof(this.DidISendIt));
+
+            this.RedrawLikers();
+        }
+
+        private void RedrawLikers()
+        {
+            this.RaisePropertyChanged(nameof(this.LikeStatus));
+            this.RaisePropertyChanged(nameof(this.LikeCount));
+            this.RaisePropertyChanged(nameof(this.LikedByAvatars));
+        }
+
+        private void LoadStarAndHiddenStatus()
+        {
+            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            using (var cache = persistManager.OpenNewContext())
+            {
+                this.IsMessageStarred = cache.StarredMessages.Find(this.Message.Id) != null;
+                this.IsMessageHidden = cache.HiddenMessages.Find(this.Message.Id) != null;
             }
         }
 

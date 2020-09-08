@@ -6,7 +6,6 @@
              xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
              xmlns:gif="clr-namespace:XamlAnimatedGif;assembly=XamlAnimatedGif"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="400"
@@ -14,15 +13,11 @@
              Foreground="White"
              FocusManager.FocusedElement="{Binding ElementName=NextImageButton}">
 
-    <UserControl.Resources>
-        <converters:PercentageConverter x:Key="percentageConverter" />
-    </UserControl.Resources>
-
     <UserControl.InputBindings>
         <KeyBinding Key="Left" Command="{Binding ShowPreviousImage}" />
         <KeyBinding Key="Right" Command="{Binding ShowNextImage}" />
     </UserControl.InputBindings>
-
+    
     <Grid
          Width="{Binding Converter={StaticResource percentageConverter}, RelativeSource={RelativeSource AncestorType={x:Type controls:Popup}, Mode=FindAncestor}, Path=ActualWidth, ConverterParameter=0.8}"
          Height="{Binding Converter={StaticResource percentageConverter}, RelativeSource={RelativeSource AncestorType={x:Type controls:Popup}, Mode=FindAncestor}, Path=ActualHeight, ConverterParameter=0.8}">

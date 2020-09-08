@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors" 
-             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
              Background="{DynamicResource MahApps.Brushes.Control.Background}">
@@ -16,10 +15,6 @@
                 <behaviors:InvokeCommandAction Command="{Binding Clicked}" />
             </behaviors:EventTrigger>
         </behaviors:Interaction.Triggers>
-
-        <Grid.Resources>
-            <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
-        </Grid.Resources>
 
         <Image Grid.Row="0"
                Grid.RowSpan="2"

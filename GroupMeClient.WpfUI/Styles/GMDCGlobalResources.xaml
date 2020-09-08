@@ -1,0 +1,45 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters">
+
+    <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
+    
+    <converters:PercentageConverter x:Key="percentageConverter" />
+    <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
+    <converters:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+    <converters:IsZeroConverter x:Key="isZeroConverter"/>
+    <converters:IsGreaterThanConverter x:Key="isGreaterThanConverter" />
+    <converters:PlusOneConverter x:Key="plusOneConverter" />
+
+    <converters:GMDCInlineToWPFInline x:Key="inlineConverter" />
+    <converters:LikeStatusToIcon x:Key="likeStatusToIcon" />
+    <converters:LikeStatusToBool x:Key="likeStatusToBool" />
+
+
+    <converters:ValueConverterGroup x:Key="isDeeplyNestedConverter">
+        <converters:IsGreaterThanConverter />
+        <converters:InverseBoolConverter />
+    </converters:ValueConverterGroup>
+
+    <converters:ValueConverterGroup x:Key="isGreaterThanZeroToVisibleConverter">
+        <converters:IsGreaterThanConverter />
+        <BooleanToVisibilityConverter />
+    </converters:ValueConverterGroup>
+
+    <converters:ValueConverterGroup x:Key="inverseBooleanToVisibilityConverter">
+        <converters:InverseBoolConverter />
+        <BooleanToVisibilityConverter />
+    </converters:ValueConverterGroup>
+
+    <converters:ValueConverterGroup x:Key="inverseNullToVisibilityConverter">
+        <converters:IsZeroConverter />
+        <BooleanToVisibilityConverter />
+    </converters:ValueConverterGroup>
+
+    <ContextMenu x:Key="emptyContextMenu" Width="0" Height="0" IsEnabled="False"/>
+
+    <sys:Int32 x:Key="Zero">0</sys:Int32>
+    <sys:Boolean x:Key="True">True</sys:Boolean>
+
+</ResourceDictionary>

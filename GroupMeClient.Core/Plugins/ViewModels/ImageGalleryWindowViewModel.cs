@@ -382,7 +382,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
                 this.ImageIndex = imageIndex;
                 this.ImageDownloader = downloader;
 
-                _ = this.LoadImage();
+                Task.Run(this.LoadImage);
             }
 
             /// <summary>

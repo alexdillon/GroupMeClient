@@ -13,8 +13,15 @@ namespace GroupMeClient.WpfUI.Converters
         /// <inheritdoc/>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            var parameterCorrect = parameter;
+
+            if (parameter.GetType() != value.GetType())
+            {
+                parameterCorrect = System.Convert.ChangeType(parameter, value.GetType());
+            }
+
             var comparer = new Comparer(culture);
-            return comparer.Compare(value, parameter) > 0;
+            return comparer.Compare(value, parameterCorrect) > 0;
         }
 
         /// <inheritdoc/>

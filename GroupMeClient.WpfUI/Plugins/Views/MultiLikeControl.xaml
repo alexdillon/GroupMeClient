@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:converters="clr-namespace:GroupMeClient.WpfUI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
              Background="Black">
@@ -16,11 +15,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-        <Grid.Resources>
-            <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter"/>
-            <converters:InverseBoolConverter x:Key="inverseBoolConverter"/>
-        </Grid.Resources>
 
         <Button Grid.Row="0"
                 Content="Enable Multi-Like Mode"
