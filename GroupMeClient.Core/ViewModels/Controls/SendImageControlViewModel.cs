@@ -26,7 +26,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public SendImageControlViewModel()
         {
-            this.SendButtonClicked = new RelayCommand(async () => await this.Send(), () => !this.IsSending);
+            this.SendButtonClicked = new RelayCommand(async () => await this.SendAsync(), () => !this.IsSending);
 
             this.ImagesCollection = new ObservableCollection<SendableImage>();
             this.AddImage = new RelayCommand(this.AddBlankImage);
@@ -89,7 +89,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
         }
 
-        private async Task Send()
+        private async Task SendAsync()
         {
             var attachments = new List<Attachment>();
 
@@ -179,7 +179,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             /// <inheritdoc/>
             public void Dispose()
             {
-                ((IDisposable)this.ImageStream).Dispose();
+                (this.ImageStream as IDisposable)?.Dispose();
             }
 
             /// <summary>
