@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
+using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
 
 namespace GroupMeClient.Core.ViewModels.Controls
@@ -14,6 +15,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
     /// </summary>
     public class SendFileControlViewModel : SendContentControlViewModelBase
     {
+        private int uploadPercentage;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SendFileControlViewModel"/> class.
         /// </summary>
@@ -36,6 +39,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// Gets or sets the name of the document.
         /// </summary>
         public string FileName { get; set; }
+
+        /// <summary>
+        /// Gets the file upload progress as an integer percentage value.
+        /// </summary>
+        public int UploadPercentage
+        {
+            get => this.uploadPercentage;
+            private set => this.Set(() => this.UploadPercentage, ref this.uploadPercentage, value);
+        }
 
         /// <inheritdoc/>
         public override bool HasContents => this.ContentStream != null;
@@ -67,11 +79,25 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                 this.UploadCancellationSource = new CancellationTokenSource();
 
+                var uploadProgress = new UploadProgress();
+
+                // Only show progress if the file is larger than the block size
+                // Otherwise the progress will immediately jump to 100%.
+                if (file.Length > FileAttachment.DefaultUploadBlockSize)
+                {
+                    uploadProgress.BytesUploadedChanged += (e) =>
+                    {
+                        var percentage = e.BytesUploaded / (double)file.Length;
+                        this.UploadPercentage = (int)(percentage * 100);
+                    };
+                }
+
                 var attachment = await FileAttachment.CreateFileAttachment(
                     this.FileName,
                     file,
                     this.MessageContainer,
-                    this.UploadCancellationSource);
+                    this.UploadCancellationSource,
+                    uploadProgress);
 
                 var attachmentList = new List<Attachment> { attachment };
 
