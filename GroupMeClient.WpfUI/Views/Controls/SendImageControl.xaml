@@ -103,6 +103,13 @@
             </TabControl.ItemContainerStyle>
         </TabControl>
 
+        <Controls:MetroProgressBar Grid.Row="0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Bottom"
+                                   Value="{Binding UploadPercentage, Mode=OneWay}"
+                                   Visibility="{Binding UploadPercentage, Converter={StaticResource inverseZeroToVisibilityConverter}}"
+                                   Height="13" />
+
         <Controls:ProgressRing 
             Grid.Row="0"
             IsActive="{Binding IsSending}"
