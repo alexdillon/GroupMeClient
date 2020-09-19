@@ -616,7 +616,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 vm = new TwitterAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
             }
-            else if (imageExtensions.Contains(linkExtension))
+            else if (imageExtensions.Contains(linkExtension) && Uri.TryCreate(text, UriKind.Absolute, out var _))
             {
                 vm = new ImageLinkAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
