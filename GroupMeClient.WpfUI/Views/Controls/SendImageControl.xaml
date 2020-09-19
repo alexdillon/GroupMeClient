@@ -107,6 +107,8 @@
                                    HorizontalAlignment="Stretch"
                                    VerticalAlignment="Bottom"
                                    Value="{Binding UploadPercentage, Mode=OneWay}"
+                                   Foreground="{DynamicResource MessageTheyLikedBrush}"
+                                   Opacity="0.8"
                                    Visibility="{Binding UploadPercentage, Converter={StaticResource inverseZeroToVisibilityConverter}}"
                                    Height="13" />
 
