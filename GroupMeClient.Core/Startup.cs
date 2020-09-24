@@ -6,6 +6,7 @@ using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Tasks;
 using GroupMeClient.Core.ViewModels;
 using GroupMeClientPlugin.GroupChat;
+using System.Net;
 
 namespace GroupMeClient.Core
 {
@@ -27,6 +28,8 @@ namespace GroupMeClient.Core
             SimpleIoc.Default.Register(() => new SettingsManager(startupParameters.SettingsFilePath));
             SimpleIoc.Default.Register(() => new PluginInstaller(startupParameters.PluginPath));
             SimpleIoc.Default.Register<PluginHost>();
+
+            AdditionalStartupConfig();
         }
 
         /// <summary>
@@ -43,6 +46,12 @@ namespace GroupMeClient.Core
             SimpleIoc.Default.Register<IPluginUIIntegration>(
                 () => SimpleIoc.Default.GetInstance<SearchViewModel>(),
                 createInstanceImmediately: false);
+        }
+
+        private static void AdditionalStartupConfig()
+        {
+            // Windows 7 and prior will not have TLS1.2 enabled by default in all cases.
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
         }
 
         /// <summary>
