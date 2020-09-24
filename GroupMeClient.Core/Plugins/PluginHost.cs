@@ -52,7 +52,7 @@ namespace GroupMeClient.Core.Plugins
         /// <param name="cacheSession">The session used by the terminated plugin.</param>
         private void CleanupPlugin(CacheSession cacheSession)
         {
-            (cacheSession.Tag as Caching.CacheManager.CacheContext).Dispose();
+            (cacheSession.Tag as Caching.CacheManager.CacheContext)?.Dispose();
         }
     }
 }

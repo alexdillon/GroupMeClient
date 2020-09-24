@@ -18,6 +18,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid>
@@ -42,11 +43,19 @@
                        Text="{Binding FileName}" />
         </Grid>
 
+        <Controls:MetroProgressBar Grid.Row="1"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Bottom"
+                                   Value="{Binding UploadPercentage, Mode=OneWay}"
+                                   Foreground="{DynamicResource MessageTheyLikedBrush}"
+                                   Visibility="{Binding UploadPercentage, Converter={StaticResource inverseZeroToVisibilityConverter}}"
+                                   Height="13" />
+
         <Controls:ProgressRing IsActive="{Binding IsSending}" 
                                Width="60" Height="60"
                                HorizontalAlignment="Center"/>
 
-        <Grid Grid.Column="0" Grid.Row="3"
+        <Grid Grid.Column="0" Grid.Row="2"
               Background="{DynamicResource MahApps.Brushes.Control.Background}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
