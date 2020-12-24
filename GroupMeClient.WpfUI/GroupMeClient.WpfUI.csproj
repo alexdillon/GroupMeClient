@@ -484,7 +484,7 @@
       <Version>1.0.1.11</Version>
     </PackageReference>
     <PackageReference Include="NuGet.CommandLine">
-      <Version>5.6.0</Version>
+      <Version>5.8.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -506,7 +506,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="VirtualizingWrapPanel">
-      <Version>1.5.0</Version>
+      <Version>1.5.3</Version>
     </PackageReference>
     <PackageReference Include="XamlAnimatedGif">
       <Version>1.2.3</Version>
