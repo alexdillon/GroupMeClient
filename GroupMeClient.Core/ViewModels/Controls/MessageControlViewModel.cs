@@ -265,6 +265,10 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 {
                     return "iOS";
                 }
+                else if (this.message.SourceGuid.StartsWith("iosshareext"))
+                {
+                    return "iOS (Share)";
+                }
                 else if (!this.message.SourceGuid.Contains("-"))
                 {
                     return "Web Client";
