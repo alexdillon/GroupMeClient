@@ -494,6 +494,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 repliedMessageId = parts[1].Substring(1);
                 totalAttachedImages--; // Don't count the preview bitmap as an image
             }
+            else if (this.Message.Attachments.OfType<ReplyAttachment>().Count() > 0)
+            {
+                // GroupMe native reply, added in 10/2020.
+                var replyAttach = this.Message.Attachments.OfType<ReplyAttachment>().First();
+                repliedMessageId = replyAttach.RepliedMessageId;
+            }
 
             bool hasMultipleImages = totalAttachedImages > 1;
             bool doneWithAttachments = false;
