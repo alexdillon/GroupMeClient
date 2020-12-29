@@ -159,7 +159,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
 
         private IPluginUIIntegration UIIntegration { get; }
 
-        private IEnumerable<Message> MessagesWithAttachments { get; set; }
+        private IQueryable<Message> MessagesWithAttachments { get; set; }
 
         private int FilteredMessagesCount { get; set; }
 
