@@ -159,13 +159,13 @@ namespace GroupMeClient.Core.Plugins.ViewModels
 
         private IPluginUIIntegration UIIntegration { get; }
 
-        private IEnumerable<Message> MessagesWithAttachments { get; set; }
+        private IQueryable<Message> MessagesWithAttachments { get; set; }
 
-        private int MessagesWithAttachmentsCount { get; set; }
+        private int FilteredMessagesCount { get; set; }
 
         private int ImagesPerPage { get; } = 100;
 
-        private int LastPageIndex { get; set; }
+        private int LastShownMessageIndex { get; set; }
 
         private bool DeferSearchUpdating { get; set; }
 
@@ -233,7 +233,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             }
 
             this.Images.Clear();
-            this.LastPageIndex = -1;
+            this.LastShownMessageIndex = 0;
 
             var startDate = this.FilterStartDate;
             var endDate = (this.FilterEndDate == DateTime.MinValue) ? DateTime.Now : this.FilterEndDate.AddDays(1);
@@ -261,15 +261,13 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             }
 
             this.MessagesWithAttachments = messagesFromMember
-                .AsEnumerable()
-                .Where(m => m.Attachments.Count > 0)
                 .Where(m => m.CreatedAtUnixTime >= startDateUnix)
                 .Where(m => m.CreatedAtUnixTime <= endDateUnix)
-                .OrderByDescending(m => m.CreatedAtTime);
+                .OrderByDescending(m => m.CreatedAtUnixTime);
 
-            this.MessagesWithAttachmentsCount = this.MessagesWithAttachments.Count();
+            this.FilteredMessagesCount = this.MessagesWithAttachments.Count();
 
-            _ = this.LoadNextPage();
+            Task.Run(this.LoadNextPage);
         }
 
         private async Task LoadNextPage()
@@ -279,33 +277,36 @@ namespace GroupMeClient.Core.Plugins.ViewModels
                 return;
             }
 
-            this.LastPageIndex += 1;
-            var range = this.MessagesWithAttachments.Skip(this.LastPageIndex * this.ImagesPerPage).Take(this.ImagesPerPage);
-
-            if (this.LastPageIndex * this.ImagesPerPage > this.MessagesWithAttachmentsCount)
-            {
-              return;
-            }
-
             var newItems = new List<AttachmentImageItem>();
 
-            foreach (var msg in range)
+            var startingRange = this.MessagesWithAttachments.Skip(this.LastShownMessageIndex);
+
+            foreach (var msg in startingRange)
             {
-                var imageUrls = GetAttachmentContentUrls(msg.Attachments, true);
-
-                var numberOfImages = imageUrls.Length;
-                if (this.FilterReplyScreenshots && MessageUtils.IsGMDCReply(msg))
+                if (newItems.Count < this.ImagesPerPage && this.LastShownMessageIndex < this.FilteredMessagesCount)
                 {
-                    numberOfImages -= 1;
-                }
+                    var imageUrls = GetAttachmentContentUrls(msg.Attachments, true);
 
-                for (int i = 0; i < numberOfImages; i++)
-                {
-                    if (!string.IsNullOrEmpty(imageUrls[i]))
+                    var numberOfImages = imageUrls.Length;
+                    if (this.FilterReplyScreenshots && MessageUtils.IsGMDCReply(msg))
                     {
-                        var entry = new AttachmentImageItem(imageUrls[i], msg, i, this.GroupChat.Client.ImageDownloader);
-                        newItems.Add(entry);
+                        numberOfImages -= 1;
                     }
+
+                    for (int i = 0; i < numberOfImages; i++)
+                    {
+                        if (!string.IsNullOrEmpty(imageUrls[i]))
+                        {
+                            var entry = new AttachmentImageItem(imageUrls[i], msg, i, this.GroupChat.Client.ImageDownloader);
+                            newItems.Add(entry);
+                        }
+                    }
+
+                    this.LastShownMessageIndex++;
+                }
+                else
+                {
+                    break;
                 }
             }
 
@@ -326,7 +327,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
                 return;
             }
 
-            var currentItem = this.Images.First(x => x.Message.Id == item.Message.Id);
+            var currentItem = this.Images.First(x => x.Url == item.Url);
             var currentIndex = this.Images.IndexOf(currentItem);
             var previousItem = currentIndex > 0 ? this.Images[currentIndex - 1] : null;
             var nextItem = currentIndex < this.Images.Count - 1 ? this.Images[currentIndex + 1] : null;
@@ -413,7 +414,10 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             /// </summary>
             public int ImageIndex { get; }
 
-            private string Url { get; }
+            /// <summary>
+            /// Gets the URL of the image displayed in this attachment.
+            /// </summary>
+            public string Url { get; }
 
             private ImageDownloader ImageDownloader { get; }
 
