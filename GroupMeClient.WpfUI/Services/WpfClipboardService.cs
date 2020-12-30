@@ -5,6 +5,9 @@ using GroupMeClient.Core.Services;
 
 namespace GroupMeClient.WpfUI.Services
 {
+    /// <summary>
+    /// <see cref="WpfClipboardService"/> implements clipboard services on the Wpf/Windows platform.
+    /// </summary>
     public class WpfClipboardService : IClipboardService
     {
         /// <inheritdoc/>
