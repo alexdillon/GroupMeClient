@@ -753,7 +753,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             while (true)
             {
-                if (!Regex.IsMatch(text, Utilities.RegexUtils.UrlRegex))
+                if (!Regex.IsMatch(text, RegexUtils.UrlRegex))
                 {
                     // no URLs contained
                     result.Add(new Run(text));
@@ -772,12 +772,31 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                     try
                     {
-                        var hyperlink = new Hyperlink(new Run(match.Value))
-                        {
-                            NavigateUri = new Uri(match.Value),
-                        };
+                        var navigableUrl = match.Value;
 
-                        result.Add(hyperlink);
+                        if (navigableUrl.EndsWith("))"))
+                        {
+                            // URLs almost never end in )). This is typically a case where an entire URL containing a ) is wrapped in parenthesis.
+                            // Trim the closing parenthesis.
+                            navigableUrl = navigableUrl.Substring(0, navigableUrl.Length - 1);
+
+                            result.Add(this.MakeHyperLink(navigableUrl));
+                            result.Add(new Run(")"));
+                        }
+                        else if (navigableUrl.EndsWith(")") && !navigableUrl.Contains("("))
+                        {
+                            // It's extremely uncommon for a URL to contain a ) without a matching (.
+                            // This is most likely caused by the entire URL being contained in parenthesis, and should be stripped.
+                            navigableUrl = navigableUrl.Substring(0, navigableUrl.Length - 1);
+
+                            result.Add(this.MakeHyperLink(navigableUrl));
+                            result.Add(new Run(")"));
+                        }
+                        else
+                        {
+                            // Normal URL with no strange parenthesis to handle
+                            result.Add(this.MakeHyperLink(navigableUrl));
+                        }
                     }
                     catch (Exception)
                     {
@@ -792,6 +811,14 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
 
             return result;
+        }
+
+        private Hyperlink MakeHyperLink(string url)
+        {
+            return new Hyperlink(new Run(url))
+            {
+                NavigateUri = new Uri(url),
+            };
         }
 
         private void StarMessage()
