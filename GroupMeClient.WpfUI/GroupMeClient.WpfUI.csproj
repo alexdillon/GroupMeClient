@@ -77,6 +77,7 @@
     <Compile Include="Converters\Core\GMDCInlineToWPFInline.cs" />
     <Compile Include="Converters\Core\LikeStatusToIcon.cs" />
     <Compile Include="Converters\PlusOneConverter.cs" />
+    <Compile Include="Extensions\CopyableHyperlink.cs" />
     <Compile Include="Extensions\EventButtonFocusExtensions.cs" />
     <Compile Include="Extensions\NotRightClickTrigger.cs" />
     <Compile Include="Extensions\SetFocusBehavior.cs" />
@@ -237,7 +238,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Styles\Hyperlink.xaml">
+    <Page Include="Styles\CopyableHyperlink.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Ioc;
+﻿using System.Net;
+using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Services;
@@ -6,7 +7,6 @@ using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Tasks;
 using GroupMeClient.Core.ViewModels;
 using GroupMeClientPlugin.GroupChat;
-using System.Net;
 
 namespace GroupMeClient.Core
 {
