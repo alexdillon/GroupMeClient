@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Data;
 using GroupMeClient.Core.Services;
+using GroupMeClient.WpfUI.Extensions;
 
 namespace GroupMeClient.WpfUI.Converters
 {
@@ -75,7 +76,7 @@ namespace GroupMeClient.WpfUI.Converters
         private System.Windows.Documents.Hyperlink GMDCHyperlinkToWpfHyperlink(Core.Controls.Documents.Hyperlink hyperlink)
         {
             var span = this.GMDCSpanToWpfSpan(hyperlink);
-            var result = new System.Windows.Documents.Hyperlink(span)
+            var result = new CopyableHyperlink(span)
             {
                 NavigateUri = hyperlink.NavigateUri,
             };

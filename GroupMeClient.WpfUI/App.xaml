@@ -29,7 +29,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Styles/GroupMeLight.xaml" />
                 
                 <ResourceDictionary Source="pack://application:,,,/Styles/GroupNameDropdown.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Styles/Hyperlink.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/CopyableHyperlink.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/MessageControlResources.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/PopupDialog.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/ScrollBar.xaml" />
