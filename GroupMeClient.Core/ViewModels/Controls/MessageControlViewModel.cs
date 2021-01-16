@@ -479,6 +479,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             // Check if this is a GroupMe Desktop Client Reply-extension message
             var repliedMessageId = string.Empty;
+            bool isGroupMeNativeReply = false;
             if (MessageUtils.IsReplyGen1(this.Message))
             {
                 // Method 1, where /rmid:<message-id> is appended to the end of the message body
@@ -499,6 +500,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 // GroupMe native reply, added in 10/2020.
                 var replyAttach = this.Message.Attachments.OfType<ReplyAttachment>().First();
                 repliedMessageId = replyAttach.RepliedMessageId;
+                isGroupMeNativeReply = true;
             }
 
             bool hasMultipleImages = totalAttachedImages > 1;
@@ -573,7 +575,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 var repliedMessageAttachment = new RepliedMessageControlViewModel(repliedMessageId, container, this.NestLevel);
 
                 // Replace the photo of the original message that is included for non-GMDC clients with the real message
-                if (this.AttachedItems.Count > 0)
+                if (this.AttachedItems.Count > 0 && !isGroupMeNativeReply)
                 {
                     var lastIndexOfPhoto = -1;
                     for (int i = 0; i < this.AttachedItems.Count; i++)
