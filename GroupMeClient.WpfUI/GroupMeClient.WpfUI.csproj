@@ -77,6 +77,7 @@
     <Compile Include="Converters\Core\GMDCInlineToWPFInline.cs" />
     <Compile Include="Converters\Core\LikeStatusToIcon.cs" />
     <Compile Include="Converters\PlusOneConverter.cs" />
+    <Compile Include="Extensions\CopyableHyperlink.cs" />
     <Compile Include="Extensions\EventButtonFocusExtensions.cs" />
     <Compile Include="Extensions\NotRightClickTrigger.cs" />
     <Compile Include="Extensions\SetFocusBehavior.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Services\WpfClipboardService.cs" />
     <Compile Include="Services\WpfDispatcherService.cs" />
+    <Compile Include="Services\WpfImageService.cs" />
     <Compile Include="Services\WpfMessageBoxService.cs" />
     <Compile Include="Services\WpfMessageRenderer.cs" />
     <Compile Include="Converters\IsGreaterThanConverter.cs" />
@@ -236,7 +238,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Styles\Hyperlink.xaml">
+    <Page Include="Styles\CopyableHyperlink.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -457,19 +459,19 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MahApps.Metro">
-      <Version>2.2.0</Version>
+      <Version>2.4.3</Version>
     </PackageReference>
     <PackageReference Include="MahApps.Metro.IconPacks.Entypo">
-      <Version>4.4.0</Version>
+      <Version>4.8.0</Version>
     </PackageReference>
     <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome">
-      <Version>4.4.0</Version>
+      <Version>4.8.0</Version>
     </PackageReference>
     <PackageReference Include="MahApps.Metro.IconPacks.Material">
-      <Version>4.4.0</Version>
+      <Version>4.8.0</Version>
     </PackageReference>
     <PackageReference Include="MahApps.Metro.IconPacks.Octicons">
-      <Version>4.4.0</Version>
+      <Version>4.8.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
       <Version>6.1.0</Version>
@@ -481,10 +483,10 @@
       <Version>1.1.19</Version>
     </PackageReference>
     <PackageReference Include="Notification.WPF">
-      <Version>1.0.2.1</Version>
+      <Version>1.0.1.11</Version>
     </PackageReference>
     <PackageReference Include="NuGet.CommandLine">
-      <Version>5.6.0</Version>
+      <Version>5.8.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -495,7 +497,7 @@
       <Version>1.0.0</Version>
     </PackageReference>
     <PackageReference Include="ReactiveUI.WPF">
-      <Version>11.5.17</Version>
+      <Version>13.0.27</Version>
     </PackageReference>
     <PackageReference Include="Squirrel.Windows">
       <Version>1.9.1</Version>
@@ -506,7 +508,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="VirtualizingWrapPanel">
-      <Version>1.5.0</Version>
+      <Version>1.5.3</Version>
     </PackageReference>
     <PackageReference Include="XamlAnimatedGif">
       <Version>1.2.3</Version>

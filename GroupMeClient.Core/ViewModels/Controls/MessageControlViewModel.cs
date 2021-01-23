@@ -265,6 +265,10 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 {
                     return "iOS";
                 }
+                else if (this.message.SourceGuid.StartsWith("iosshareext"))
+                {
+                    return "iOS (Share)";
+                }
                 else if (!this.message.SourceGuid.Contains("-"))
                 {
                     return "Web Client";
@@ -475,6 +479,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             // Check if this is a GroupMe Desktop Client Reply-extension message
             var repliedMessageId = string.Empty;
+            bool isGroupMeNativeReply = false;
             if (MessageUtils.IsReplyGen1(this.Message))
             {
                 // Method 1, where /rmid:<message-id> is appended to the end of the message body
@@ -489,6 +494,13 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 var parts = this.Message.SourceGuid.Split('-');
                 repliedMessageId = parts[1].Substring(1);
                 totalAttachedImages--; // Don't count the preview bitmap as an image
+            }
+            else if (this.Message.Attachments.OfType<ReplyAttachment>().Count() > 0)
+            {
+                // GroupMe native reply, added in 10/2020.
+                var replyAttach = this.Message.Attachments.OfType<ReplyAttachment>().First();
+                repliedMessageId = replyAttach.RepliedMessageId;
+                isGroupMeNativeReply = true;
             }
 
             bool hasMultipleImages = totalAttachedImages > 1;
@@ -563,7 +575,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 var repliedMessageAttachment = new RepliedMessageControlViewModel(repliedMessageId, container, this.NestLevel);
 
                 // Replace the photo of the original message that is included for non-GMDC clients with the real message
-                if (this.AttachedItems.Count > 0)
+                if (this.AttachedItems.Count > 0 && !isGroupMeNativeReply)
                 {
                     var lastIndexOfPhoto = -1;
                     for (int i = 0; i < this.AttachedItems.Count; i++)
@@ -616,7 +628,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 vm = new TwitterAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
             }
-            else if (imageExtensions.Contains(linkExtension))
+            else if (imageExtensions.Contains(linkExtension) && Uri.TryCreate(text, UriKind.Absolute, out var _))
             {
                 vm = new ImageLinkAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
@@ -743,7 +755,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             while (true)
             {
-                if (!Regex.IsMatch(text, Utilities.RegexUtils.UrlRegex))
+                if (!Regex.IsMatch(text, RegexUtils.UrlRegex))
                 {
                     // no URLs contained
                     result.Add(new Run(text));
@@ -762,12 +774,31 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                     try
                     {
-                        var hyperlink = new Hyperlink(new Run(match.Value))
-                        {
-                            NavigateUri = new Uri(match.Value),
-                        };
+                        var navigableUrl = match.Value;
 
-                        result.Add(hyperlink);
+                        if (navigableUrl.EndsWith("))"))
+                        {
+                            // URLs almost never end in )). This is typically a case where an entire URL containing a ) is wrapped in parenthesis.
+                            // Trim the closing parenthesis.
+                            navigableUrl = navigableUrl.Substring(0, navigableUrl.Length - 1);
+
+                            result.Add(this.MakeHyperLink(navigableUrl));
+                            result.Add(new Run(")"));
+                        }
+                        else if (navigableUrl.EndsWith(")") && !navigableUrl.Contains("("))
+                        {
+                            // It's extremely uncommon for a URL to contain a ) without a matching (.
+                            // This is most likely caused by the entire URL being contained in parenthesis, and should be stripped.
+                            navigableUrl = navigableUrl.Substring(0, navigableUrl.Length - 1);
+
+                            result.Add(this.MakeHyperLink(navigableUrl));
+                            result.Add(new Run(")"));
+                        }
+                        else
+                        {
+                            // Normal URL with no strange parenthesis to handle
+                            result.Add(this.MakeHyperLink(navigableUrl));
+                        }
                     }
                     catch (Exception)
                     {
@@ -782,6 +813,14 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
 
             return result;
+        }
+
+        private Hyperlink MakeHyperLink(string url)
+        {
+            return new Hyperlink(new Run(url))
+            {
+                NavigateUri = new Uri(url),
+            };
         }
 
         private void StarMessage()

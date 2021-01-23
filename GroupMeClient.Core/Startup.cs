@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Ioc;
+﻿using System.Net;
+using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Services;
@@ -27,6 +28,8 @@ namespace GroupMeClient.Core
             SimpleIoc.Default.Register(() => new SettingsManager(startupParameters.SettingsFilePath));
             SimpleIoc.Default.Register(() => new PluginInstaller(startupParameters.PluginPath));
             SimpleIoc.Default.Register<PluginHost>();
+
+            AdditionalStartupConfig();
         }
 
         /// <summary>
@@ -43,6 +46,12 @@ namespace GroupMeClient.Core
             SimpleIoc.Default.Register<IPluginUIIntegration>(
                 () => SimpleIoc.Default.GetInstance<SearchViewModel>(),
                 createInstanceImmediately: false);
+        }
+
+        private static void AdditionalStartupConfig()
+        {
+            // Windows 7 and prior will not have TLS1.2 enabled by default in all cases.
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
         }
 
         /// <summary>

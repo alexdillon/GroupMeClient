@@ -10,6 +10,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Controls;
 using GroupMeClient.Core.Services;
+using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
 
 namespace GroupMeClient.Core.ViewModels.Controls
@@ -20,13 +21,14 @@ namespace GroupMeClient.Core.ViewModels.Controls
     public class SendImageControlViewModel : SendContentControlViewModelBase, IDragDropPasteTarget
     {
         private SendableImage selectedImage;
+        private int uploadPercentage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SendImageControlViewModel"/> class.
         /// </summary>
         public SendImageControlViewModel()
         {
-            this.SendButtonClicked = new RelayCommand(async () => await this.Send(), () => !this.IsSending);
+            this.SendButtonClicked = new RelayCommand(async () => await this.SendAsync(), () => !this.IsSending);
 
             this.ImagesCollection = new ObservableCollection<SendableImage>();
             this.AddImage = new RelayCommand(this.AddBlankImage);
@@ -62,6 +64,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
             set => this.Set(() => this.SelectedImage, ref this.selectedImage, value);
         }
 
+        /// <summary>
+        /// Gets the image upload progress as an integer percentage value.
+        /// </summary>
+        public int UploadPercentage
+        {
+            get => this.uploadPercentage;
+            private set => this.Set(() => this.UploadPercentage, ref this.uploadPercentage, value);
+        }
+
         /// <inheritdoc/>
         public override bool HasContents => this.ImagesCollection.Count > 0;
 
@@ -89,13 +100,16 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
         }
 
-        private async Task Send()
+        private async Task SendAsync()
         {
             var attachments = new List<Attachment>();
 
             foreach (var sendableImage in this.ImagesCollection)
             {
                 byte[] imageBytes;
+
+                // Show the progress for the current image being uploaded
+                this.SelectedImage = sendableImage;
 
                 using (var ms = new MemoryStream())
                 {
@@ -106,7 +120,20 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                 this.IsSending = true;
 
-                var attachment = await ImageAttachment.CreateImageAttachment(imageBytes, this.MessageContainer);
+                var progress = new UploadProgress();
+
+                // Only show progress if the file is larger than the block size
+                // Otherwise the progress will immediately jump to 100%.
+                if (imageBytes.Length > ImageAttachment.DefaultUploadBlockSize)
+                {
+                    progress.BytesUploadedChanged += (e) =>
+                    {
+                        var percentage = e.BytesUploaded / (double)imageBytes.Length;
+                        this.UploadPercentage = (int)(percentage * 100);
+                    };
+                }
+
+                var attachment = await ImageAttachment.CreateImageAttachment(imageBytes, this.MessageContainer, progress);
                 attachments.Add(attachment);
             }
 
@@ -179,7 +206,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             /// <inheritdoc/>
             public void Dispose()
             {
-                ((IDisposable)this.ImageStream).Dispose();
+                (this.ImageStream as IDisposable)?.Dispose();
             }
 
             /// <summary>
