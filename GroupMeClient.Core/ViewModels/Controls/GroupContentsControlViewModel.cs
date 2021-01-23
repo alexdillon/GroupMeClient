@@ -354,15 +354,16 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <inheritdoc />
         void IDragDropPasteTarget.OnFileDrop(string[] filepaths)
         {
-            var supportedImageExtensions = GroupMeClientApi.Models.Attachments.ImageAttachment.SupportedExtensions.ToList();
-            var supportedFileExtensions = GroupMeClientApi.Models.Attachments.FileAttachment.GroupMeDocumentMimeTypeMapper.SupportedExtensions.ToList();
+            var supportedImageExtensions = ImageAttachment.SupportedExtensions.ToList();
+            var supportedFileExtensions = FileAttachment.GroupMeDocumentMimeTypeMapper.SupportedExtensions.ToList();
+
+            var imagesToSend = new List<string>();
 
             foreach (var file in filepaths)
             {
                 if (supportedImageExtensions.Contains(Path.GetExtension(file).ToLower()))
                 {
-                    this.ShowImageSendDialog(file);
-                    break;
+                    imagesToSend.Add(file);
                 }
                 else if (supportedFileExtensions.Contains(Path.GetExtension(file).ToLower()))
                 {
@@ -376,13 +377,18 @@ namespace GroupMeClient.Core.ViewModels.Controls
                     break;
                 }
             }
+
+            if (imagesToSend.Count > 0)
+            {
+                this.ShowImageSendDialog(imagesToSend);
+            }
         }
 
         /// <inheritdoc />
         void IDragDropPasteTarget.OnImageDrop(byte[] image)
         {
             var memoryStream = new MemoryStream(image);
-            this.ShowImageSendDialog(memoryStream);
+            this.ShowImageSendDialog(new List<Stream>() { memoryStream });
         }
 
         private async Task LoadMoreAsync(bool updateNewest = false)
@@ -683,12 +689,24 @@ namespace GroupMeClient.Core.ViewModels.Controls
             return success;
         }
 
-        private void ShowImageSendDialog(string imageFileName)
+        private void ShowImageSendDialog(IEnumerable<string> imageFileNames)
         {
-            this.ShowImageSendDialog(File.OpenRead(imageFileName));
+            var imagesData = new List<Stream>();
+
+            foreach (var file in imageFileNames)
+            {
+                imagesData.Add(File.OpenRead(file));
+            }
+
+            this.ShowImageSendDialog(imagesData);
         }
 
-        private void ShowImageSendDialog(Stream imageData)
+        private void ShowImageSendDialog(string imageFileName)
+        {
+            this.ShowImageSendDialog(new List<Stream>() { File.OpenRead(imageFileName) });
+        }
+
+        private void ShowImageSendDialog(IEnumerable<Stream> imagesData)
         {
             var dialog = new SendImageControlViewModel()
             {
@@ -697,7 +715,10 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 SendMessage = new RelayCommand<List<Attachment>>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
             };
 
-            dialog.ImagesCollection.Add(new SendImageControlViewModel.SendableImage(imageData));
+            foreach (var image in imagesData)
+            {
+                dialog.ImagesCollection.Add(new SendImageControlViewModel.SendableImage(image));
+            }
 
             this.SmallDialogManager.PopupDialog = dialog;
         }
