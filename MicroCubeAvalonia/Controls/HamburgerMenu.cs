@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Media;
 
@@ -42,11 +43,17 @@ namespace MicroCubeAvalonia.Controls
             AvaloniaProperty.Register<HamburgerMenu, HamburgerMenuItem>(
                 nameof(SelectedItem),
                 inherits: true,
-                defaultBindingMode: Avalonia.Data.BindingMode.TwoWay,
-                notifying: (a,b) => SelectionChanged(a, b),
-                validate: SelectionValidator);
+                defaultBindingMode: BindingMode.TwoWay,
+                notifying: (a,b) => SelectionChanged(a, b, isOption: false));
 
-        public static AvaloniaProperty SelectedContentProperty =
+        public static AvaloniaProperty SelectedOptionProperty =
+              AvaloniaProperty.Register<HamburgerMenu, HamburgerMenuItem>(
+                  nameof(SelectedOption),
+                  inherits: true,
+                  defaultBindingMode: BindingMode.TwoWay,
+                  notifying: (a, b) => SelectionChanged(a, b, isOption: true));
+
+        public static AvaloniaProperty<object> SelectedContentProperty =
             AvaloniaProperty.RegisterDirect<HamburgerMenu, object>(
                 nameof(SelectedContent),
                 (hm) => hm.SelectedContent);
@@ -93,32 +100,47 @@ namespace MicroCubeAvalonia.Controls
             set
             {
                 this.SetValue(SelectedItemProperty, value);
-                SelectionChanged(this, true);
+                this.SetValue(SelectedOptionProperty, null);
+                SelectionChanged(
+                   avaloniaObject: this,
+                   done: true,
+                   isOption: false);
+            }
+        }
+
+        public HamburgerMenuItem SelectedOption
+        {
+            get => (HamburgerMenuItem)this.GetValue(SelectedOptionProperty);
+            set
+            {
+                this.SetValue(SelectedOptionProperty, value);
+                this.SetValue(SelectedItemProperty, null);
+                SelectionChanged(
+                    avaloniaObject: this,
+                    done: true,
+                    isOption: true);
             }
         }
 
         public object SelectedContent
         {
-            get => this.SelectedItem?.Tag;
+            get => this.SelectedItem?.Tag ?? this.SelectedOption?.Tag;
         }
 
-        public static void SelectionChanged(IAvaloniaObject avaloniaObject, bool done)
+        public static void SelectionChanged(IAvaloniaObject avaloniaObject, bool done, bool isOption)
         {
             if (avaloniaObject is HamburgerMenu hamburgerMenu && done)
             {
-                hamburgerMenu.RaisePropertyChanged(SelectedContentProperty, null, hamburgerMenu.SelectedContent);
-            }
-        }
+                if (isOption && hamburgerMenu.SelectedOption != null)
+                {
+                    avaloniaObject.SetValue(SelectedItemProperty, null);
+                }
+                else if (!isOption && hamburgerMenu.SelectedItem != null)
+                {
+                    avaloniaObject.SetValue(SelectedOptionProperty, null);
+                }
 
-        public static HamburgerMenuItem SelectionValidator(HamburgerMenu menu, HamburgerMenuItem item)
-        {
-            if (item != null)
-            {
-                return item;
-            }
-            else
-            {
-                return menu.SelectedItem;
+                hamburgerMenu.RaisePropertyChanged<object>(SelectedContentProperty, null, hamburgerMenu.SelectedContent);
             }
         }
     }

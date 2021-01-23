@@ -11,15 +11,16 @@ namespace GroupMeClient.AvaloniaUI.Services
         /// <inheritdoc/>
         public void ShowMessageBox(MessageBoxParams parameters)
         {
-            var msg = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(new MessageBox.Avalonia.DTO.MessageBoxStandardParams
-            {
-                ButtonDefinitions = MessageBox.Avalonia.Enums.ButtonEnum.Ok,
-                ContentTitle = parameters.Title,
-                ContentMessage = parameters.Message,
-                Icon = MessageBox.Avalonia.Enums.Icon.Error,
-            });
+            //var msg = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(new MessageBox.Avalonia.DTO.MessageBoxStandardParams
+            //{
+            //    ButtonDefinitions = MessageBox.Avalonia.Enums.ButtonEnum.Ok,
+            //    ContentTitle = parameters.Title,
+            //    ContentMessage = parameters.Message,
+            //    Icon = MessageBox.Avalonia.Enums.Icon.Error,
+            //});
+            //msg.ShowDialog(GroupMeClient.AvaloniaUI.Program.GroupMeMainWindow).Wait();
 
-            msg.ShowDialog(GroupMeClient.AvaloniaUI.Program.GroupMeMainWindow).Wait();
+            //TODO10
         }
 
         private MessageBox.Avalonia.Enums.ButtonEnum GetButtons(MessageBoxParams.Buttons buttons)

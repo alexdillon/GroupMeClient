@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 
 namespace MicroCubeAvalonia.Controls
 {
@@ -23,6 +24,12 @@ namespace MicroCubeAvalonia.Controls
                 (hmi) => hmi.ToolTip,
                 (hmi, value) => hmi.ToolTip = value);
 
+        public static AvaloniaProperty TagProperty =
+            AvaloniaProperty.RegisterDirect<HamburgerMenuItem, object>(
+                nameof(Tag),
+                (hmi) => hmi.Tag,
+                (hmi, value) => hmi.Tag = value);
+
         //public static AvaloniaProperty ShowItemProperty =
         //  AvaloniaProperty.RegisterDirect<HamburgerMenuItem, bool>(
         //      nameof(ShowItem),
@@ -34,6 +41,8 @@ namespace MicroCubeAvalonia.Controls
         public string Label { get; set; }
 
         public string ToolTip { get; set; }
+
+        public object Tag { get; set; }
 
         //public bool ShowItem { get; set; } = true;
     }

@@ -2,7 +2,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Logging.Serilog;
 using Avalonia.ReactiveUI;
 using GroupMeClient.AvaloniaUI.ViewModels;
 using GroupMeClient.AvaloniaUI.Views;
