@@ -20,6 +20,7 @@ namespace GroupMeClient.AvaloniaUI
             SimpleIoc.Default.Register<GroupMeClient.Core.Services.IMessageRendererService, GroupMeClient.AvaloniaUI.Services.AvaloniaMessageRenderer>();
             SimpleIoc.Default.Register<GroupMeClient.Core.Services.IUserInterfaceDispatchService, GroupMeClient.AvaloniaUI.Services.AvaloniaDispatcherService>();
             SimpleIoc.Default.Register<GroupMeClient.Core.Services.IRestoreService, GroupMeClient.AvaloniaUI.Services.AvaloniaRestoreService>();
+            SimpleIoc.Default.Register<GroupMeClient.Core.Services.IImageService, GroupMeClient.AvaloniaUI.Services.AvaloniaImageService>();
 
             // Setup Themeing
             SimpleIoc.Default.Register<GroupMeClient.Core.Services.IThemeService, GroupMeClient.AvaloniaUI.Services.AvaloniaThemeService>();
