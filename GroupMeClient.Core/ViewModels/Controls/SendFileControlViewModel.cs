@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
+using GroupMeClientApi;
+using GroupMeClientApi.Models.Attachments;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -12,6 +15,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
     /// </summary>
     public class SendFileControlViewModel : SendContentControlViewModelBase
     {
+        private int uploadPercentage;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SendFileControlViewModel"/> class.
         /// </summary>
@@ -19,6 +24,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             this.SendButtonClicked = new RelayCommand(async () => await this.Send(), () => !this.IsSending);
         }
+
+        /// <summary>
+        /// Gets or sets the data stream for the content that is being sent.
+        /// </summary>
+        public Stream ContentStream { get; set; }
 
         /// <summary>
         /// Gets the command to be executed when the send button is clicked.
@@ -30,13 +40,26 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public string FileName { get; set; }
 
+        /// <summary>
+        /// Gets the file upload progress as an integer percentage value.
+        /// </summary>
+        public int UploadPercentage
+        {
+            get => this.uploadPercentage;
+            private set => this.Set(() => this.UploadPercentage, ref this.uploadPercentage, value);
+        }
+
+        /// <inheritdoc/>
+        public override bool HasContents => this.ContentStream != null;
+
         private CancellationTokenSource UploadCancellationSource { get; set; }
 
         /// <inheritdoc />
         public override void Dispose()
         {
             this.UploadCancellationSource?.Cancel();
-            base.Dispose();
+            this.ContentStream?.Close();
+            this.ContentStream?.Dispose();
         }
 
         private async Task Send()
@@ -56,15 +79,31 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                 this.UploadCancellationSource = new CancellationTokenSource();
 
-                var attachment = await GroupMeClientApi.Models.Attachments.FileAttachment.CreateFileAttachment(
+                var uploadProgress = new UploadProgress();
+
+                // Only show progress if the file is larger than the block size
+                // Otherwise the progress will immediately jump to 100%.
+                if (file.Length > FileAttachment.DefaultUploadBlockSize)
+                {
+                    uploadProgress.BytesUploadedChanged += (e) =>
+                    {
+                        var percentage = e.BytesUploaded / (double)file.Length;
+                        this.UploadPercentage = (int)(percentage * 100);
+                    };
+                }
+
+                var attachment = await FileAttachment.CreateFileAttachment(
                     this.FileName,
                     file,
                     this.MessageContainer,
-                    this.UploadCancellationSource);
+                    this.UploadCancellationSource,
+                    uploadProgress);
 
-                if (this.SendMessage.CanExecute(attachment))
+                var attachmentList = new List<Attachment> { attachment };
+
+                if (this.SendMessage.CanExecute(attachmentList))
                 {
-                    this.SendMessage.Execute(attachment);
+                    this.SendMessage.Execute(attachmentList);
                 }
             }
             catch (TaskCanceledException)

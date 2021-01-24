@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
@@ -12,7 +13,7 @@ namespace MicroCubeAvalonia.Controls
     /// Adapted from the MahApps Metro implementation at
     /// https://github.com/MahApps/MahApps.Metro/blob/develop/src/MahApps.Metro/Controls/ProgressRing.cs.
     /// </remarks>
-    public class ProgressRing : ContentControl
+    public class ProgressRing : TemplatedControl
     {
         public static readonly AvaloniaProperty IsActiveProperty =
             AvaloniaProperty.Register<ProgressRing, bool>(

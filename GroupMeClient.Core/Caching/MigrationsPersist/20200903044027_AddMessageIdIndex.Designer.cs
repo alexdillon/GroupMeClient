@@ -2,14 +2,16 @@
 using GroupMeClient.Core.Caching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GroupMeClient.Core.Caching.MigrationsPersist
 {
     [DbContext(typeof(PersistManager.PersistContext))]
-    partial class PersistContextModelSnapshot : ModelSnapshot
+    [Migration("20200903044027_AddMessageIdIndex")]
+    partial class AddMessageIdIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

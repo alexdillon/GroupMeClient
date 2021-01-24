@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GroupMeClient.Core.Services
 {
@@ -9,6 +7,10 @@ namespace GroupMeClient.Core.Services
     /// </summary>
     public interface IMessageBoxService
     {
-        void ShowMessageBox(MessageBoxParams paramters);
+        /// <summary>
+        /// Displays a message box.
+        /// </summary>
+        /// <param name="parameters">The parameters for the message box to display.</param>
+        void ShowMessageBox(MessageBoxParams parameters);
     }
 }

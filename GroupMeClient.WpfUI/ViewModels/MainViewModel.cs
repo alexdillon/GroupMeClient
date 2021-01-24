@@ -249,12 +249,12 @@ namespace GroupMeClient.WpfUI.ViewModels
         private void InitializeClient()
         {
             // Setup plugins
-            SimpleIoc.Default.GetInstance<IPluginManagerService>().LoadPlugins(this.PluginsPath);
+            Task.Run(() =>
+                SimpleIoc.Default.GetInstance<IPluginManagerService>().LoadPlugins(this.PluginsPath));
 
             // Setup messaging
             Messenger.Default.Register<Core.Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
             Messenger.Default.Register<Core.Messaging.DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
-            Messenger.Default.Register<Core.Messaging.RunPluginRequestMessage>(this, this.IndexAndRunCommand);
             Messenger.Default.Register<Core.Messaging.SwitchToPageRequestMessage>(this, this.SwitchToPageCommand);
             Messenger.Default.Register<Core.Messaging.RebootRequestMessage>(this, (r) => this.RebootReasons.Add(r.Reason), true);
             Messenger.Default.Register<Core.Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
@@ -506,11 +506,6 @@ namespace GroupMeClient.WpfUI.ViewModels
             {
                 this.IsReconnecting = this.DisconnectedComponentCount > 0 || this.TaskManager.RunningTasks.Count > 0;
             });
-        }
-
-        private void IndexAndRunCommand(Core.Messaging.RunPluginRequestMessage cmd)
-        {
-            this.SearchViewModel.RunPlugin(cmd.MessageContainer, cmd.Plugin);
         }
 
         private void SwitchToPageCommand(Core.Messaging.SwitchToPageRequestMessage cmd)

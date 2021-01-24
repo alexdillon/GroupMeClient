@@ -106,7 +106,7 @@
                        HorizontalAlignment="Stretch"
                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                        SelectionMode="Single"
-                       SelectedItem="{TemplateBinding SelectedItem, Mode=TwoWay}"
+                       SelectedItem="{TemplateBinding SelectedOption, Mode=TwoWay}"
                        DockPanel.Dock="Bottom"
                        Padding="0">
                 <ListBox.Styles>

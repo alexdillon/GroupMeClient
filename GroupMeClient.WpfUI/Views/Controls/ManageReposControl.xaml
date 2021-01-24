@@ -14,8 +14,6 @@
             <Setter Property="Background" Value="#252525" />
             <Setter Property="Foreground" Value="White" />
         </Style>
-
-        <BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
     </UserControl.Resources>
 
     <Grid>
@@ -61,10 +59,6 @@
                                 <GridViewColumn Header="Url" Width="300" DisplayMemberBinding="{Binding Url}" />
                             </GridView>
                         </ListView.View>
-
-                        <ListView.Resources>
-                      
-                        </ListView.Resources>
 
                         <ListView.Template>
                             <ControlTemplate>

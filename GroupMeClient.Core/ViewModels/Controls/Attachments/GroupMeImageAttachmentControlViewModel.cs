@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
+using GroupMeClient.Core.Services;
 using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
 
@@ -31,7 +34,8 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             this.PreviewMode = previewMode;
 
             this.IsLoading = true;
-            _ = this.LoadImageAttachment();
+            this.GenerateSizedPlaceholder();
+            Task.Run(this.LoadImageAttachment);
         }
 
         /// <summary>
@@ -120,6 +124,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
                 return;
             }
 
+            this.ImageAttachmentStream?.Dispose();
             this.ImageAttachmentStream = new System.IO.MemoryStream(image);
             this.IsLoading = false;
         }
@@ -130,6 +135,38 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 
             var request = new Messaging.DialogRequestMessage(vm);
             Messenger.Default.Send(request);
+        }
+
+        private void GenerateSizedPlaceholder()
+        {
+            // Assign a dummy image of the same size to allow for immediate layout
+            // operations to be completed accurately before the full image loads
+            var dimensions = this.GetScaledImageDimensions();
+            var imageService = SimpleIoc.Default.GetInstance<IImageService>();
+            var bytes = imageService.CreateTransparentPng(dimensions.Item1, dimensions.Item2);
+            this.ImageAttachmentStream = new MemoryStream(bytes);
+        }
+
+        private Tuple<int, int> GetScaledImageDimensions()
+        {
+            if (this.PreviewMode == GroupMeImageDisplayMode.Preview)
+            {
+                return new Tuple<int, int>(200, 200);
+            }
+
+            var choppedUrl = new Uri(this.ImageAttachment.Url).AbsolutePath.Substring(1).Split('.')[0];
+            var dimensionsStr = choppedUrl.Split('x');
+
+            int.TryParse(dimensionsStr[0], out var width);
+            int.TryParse(dimensionsStr[1], out var height);
+
+            // GroupMe in large mode limits images to 960px in the largest dimensions. Small mode is not documented for the limits.
+            const int MaxImageDim = 960;
+
+            var largestSide = Math.Max(width, height);
+            var scale = Math.Min(1.0, (double)MaxImageDim / largestSide);
+
+            return new Tuple<int, int>((int)(width * scale), (int)(height * scale));
         }
     }
 }

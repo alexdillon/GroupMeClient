@@ -61,9 +61,9 @@ namespace GroupMeClient.WpfUI.Extensions
         public static readonly DependencyProperty TopLoadingSnap =
             DependencyProperty.RegisterAttached(
                 "TopLoadingSnap",
-                typeof(int),
+                typeof(double),
                 typeof(ListBoxExtensions),
-                new PropertyMetadata(0));
+                new PropertyMetadata(0.0));
 
         /// <summary>
         /// Gets a property indicating if Auto Scroll is enabled.
@@ -71,9 +71,9 @@ namespace GroupMeClient.WpfUI.Extensions
         public static readonly DependencyProperty BottomLoadingSnap =
             DependencyProperty.RegisterAttached(
                 "BottomLoadingSnap",
-                typeof(int),
+                typeof(double),
                 typeof(ListBoxExtensions),
-                new PropertyMetadata(0));
+                new PropertyMetadata(0.0));
 
         /// <summary>
         /// Gets a value indicating whether Auto Scrolling in enabled.
@@ -143,9 +143,9 @@ namespace GroupMeClient.WpfUI.Extensions
         /// </summary>
         /// <param name="instance">The dependency object to retreive the property from.</param>
         /// <returns>The snap position when items are being loaded at the top.</returns>
-        public static int GetTopLoadingSnap(ListBox instance)
+        public static double GetTopLoadingSnap(ListBox instance)
         {
-            return (int)instance.GetValue(TopLoadingSnap);
+            return (double)instance.GetValue(TopLoadingSnap);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace GroupMeClient.WpfUI.Extensions
         /// </summary>
         /// <param name="ob">The dependency object to apply the property to.</param>
         /// <param name="value">The snap position when items are being loaded at the top.</param>
-        public static void SetTopLoadingSnap(DependencyObject ob, int value)
+        public static void SetTopLoadingSnap(DependencyObject ob, double value)
         {
             ob.SetValue(TopLoadingSnap, value);
         }
@@ -163,9 +163,9 @@ namespace GroupMeClient.WpfUI.Extensions
         /// </summary>
         /// <param name="instance">The dependency object to retreive the property from.</param>
         /// <returns>The snap position when items are being loaded at the Bottom.</returns>
-        public static int GetBottomLoadingSnap(ListBox instance)
+        public static double GetBottomLoadingSnap(ListBox instance)
         {
-            return (int)instance.GetValue(BottomLoadingSnap);
+            return (double)instance.GetValue(BottomLoadingSnap);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace GroupMeClient.WpfUI.Extensions
         /// </summary>
         /// <param name="ob">The dependency object to apply the property to.</param>
         /// <param name="value">The snap position when items are being loaded at the Bottom.</param>
-        public static void SetBottomLoadingSnap(DependencyObject ob, int value)
+        public static void SetBottomLoadingSnap(DependencyObject ob, double value)
         {
             ob.SetValue(BottomLoadingSnap, value);
         }

@@ -1,10 +1,12 @@
-﻿using GalaSoft.MvvmLight.Ioc;
+﻿using System.Net;
+using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Tasks;
 using GroupMeClient.Core.ViewModels;
+using GroupMeClientPlugin.GroupChat;
 
 namespace GroupMeClient.Core
 {
@@ -25,6 +27,9 @@ namespace GroupMeClient.Core
             SimpleIoc.Default.Register(() => new PersistManager(startupParameters.PersistFilePath));
             SimpleIoc.Default.Register(() => new SettingsManager(startupParameters.SettingsFilePath));
             SimpleIoc.Default.Register(() => new PluginInstaller(startupParameters.PluginPath));
+            SimpleIoc.Default.Register<PluginHost>();
+
+            AdditionalStartupConfig();
         }
 
         /// <summary>
@@ -36,6 +41,17 @@ namespace GroupMeClient.Core
             SimpleIoc.Default.Register<SearchViewModel>(createInstanceImmediately: false);
             SimpleIoc.Default.Register<StarsViewModel>(createInstanceImmediately: false);
             SimpleIoc.Default.Register<SettingsViewModel>(createInstanceImmediately: false);
+
+            // UI integration is provided via the Seach page for the show-in-context feature.
+            SimpleIoc.Default.Register<IPluginUIIntegration>(
+                () => SimpleIoc.Default.GetInstance<SearchViewModel>(),
+                createInstanceImmediately: false);
+        }
+
+        private static void AdditionalStartupConfig()
+        {
+            // Windows 7 and prior will not have TLS1.2 enabled by default in all cases.
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
         }
 
         /// <summary>

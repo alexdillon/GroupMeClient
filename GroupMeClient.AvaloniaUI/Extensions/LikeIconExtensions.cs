@@ -56,7 +56,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <returns>An <see cref="IBrush"/>.</returns>
         public static IBrush GetBrushWhenILiked(Control element)
         {
-            return element.GetValue(BrushWhenILikedProperty);
+            return element.GetValue(BrushWhenILikedProperty) as IBrush;
         }
 
         /// <summary>
@@ -77,7 +77,8 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <returns>An <see cref="IBrush"/>.</returns>
         public static IBrush GetBrushWhenTheyLiked(Control element)
         {
-            return element.GetValue(BrushWhenTheyLikedProperty);
+            return element.GetValue(BrushWhenTheyLikedProperty) as IBrush;
+           
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <returns>The associated like status.</returns>
         public static MessageControlViewModel.LikeStatusOptions GetLikeStatus(Control element)
         {
-            return element.GetValue(LikeStatusProperty);
+            return (MessageControlViewModel.LikeStatusOptions)element.GetValue(LikeStatusProperty);
         }
 
         /// <summary>

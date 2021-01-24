@@ -26,6 +26,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private Message message;
         private AvatarControlViewModel avatar;
         private RepliedMessageControlViewModel repliedMessage;
+        private bool isStarred;
+        private bool isHidden;
 
         private bool showDetails;
 
@@ -36,7 +38,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <param name="showLikers">Indicates whether the like status for a message should be displayed.</param>
         /// <param name="showPreviewsOnlyForMultiImages">Indicates whether only previews, or full images, should be shown for multi-images.</param>
         /// <param name="nestLevel">The number of <see cref="MessageControlViewModel"/>s deeply nested this is. Top level messages are 0.</param>
-        public MessageControlViewModel(Message message, bool? showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0)
+        /// <param name="isHidden">A boolean value indicating whether this message is hidden. Null indicated the status is unknown.</param>
+        /// <param name="isStarred">A boolean value indicating whether this message is starred. Null indicated the status is unknown.</param>
+        public MessageControlViewModel(Message message, bool? showLikers = true, bool showPreviewsOnlyForMultiImages = false, int nestLevel = 0, bool? isHidden = null, bool? isStarred = null)
         {
             this.Message = message;
 
@@ -54,6 +58,17 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.LoadAttachments();
             this.LoadInlinesForMessageBody();
+
+            // If starred and hidden status was pre-determined by the hosting control, don't re-query it.
+            if (isStarred != null && isHidden != null)
+            {
+                this.IsMessageStarred = isStarred ?? false;
+                this.IsMessageHidden = isHidden ?? false;
+            }
+            else
+            {
+                this.LoadStarAndHiddenStatus();
+            }
         }
 
         /// <summary>
@@ -177,7 +192,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 lock (this.messageLock)
                 {
                     this.message = value;
-                    this.UpdateDisplay();
+                    this.RedrawMessage();
                 }
             }
         }
@@ -249,6 +264,10 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 else if (this.message.SourceGuid.ToUpper() == this.Message.SourceGuid)
                 {
                     return "iOS";
+                }
+                else if (this.message.SourceGuid.StartsWith("iosshareext"))
+                {
+                    return "iOS (Share)";
                 }
                 else if (!this.message.SourceGuid.Contains("-"))
                 {
@@ -370,15 +389,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public bool IsMessageStarred
         {
-            get
-            {
-                var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
-                using (var cache = persistManager.OpenNewContext())
-                {
-                    var result = cache.StarredMessages.Find(this.Message.Id);
-                    return result != null;
-                }
-            }
+            get => this.isStarred;
+            private set => this.Set(() => this.IsMessageStarred, ref this.isStarred, value);
         }
 
         /// <summary>
@@ -386,28 +398,13 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public bool IsMessageHidden
         {
-            get
-            {
-                var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
-                using (var cache = persistManager.OpenNewContext())
-                {
-                    var result = cache.HiddenMessages.Find(this.Message.Id);
-                    return result != null;
-                }
-            }
+            get => this.isHidden;
+            private set => this.Set(() => this.IsMessageHidden, ref this.isHidden, value);
         }
 
         private string HiddenText { get; set; } = string.Empty;
 
         private bool ShowPreviewsOnlyForMultiImages { get; }
-
-        /// <summary>
-        /// Redraw the message immediately.
-        /// </summary>
-        public void UpdateDisplay()
-        {
-            this.RaisePropertyChanged(string.Empty); // no property name to force every single property to be updated
-        }
 
         /// <summary>
         /// Likes a message and updates the Liker's Display area for the current <see cref="Message"/>.
@@ -442,7 +439,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 }
             }
 
-            this.UpdateDisplay();
+            this.RedrawLikers();
         }
 
         /// <summary>
@@ -463,7 +460,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                     this.Message.FavoritedBy.Add(liker);
                 }
 
-                this.UpdateDisplay();
+                this.RedrawLikers();
             }
         }
 
@@ -482,6 +479,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             // Check if this is a GroupMe Desktop Client Reply-extension message
             var repliedMessageId = string.Empty;
+            bool isGroupMeNativeReply = false;
             if (MessageUtils.IsReplyGen1(this.Message))
             {
                 // Method 1, where /rmid:<message-id> is appended to the end of the message body
@@ -496,6 +494,13 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 var parts = this.Message.SourceGuid.Split('-');
                 repliedMessageId = parts[1].Substring(1);
                 totalAttachedImages--; // Don't count the preview bitmap as an image
+            }
+            else if (this.Message.Attachments.OfType<ReplyAttachment>().Count() > 0)
+            {
+                // GroupMe native reply, added in 10/2020.
+                var replyAttach = this.Message.Attachments.OfType<ReplyAttachment>().First();
+                repliedMessageId = replyAttach.RepliedMessageId;
+                isGroupMeNativeReply = true;
             }
 
             bool hasMultipleImages = totalAttachedImages > 1;
@@ -570,7 +575,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 var repliedMessageAttachment = new RepliedMessageControlViewModel(repliedMessageId, container, this.NestLevel);
 
                 // Replace the photo of the original message that is included for non-GMDC clients with the real message
-                if (this.AttachedItems.Count > 0)
+                if (this.AttachedItems.Count > 0 && !isGroupMeNativeReply)
                 {
                     var lastIndexOfPhoto = -1;
                     for (int i = 0; i < this.AttachedItems.Count; i++)
@@ -623,7 +628,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 vm = new TwitterAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
             }
-            else if (imageExtensions.Contains(linkExtension))
+            else if (imageExtensions.Contains(linkExtension) && Uri.TryCreate(text, UriKind.Absolute, out var _))
             {
                 vm = new ImageLinkAttachmentControlViewModel(text, this.Message.ImageDownloader);
                 this.AttachedItems.Add(vm);
@@ -750,7 +755,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             while (true)
             {
-                if (!Regex.IsMatch(text, Utilities.RegexUtils.UrlRegex))
+                if (!Regex.IsMatch(text, RegexUtils.UrlRegex))
                 {
                     // no URLs contained
                     result.Add(new Run(text));
@@ -769,12 +774,31 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                     try
                     {
-                        var hyperlink = new Hyperlink(new Run(match.Value))
-                        {
-                            NavigateUri = new Uri(match.Value),
-                        };
+                        var navigableUrl = match.Value;
 
-                        result.Add(hyperlink);
+                        if (navigableUrl.EndsWith("))"))
+                        {
+                            // URLs almost never end in )). This is typically a case where an entire URL containing a ) is wrapped in parenthesis.
+                            // Trim the closing parenthesis.
+                            navigableUrl = navigableUrl.Substring(0, navigableUrl.Length - 1);
+
+                            result.Add(this.MakeHyperLink(navigableUrl));
+                            result.Add(new Run(")"));
+                        }
+                        else if (navigableUrl.EndsWith(")") && !navigableUrl.Contains("("))
+                        {
+                            // It's extremely uncommon for a URL to contain a ) without a matching (.
+                            // This is most likely caused by the entire URL being contained in parenthesis, and should be stripped.
+                            navigableUrl = navigableUrl.Substring(0, navigableUrl.Length - 1);
+
+                            result.Add(this.MakeHyperLink(navigableUrl));
+                            result.Add(new Run(")"));
+                        }
+                        else
+                        {
+                            // Normal URL with no strange parenthesis to handle
+                            result.Add(this.MakeHyperLink(navigableUrl));
+                        }
                     }
                     catch (Exception)
                     {
@@ -789,6 +813,14 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
 
             return result;
+        }
+
+        private Hyperlink MakeHyperLink(string url)
+        {
+            return new Hyperlink(new Run(url))
+            {
+                NavigateUri = new Uri(url),
+            };
         }
 
         private void StarMessage()
@@ -806,7 +838,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 }
 
                 context.SaveChanges();
-                this.RaisePropertyChanged(nameof(this.IsMessageStarred));
+                this.LoadStarAndHiddenStatus();
             }
         }
 
@@ -821,7 +853,35 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 }
 
                 context.SaveChanges();
-                this.RaisePropertyChanged(nameof(this.IsMessageHidden));
+                this.LoadStarAndHiddenStatus();
+            }
+        }
+
+        private void RedrawMessage()
+        {
+            this.RaisePropertyChanged(nameof(this.Sender));
+            this.RaisePropertyChanged(nameof(this.SentTimeString));
+            this.RaisePropertyChanged(nameof(this.SenderPlatform));
+            this.RaisePropertyChanged(nameof(this.DidISendItColoring));
+            this.RaisePropertyChanged(nameof(this.DidISendIt));
+
+            this.RedrawLikers();
+        }
+
+        private void RedrawLikers()
+        {
+            this.RaisePropertyChanged(nameof(this.LikeStatus));
+            this.RaisePropertyChanged(nameof(this.LikeCount));
+            this.RaisePropertyChanged(nameof(this.LikedByAvatars));
+        }
+
+        private void LoadStarAndHiddenStatus()
+        {
+            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            using (var cache = persistManager.OpenNewContext())
+            {
+                this.IsMessageStarred = cache.StarredMessages.Find(this.Message.Id) != null;
+                this.IsMessageHidden = cache.HiddenMessages.Find(this.Message.Id) != null;
             }
         }
 
