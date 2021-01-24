@@ -13,20 +13,20 @@ namespace GroupMeClient.AvaloniaUI.Extensions
     public class LikeIconExtensions
     {
         /// <summary>
-        /// An Avalonia Attached property to represent the rendering color of the icon when the current user likes the message.
+        /// An Avalonia Attached property to represent the rendering brush of the icon when the current user likes the message.
         /// </summary>
-        public static readonly AvaloniaProperty<IBrush> ColorWhenILikedProperty =
+        public static readonly AvaloniaProperty<IBrush> BrushWhenILikedProperty =
             AvaloniaProperty.RegisterAttached<IconControl, IBrush>(
-                "ColorWhenILiked",
+                "BrushWhenILiked",
                 typeof(LikeIconExtensions),
                 defaultValue: default(SolidColorBrush));
 
         /// <summary>
-        /// An Avalonia Attached property to represent the rendering color of the icon when the other users likes the message.
+        /// An Avalonia Attached property to represent the rendering brush of the icon when the other users likes the message.
         /// </summary>
-        public static readonly AvaloniaProperty<IBrush> ColorWhenTheyLikedProperty =
+        public static readonly AvaloniaProperty<IBrush> BrushWhenTheyLikedProperty =
             AvaloniaProperty.RegisterAttached<IconControl, IBrush>(
-                "ColorWhenTheyLiked",
+                "BrushWhenTheyLiked",
                 typeof(LikeIconExtensions),
                 defaultValue: default(SolidColorBrush));
 
@@ -44,50 +44,51 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// </summary>
         static LikeIconExtensions()
         {
-            ColorWhenILikedProperty.Changed.Subscribe(PropertyChanged);
-            ColorWhenTheyLikedProperty.Changed.Subscribe(PropertyChanged);
+            BrushWhenILikedProperty.Changed.Subscribe(PropertyChanged);
+            BrushWhenTheyLikedProperty.Changed.Subscribe(PropertyChanged);
             LikeStatusProperty.Changed.Subscribe(PropertyChanged);
         }
 
         /// <summary>
-        /// Gets the brush color to render with when the current user likes the message.
+        /// Gets the brush to render with when the current user likes the message.
         /// </summary>
         /// <param name="element">The <see cref="Control"/> to retreive the property from.</param>
         /// <returns>An <see cref="IBrush"/>.</returns>
-        public static IBrush GetColorWhenILiked(Control element)
+        public static IBrush GetBrushWhenILiked(Control element)
         {
-            return element.GetValue(ColorWhenILikedProperty) as IBrush;
+            return element.GetValue(BrushWhenILikedProperty) as IBrush;
         }
 
         /// <summary>
-        /// Sets the brush color to render with when the current user likes the message.
+        /// Sets the brush to render with when the current user likes the message.
         /// </summary>
         /// <param name="element">The <see cref="Control"/> to assign the property value to.</param>
         /// <param name="value">The new value to assign.</param>
-        public static void SetColorWhenILiked(Control element, IBrush value)
+        public static void SetBrushWhenILiked(Control element, IBrush value)
         {
-            element.SetValue(ColorWhenILikedProperty, value);
+            element.SetValue(BrushWhenILikedProperty, value);
             UpdateData(element);
         }
 
         /// <summary>
-        /// Gets the brush color to render with when the other users likes the message.
+        /// Gets the brush to render with when the other users likes the message.
         /// </summary>
         /// <param name="element">The <see cref="Control"/> to retreive the property from.</param>
         /// <returns>An <see cref="IBrush"/>.</returns>
-        public static IBrush GetColorWhenTheyLiked(Control element)
+        public static IBrush GetBrushWhenTheyLiked(Control element)
         {
-            return element.GetValue(ColorWhenTheyLikedProperty) as IBrush;
+            return element.GetValue(BrushWhenTheyLikedProperty) as IBrush;
+           
         }
 
         /// <summary>
-        /// Sets the brush color to render with when other users like the message.
+        /// Sets the brush to render with when other users like the message.
         /// </summary>
         /// <param name="element">The <see cref="Control"/> to assign the property value to.</param>
         /// <param name="value">The new value to assign.</param>
-        public static void SetColorWhenTheyLiked(Control element, IBrush value)
+        public static void SetBrushWhenTheyLiked(Control element, IBrush value)
         {
-            element.SetValue(ColorWhenTheyLikedProperty, value);
+            element.SetValue(BrushWhenTheyLikedProperty, value);
             UpdateData(element);
         }
 
@@ -128,12 +129,12 @@ namespace GroupMeClient.AvaloniaUI.Extensions
                 {
                     case MessageControlViewModel.LikeStatusOptions.SelfLiked:
                         iconControl.BindableKind = MicroCubeAvalonia.IconPack.Icons.PackIconFontAwesomeKind.HeartSolid;
-                        iconControl.Foreground = GetColorWhenILiked(element);
+                        iconControl.Foreground = GetBrushWhenILiked(element);
                         break;
 
                     case MessageControlViewModel.LikeStatusOptions.OthersLiked:
                         iconControl.BindableKind = MicroCubeAvalonia.IconPack.Icons.PackIconFontAwesomeKind.HeartSolid;
-                        iconControl.Foreground = GetColorWhenTheyLiked(element);
+                        iconControl.Foreground = GetBrushWhenTheyLiked(element);
                         break;
 
                     case MessageControlViewModel.LikeStatusOptions.HiddenLikers:
@@ -143,7 +144,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
                     default:
                     case MessageControlViewModel.LikeStatusOptions.NoLikers:
                         iconControl.BindableKind = MicroCubeAvalonia.IconPack.Icons.PackIconFontAwesomeKind.HeartRegular;
-                        iconControl.Foreground = GetColorWhenTheyLiked(element);
+                        iconControl.Foreground = GetBrushWhenTheyLiked(element);
                         break;
                 }
             }
