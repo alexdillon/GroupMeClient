@@ -50,7 +50,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <returns>A <see cref="string"/>.</returns>
         public static string GetLikeCount(Control element)
         {
-            return element.GetValue(LikeCountProperty);
+            return (string)element.GetValue(LikeCountProperty);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <returns>A <see cref="Grid"/>.</returns>
         public static bool GetIsMouseOverArea(Control element)
         {
-            return element.GetValue(IsMouseOverAreaProperty);
+            return (bool)element.GetValue(IsMouseOverAreaProperty);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <returns>A <see cref="Border"/>.</returns>
         public static bool GetIsMouseOverPopup(Control element)
         {
-            return element.GetValue(IsMouseOverPopupProperty);
+            return (bool)element.GetValue(IsMouseOverPopupProperty);
         }
 
         /// <summary>

@@ -9,6 +9,7 @@
              xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
              xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
              xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
+             
              ClipToBounds="False"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="200">
 
@@ -20,7 +21,6 @@
   </UserControl.Resources>
 
   <Grid
-    
     extensions:MessageBrushExtensions.MessageISentBrush="{DynamicResource MessageISentBackdropBrush}"
     extensions:MessageBrushExtensions.MessageTheySentBrush="{DynamicResource MessageTheySentBackdropBrush}"
     extensions:MessageBrushExtensions.MessageSender="{Binding DidISendIt}">

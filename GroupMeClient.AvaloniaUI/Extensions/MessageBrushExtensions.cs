@@ -54,7 +54,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <returns>Returns the <see cref="IBrush"/> used for user message sent.</returns>
         public static IBrush GetMessageISentBrush(Control element)
         {
-            return element.GetValue(MessageISentBrushProperty);
+            return (IBrush)element.GetValue(MessageISentBrushProperty);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <returns>Returns the <see cref="IBrush"/> used for other users message sent.</returns>
         public static IBrush GetMessageTheySentBrush(Control element)
         {
-            return element.GetValue(MessageTheySentBrushProperty);
+            return (IBrush)element.GetValue(MessageTheySentBrushProperty);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <returns>True if the sender is the current user.</returns>
         public static bool GetMessageSender(Control element)
         {
-            return element.GetValue(MessageSenderProperty);
+            return (bool)element.GetValue(MessageSenderProperty);
         }
 
         /// <summary>
@@ -109,7 +109,6 @@ namespace GroupMeClient.AvaloniaUI.Extensions
             element.SetValue(MessageSenderProperty, value);
             UpdateData(element);
         }
-
 
         private static void PropertyChanged(AvaloniaPropertyChangedEventArgs e)
         {
