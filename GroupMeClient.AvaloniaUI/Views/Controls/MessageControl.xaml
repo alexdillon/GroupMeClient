@@ -9,7 +9,8 @@
              xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
              xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
              xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
-             
+             xmlns:vmcontrols="clr-namespace:GroupMeClient.Core.ViewModels.Controls;assembly=GroupMeClient.Core"
+             x:DataType="vmcontrols:MessageControlViewModel"
              ClipToBounds="False"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="200">
 
@@ -23,7 +24,7 @@
   <Grid
     extensions:MessageBrushExtensions.MessageISentBrush="{DynamicResource MessageISentBackdropBrush}"
     extensions:MessageBrushExtensions.MessageTheySentBrush="{DynamicResource MessageTheySentBackdropBrush}"
-    extensions:MessageBrushExtensions.MessageSender="{Binding DidISendIt}">
+    extensions:MessageBrushExtensions.MessageSender="{CompiledBinding DidISendIt}">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="55" />
       <ColumnDefinition Width="*"/>
@@ -39,7 +40,7 @@
     <controls:AvatarControl
             Grid.Column="0" Grid.Row="1"
             Width="40" Height="40" VerticalAlignment="Top"
-            DataContext="{Binding Avatar}">
+            DataContext="{CompiledBinding Avatar}">
 
       <!--<i:Interaction.Behaviors>
         <ia:EventTriggerBehavior EventName="PointerPressed">
@@ -49,9 +50,9 @@
       </controls:AvatarControl>
 
     <StackPanel Grid.Column="1" Grid.Row="1">
-      <TextBlock Text="{Binding Sender}" FontSize="12" Foreground="{DynamicResource MessageFontBrush}" />
+      <TextBlock Text="{CompiledBinding Sender}" FontSize="12" Foreground="{DynamicResource MessageFontBrush}" />
 
-      <ItemsControl Items="{Binding AttachedItems}">
+      <ItemsControl Items="{CompiledBinding AttachedItems}">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
             <UserControl
@@ -70,7 +71,7 @@
 
       <TextBlock Margin="0,0,0,20"
                  FontSize="15"
-                 Text="{Binding Inlines, Converter={StaticResource inlineConverter}}"
+                 Text="{CompiledBinding Inlines, Converter={StaticResource inlineConverter}}"
                  TextWrapping="Wrap">
         <!--<extensions:SelectableTextBlock
             FontSize="15"
@@ -102,7 +103,7 @@
                             Background="Transparent"
                             extensions:LikeIconExtensions.BrushWhenILiked="{DynamicResource MessageILikedBrush}"
                             extensions:LikeIconExtensions.BrushWhenTheyLiked="{DynamicResource MessageTheyLikedBrush}"
-                            extensions:LikeIconExtensions.LikeStatus="{Binding LikeStatus}"
+                            extensions:LikeIconExtensions.LikeStatus="{CompiledBinding LikeStatus}"
                             Name="likeIcon"/>
         
       <TextBlock Grid.Row="2" Grid.Column="1"
@@ -111,11 +112,11 @@
                  Margin="2,0,0,0"
                  Foreground="{DynamicResource MessageFontBrush}" 
                  FontSize="10" FontWeight="Thin"
-                 Text="{Binding LikeCount}" />  
+                 Text="{CompiledBinding LikeCount}" />  
 
       <i:Interaction.Behaviors>
         <ia:EventTriggerBehavior EventName="PointerPressed">
-          <ia:InvokeCommandAction Command="{Binding LikeAction}" />
+          <ia:InvokeCommandAction Command="{CompiledBinding LikeAction}" />
         </ia:EventTriggerBehavior>
       </i:Interaction.Behaviors>
     </Grid>
@@ -124,7 +125,7 @@
             Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-45,20,0"
             IsVisible="False"
             Background="Transparent"
-            extensions:LikesCanvasExtension.LikeCount ="{Binding LikeCount}"
+            extensions:LikesCanvasExtension.LikeCount ="{CompiledBinding LikeCount}"
             extensions:LikesCanvasExtension.IsMouseOverArea ="{Binding #likeButtonArea.IsPointerOver}"
             extensions:LikesCanvasExtension.IsMouseOverPopup="{Binding #likesBubble.IsPointerOver}">
 
@@ -137,14 +138,14 @@
 
           <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                         Margin="7"
-                        Items="{Binding LikedByAvatars}">
+                        Items="{CompiledBinding LikedByAvatars}">
 
             <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <ContentControl Content="{Binding Avatar}" 
+                <ContentControl Content="{CompiledBinding Avatar}" 
                                 Width="35" Height="35" 
                                 Margin="3,0,3,0" 
-                                ToolTip.Tip="{Binding Name}"/>
+                                ToolTip.Tip="{CompiledBinding Name}"/>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
 
@@ -162,15 +163,15 @@
                 Orientation="Vertical"
                 Background="{DynamicResource MessageDetailsBrush}"
                 Height="45"
-                IsVisible="{Binding ShowDetails}">
+                IsVisible="{CompiledBinding ShowDetails}">
 
-      <TextBlock Text="{Binding SentTimeString, StringFormat=Sent: \{0\}}"
+      <TextBlock Text="{CompiledBinding SentTimeString, StringFormat=Sent: \{0\}}"
                  FontWeight="Regular"
                  FontSize="11"
                  Foreground="{DynamicResource MessageFontBrush}"
                  Margin="20,0,0,0" />
 
-      <TextBlock Text="{Binding SenderPlatform, StringFormat=Client: \{0\}}"
+      <TextBlock Text="{CompiledBinding SenderPlatform, StringFormat=Client: \{0\}}"
                  FontWeight="Regular"
                  FontSize="11"
                  Margin="20,0,0,0"

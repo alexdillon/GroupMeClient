@@ -120,15 +120,15 @@ namespace GroupMeClient.AvaloniaUI.Extensions
 
         private static void UpdateData(Control element)
         {
-            if (element is Grid Grid)
+            if (element is Grid grid)
             {
                 if (GetMessageSender(element))
                 {
-                    Grid.Background = GetMessageISentBrush(element);
+                    grid.Background = GetMessageISentBrush(element);
                 }
                 else
                 {
-                    Grid.Background = GetMessageTheySentBrush(element);
+                    grid.Background = GetMessageTheySentBrush(element);
                 }
             }
         }
