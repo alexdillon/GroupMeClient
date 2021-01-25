@@ -20,7 +20,7 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display.Win10
     [ClassInterface(ClassInterfaceType.None)]
     [ComSourceInterfaces(typeof(INotificationActivationCallback))]
     [ComVisible(true)]
-    [Guid("3d1bf80b-078b-5aee-b9a0-fc40af7fc030")]
+    [Guid("3333380b-078b-5aee-b9a0-fc40af7fffff")]
     public class GroupMeNotificationActivator : NotificationActivator
     {
         /// <inheritdoc/>

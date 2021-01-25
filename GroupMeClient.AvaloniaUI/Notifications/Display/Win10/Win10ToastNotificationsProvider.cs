@@ -61,7 +61,7 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display.Win10
         /// <summary>
         /// Gets the AUMID identifier used for Windows 10 Toast Notifications.
         /// </summary>
-        public static string ApplicationId => "com.squirrel.GroupMeDesktopClient.GroupMeClient";
+        public static string ApplicationId => "com.squirrel.GroupMeDesktopClientAvalonia.GroupMeClient";
 
         private bool HasPerformedCleanup { get; set; } = false;
 
