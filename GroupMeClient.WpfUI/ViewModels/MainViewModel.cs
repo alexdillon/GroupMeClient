@@ -141,6 +141,11 @@ namespace GroupMeClient.WpfUI.ViewModels
         }
 
         /// <summary>
+        /// Gets a value indicating whether this ViewModel is represents a complete copy of GMDC.
+        /// </summary>
+        public bool IsFullGMDC => true;
+
+        /// <summary>
         /// Gets or sets the manager for the dialog that should be displayed as a large popup.
         /// </summary>
         public PopupViewModel DialogManagerRegular { get; set; }
@@ -258,6 +263,7 @@ namespace GroupMeClient.WpfUI.ViewModels
             Messenger.Default.Register<Core.Messaging.SwitchToPageRequestMessage>(this, this.SwitchToPageCommand);
             Messenger.Default.Register<Core.Messaging.RebootRequestMessage>(this, (r) => this.RebootReasons.Add(r.Reason), true);
             Messenger.Default.Register<Core.Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
+            Messenger.Default.Register<Core.Messaging.RefreshAllMessage>(this, (s) => Task.Run(this.RefreshEverything), true);
 
             // Setup updating
             Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);

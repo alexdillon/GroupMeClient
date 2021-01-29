@@ -12,8 +12,10 @@ using DynamicData.Binding;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Controls;
+using GroupMeClient.Core.Messaging;
 using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Plugins.ViewModels;
 using GroupMeClient.Core.Services;
@@ -38,6 +40,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private bool isSending;
         private double scalingFactor = 1.0;
         private bool showDisplayOptions;
+        private bool showPluginOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -57,6 +60,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.InitiateReply = new RelayCommand<MessageControlViewModel>(m => this.InitiateReplyCommand(m), true);
             this.HideMessage = new RelayCommand<MessageControlViewModel>(m => this.HideMessageCommand(m), true);
             this.TerminateReply = new RelayCommand(() => this.MessageBeingRepliedTo = null, true);
+            this.ShowMiniChat = new RelayCommand(this.PopoutMiniChat);
+            this.GlobalRefreshAllCommand = new RelayCommand(this.SendGlobalRefresh);
             this.ToggleDisplayOptions = new RelayCommand(() => this.ShowDisplayOptions = !this.ShowDisplayOptions, true);
 
             this.SmallDialogManager = new PopupViewModel()
@@ -124,6 +129,16 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ICommand CloseGroup { get; set; }
 
         /// <summary>
+        /// Gets or sets the action to be performed to close this as a MiniChat.
+        /// </summary>
+        public ICommand CloseMiniChat { get; set; }
+
+        /// <summary>
+        /// Gets or sets the action to be performed to register this chat as being a MiniChat.
+        /// </summary>
+        public ICommand RegisterAsMiniChat { get; set; }
+
+        /// <summary>
         /// Gets or sets the action to be performed when a message is ready to send.
         /// </summary>
         public ICommand SendMessage { get; set; }
@@ -165,6 +180,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ICommand SelectionChangedCommand { get; }
 
         /// <summary>
+        /// Gets the action to be be performed to send a message to globally refresh all data
+        /// in GMDC.
+        /// </summary>
+        public ICommand GlobalRefreshAllCommand { get; }
+
+        /// <summary>
         /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed, sorted in ascending order.
         /// </summary>
         public IObservableCollection<MessageControlViewModelBase> MessagesSorted { get; private set; }
@@ -184,6 +205,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// Gets the action to be performed to toggle the <see cref="ShowDisplayOptions"/> property.
         /// </summary>
         public ICommand ToggleDisplayOptions { get; }
+
+        /// <summary>
+        /// Gets the action to be performed to pop out this chat as a MiniChat.
+        /// </summary>
+        public ICommand ShowMiniChat { get; }
 
         /// <summary>
         /// Gets the title of the <see cref="Group"/> or <see cref="Chat"/>.
@@ -275,7 +301,26 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool ShowDisplayOptions
         {
             get => this.showDisplayOptions;
-            private set => this.Set(() => this.ShowDisplayOptions, ref this.showDisplayOptions, value);
+            private set
+            {
+                this.Set(() => this.ShowDisplayOptions, ref this.showDisplayOptions, value);
+                this.showPluginOptions = false;
+                this.RaisePropertyChanged(nameof(this.ShowPluginOptions));
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the plugin menu should be shown.
+        /// </summary>
+        public bool ShowPluginOptions
+        {
+            get => this.showPluginOptions;
+            set
+            {
+                this.Set(() => this.ShowPluginOptions, ref this.showPluginOptions, value);
+                this.showDisplayOptions = false;
+                this.RaisePropertyChanged(nameof(this.ShowDisplayOptions));
+            }
         }
 
         private CacheManager CacheManager { get; }
@@ -814,6 +859,28 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 this.AllMessages.Remove(message);
                 context.SaveChanges();
             }
+        }
+
+        private void PopoutMiniChat()
+        {
+            var windowService = SimpleIoc.Default.GetInstance<IWindowService>();
+            windowService.ShowWindow(new WindowParams()
+            {
+                Content = this,
+                Title = this.Title,
+                Width = 350,
+                Height = 550,
+                TopMost = true,
+                CloseCallback = () => this.CloseMiniChat?.Execute(this),
+            });
+
+            this.RegisterAsMiniChat.Execute(this);
+            this.ShowDisplayOptions = false;
+        }
+
+        private void SendGlobalRefresh()
+        {
+            Messenger.Default.Send(new RefreshAllMessage());
         }
     }
 }

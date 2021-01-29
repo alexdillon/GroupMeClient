@@ -7,6 +7,7 @@
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="500">
 
@@ -71,17 +72,57 @@
             <ToggleButton Style="{StaticResource GroupMeClient.Wpf.Styles.GroupNameDropdown}"
                           Grid.Column="1"
                           Tag="{Binding Title}"
+                          IsChecked="{Binding ShowPluginOptions}"
                           x:Name="toggleGroupOptionsButton"/>
 
             <!--Close Group Button-->
+            <!--Shown only in Regular Chat Mode-->
             <Button Grid.Column="2"
                     HorizontalAlignment="Right"
                     Width="35" Height="35"
                     BorderThickness="0"
-                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                     Command="{Binding Path=CloseGroup}"
                     CommandParameter="{Binding Path=.}">
                 <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
+
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsFullGMDC}" Value="True">
+                                <!--Only show the close button in regular (docked in GMDC) mode.-->
+                                <!--Don't show the close button when in MiniChat Mode-->
+                                <!--All it would do is close the copy in the main UI. The Windows X button
+                                is the intended close mechanism in MiniChat mode-->
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                
+            </Button>
+
+            <!--Refresh Group Button-->
+            <!--Shown only in MiniChat Mode-->
+            <Button Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    Width="35" Height="35"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding GlobalRefreshAllCommand}">
+                <iconPacks:PackIconMaterial Width="17" Height="17"  Kind="Refresh"/>
+
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource bottomBarButtonStyle}">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsFullGMDC}" Value="True">
+                                <!--Only show the refresh button in MiniChat mode.-->
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
 
             <!--Top Bar Underline-->
@@ -207,9 +248,7 @@
                             BorderThickness="0"
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Margin="5">
-
-                        </Button>
+                            Margin="5" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 
@@ -237,13 +276,55 @@
                     
                     <Grid.RowDefinitions>
                         <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="{Binding ScalingFactor, StringFormat='Zoom {0:0.00}x'}" Padding="0,0,15,0" Grid.Row="0" Grid.Column="0" />
+                    <TextBlock Text="{Binding ScalingFactor, StringFormat='Zoom {0:0.00}x'}" Padding="0,0,15,0" Grid.Row="0" Grid.Column="0" Foreground="{DynamicResource MahApps.Brushes.IdealForeground}" />
                     <Slider Minimum="0.50" Maximum="1.50" Value="{Binding ScalingFactor, Mode=TwoWay}" TickPlacement="BottomRight" TickFrequency="0.10" Grid.Row="0" Grid.Column="1" />
                 </Grid>
+
+                <Button 
+                    Content="MiniChat"
+                    Command="{Binding ShowMiniChat}"
+                    HorizontalContentAlignment="Left"
+                    Foreground="{DynamicResource PluginButtonFontBrush}" 
+                    BorderThickness="0"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Margin="5,20,0,0">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsFullGMDC}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <mah:ToggleSwitch 
+                    Content="Show Top Most"
+                    HorizontalContentAlignment="Left"
+                    Foreground="{DynamicResource MahApps.Brushes.IdealForeground}"
+                    IsOn="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Topmost}"
+                    BorderThickness="0"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Margin="5,20,0,0">
+                    <mah:ToggleSwitch.Style>
+                        <Style TargetType="mah:ToggleSwitch" BasedOn="{StaticResource {x:Type mah:ToggleSwitch}}">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsFullGMDC}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </mah:ToggleSwitch.Style>
+                </mah:ToggleSwitch>
             </StackPanel>
-          
         </Border>
 
         <!--Send Message Bar-->
