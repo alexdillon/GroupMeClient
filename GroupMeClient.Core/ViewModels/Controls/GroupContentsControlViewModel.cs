@@ -66,9 +66,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.SmallDialogManager = new PopupViewModel()
             {
-                ClosePopup = new RelayCommand(this.ClosePopupHandler),
-                EasyClosePopup = null,  // EasyClose makes it too easy to accidently close the send dialog.
-                PopupDialog = null,
+                ClosePopupCallback = new RelayCommand(this.ClosePopupHandler),
+                EasyClosePopupCallback = null,  // EasyClose makes it too easy to accidently close the send dialog.
             };
 
             this.ReliabilityStateMachine = new ReliabilityStateMachine();
@@ -765,7 +764,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 dialog.ImagesCollection.Add(new SendImageControlViewModel.SendableImage(image));
             }
 
-            this.SmallDialogManager.PopupDialog = dialog;
+            this.SmallDialogManager.OpenPopup(dialog, Guid.Empty);
         }
 
         private void ShowFileSendDialog(string fileName)
@@ -801,13 +800,13 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 SendMessage = new RelayCommand<List<Attachment>>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
             };
 
-            this.SmallDialogManager.PopupDialog = dialog;
+            this.SmallDialogManager.OpenPopup(dialog, Guid.Empty);
         }
 
         private void ClosePopupHandler()
         {
             (this.SmallDialogManager.PopupDialog as IDisposable)?.Dispose();
-            this.SmallDialogManager.PopupDialog = null;
+            this.SmallDialogManager.ClosePopup();
         }
 
         private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
@@ -823,7 +822,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 UpdateMessage = new RelayCommand(this.UseMessageEffectSuggestion),
             };
 
-            this.SmallDialogManager.PopupDialog = dialog;
+            this.SmallDialogManager.OpenPopup(dialog, Guid.Empty);
         }
 
         private void UseMessageEffectSuggestion()
@@ -871,6 +870,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 Width = 350,
                 Height = 550,
                 TopMost = true,
+                Tag = this.Id,
                 CloseCallback = () => this.CloseMiniChat?.Execute(this),
             });
 

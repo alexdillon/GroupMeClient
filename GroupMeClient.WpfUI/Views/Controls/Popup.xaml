@@ -32,7 +32,7 @@
                                 HorizontalAlignment="Right"
                                 BorderThickness="0"
                                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                Command="{Binding Path=ClosePopup}"
+                                Command="{Binding Path=ClosePopupCallback}"
                                 CommandParameter="{Binding Path=.}">
                     <Button.ContentTemplate>
                         <DataTemplate>
@@ -50,7 +50,7 @@
 
         <behaviors:Interaction.Triggers>
             <behaviors:EventTrigger EventName="MouseLeftButtonDown" >
-                <behaviors:InvokeCommandAction Command="{Binding EasyClosePopup}" />
+                <behaviors:InvokeCommandAction Command="{Binding EasyClosePopupCallback}" />
             </behaviors:EventTrigger>
         </behaviors:Interaction.Triggers>
     </Grid>

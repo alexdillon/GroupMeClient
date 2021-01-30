@@ -39,5 +39,10 @@ namespace GroupMeClient.Core.Services
         /// Gets or sets a value indicating whether this window should be displayed above all others.
         /// </summary>
         public bool TopMost { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets an optional tag value.
+        /// </summary>
+        public string Tag { get; set; }
     }
 }

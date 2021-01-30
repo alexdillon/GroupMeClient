@@ -25,7 +25,7 @@ namespace GroupMeClient.WpfUI.Services
 
         private Window CreateWindow(WindowParams windowParams)
         {
-            var hostVm = new WindowHostViewModel(windowParams.Content);
+            var hostVm = new WindowHostViewModel(windowParams.Content, windowParams.Tag);
             var host = new WindowHost()
             {
                 DataContext = hostVm,
@@ -37,6 +37,7 @@ namespace GroupMeClient.WpfUI.Services
                 Content = host,
                 DataContext = host,
                 Topmost = windowParams.TopMost,
+                Tag = windowParams.Tag,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
                 VerticalContentAlignment = VerticalAlignment.Stretch,
             };

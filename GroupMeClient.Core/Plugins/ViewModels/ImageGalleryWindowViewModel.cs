@@ -51,14 +51,14 @@ namespace GroupMeClient.Core.Plugins.ViewModels
 
             this.SmallDialogManager = new PopupViewModel()
             {
-                ClosePopup = new RelayCommand(this.CloseSmallPopupHandler),
-                EasyClosePopup = null,
+                ClosePopupCallback = new RelayCommand(this.CloseSmallPopupHandler),
+                EasyClosePopupCallback = null,
             };
 
             this.BigDialogManager = new PopupViewModel()
             {
-                ClosePopup = new RelayCommand(this.CloseBigPopupHandler),
-                EasyClosePopup = new RelayCommand(this.CloseBigPopupHandler),
+                ClosePopupCallback = new RelayCommand(this.CloseBigPopupHandler),
+                EasyClosePopupCallback = new RelayCommand(this.CloseBigPopupHandler),
             };
 
             if (this.GroupChat is Group group)
@@ -341,24 +341,24 @@ namespace GroupMeClient.Core.Plugins.ViewModels
                 showNext: () => this.ShowImageDetails(nextItem),
                 showPrevious: () => this.ShowImageDetails(previousItem));
 
-            this.SmallDialogManager.PopupDialog = dialog;
+            this.SmallDialogManager.OpenPopup(dialog, Guid.Empty);
         }
 
         private void ShowLargePopup(ViewModelBase dialog)
         {
-            this.BigDialogManager.PopupDialog = dialog;
+            this.BigDialogManager.OpenPopup(dialog, Guid.Empty);
         }
 
         private void CloseSmallPopupHandler()
         {
             (this.SmallDialogManager.PopupDialog as IDisposable)?.Dispose();
-            this.SmallDialogManager.PopupDialog = null;
+            this.SmallDialogManager.ClosePopup();
         }
 
         private void CloseBigPopupHandler()
         {
             (this.BigDialogManager.PopupDialog as IDisposable)?.Dispose();
-            this.BigDialogManager.PopupDialog = null;
+            this.BigDialogManager.ClosePopup();
         }
 
         /// <summary>

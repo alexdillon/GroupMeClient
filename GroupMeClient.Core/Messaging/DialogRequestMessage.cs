@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace GroupMeClient.Core.Messaging
@@ -14,10 +15,14 @@ namespace GroupMeClient.Core.Messaging
         /// </summary>
         /// <param name="dialog">The dialog to be displayed.</param>
         /// <param name="topMost">A value indicating whether this dialog should be displayed on top of any first-level dialogs.</param>
-        public DialogRequestMessage(ViewModelBase dialog, bool topMost = false)
+        /// <param name="destination">A optional tag value indicating which dialog manager(s) should respond to this request.</param>
+        public DialogRequestMessage(ViewModelBase dialog, bool topMost = false, string destination = "")
         {
             this.Dialog = dialog;
             this.TopMost = topMost;
+            this.Destination = destination;
+
+            this.DialogId = Guid.NewGuid();
         }
 
         /// <summary>
@@ -29,5 +34,15 @@ namespace GroupMeClient.Core.Messaging
         /// Gets a value indicating whether this dialog should be displayed on top of any first-level dialogs.
         /// </summary>
         public bool TopMost { get; }
+
+        /// <summary>
+        /// Gets a string identifying which dialog manager(s) should respond to this popup request.
+        /// </summary>
+        public string Destination { get; }
+
+        /// <summary>
+        /// Gets a GUID that uniquely identifies this dialog.
+        /// </summary>
+        public Guid DialogId { get; }
     }
 }

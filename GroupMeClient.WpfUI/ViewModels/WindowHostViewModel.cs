@@ -1,6 +1,7 @@
 ﻿using System;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using GroupMeClient.Core.Messaging;
 using GroupMeClient.Core.ViewModels.Controls;
 
 namespace GroupMeClient.WpfUI.ViewModels
@@ -15,25 +16,26 @@ namespace GroupMeClient.WpfUI.ViewModels
         /// Initializes a new instance of the <see cref="WindowHostViewModel"/> class.
         /// </summary>
         /// <param name="content">The content to display in this window.</param>
-        public WindowHostViewModel(object content)
+        /// <param name="tag">A unique value tagging this window.</param>
+        public WindowHostViewModel(object content, string tag = "")
         {
             this.Content = content;
+            this.Tag = tag;
 
             this.DialogManagerRegular = new PopupViewModel()
             {
-                EasyClosePopup = new RelayCommand(this.CloseBigPopup),
-                ClosePopup = new RelayCommand(this.CloseBigPopup),
-                PopupDialog = null,
+                EasyClosePopupCallback = new RelayCommand(this.CloseBigPopup),
+                ClosePopupCallback = new RelayCommand(this.CloseBigPopup),
             };
 
             this.DialogManagerTopMost = new PopupViewModel()
             {
-                EasyClosePopup = new RelayCommand(this.CloseBigTopMostPopup),
-                ClosePopup = new RelayCommand(this.CloseBigTopMostPopup),
-                PopupDialog = null,
+                EasyClosePopupCallback = new RelayCommand(this.CloseBigTopMostPopup),
+                ClosePopupCallback = new RelayCommand(this.CloseBigTopMostPopup),
             };
 
             Messenger.Default.Register<Core.Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
+            Messenger.Default.Register<Core.Messaging.DialogDismissMessage>(this, this.DismissCallback);
         }
 
         /// <summary>
@@ -51,15 +53,20 @@ namespace GroupMeClient.WpfUI.ViewModels
         /// </summary>
         public PopupViewModel DialogManagerTopMost { get; set; }
 
+        private string Tag { get; }
+
         private void OpenBigPopup(Core.Messaging.DialogRequestMessage dialog)
         {
-            if (dialog.TopMost)
+            if (this.Tag == dialog.Destination || string.IsNullOrEmpty(this.Tag))
             {
-                this.DialogManagerTopMost.PopupDialog = dialog.Dialog;
-            }
-            else
-            {
-                this.DialogManagerRegular.PopupDialog = dialog.Dialog;
+                if (dialog.TopMost)
+                {
+                    this.DialogManagerTopMost.OpenPopup(dialog.Dialog, dialog.DialogId);
+                }
+                else
+                {
+                    this.DialogManagerRegular.OpenPopup(dialog.Dialog, dialog.DialogId);
+                }
             }
         }
 
@@ -70,7 +77,9 @@ namespace GroupMeClient.WpfUI.ViewModels
                 d.Dispose();
             }
 
-            this.DialogManagerRegular.PopupDialog = null;
+            var closeId = this.DialogManagerRegular.PopupId;
+            this.DialogManagerRegular.ClosePopup();
+            Messenger.Default.Send(new DialogDismissMessage(closeId));
         }
 
         private void CloseBigTopMostPopup()
@@ -80,7 +89,21 @@ namespace GroupMeClient.WpfUI.ViewModels
                 d.Dispose();
             }
 
-            this.DialogManagerTopMost.PopupDialog = null;
+            var closeId = this.DialogManagerTopMost.PopupId;
+            this.DialogManagerTopMost.ClosePopup();
+            Messenger.Default.Send(new DialogDismissMessage(closeId));
+        }
+
+        private void DismissCallback(DialogDismissMessage dismissMessage)
+        {
+            if (this.DialogManagerTopMost.PopupId == dismissMessage.DialogId && dismissMessage.DialogId != Guid.Empty)
+            {
+                this.CloseBigTopMostPopup();
+            }
+            else if (this.DialogManagerRegular.PopupId == dismissMessage.DialogId && dismissMessage.DialogId != Guid.Empty)
+            {
+                this.CloseBigPopup();
+            }
         }
     }
 }

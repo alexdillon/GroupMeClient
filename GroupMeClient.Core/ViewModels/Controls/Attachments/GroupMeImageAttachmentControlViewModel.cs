@@ -17,18 +17,20 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
     /// </summary>
     public class GroupMeImageAttachmentControlViewModel : ViewModelBase, IDisposable
     {
-        private System.IO.Stream imageAttachmentStream;
+        private Stream imageAttachmentStream;
         private bool isLoading;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupMeImageAttachmentControlViewModel"/> class.
         /// </summary>
         /// <param name="attachment">The attachment to display.</param>
+        /// <param name="groupId">The ID of the Group or Chat this image's parent message is in.</param>
         /// <param name="imageDownloader">The downloader to use for loading the image.</param>
         /// <param name="previewMode">The resolution in which to download and render the image.</param>
-        public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, ImageDownloader imageDownloader, GroupMeImageDisplayMode previewMode = GroupMeImageDisplayMode.Large)
+        public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, string groupId, ImageDownloader imageDownloader, GroupMeImageDisplayMode previewMode = GroupMeImageDisplayMode.Large)
         {
             this.ImageAttachment = attachment;
+            this.GroupOrChatId = groupId;
             this.ImageDownloader = imageDownloader;
             this.Clicked = new RelayCommand(this.ClickedAction);
             this.PreviewMode = previewMode;
@@ -68,7 +70,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         /// <summary>
         /// Gets the attached image.
         /// </summary>
-        public System.IO.Stream ImageAttachmentStream
+        public Stream ImageAttachmentStream
         {
             get => this.imageAttachmentStream;
             internal set => this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value);
@@ -88,6 +90,8 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         private GroupMeImageDisplayMode PreviewMode { get; }
 
         private ImageDownloader ImageDownloader { get; }
+
+        private string GroupOrChatId { get; }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -125,7 +129,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             }
 
             this.ImageAttachmentStream?.Dispose();
-            this.ImageAttachmentStream = new System.IO.MemoryStream(image);
+            this.ImageAttachmentStream = new MemoryStream(image);
             this.IsLoading = false;
         }
 
@@ -133,7 +137,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         {
             var vm = new ViewImageControlViewModel(this.ImageAttachment.Url, this.ImageDownloader);
 
-            var request = new Messaging.DialogRequestMessage(vm);
+            var request = new Messaging.DialogRequestMessage(vm, destination: this.GroupOrChatId);
             Messenger.Default.Send(request);
         }
 

@@ -37,9 +37,8 @@ namespace GroupMeClient.Core.ViewModels
 
             this.DialogManager = new PopupViewModel()
             {
-                PopupDialog = null,
-                EasyClosePopup = null,
-                ClosePopup = new RelayCommand(this.ClosePopup),
+                ClosePopupCallback = new RelayCommand(this.ClosePopup),
+                EasyClosePopupCallback = null,
             };
 
             this.LoadPluginInfo();
@@ -261,7 +260,7 @@ namespace GroupMeClient.Core.ViewModels
         private void ViewReleaseNotes()
         {
             var viewer = new ViewReleaseNotesControlViewModel(this.UpdateAssist);
-            this.DialogManager.PopupDialog = viewer;
+            this.DialogManager.OpenPopup(viewer, Guid.Empty);
         }
 
         private void CheckForApplicationUpdates()
@@ -300,18 +299,18 @@ namespace GroupMeClient.Core.ViewModels
         private void ManageRepos()
         {
             var repoManager = new ManageReposViewModel();
-            this.DialogManager.PopupDialog = repoManager;
+            this.DialogManager.OpenPopup(repoManager, Guid.Empty);
         }
 
         private void ManageUpdates()
         {
             var updateManager = new UpdatePluginsViewModel();
-            this.DialogManager.PopupDialog = updateManager;
+            this.DialogManager.OpenPopup(updateManager, Guid.Empty);
         }
 
         private void ClosePopup()
         {
-            this.DialogManager.PopupDialog = null;
+            this.DialogManager.ClosePopup();
         }
 
         /// <summary>
