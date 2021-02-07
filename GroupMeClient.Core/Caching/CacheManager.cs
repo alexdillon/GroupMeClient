@@ -39,38 +39,6 @@ namespace GroupMeClient.Core.Caching
         private bool HasBeenUpgradeChecked { get; set; }
 
         /// <summary>
-        /// Returns a <see cref="Queryable"/> collection of all the messages in a given <see cref="IMessageContainer"/>
-        /// that are cached in the database.
-        /// </summary>
-        /// <param name="group">The <see cref="IMessageContainer"/> which to return messages for.</param>
-        /// <param name="cacheContext">The cache instance messages should be retreived from.</param>
-        /// <returns>Returns a <see cref="Queryable"/> collection of all the messages in a given <see cref="IMessageContainer"/>.</returns>
-        public static IQueryable<Message> GetMessagesForGroup(IMessageContainer group, CacheContext cacheContext)
-        {
-            if (group is Group g)
-            {
-                return cacheContext.Messages
-                    .AsNoTracking()
-                    .Where(m => m.GroupId == g.Id);
-            }
-            else if (group is Chat c)
-            {
-                // Chat.Id returns the Id of the other user
-                // However, GroupMe messages are natively returned with a Conversation Id instead
-                // Conversation IDs are user1+user2.
-                var conversationId = c.LatestMessage.ConversationId;
-
-                return cacheContext.Messages
-                    .AsNoTracking()
-                    .Where(m => m.ConversationId == conversationId);
-            }
-            else
-            {
-                return Enumerable.Empty<Message>().AsQueryable();
-            }
-        }
-
-        /// <summary>
         /// Creates a new instance of the message cache context.
         /// </summary>
         /// <returns>A new <see cref="CacheContext"/>.</returns>
@@ -154,6 +122,37 @@ namespace GroupMeClient.Core.Caching
                     {
                         this.Messages.Add(msg);
                     }
+                }
+            }
+
+            /// <summary>
+            /// Returns a <see cref="IQueryable"/> of all the messages in a given <see cref="IMessageContainer"/>
+            /// that are cached in the database.
+            /// </summary>
+            /// <param name="group">The <see cref="IMessageContainer"/> which to return messages for.</param>
+            /// <returns>Returns a <see cref="Queryable"/> collection of all the messages in a given <see cref="IMessageContainer"/>.</returns>
+            public IQueryable<Message> GetMessagesForGroup(IMessageContainer group)
+            {
+                if (group is Group g)
+                {
+                    return this.Messages
+                        .AsNoTracking()
+                        .Where(m => m.GroupId == g.Id);
+                }
+                else if (group is Chat c)
+                {
+                    // Chat.Id returns the Id of the other user
+                    // However, GroupMe messages are natively returned with a Conversation Id instead
+                    // Conversation IDs are user1+user2.
+                    var conversationId = c.LatestMessage.ConversationId;
+
+                    return this.Messages
+                        .AsNoTracking()
+                        .Where(m => m.ConversationId == conversationId);
+                }
+                else
+                {
+                    return Enumerable.Empty<Message>().AsQueryable();
                 }
             }
 

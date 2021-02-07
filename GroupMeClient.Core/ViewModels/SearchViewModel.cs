@@ -343,7 +343,7 @@ namespace GroupMeClient.Core.ViewModels
             this.ResultsView.DisplayMessages(null, null);
 
             var cacheContext = this.CacheManager.OpenNewContext();
-            var messagesForGroupChat = Caching.CacheManager.GetMessagesForGroup(this.SelectedGroupChat, cacheContext);
+            var messagesForGroupChat = cacheContext.GetMessagesForGroup(this.SelectedGroupChat);
 
             var startDate = this.FilterStartDate;
             var endDate = (this.FilterEndDate == DateTime.MinValue) ? DateTime.Now : this.FilterEndDate.AddDays(1);
@@ -445,7 +445,7 @@ namespace GroupMeClient.Core.ViewModels
 
             var cacheContext = this.CacheManager.OpenNewContext();
 
-            var messagesForGroupChat = Caching.CacheManager.GetMessagesForGroup(this.SelectedGroupChat, cacheContext)
+            var messagesForGroupChat = cacheContext.GetMessagesForGroup(this.SelectedGroupChat)
                 .OrderBy(m => m.Id);
 
             this.ContextView.AssociateWith = this.SelectedGroupChat;
