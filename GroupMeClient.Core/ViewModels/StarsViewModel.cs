@@ -21,7 +21,7 @@ using ReactiveUI;
 namespace GroupMeClient.Core.ViewModels
 {
     /// <summary>
-    /// <see cref="SearchViewModel"/> provides a ViewModel for the <see cref="Controls.SearchView"/> view.
+    /// <see cref="StarsViewModel"/> provides a ViewModel for the Starred Chats view.
     /// </summary>
     public class StarsViewModel : ViewModelBase
     {
@@ -58,7 +58,7 @@ namespace GroupMeClient.Core.ViewModels
                 .Bind(this.SortedGroupChats)
                 .Subscribe();
 
-            this.Loaded = new RelayCommand(async () => await this.LoadIndexedGroups(), true);
+            this.Loaded = new RelayCommand(() => Task.Run(this.LoadIndexedGroups), true);
             this.CloseGroup = new RelayCommand<StarredMessageGroup>(this.CloseChat);
         }
 

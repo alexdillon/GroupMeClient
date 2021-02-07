@@ -84,7 +84,7 @@ namespace GroupMeClient.Core.ViewModels
 
             this.Members = new ObservableCollection<Member>();
 
-            this.Loaded = new RelayCommand(async () => await this.LoadIndexedGroups(), true);
+            this.Loaded = new RelayCommand(() => Task.Run(this.LoadIndexedGroups), true);
         }
 
         /// <summary>
