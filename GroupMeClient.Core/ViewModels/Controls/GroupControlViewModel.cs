@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Controls.Documents;
 using GroupMeClientApi.Models;
 
@@ -31,6 +32,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// Gets or sets the command to be performed when this Group or Chat is clicked.
         /// </summary>
         public ICommand GroupSelected { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this group is loaded purely from cache.
+        /// </summary>
+        public bool IsHistorical { get; set; }
 
         /// <summary>
         /// Gets the title of this Group or Chat.
@@ -118,6 +124,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
             get
             {
                 var latestPreviewMessage = this.MessageContainer.LatestMessage;
+
+                if (latestPreviewMessage == null)
+                {
+                    return new ObservableCollection<Inline>();
+                }
 
                 var sender = latestPreviewMessage.Name;
                 var attachments = latestPreviewMessage.Attachments;

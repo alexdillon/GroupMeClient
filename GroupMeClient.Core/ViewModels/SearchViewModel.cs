@@ -15,9 +15,7 @@ using GroupMeClient.Core.Utilities;
 using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
-using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
-using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
 
 namespace GroupMeClient.Core.ViewModels
@@ -52,11 +50,11 @@ namespace GroupMeClient.Core.ViewModels
             this.SortedGroupChats = new ObservableCollectionExtended<GroupControlViewModel>();
 
             var updatedSort = this.AllGroupsChats
-              .Connect()
-              .WhenPropertyChanged(c => c.LastUpdated)
-              .Throttle(TimeSpan.FromMilliseconds(250))
-              .ObserveOn(RxApp.MainThreadScheduler)
-              .Select(_ => Unit.Default);
+                .Connect()
+                .WhenPropertyChanged(c => c.LastUpdated)
+                .Throttle(TimeSpan.FromMilliseconds(250))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Select(_ => Unit.Default);
 
             this.AllGroupsChats.AsObservableList()
                 .Connect()
@@ -232,13 +230,15 @@ namespace GroupMeClient.Core.ViewModels
 
         private Timer RetryTimer { get; set; }
 
+        private bool LoadedCachedChats { get; set; } = false;
+
         /// <inheritdoc/>
         void IPluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
         {
             var command = new Messaging.SwitchToPageRequestMessage(Messaging.SwitchToPageRequestMessage.Page.Search);
             Messenger.Default.Send(command);
 
-            this.OpenNewGroupChat(container);
+            this.OpenNewGroupChat(container, isHistorical: false);
             this.UpdateContextView(message);
         }
 
@@ -260,13 +260,14 @@ namespace GroupMeClient.Core.ViewModels
                 this.CacheManager.SuperIndexer.EndTransaction();
 
                 this.AllGroupsChats.Clear();
+                this.LoadedCachedChats = false;
 
                 foreach (var group in groupsAndChats)
                 {
                     // Add Group/Chat to the list
                     var vm = new GroupControlViewModel(group)
                     {
-                        GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s.MessageContainer), (g) => true, true),
+                        GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s), (g) => true, true),
                     };
                     this.AllGroupsChats.Add(vm);
                 }
@@ -278,9 +279,36 @@ namespace GroupMeClient.Core.ViewModels
                 System.Diagnostics.Debug.WriteLine($"Exception in {nameof(this.LoadIndexedGroups)} - {ex.Message}. Retrying...");
                 this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(async () => await this.LoadIndexedGroups());
             }
+
+            if (!this.LoadedCachedChats)
+            {
+                this.LoadedCachedChats = true;
+
+                using (var cache = this.CacheManager.OpenNewContext())
+                {
+                    var cachedGroupsAndChats = cache.GetGroupsAndChats();
+                    foreach (var cached in cachedGroupsAndChats)
+                    {
+                        var liveVersion = this.AllGroupsChats.Items.FirstOrDefault(g => g.Id == cached.Id);
+                        if (liveVersion == null)
+                        {
+                            this.AllGroupsChats.Add(new GroupControlViewModel(cached)
+                            {
+                                GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s), (g) => true, true),
+                                IsHistorical = true,
+                            });
+                        }
+                    }
+                }
+            }
         }
 
-        private void OpenNewGroupChat(IMessageContainer group)
+        private void OpenNewGroupChat(GroupControlViewModel group)
+        {
+            this.OpenNewGroupChat(group.MessageContainer, group.IsHistorical);
+        }
+
+        private void OpenNewGroupChat(IMessageContainer group, bool isHistorical)
         {
             this.SelectedGroupChat = group;
 
@@ -292,16 +320,33 @@ namespace GroupMeClient.Core.ViewModels
             this.Members.Clear();
             if (this.SelectedGroupChat is Group g)
             {
-                foreach (var member in g.Members)
+                if (g.Members != null)
                 {
-                    this.Members.Add(member);
+                    foreach (var member in g.Members)
+                    {
+                        this.Members.Add(member);
+                    }
                 }
             }
             else if (this.SelectedGroupChat is Chat c)
             {
                 this.Members.Add(c.OtherUser);
-                this.Members.Add(c.WhoAmI());
+
+                try
+                {
+                    this.Members.Add(c.WhoAmI());
+                }
+                catch (Exception)
+                {
+                    // WhoAmI may not be available offline
+                    var conversationIdParts = c.ConversationId.Split('+');
+                    var meId = conversationIdParts.First(i => i != c.OtherUser.Id);
+                    this.Members.Add(Placeholders.CreatePlaceholderMember(meId, "Me"));
+                }
             }
+
+            // Historical groups no longer exist on GroupMe, so likes can't be synchronized anymore.
+            this.ContextView.SyncAndUpdate = !isHistorical;
 
             this.ContextView.DisplayMessages(null, null);
         }

@@ -23,7 +23,7 @@ namespace GroupMeClient.Core
         {
             SimpleIoc.Default.Register<TaskManager>();
             SimpleIoc.Default.Register(() => startupParameters.ClientIdentity);
-            SimpleIoc.Default.Register(() => new CacheManager(startupParameters.CacheFilePath, SimpleIoc.Default.GetInstance<TaskManager>()));
+            SimpleIoc.Default.Register(() => new CacheManager(startupParameters.CacheFilePath, SimpleIoc.Default.GetInstance<TaskManager>(), SimpleIoc.Default.GetInstance<SettingsManager>()));
             SimpleIoc.Default.Register(() => new PersistManager(startupParameters.PersistFilePath));
             SimpleIoc.Default.Register(() => new SettingsManager(startupParameters.SettingsFilePath));
             SimpleIoc.Default.Register(() => new PluginInstaller(startupParameters.PluginPath));
