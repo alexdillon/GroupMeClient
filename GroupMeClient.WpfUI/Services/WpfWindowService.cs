@@ -35,7 +35,7 @@ namespace GroupMeClient.WpfUI.Services
             {
                 Title = windowParams.Title,
                 Content = host,
-                DataContext = host,
+                DataContext = hostVm,
                 Topmost = windowParams.TopMost,
                 Tag = windowParams.Tag,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,

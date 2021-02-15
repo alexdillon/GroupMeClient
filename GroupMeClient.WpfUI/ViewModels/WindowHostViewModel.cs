@@ -53,6 +53,11 @@ namespace GroupMeClient.WpfUI.ViewModels
         /// </summary>
         public PopupViewModel DialogManagerTopMost { get; set; }
 
+        /// <summary>
+        /// Gets a value indicating whether this ViewModel is represents a complete copy of GMDC.
+        /// </summary>
+        public bool IsFullGMDC => false;
+
         private string Tag { get; }
 
         private void OpenBigPopup(Core.Messaging.DialogRequestMessage dialog)
