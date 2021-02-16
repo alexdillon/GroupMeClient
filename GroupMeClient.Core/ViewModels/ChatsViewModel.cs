@@ -320,11 +320,12 @@ namespace GroupMeClient.Core.ViewModels
             {
                 this.OpenNewGroupChat(
                     group: groupOrChat,
-                    skipClose: !this.SettingsManager.UISettings.StrictlyEnforceMultiChatLimits);
+                    skipClose: !this.SettingsManager.UISettings.StrictlyEnforceMultiChatLimits,
+                    startReply: requestMessage.StartReply);
             }
         }
 
-        private void OpenNewGroupChat(GroupControlViewModel group, bool skipClose = false)
+        private void OpenNewGroupChat(GroupControlViewModel group, bool skipClose = false, MessageControlViewModel startReply = null)
         {
             if (this.ActiveGroupsChats.Any(g => g.Id == group.Id))
             {
@@ -332,6 +333,11 @@ namespace GroupMeClient.Core.ViewModels
                 var openGroup = this.ActiveGroupsChats.First(g => g.Id == group.Id);
                 var indexOpenGroup = this.ActiveGroupsChats.IndexOf(openGroup);
                 this.ActiveGroupsChats.Move(indexOpenGroup, 0);
+
+                if (startReply != null)
+                {
+                    openGroup.InitiateReply.Execute(startReply);
+                }
             }
             else
             {
@@ -349,6 +355,11 @@ namespace GroupMeClient.Core.ViewModels
                 this.MarkGroupChatAsRead(group);
 
                 this.PublishTotalUnreadCount();
+
+                if (startReply != null)
+                {
+                    groupContentsDisplay.InitiateReply.Execute(new MessageControlViewModel(startReply));
+                }
             }
 
             if (!skipClose)

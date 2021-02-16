@@ -93,7 +93,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
             else
             {
-                image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl, isGroup);
+                 image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl, isGroup);
             }
 
             this.CurrentlyRenderedUrl = this.AvatarSource.ImageOrAvatarUrl;

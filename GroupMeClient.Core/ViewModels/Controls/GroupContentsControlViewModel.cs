@@ -54,7 +54,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.ReloadView = new RelayCommand(async () => await this.LoadMoreAsync(), true);
             this.GroupChatPluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>(this.ActivateGroupPlugin);
             this.SelectionChangedCommand = new RelayCommand<object>(this.SelectionChangedHandler);
-            this.InitiateReply = new RelayCommand<MessageControlViewModel>(m => this.InitiateReplyCommand(m), true);
+            this.InitiateReply = new RelayCommand<MessageControlViewModel>(this.InitiateReplyCommand, true);
             this.HideMessage = new RelayCommand<MessageControlViewModel>(m => this.HideMessageCommand(m), true);
             this.TerminateReply = new RelayCommand(() => this.MessageBeingRepliedTo = null, true);
             this.ToggleDisplayOptions = new RelayCommand(() => this.ShowDisplayOptions = !this.ShowDisplayOptions, true);
@@ -635,9 +635,16 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private async Task<Message> InjectReplyData(Message responseMessage)
         {
             var renderingService = SimpleIoc.Default.GetInstance<IMessageRendererService>();
-            var currentlyDisplayedVersion = this.AllMessages.Items.First(m => m.Id == this.MessageBeingRepliedTo.Id);
+            var currentlyDisplayedVersion = this.AllMessages.Items.FirstOrDefault(m => m.Id == this.MessageBeingRepliedTo.Id);
+
+            if (currentlyDisplayedVersion == null)
+            {
+                // This reply was initiated from somewhere else, so the message isn't displayed yet
+                currentlyDisplayedVersion = this.MessageBeingRepliedTo;
+            }
+
             var renderedOriginalMessage = renderingService.RenderMessageToPngImage(this.MessageBeingRepliedTo.Message, currentlyDisplayedVersion);
-            var renderedImageAttachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(renderedOriginalMessage, this.MessageContainer);
+            var renderedImageAttachment = await ImageAttachment.CreateImageAttachment(renderedOriginalMessage, this.MessageContainer);
 
             var attachments = responseMessage.Attachments.ToList();
             attachments.Add(renderedImageAttachment);
