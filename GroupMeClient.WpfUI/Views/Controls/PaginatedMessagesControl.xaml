@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
+             xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
              mc:Ignorable="d"
              Background="{DynamicResource MahApps.Brushes.Control.Background}"
              d:DesignHeight="700" d:DesignWidth="500">
@@ -53,9 +54,16 @@
                                 <Border BorderThickness="0"
                                         x:Name="highlightBorder"
                                         Margin="0" >
-                                    <ContentPresenter 
-                                        SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" 
-                                        IsHitTestVisible="{Binding IsSelectable}"/>
+                                    <ContentPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                                      Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:PaginatedMessagesControl}}}">
+                                        <ContentPresenter.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Reply To Message" 
+                                                          Command="{Binding PlacementTarget.Tag.DataContext.InitiateReply, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
+                                                          CommandParameter="{Binding .}"/>
+                                            </ContextMenu>
+                                        </ContentPresenter.ContextMenu>
+                                    </ContentPresenter>
                                 </Border>
 
                                 <ControlTemplate.Triggers>

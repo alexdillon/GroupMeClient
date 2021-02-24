@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Services;
 using GroupMeClientApi.Models;
@@ -33,6 +34,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.GoBackCommand = new RelayCommand(this.GoBack, this.CanGoBack);
             this.GoForwardCommand = new RelayCommand(this.GoForward, this.CanGoForward);
+
+            this.InitiateReply = new RelayCommand<MessageControlViewModel>(this.InitiateReplyCommand, true);
 
             this.NewestAtBottom = false;
         }
@@ -101,6 +104,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// Gets or sets the action to be performed when a <see cref="Message"/> is selected.
         /// </summary>
         public ICommand MessageSelectedCommand { get; set; }
+
+        /// <summary>
+        /// Gets the action to be performed to initiate composing a reply to a specific message.
+        /// </summary>
+        public ICommand InitiateReply { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether a title is shown.
@@ -323,6 +331,17 @@ namespace GroupMeClient.Core.ViewModels.Controls
             // Cut to match the expected page size.
             int startIndex = result.FindIndex(m => m.Id == startAt.Id);
             return result.Skip(startIndex);
+        }
+
+        private void InitiateReplyCommand(MessageControlViewModel message)
+        {
+            var groupOrChatId = message.Message.GroupId ?? message.Message.Chat?.OtherUser.Id;
+
+            Messenger.Default.Send(new Messaging.SwitchToPageRequestMessage(Messaging.SwitchToPageRequestMessage.Page.Chats));
+
+            Messenger.Default.Send(new Messaging.ShowChatRequestMessage(
+                groupOrChatId: groupOrChatId,
+                startReply: message));
         }
     }
 }
