@@ -270,7 +270,7 @@ namespace GroupMeClient.Core.ViewModels
                         {
                             // strange errors can occur when the Group Listing lags behind the
                             // actual group contents. If this occurs, cancel and reload the sidebar.
-                            this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(async () => await this.LoadGroupsAndChats());
+                            this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(() => Task.Run(() => this.LoadGroupsAndChats()));
                             return;
                         }
 
@@ -312,7 +312,7 @@ namespace GroupMeClient.Core.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Exception in {nameof(this.LoadGroupsAndChats)} - {ex.Message}. Retrying...");
-                this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(async () => await this.LoadGroupsAndChats());
+                this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(() => Task.Run(() => this.LoadGroupsAndChats()));
             }
             finally
             {

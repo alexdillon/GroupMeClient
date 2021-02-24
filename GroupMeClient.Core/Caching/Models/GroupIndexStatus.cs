@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GroupMeClientApi.Models;
 
 namespace GroupMeClient.Core.Caching.Models
 {
     /// <summary>
     /// Represents the current index status for a specific <see cref="Group"/> or <see cref="Chat"/>.
+    /// This is used to determine if the group is up-to-date in cache, or if updated are required.
     /// </summary>
     public class GroupIndexStatus
     {

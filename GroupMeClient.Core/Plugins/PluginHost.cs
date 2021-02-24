@@ -39,7 +39,7 @@ namespace GroupMeClient.Core.Plugins
             var cacheContext = this.CacheManager.OpenNewContext();
 
             var cacheSession = new CacheSession(
-                 CacheManager.GetMessagesForGroup(group, cacheContext),
+                 cacheContext.GetMessagesForGroup(group),
                  cacheContext.Messages.AsNoTracking(),
                  cacheContext);
 

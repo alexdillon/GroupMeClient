@@ -305,8 +305,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             get
             {
-                var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
-                return this.Message.UserId == me.UserId;
+                try
+                {
+                    var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
+                    return this.Message.UserId == me.UserId;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
         }
 

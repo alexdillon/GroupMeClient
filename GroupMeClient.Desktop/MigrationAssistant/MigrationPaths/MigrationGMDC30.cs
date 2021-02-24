@@ -86,7 +86,7 @@ namespace GroupMeClient.Desktop.MigrationAssistant
 
         private void FixStarredHiddenMessages(string persistPath, string cachePath)
         {
-            var cacheManager = new CacheManager(cachePath, null);
+            var cacheManager = new CacheManager(cachePath, null, null);
             var persistManager = new PersistManager(persistPath);
         
             using (var persistContext = persistManager.OpenNewContext())
