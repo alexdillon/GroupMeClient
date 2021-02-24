@@ -7,6 +7,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Services;
+using GroupMeClient.Core.Utilities;
 using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
 
@@ -17,7 +18,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
     /// </summary>
     public class GroupMeImageAttachmentControlViewModel : ViewModelBase, IDisposable
     {
-        private Stream imageAttachmentStream;
+        private byte[] imageData;
         private bool isLoading;
 
         /// <summary>
@@ -72,8 +73,17 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         /// </summary>
         public Stream ImageAttachmentStream
         {
-            get => this.imageAttachmentStream;
-            internal set => this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value);
+            get
+            {
+                if (this.ImageData == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new ReadOnlyByteStream(this.ImageData);
+                }
+            }
         }
 
         /// <summary>
@@ -93,10 +103,20 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 
         private string GroupOrChatId { get; }
 
+        private byte[] ImageData
+        {
+            get => this.imageData;
+            set
+            {
+                this.imageData = value;
+                this.RaisePropertyChanged(nameof(this.ImageAttachmentStream));
+            }
+        }
+
         /// <inheritdoc/>
         public void Dispose()
         {
-            (this.imageAttachmentStream as IDisposable)?.Dispose();
+            // No unmanaged image data anymore
         }
 
         private static string GetGroupMeImageDisplayModeString(GroupMeImageDisplayMode mode)
@@ -120,17 +140,12 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         private async Task LoadImageAttachment()
         {
             var resolution = GetGroupMeImageDisplayModeString(this.PreviewMode);
-
             var image = await this.ImageDownloader.DownloadPostImageAsync($"{this.ImageAttachment.Url}.{resolution}");
-
-            if (image == null)
+            if (image != null)
             {
-                return;
+                this.IsLoading = false;
+                this.ImageData = image;
             }
-
-            this.ImageAttachmentStream?.Dispose();
-            this.ImageAttachmentStream = new MemoryStream(image);
-            this.IsLoading = false;
         }
 
         private void ClickedAction()
@@ -147,8 +162,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             // operations to be completed accurately before the full image loads
             var dimensions = this.GetScaledImageDimensions();
             var imageService = SimpleIoc.Default.GetInstance<IImageService>();
-            var bytes = imageService.CreateTransparentPng(dimensions.Item1, dimensions.Item2);
-            this.ImageAttachmentStream = new MemoryStream(bytes);
+            this.ImageData = imageService.CreateTransparentPng(dimensions.Item1, dimensions.Item2);
         }
 
         private Tuple<int, int> GetScaledImageDimensions()
