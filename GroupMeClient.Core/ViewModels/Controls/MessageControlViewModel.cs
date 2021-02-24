@@ -475,6 +475,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void LoadAttachments()
         {
+            var groupOrChatId = this.Message.Group?.Id ?? this.Message.Chat?.Id;
+
             int totalAttachedImages = this.Message.Attachments.OfType<ImageAttachment>().Count();
 
             // Check if this is a GroupMe Desktop Client Reply-extension message
@@ -517,7 +519,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                         displayMode = GroupMeImageAttachmentControlViewModel.GroupMeImageDisplayMode.Preview;
                     }
 
-                    var imageVm = new GroupMeImageAttachmentControlViewModel(imageAttach, this.Message.ImageDownloader, displayMode);
+                    var imageVm = new GroupMeImageAttachmentControlViewModel(imageAttach, groupOrChatId, this.Message.ImageDownloader, displayMode);
                     this.AttachedItems.Add(imageVm);
 
                     // Starting in 9/2019, GroupMe supports multiple images-per-message.

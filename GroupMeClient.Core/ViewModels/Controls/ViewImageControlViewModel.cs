@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
+using GroupMeClient.Core.Utilities;
 using GroupMeClientApi;
-using Microsoft.Win32;
-using SQLitePCL;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -16,7 +15,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
     /// </summary>
     public class ViewImageControlViewModel : GalaSoft.MvvmLight.ViewModelBase, IDisposable
     {
-        private Stream imageAttachmentStream;
+        private byte[] imageData;
         private bool isLoading;
         private double rotateAngle;
 
@@ -58,8 +57,17 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public Stream ImageStream
         {
-            get => this.imageAttachmentStream;
-            internal set => this.Set(() => this.ImageStream, ref this.imageAttachmentStream, value);
+            get
+            {
+                if (this.ImageData == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new ReadOnlyByteStream(this.ImageData);
+                }
+            }
         }
 
         /// <summary>
@@ -80,6 +88,16 @@ namespace GroupMeClient.Core.ViewModels.Controls
             private set => this.Set(() => this.RotateAngle, ref this.rotateAngle, value);
         }
 
+        private byte[] ImageData
+        {
+            get => this.imageData;
+            set
+            {
+                this.imageData = value;
+                this.RaisePropertyChanged(nameof(this.ImageStream));
+            }
+        }
+
         private string ImageUrl { get; }
 
         private ImageDownloader ImageDownloader { get; }
@@ -87,7 +105,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <inheritdoc/>
         void IDisposable.Dispose()
         {
-            (this.imageAttachmentStream as IDisposable)?.Dispose();
+            // No unmanaged image resources anymore
         }
 
         private async Task LoadImageAttachment()
@@ -99,7 +117,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 return;
             }
 
-            this.ImageStream = new MemoryStream(image);
+            this.ImageData = image;
             this.IsLoading = false;
         }
 

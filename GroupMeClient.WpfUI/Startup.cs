@@ -21,6 +21,7 @@ namespace GroupMeClient.WpfUI
             SimpleIoc.Default.Register<Core.Services.IUserInterfaceDispatchService, Services.WpfDispatcherService>();
             SimpleIoc.Default.Register<Core.Services.IRestoreService, Services.WpfRestoreService>();
             SimpleIoc.Default.Register<Core.Services.IImageService, Services.WpfImageService>();
+            SimpleIoc.Default.Register<Core.Services.IWindowService, Services.WpfWindowService>();
 
             // Setup Themeing
             SimpleIoc.Default.Register<Core.Services.IThemeService, Services.WpfThemeService>();

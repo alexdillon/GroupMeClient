@@ -117,6 +117,7 @@
     </Compile>
     <Compile Include="Services\WpfFileDialogService.cs" />
     <Compile Include="Services\WpfRestoreService.cs" />
+    <Compile Include="Services\WpfWindowService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Services\WpfThemeService.cs" />
     <Compile Include="Extensions\SelectableTextBlock.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Updates\UpdateAssist.cs" />
     <Compile Include="Utilities\ImageUtils.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\WindowHostViewModel.cs" />
     <Compile Include="Views\Controls\Attachments\GroupMeImageAttachmentControl.xaml.cs">
       <DependentUpon>GroupMeImageAttachmentControl.xaml</DependentUpon>
     </Compile>
@@ -233,6 +235,9 @@
     </Compile>
     <Compile Include="Views\SearchView.xaml.cs">
       <DependentUpon>SearchView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WindowHost.xaml.cs">
+      <DependentUpon>WindowHost.xaml</DependentUpon>
     </Compile>
     <Page Include="Styles\GMDCGlobalResources.xaml">
       <SubType>Designer</SubType>
@@ -423,6 +428,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SearchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WindowHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

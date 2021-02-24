@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
+using GroupMeClient.Core.Utilities;
 using GroupMeClientApi;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
@@ -14,7 +16,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
     /// </summary>
     public class ImageLinkAttachmentControlViewModel : ViewModelBase, IHidesTextAttachment, IDisposable
     {
-        private System.IO.Stream imageAttachmentStream;
+        private byte[] imageData;
         private bool isLoading;
 
         /// <summary>
@@ -69,10 +71,19 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         /// <summary>
         /// Gets the attached image.
         /// </summary>
-        public System.IO.Stream ImageAttachmentStream
+        public Stream ImageAttachmentStream
         {
-            get => this.imageAttachmentStream;
-            internal set => this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value);
+            get
+            {
+                if (this.ImageData == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new ReadOnlyByteStream(this.ImageData);
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -81,6 +92,16 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         private string NavigateToUrl { get; }
 
         private ImageDownloader ImageDownloader { get; }
+
+        private byte[] ImageData
+        {
+            get => this.imageData;
+            set
+            {
+                this.imageData = value;
+                this.RaisePropertyChanged(nameof(this.ImageAttachmentStream));
+            }
+        }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -91,14 +112,11 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         private async Task LoadImageAttachment()
         {
             var image = await this.ImageDownloader.DownloadPostImageAsync($"{this.Url}");
-
-            if (image == null)
+            if (image != null)
             {
-                return;
+                this.ImageData = image;
+                this.IsLoading = false;
             }
-
-            this.ImageAttachmentStream = new System.IO.MemoryStream(image);
-            this.IsLoading = false;
         }
 
         private void ClickedAction()

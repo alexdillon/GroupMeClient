@@ -5,7 +5,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Settings;
+using GroupMeClient.Core.ViewModels;
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin.Notifications.Display;
 using Microsoft.Toolkit.Uwp.Notifications;
@@ -30,6 +32,7 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
             DesktopNotificationManagerCompat.RegisterActivator<GroupMeNotificationActivator>();
 
             this.SettingsManager = settingsManager;
+            this.ChatsViewModel = SimpleIoc.Default.GetInstance<ChatsViewModel>();
         }
 
         /// <summary>
@@ -66,6 +69,8 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
         private bool HasPerformedCleanup { get; set; } = false;
 
         private SettingsManager SettingsManager { get; }
+
+        private ChatsViewModel ChatsViewModel { get; }
 
         private string ToastImagePath => Path.GetTempPath() + "WindowsNotifications.GroupMeToasts.Images";
 
@@ -105,7 +110,9 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
                 },
             };
 
-            this.ShowToast(toastContent);
+            this.ShowToast(
+                toastContent: toastContent,
+                containerId: containerId);
         }
 
         /// <inheritdoc/>
@@ -178,7 +185,10 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
                 },
             };
 
-            this.ShowToast(toastContent, $"{containerId}{messageId}");
+            this.ShowToast(
+                toastContent: toastContent,
+                tag: $"{containerId}{messageId}",
+                containerId: containerId);
         }
 
         /// <inheritdoc/>
@@ -247,7 +257,10 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
                 },
             };
 
-            this.ShowToast(toastContent, $"{containerId}{messageId}");
+            this.ShowToast(
+                toastContent: toastContent,
+                tag: $"{containerId}{messageId}",
+                containerId: containerId);
         }
 
         /// <inheritdoc/>
@@ -256,12 +269,20 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
             this.GroupMeClient = client;
         }
 
-        private void ShowToast(ToastContent toastContent, string tag = "")
+        private void ShowToast(ToastContent toastContent, string tag = "", string containerId = "")
         {
             bool isActive = false;
             Application.Current.Dispatcher.Invoke(() =>
             {
                 isActive = Application.Current.MainWindow?.IsActive ?? false;
+
+                foreach (var miniChat in this.ChatsViewModel.ActiveMiniChats)
+                {
+                    if (miniChat.Id == containerId)
+                    {
+                        isActive = true;
+                    }
+                }
             });
 
             if (isActive)

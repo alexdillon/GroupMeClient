@@ -141,6 +141,11 @@ namespace GroupMeClient.WpfUI.ViewModels
         }
 
         /// <summary>
+        /// Gets a value indicating whether this ViewModel is represents a complete copy of GMDC.
+        /// </summary>
+        public bool IsFullGMDC => true;
+
+        /// <summary>
         /// Gets or sets the manager for the dialog that should be displayed as a large popup.
         /// </summary>
         public PopupViewModel DialogManagerRegular { get; set; }
@@ -258,6 +263,8 @@ namespace GroupMeClient.WpfUI.ViewModels
             Messenger.Default.Register<Core.Messaging.SwitchToPageRequestMessage>(this, this.SwitchToPageCommand);
             Messenger.Default.Register<Core.Messaging.RebootRequestMessage>(this, (r) => this.RebootReasons.Add(r.Reason), true);
             Messenger.Default.Register<Core.Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
+            Messenger.Default.Register<Core.Messaging.DialogDismissMessage>(this, this.DismissCallback);
+            Messenger.Default.Register<Core.Messaging.RefreshAllMessage>(this, (s) => Task.Run(this.RefreshEverything), true);
 
             // Setup updating
             Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
@@ -302,16 +309,14 @@ namespace GroupMeClient.WpfUI.ViewModels
 
             this.DialogManagerRegular = new PopupViewModel()
             {
-                EasyClosePopup = new RelayCommand(this.CloseBigPopup),
-                ClosePopup = new RelayCommand(this.CloseBigPopup),
-                PopupDialog = null,
+                ClosePopupCallback = new RelayCommand(this.CloseBigPopup),
+                EasyClosePopupCallback = new RelayCommand(this.CloseBigPopup),
             };
 
             this.DialogManagerTopMost = new PopupViewModel()
             {
-                EasyClosePopup = new RelayCommand(this.CloseBigTopMostPopup),
-                ClosePopup = new RelayCommand(this.CloseBigTopMostPopup),
-                PopupDialog = null,
+                ClosePopupCallback = new RelayCommand(this.CloseBigTopMostPopup),
+                EasyClosePopupCallback = new RelayCommand(this.CloseBigTopMostPopup),
             };
 
             Desktop.Native.Windows.RecoveryManager.RegisterForRecovery();
@@ -456,11 +461,11 @@ namespace GroupMeClient.WpfUI.ViewModels
         {
             if (dialog.TopMost)
             {
-                this.DialogManagerTopMost.PopupDialog = dialog.Dialog;
+                this.DialogManagerTopMost.OpenPopup(dialog.Dialog, dialog.DialogId);
             }
             else
             {
-                this.DialogManagerRegular.PopupDialog = dialog.Dialog;
+                this.DialogManagerRegular.OpenPopup(dialog.Dialog, dialog.DialogId);
             }
         }
 
@@ -471,7 +476,9 @@ namespace GroupMeClient.WpfUI.ViewModels
                 d.Dispose();
             }
 
-            this.DialogManagerRegular.PopupDialog = null;
+            var closeId = this.DialogManagerRegular.PopupId;
+            this.DialogManagerRegular.ClosePopup();
+            Messenger.Default.Send(new Core.Messaging.DialogDismissMessage(closeId));
         }
 
         private void CloseBigTopMostPopup()
@@ -481,7 +488,21 @@ namespace GroupMeClient.WpfUI.ViewModels
                 d.Dispose();
             }
 
-            this.DialogManagerTopMost.PopupDialog = null;
+            var closeId = this.DialogManagerTopMost.PopupId;
+            this.DialogManagerTopMost.ClosePopup();
+            Messenger.Default.Send(new Core.Messaging.DialogDismissMessage(closeId));
+        }
+
+        private void DismissCallback(Core.Messaging.DialogDismissMessage dismissMessage)
+        {
+            if (this.DialogManagerTopMost.PopupId == dismissMessage.DialogId && dismissMessage.DialogId != Guid.Empty)
+            {
+                this.CloseBigTopMostPopup();
+            }
+            else if (this.DialogManagerRegular.PopupId == dismissMessage.DialogId && dismissMessage.DialogId != Guid.Empty)
+            {
+                this.CloseBigPopup();
+            }
         }
 
         private void UpdateNotificationCount(Core.Messaging.UnreadRequestMessage update)
