@@ -877,6 +877,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 Width = 350,
                 Height = 550,
                 TopMost = true,
+                StartingLocation = WindowParams.Location.BottomRight,
                 Tag = this.Id,
                 CloseCallback = () => this.CloseMiniChat?.Execute(this),
             });
