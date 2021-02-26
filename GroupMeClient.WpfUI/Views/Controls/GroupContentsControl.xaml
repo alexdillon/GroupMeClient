@@ -363,12 +363,13 @@
                 </Border>
 
                 <Button HorizontalAlignment="Right"
-                        Width="35" Height="35"
-                        BorderThickness="0"
-                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Width="30" Height="30"
+                        Background="Transparent"
+                        Margin="0,0,7,0"
+                        Style="{StaticResource bottomBarButtonStyle}"
                         Command="{Binding TerminateReply}"
                         CommandParameter="{Binding Path=.}">
-                    <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
+                    <iconPacks:PackIconOcticons Width="15" Height="15"  Kind="X"/>
                 </Button>
             </Grid>
 
