@@ -34,6 +34,9 @@ namespace GroupMeClient.WpfUI
 
             // Create Plugin Manager singleton
             SimpleIoc.Default.Register<Core.Services.IPluginManagerService, Plugins.PluginManager>();
+
+            // Register the app AUMID for taskbar grouping
+            Desktop.Native.Windows.TaskBar.SetCurrentProcessExplicitAppUserModelID(Notifications.Display.Win10.Win10ToastNotificationsProvider.ApplicationId);
         }
     }
 }
