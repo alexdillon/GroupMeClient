@@ -57,6 +57,23 @@ namespace GroupMeClient.Core.Settings
         public bool EnableNonNativeNotifications { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets the starting window placement for new MiniChat instances.
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public WindowParams.Location MiniChatOpenLocation { get; set; } = WindowParams.Location.BottomRight;
+
+        /// <summary>
+        /// Gets or sets the starting window position for MiniChats when <see cref="MiniChatOpenLocation"/>
+        /// is set to <see cref="WindowParams.Location.Manual"/>.
+        /// </summary>
+        public double MiniChatManualX { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the starting window position for MiniChats when <see cref="MiniChatOpenLocation"/>
+        /// is set to <see cref="WindowParams.Location.Manual"/>.
+        public double MiniChatManualY { get; set; } = 0;
+
+        /// <summary>
         /// Gets or sets the user selected theme that should be applied to the entire application UI.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
