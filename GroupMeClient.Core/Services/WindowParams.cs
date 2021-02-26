@@ -42,6 +42,11 @@ namespace GroupMeClient.Core.Services
             /// The default location, as determined by the system.
             /// </summary>
             Default,
+
+            /// <summary>
+            /// A manually set X, Y position.
+            /// </summary>
+            Manual,
         }
 
         /// <summary>
@@ -85,5 +90,17 @@ namespace GroupMeClient.Core.Services
         /// Gets or sets the default window starting location.
         /// </summary>
         public Location StartingLocation { get; set; } = Location.Default;
+
+        /// <summary>
+        /// Gets or sets the starting X position of the window if <see cref="StartingLocation"/>
+        /// is set to <see cref="Location.Manual"/>.
+        /// </summary>
+        public double StartingX { get; set; }
+
+        /// <summary>
+        /// Gets or sets the starting Y position of the window if <see cref="StartingLocation"/>
+        /// is set to <see cref="Location.Manual"/>.
+        /// </summary>
+        public double StartingY { get; set; }
     }
 }

@@ -62,6 +62,12 @@ namespace GroupMeClient.WpfUI.Services
                     window.WindowStartupLocation = WindowStartupLocation.Manual;
                     break;
 
+                case WindowParams.Location.Manual:
+                    window.WindowStartupLocation = WindowStartupLocation.Manual;
+                    window.Left = windowParams.StartingX;
+                    window.Top = windowParams.StartingY;
+                    break;
+
                 case WindowParams.Location.CenterScreen:
                     window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     break;
