@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Tasks;
 using GroupMeClientApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupMeClient.Core.Caching
 {
@@ -120,28 +121,47 @@ namespace GroupMeClient.Core.Caching
                     {
                         this.LastMetadataUpdate = DateTime.Now;
 
+                        // Remove old metadata. Doing a removal and addition in the same cycle was causing
+                        // OtherUserId foreign key for Chats to be null. Doing true updates with cascading deletes
+                        // should be possible, but this can be done easily in SQLite without any further migrations (GMDC 33.0.3)
                         foreach (var metaData in this.GroupsAndChats)
                         {
                             if (metaData is Group groupMetadata)
                             {
-                                var existing = context.GroupMetadata.Find(groupMetadata.Id);
+                                var existing = context.GroupMetadata
+                                    .Include(g => g.Members)
+                                    .FirstOrDefault(g => g.Id == groupMetadata.Id);
                                 if (existing != null)
                                 {
-                                    context.Remove(existing);
-                                }
+                                    foreach (var member in existing.Members)
+                                    {
+                                        context.Remove(member);
+                                    }
 
-                                context.GroupMetadata.Add(groupMetadata);
+                                    context.GroupMetadata.Remove(existing);
+                                }
                             }
                             else if (metaData is Chat chatMetadata)
                             {
-                                var existing = context.ChatMetadata.Find(chatMetadata.Id);
-                                if (existing != null)
+                                var existingChat = context.ChatMetadata.FirstOrDefault(c => c.Id == metaData.Id);
+                                if (existingChat != null)
                                 {
-                                    context.Remove(existing);
+                                    context.Remove(existingChat);
                                 }
 
-                                context.ChatMetadata.Add(chatMetadata);
+                                var existingMember = context.Find<Member>(chatMetadata.OtherUser.Id);
+                                if (existingMember != null)
+                                {
+                                    context.Remove(existingMember);
+                                }
                             }
+                        }
+
+                        context.SaveChanges();
+
+                        foreach (var addMetaData in this.GroupsAndChats)
+                        {
+                            context.Add(addMetaData);
                         }
 
                         context.SaveChanges();
