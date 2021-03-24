@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using Notification.Wpf;
+using Notification.Wpf.Classes;
 using Notification.Wpf.Controls;
 
 namespace GroupMeClient.WpfUI.Notifications.Display.Win7
@@ -47,7 +49,7 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win7
         private Dispatcher Dispatcher { get; }
 
         /// <inheritdoc/>
-        public void Show(object content, string areaName = "", TimeSpan? expirationTime = null, Action onClick = null, Action onClose = null)
+        public void Show(object content, string areaName = "", TimeSpan? expirationTime = null, Action onClick = null, Action onClose = null, bool CloseOnClick = true)
         {
             if (!this.Dispatcher.CheckAccess())
             {
@@ -68,8 +70,21 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win7
                     content,
                     expirationTime ?? TimeSpan.FromSeconds(5),
                     onClick,
-                    onClose);
+                    onClose,
+                    CloseOnClick);
             }
+        }
+
+        /// <inheritdoc/>
+        public void Show(string title, string message, NotificationType type, string areaName = "", TimeSpan? expirationTime = null, Action onClick = null, Action onClose = null, Action LeftButton = null, string LeftButtonText = null, Action RightButton = null, string RightButtonText = null, NotificationTextTrimType trim = NotificationTextTrimType.NoTrim, uint RowsCountWhenTrim = 2, bool CloseOnClick = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public void ShowProgressBar(out ProgressFinaly<(int? value, string message, string title, bool? showCancel)> progress, out CancellationToken Cancel, string Title = null, bool ShowCancelButton = true, bool ShowProgress = true, string areaName = "", bool TrimText = false, uint DefaultRowsCount = 1, string BaseWaitingMessage = "Calculation time")
+        {
+            throw new NotImplementedException();
         }
     }
 }
