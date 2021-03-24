@@ -47,6 +47,7 @@
     </PackageReference>
     <PackageReference Include="Octokit" Version="0.48.0" />
     <PackageReference Include="ReactiveUI" Version="13.0.27" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.0.4" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
