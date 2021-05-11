@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Controls.Documents;
 using GroupMeClient.Core.Utilities;
 using GroupMeClient.Core.ViewModels.Controls.Attachments;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -46,7 +47,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.Inlines = new ObservableCollection<Inline>();
-            this.LikeAction = new RelayCommand(async () => { await this.LikeMessageAsync(); }, () => true, true);
+            this.LikeAction = new AsyncRelayCommand(this.LikeMessageAsync);
             this.StarAction = new RelayCommand(this.StarMessage);
             this.DeHideAction = new RelayCommand(this.DeHideMessage);
             this.ToggleMessageDetails = new RelayCommand(() => this.ShowDetails = !this.ShowDetails);
@@ -203,7 +204,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public AvatarControlViewModel Avatar
         {
             get => this.avatar;
-            private set => this.Set(() => this.Avatar, ref this.avatar, value);
+            private set => this.SetProperty(ref this.avatar, value);
         }
 
         /// <summary>
@@ -212,7 +213,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool ShowDetails
         {
             get => this.showDetails;
-            set => this.Set(() => this.ShowDetails, ref this.showDetails, value);
+            set => this.SetProperty(ref this.showDetails, value);
         }
 
         /// <summary>
@@ -222,7 +223,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public RepliedMessageControlViewModel RepliedMessage
         {
             get => this.repliedMessage;
-            set => this.Set(() => this.RepliedMessage, ref this.repliedMessage, value);
+            set => this.SetProperty(ref this.repliedMessage, value);
         }
 
         /// <summary>
@@ -397,7 +398,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsMessageStarred
         {
             get => this.isStarred;
-            private set => this.Set(() => this.IsMessageStarred, ref this.isStarred, value);
+            private set => this.SetProperty(ref this.isStarred, value);
         }
 
         /// <summary>
@@ -406,7 +407,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsMessageHidden
         {
             get => this.isHidden;
-            private set => this.Set(() => this.IsMessageHidden, ref this.isHidden, value);
+            private set => this.SetProperty(ref this.isHidden, value);
         }
 
         private string HiddenText { get; set; } = string.Empty;
@@ -834,7 +835,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void StarMessage()
         {
-            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            var persistManager = Ioc.Default.GetService<PersistManager>();
             using (var context = persistManager.OpenNewContext())
             {
                 if (this.IsMessageStarred)
@@ -853,7 +854,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void DeHideMessage()
         {
-            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            var persistManager = Ioc.Default.GetService<PersistManager>();
             using (var context = persistManager.OpenNewContext())
             {
                 if (this.IsMessageHidden)
@@ -868,25 +869,25 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void RedrawMessage()
         {
-            this.RaisePropertyChanged(nameof(this.Sender));
-            this.RaisePropertyChanged(nameof(this.SentTimeString));
-            this.RaisePropertyChanged(nameof(this.SenderPlatform));
-            this.RaisePropertyChanged(nameof(this.DidISendItColoring));
-            this.RaisePropertyChanged(nameof(this.DidISendIt));
+            this.OnPropertyChanged(nameof(this.Sender));
+            this.OnPropertyChanged(nameof(this.SentTimeString));
+            this.OnPropertyChanged(nameof(this.SenderPlatform));
+            this.OnPropertyChanged(nameof(this.DidISendItColoring));
+            this.OnPropertyChanged(nameof(this.DidISendIt));
 
             this.RedrawLikers();
         }
 
         private void RedrawLikers()
         {
-            this.RaisePropertyChanged(nameof(this.LikeStatus));
-            this.RaisePropertyChanged(nameof(this.LikeCount));
-            this.RaisePropertyChanged(nameof(this.LikedByAvatars));
+            this.OnPropertyChanged(nameof(this.LikeStatus));
+            this.OnPropertyChanged(nameof(this.LikeCount));
+            this.OnPropertyChanged(nameof(this.LikedByAvatars));
         }
 
         private void LoadStarAndHiddenStatus()
         {
-            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            var persistManager = Ioc.Default.GetService<PersistManager>();
             using (var cache = persistManager.OpenNewContext())
             {
                 this.IsMessageStarred = cache.StarredMessages.Find(this.Message.Id) != null;

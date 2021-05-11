@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using GalaSoft.MvvmLight;
 using GroupMeClient.Core.Controls.Media;
 using GroupMeClientApi;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
@@ -12,7 +12,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
     /// <see cref="LinkAttachmentBaseViewModel"/> provides a base for controls that display Web Content.
     /// Access to GroupMe's Inline Downloader Service is provided.
     /// </summary>
-    public abstract class LinkAttachmentBaseViewModel : ViewModelBase, IHidesTextAttachment, IDisposable
+    public abstract class LinkAttachmentBaseViewModel : ObservableObject, IHidesTextAttachment, IDisposable
     {
         private string url;
         private GenericImageSource renderedImage;
@@ -81,7 +81,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         public GenericImageSource RenderedImage
         {
             get => this.renderedImage;
-            private set => this.Set(() => this.RenderedImage, ref this.renderedImage, value);
+            private set => this.SetProperty(ref this.renderedImage, value);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             }
             catch (Exception)
             {
-                this.RaisePropertyChanged(string.Empty);
+                this.OnPropertyChanged(string.Empty);
             }
         }
 

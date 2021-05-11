@@ -1,5 +1,4 @@
 ﻿using System;
-using GalaSoft.MvvmLight.Messaging;
 
 namespace GroupMeClient.Core.Messaging
 {

@@ -1,5 +1,5 @@
 ﻿using System;
-using GalaSoft.MvvmLight;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace GroupMeClient.Core.Services
 {
@@ -52,7 +52,7 @@ namespace GroupMeClient.Core.Services
         /// <summary>
         /// Gets or sets the contents to display in the window.
         /// </summary>
-        public ViewModelBase Content { get; set; }
+        public ObservableObject Content { get; set; }
 
         /// <summary>
         /// Gets or sets the window's title.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using GalaSoft.MvvmLight.Messaging;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace GroupMeClient.Core.Utilities
 {
@@ -83,7 +83,7 @@ namespace GroupMeClient.Core.Utilities
             {
                 // Indicate a disconnect the first time something fails
                 var disconnectUpdateRequest = new Messaging.DisconnectedRequestMessage(disconnected: true);
-                Messenger.Default.Send(disconnectUpdateRequest);
+                WeakReferenceMessenger.Default.Send(disconnectUpdateRequest);
             }
 
             return new Timer(
@@ -102,7 +102,7 @@ namespace GroupMeClient.Core.Utilities
             {
                 // Indicate a connection (not disconnected) only on a disconnected->connected transition.
                 var connectUpdateRequest = new Messaging.DisconnectedRequestMessage(disconnected: false);
-                Messenger.Default.Send(connectUpdateRequest);
+                WeakReferenceMessenger.Default.Send(connectUpdateRequest);
             }
 
             this.CurrentTry = 0;

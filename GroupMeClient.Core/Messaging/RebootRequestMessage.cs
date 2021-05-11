@@ -1,6 +1,4 @@
-﻿using GalaSoft.MvvmLight.Messaging;
-
-namespace GroupMeClient.Core.Messaging
+﻿namespace GroupMeClient.Core.Messaging
 {
     /// <summary>
     /// <see cref="RebootRequestMessage"/> specifies a message indicating that a component

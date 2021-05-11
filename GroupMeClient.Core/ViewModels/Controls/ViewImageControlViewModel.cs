@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Utilities;
 using GroupMeClientApi;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="ViewImageControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.ViewImageControl"/> control.
     /// </summary>
-    public class ViewImageControlViewModel : GalaSoft.MvvmLight.ViewModelBase, IDisposable
+    public class ViewImageControlViewModel : ObservableObject, IDisposable
     {
         private byte[] imageData;
         private bool isLoading;
@@ -76,7 +78,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsLoading
         {
             get => this.isLoading;
-            private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
+            private set => this.SetProperty(ref this.isLoading, value);
         }
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public double RotateAngle
         {
             get => this.rotateAngle;
-            private set => this.Set(() => this.RotateAngle, ref this.rotateAngle, value);
+            private set => this.SetProperty(ref this.rotateAngle, value);
         }
 
         private byte[] ImageData
@@ -94,7 +96,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             set
             {
                 this.imageData = value;
-                this.RaisePropertyChanged(nameof(this.ImageStream));
+                this.OnPropertyChanged(nameof(this.ImageStream));
             }
         }
 
@@ -126,7 +128,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             var imageUrlWithoutLongId = this.ImageUrl.Substring(0, this.ImageUrl.LastIndexOf('.'));
             var extension = Path.GetExtension(imageUrlWithoutLongId);
 
-            var fileDialogService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IFileDialogService>();
+            var fileDialogService = Ioc.Default.GetService<IFileDialogService>();
             var filters = new List<FileFilter>
             {
                 new FileFilter() { Name = "Image", Extensions = { extension } },
@@ -145,7 +147,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void CopyImageAction()
         {
-            var clipboardService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IClipboardService>();
+            var clipboardService = Ioc.Default.GetService<IClipboardService>();
 
             var rawData = new MemoryStream();
             this.ImageStream.Seek(0, SeekOrigin.Begin);

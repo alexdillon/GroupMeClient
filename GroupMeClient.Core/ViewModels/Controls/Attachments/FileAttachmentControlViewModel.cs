@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Services;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 {
     /// <summary>
     /// <see cref="FileAttachmentControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.FileAttachmentControl"/> control.
     /// </summary>
-    public class FileAttachmentControlViewModel : ViewModelBase
+    public class FileAttachmentControlViewModel : ObservableObject
     {
         private bool isLoading;
 
@@ -29,8 +29,8 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             this.FileAttachment = file;
             this.Message = message;
 
-            this.Clicked = new RelayCommand(async () => await this.ClickedAction(), true);
-            this.SaveAs = new RelayCommand(async () => await this.SaveAction(), true);
+            this.Clicked = new AsyncRelayCommand(this.ClickedAction);
+            this.SaveAs = new AsyncRelayCommand(this.SaveAction);
 
             _ = this.LoadFileInfo();
         }
@@ -46,7 +46,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         public bool IsLoading
         {
             get => this.isLoading;
-            set => this.Set(() => this.IsLoading, ref this.isLoading, value);
+            set => this.SetProperty(ref this.isLoading, value);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         private async Task LoadFileInfo()
         {
             this.FileData = await this.FileAttachment.GetFileData(this.Message);
-            this.RaisePropertyChanged(string.Empty);
+            this.OnPropertyChanged(string.Empty);
         }
 
         private async Task ClickedAction()
@@ -117,7 +117,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             var tempFile = Utilities.TempFileUtils.GetTempFileName(this.FileData.FileName);
             File.WriteAllBytes(tempFile, data);
 
-            var osShellService = SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
+            var osShellService = Ioc.Default.GetService<IOperatingSystemUIService>();
             try
             {
                 osShellService.OpenFile(tempFile);
@@ -134,7 +134,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         {
             var extension = FileAttachment.GroupMeDocumentMimeTypeMapper.MimeTypeToExtension(this.FileData.MimeType);
 
-            var fileDialogService = SimpleIoc.Default.GetInstance<IFileDialogService>();
+            var fileDialogService = Ioc.Default.GetService<IFileDialogService>();
             var filters = new List<FileFilter>
             {
                 new FileFilter() { Name = "Document", Extensions = { extension } },

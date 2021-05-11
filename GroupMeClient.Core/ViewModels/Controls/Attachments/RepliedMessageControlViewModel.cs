@@ -1,14 +1,14 @@
-﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Ioc;
-using GroupMeClient.Core.Caching;
+﻿using GroupMeClient.Core.Caching;
 using GroupMeClientApi.Models;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 {
     /// <summary>
     /// <see cref="RepliedMessageControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.RepliedMessageControl"/> control.
     /// </summary>
-    public class RepliedMessageControlViewModel : ViewModelBase
+    public class RepliedMessageControlViewModel : ObservableObject
     {
         private MessageControlViewModel message;
 
@@ -20,7 +20,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         /// <param name="nestLevel">The number of attachment deeply nested this <see cref="Message"/> is.</param>
         public RepliedMessageControlViewModel(string originalMessageId, IMessageContainer messageContainer, int nestLevel)
         {
-            var cacheManager = SimpleIoc.Default.GetInstance<CacheManager>();
+            var cacheManager = Ioc.Default.GetService<CacheManager>();
             using (var context = cacheManager.OpenNewContext())
             {
                 var originalMessage = context.Messages.Find(originalMessageId);
@@ -59,7 +59,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         public MessageControlViewModel Message
         {
             get => this.message;
-            set => this.Set(() => this.Message, ref this.message, value);
+            set => this.SetProperty(ref this.message, value);
         }
     }
 }

@@ -50,7 +50,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public DateTime Timestamp
         {
             get => this.timestamp;
-            private set => this.Set(() => this.Timestamp, ref this.timestamp, value);
+            private set => this.SetProperty(ref this.timestamp, value);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool ShowRead
         {
             get => this.showRead;
-            private set => this.Set(() => this.ShowRead, ref this.showRead, value);
+            private set => this.SetProperty(ref this.showRead, value);
         }
 
         /// <summary>

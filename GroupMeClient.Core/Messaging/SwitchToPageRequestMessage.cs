@@ -1,5 +1,4 @@
-﻿using GalaSoft.MvvmLight.Messaging;
-using GroupMeClientApi.Models;
+﻿using GroupMeClientApi.Models;
 using GroupMeClientPlugin.GroupChat;
 
 namespace GroupMeClient.Core.Messaging

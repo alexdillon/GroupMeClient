@@ -7,8 +7,9 @@ using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Messaging;
 using Octokit;
 
 namespace GroupMeClient.WpfUI.Updates
@@ -132,10 +133,10 @@ namespace GroupMeClient.WpfUI.Updates
                 this.HasAlreadyUpdated = true;
 
                 // Show the update notification in the UI
-                var uiDispatchService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+                var uiDispatchService = Ioc.Default.GetService<IUserInterfaceDispatchService>();
                 uiDispatchService.Invoke(() =>
                 {
-                    Messenger.Default.Send(new Core.Messaging.RebootRequestMessage($"Reboot to Finish Updating GMDC"));
+                    WeakReferenceMessenger.Default.Send(new Core.Messaging.RebootRequestMessage($"Reboot to Finish Updating GMDC"));
                 });
             }
 

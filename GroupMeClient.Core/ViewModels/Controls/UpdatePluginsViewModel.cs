@@ -2,16 +2,17 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Plugins;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="UpdatePluginsViewModel"/> provides a ViewModel for the <see cref="Views.Controls.UpdatePlugins"/> control.
     /// </summary>
-    public class UpdatePluginsViewModel : ViewModelBase
+    public class UpdatePluginsViewModel : ObservableObject
     {
         private bool isUpdatingPlugins;
         private Repository.AvailablePlugin selectedToUpdate;
@@ -25,11 +26,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.AvailableUpdates = new ObservableCollection<Repository.AvailablePlugin>();
             this.AvailablePlugins = new ObservableCollection<PluginSettings.InstalledPlugin>();
 
-            this.UpdateSelectedCommand = new RelayCommand(async () => await this.UpdateSelectedPlugin(), true);
-            this.UpdateAllCommand = new RelayCommand(async () => await this.UpdateAllPlugins(), true);
+            this.UpdateSelectedCommand = new AsyncRelayCommand(this.UpdateSelectedPlugin);
+            this.UpdateAllCommand = new AsyncRelayCommand(this.UpdateAllPlugins);
             this.UninstallPluginCommand = new RelayCommand(this.UninstallSelectedPlugin);
 
-            this.PluginInstaller = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<PluginInstaller>();
+            this.PluginInstaller = Ioc.Default.GetService<PluginInstaller>();
 
             foreach (var plugin in this.PluginInstaller.InstalledPlugins)
             {
@@ -80,7 +81,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsUpdatingPlugins
         {
             get => this.isUpdatingPlugins;
-            private set => this.Set(() => this.IsUpdatingPlugins, ref this.isUpdatingPlugins, value);
+            private set => this.SetProperty(ref this.isUpdatingPlugins, value);
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public Repository.AvailablePlugin SelectedToUpdate
         {
             get => this.selectedToUpdate;
-            set => this.Set(() => this.SelectedToUpdate, ref this.selectedToUpdate, value);
+            set => this.SetProperty(ref this.selectedToUpdate, value);
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public PluginSettings.InstalledPlugin SelectedToUninstall
         {
             get => this.selectedToUninstall;
-            set => this.Set(() => this.SelectedToUninstall, ref this.selectedToUninstall, value);
+            set => this.SetProperty(ref this.selectedToUninstall, value);
         }
 
         private PluginInstaller PluginInstaller { get; }

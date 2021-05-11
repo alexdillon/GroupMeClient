@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Documents;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.WpfUI.Extensions
 {
@@ -59,7 +60,7 @@ namespace GroupMeClient.WpfUI.Extensions
 
         private static void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            var osService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
+            var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
             osService.OpenWebBrowser(e.Uri.ToString());
 
             e.Handled = true;

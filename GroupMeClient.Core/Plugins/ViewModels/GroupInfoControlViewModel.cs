@@ -4,21 +4,22 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace GroupMeClient.Core.Plugins.ViewModels
 {
     /// <summary>
     /// <see cref="GroupInfoControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.GroupInfoControlViewModel"/> control.
     /// </summary>
-    public class GroupInfoControlViewModel : ViewModelBase
+    public class GroupInfoControlViewModel : ObservableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupInfoControlViewModel"/> class.
@@ -29,15 +30,15 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             this.Group = group;
             this.UpdateDisplay();
 
-            this.EditNicknameCommand = new RelayCommand(async () => await this.ToggleName(), true);
-            this.ChangeAvatarCommand = new RelayCommand(async () => await this.ChangeAvatar(), true);
-            this.ResetAvatarToProfileCommand = new RelayCommand(async () => await this.ResetAvatarToProfile(), true);
-            this.EditGroupNameCommand = new RelayCommand(async () => await this.ToggleGroupName(), true);
-            this.EditGroupDescriptionCommand = new RelayCommand(async () => await this.ToggleDescription(), true);
-            this.ChangeGroupAvatarCommand = new RelayCommand(async () => await this.ChangeGroupAvatar(), true);
+            this.EditNicknameCommand = new AsyncRelayCommand(this.ToggleName);
+            this.ChangeAvatarCommand = new AsyncRelayCommand(this.ChangeAvatar);
+            this.ResetAvatarToProfileCommand = new AsyncRelayCommand(this.ResetAvatarToProfile);
+            this.EditGroupNameCommand = new AsyncRelayCommand(this.ToggleGroupName);
+            this.EditGroupDescriptionCommand = new AsyncRelayCommand(this.ToggleDescription);
+            this.ChangeGroupAvatarCommand = new AsyncRelayCommand(this.ChangeGroupAvatar);
             this.ShowImageCommand = new RelayCommand<AvatarControlViewModel>(this.ShowImage);
 
-            this.ReloadGroupInfo().ContinueWith((t) => this.RaisePropertyChanged(string.Empty));
+            this.ReloadGroupInfo().ContinueWith((t) => this.OnPropertyChanged(string.Empty));
         }
 
         /// <summary>
@@ -180,7 +181,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             }
 
             this.IsEditingNickname = !this.IsEditingNickname;
-            this.RaisePropertyChanged(string.Empty);
+            this.OnPropertyChanged(string.Empty);
         }
 
         private async Task<bool> ResetAvatarToProfile()
@@ -188,7 +189,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             var result = await this.Group.UpdateMemberAvatar(null);
             await this.ReloadGroupInfo();
             this.UpdateDisplay();
-            this.RaisePropertyChanged(string.Empty);
+            this.OnPropertyChanged(string.Empty);
 
             return result;
         }
@@ -196,7 +197,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
         private async Task<bool> ChangeAvatar()
         {
             var supportedImages = GroupMeClientApi.Models.Attachments.ImageAttachment.SupportedExtensions.ToList();
-            var fileDialogService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IFileDialogService>();
+            var fileDialogService = Ioc.Default.GetService<IFileDialogService>();
 
             FileFilter[] extensions = { new Services.FileFilter() { Name = "Images", Extensions = supportedImages } };
 
@@ -214,7 +215,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
 
                     await this.ReloadGroupInfo();
                     this.UpdateDisplay();
-                    this.RaisePropertyChanged(string.Empty);
+                    this.OnPropertyChanged(string.Empty);
 
                     return result;
                 }
@@ -233,7 +234,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             }
 
             this.IsEditingGroupName = !this.IsEditingGroupName;
-            this.RaisePropertyChanged(string.Empty);
+            this.OnPropertyChanged(string.Empty);
         }
 
         private async Task ToggleDescription()
@@ -246,13 +247,13 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             }
 
             this.IsEditingGroupDescription = !this.IsEditingGroupDescription;
-            this.RaisePropertyChanged(string.Empty);
+            this.OnPropertyChanged(string.Empty);
         }
 
         private async Task<bool> ChangeGroupAvatar()
         {
             var supportedImages = GroupMeClientApi.Models.Attachments.ImageAttachment.SupportedExtensions.ToList();
-            var fileDialogService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IFileDialogService>();
+            var fileDialogService = Ioc.Default.GetService<IFileDialogService>();
 
             FileFilter[] extensions = { new Services.FileFilter() { Name = "Images", Extensions = supportedImages } };
 
@@ -270,7 +271,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
 
                     await this.ReloadGroupInfo();
                     this.UpdateDisplay();
-                    this.RaisePropertyChanged(string.Empty);
+                    this.OnPropertyChanged(string.Empty);
 
                     return result;
                 }
@@ -291,14 +292,14 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             }
 
             await this.ReloadGroupInfo();
-            this.RaisePropertyChanged(string.Empty);
+            this.OnPropertyChanged(string.Empty);
         }
 
         private void ShowImage(AvatarControlViewModel image)
         {
             var vm = new ViewImageControlViewModel(image.CurrentlyRenderedUrl, image.ImageDownloader);
             var request = new Messaging.DialogRequestMessage(vm, topMost: true);
-            Messenger.Default.Send(request);
+            WeakReferenceMessenger.Default.Send(request);
         }
 
         /// <summary>
@@ -350,7 +351,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             public Task Activated(IMessageContainer groupOrChat, CacheSession cacheSession, IPluginUIIntegration integration, Action<CacheSession> cleanup)
             {
                 var request = new Messaging.DialogRequestMessage(new GroupInfoControlViewModel(this.Group));
-                Messenger.Default.Send(request);
+                WeakReferenceMessenger.Default.Send(request);
 
                 cleanup(cacheSession);
                 return Task.CompletedTask;

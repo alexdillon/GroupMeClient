@@ -3,19 +3,19 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Helpers;
 using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.Plugins.ViewModels
 {
     /// <summary>
     /// <see cref="MultiLikeControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.MultiLikeControl"/> control.
     /// </summary>
-    public class MultiLikeControlViewModel : GalaSoft.MvvmLight.ViewModelBase, IDisposable
+    public class MultiLikeControlViewModel : ObservableObject, IDisposable
     {
         private bool isEnabled;
 
@@ -29,7 +29,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
 
             this.EnableMultiLikeCommand = new RelayCommand(this.EnableMultiLike);
             this.DisableMultiLikeCommand = new RelayCommand(this.DisableMultiLike);
-            this.PerformMultiLikeCommand = new RelayCommand(async () => await this.DoMultiLike(), true);
+            this.PerformMultiLikeCommand = new AsyncRelayCommand(this.DoMultiLike);
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace GroupMeClient.Core.Plugins.ViewModels
 
             set
             {
-                this.Set(() => this.IsEnabled, ref this.isEnabled, value);
-                this.RaisePropertyChanged(nameof(this.IsDisabled));
+                this.SetProperty(ref this.isEnabled, value);
+                this.OnPropertyChanged(nameof(this.IsDisabled));
             }
         }
 

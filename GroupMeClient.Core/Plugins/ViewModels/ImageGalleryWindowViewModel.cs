@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Utilities;
 using GroupMeClient.Core.ViewModels.Controls;
@@ -15,13 +14,16 @@ using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.Plugins.ViewModels
 {
     /// <summary>
     /// <see cref="ImageGalleryWindowViewModel"/> provides a ViewModel for the <see cref="ImageGalleryWindow"/> Window.
     /// </summary>
-    public class ImageGalleryWindowViewModel : ViewModelBase
+    public class ImageGalleryWindowViewModel : ObservableObject
     {
         private bool filterReplyScreenshots;
         private DateTime filterStartDate;
@@ -43,7 +45,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             this.GroupName = this.GroupChat.Name;
 
             this.ShowImageDetailsCommand = new RelayCommand<AttachmentImageItem>(this.ShowImageDetails);
-            this.LoadMoreCommand = new RelayCommand(async () => await this.LoadNextPage(), true);
+            this.LoadMoreCommand = new AsyncRelayCommand(this.LoadNextPage);
             this.ResetFilters = new RelayCommand<bool>(this.ResetFilterFields);
 
             this.Members = new ObservableCollection<Member>();
@@ -123,7 +125,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
         public bool FilterReplyScreenshots
         {
             get => this.filterReplyScreenshots;
-            set => this.SetSearchProperty(() => this.FilterReplyScreenshots, ref this.filterReplyScreenshots, value);
+            set => this.SetSearchProperty(ref this.filterReplyScreenshots, value);
         }
 
         /// <summary>
@@ -132,7 +134,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
         public DateTime FilterStartDate
         {
             get => this.filterStartDate;
-            set => this.SetSearchProperty(() => this.FilterStartDate, ref this.filterStartDate, value);
+            set => this.SetSearchProperty(ref this.filterStartDate, value);
         }
 
         /// <summary>
@@ -141,7 +143,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
         public DateTime FilterEndDate
         {
             get => this.filterEndDate;
-            set => this.SetSearchProperty(() => this.FilterEndDate, ref this.filterEndDate, value);
+            set => this.SetSearchProperty(ref this.filterEndDate, value);
         }
 
         /// <summary>
@@ -150,7 +152,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
         public Member FilterMessagesFrom
         {
             get => this.filterMessagesFrom;
-            set => this.SetSearchProperty(() => this.FilterMessagesFrom, ref this.filterMessagesFrom, value);
+            set => this.SetSearchProperty(ref this.filterMessagesFrom, value);
         }
 
         private IMessageContainer GroupChat { get; }
@@ -198,9 +200,9 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             return results.ToArray();
         }
 
-        private void SetSearchProperty<T>(System.Linq.Expressions.Expression<Func<T>> propertyExpression, ref T field, T newValue)
+        private void SetSearchProperty<T>(ref T field, T newValue, [CallerMemberName] string callerName = "")
         {
-            this.Set(propertyExpression, ref field, newValue);
+            this.SetProperty(ref field, newValue, callerName);
             this.UpdateSearchResults();
         }
 
@@ -310,7 +312,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
                 }
             }
 
-            var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+            var uiDispatcher = Ioc.Default.GetService<IUserInterfaceDispatchService>();
             await uiDispatcher.InvokeAsync(() =>
             {
                 foreach (var item in newItems)
@@ -344,7 +346,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             this.SmallDialogManager.OpenPopup(dialog, Guid.Empty);
         }
 
-        private void ShowLargePopup(ViewModelBase dialog)
+        private void ShowLargePopup(ObservableObject dialog)
         {
             this.BigDialogManager.OpenPopup(dialog, Guid.Empty);
         }
@@ -364,7 +366,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
         /// <summary>
         /// <see cref="AttachmentImageItem"/> represents each image that will be shown in the gallery.
         /// </summary>
-        public class AttachmentImageItem : ViewModelBase, IDisposable
+        public class AttachmentImageItem : ObservableObject, IDisposable
         {
             private bool isLoading;
             private Stream imageData;
@@ -392,7 +394,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             public Stream ImageData
             {
                 get => this.imageData;
-                private set => this.Set(() => this.ImageData, ref this.imageData, value);
+                private set => this.SetProperty(ref this.imageData, value);
             }
 
             /// <summary>
@@ -401,7 +403,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             public bool IsLoading
             {
                 get => this.isLoading;
-                private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
+                private set => this.SetProperty(ref this.isLoading, value);
             }
 
             /// <summary>

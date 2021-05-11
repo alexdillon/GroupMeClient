@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using GalaSoft.MvvmLight.Messaging;
+using Microsoft.Toolkit.Mvvm.Messaging;
 using Newtonsoft.Json;
 
 namespace GroupMeClient.Core.Plugins
@@ -90,7 +90,7 @@ namespace GroupMeClient.Core.Plugins
 
             this.PluginSettings.InstalledPlugins.Add(installedPlugin);
             this.SavePluginSettings();
-            Messenger.Default.Send(new GroupMeClient.Core.Messaging.RebootRequestMessage($"Reboot to Finish Installing {plugin.Name}"));
+            WeakReferenceMessenger.Default.Send(new GroupMeClient.Core.Messaging.RebootRequestMessage($"Reboot to Finish Installing {plugin.Name}"));
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace GroupMeClient.Core.Plugins
             await this.UnpackAndCopyPackage(installedPlugin.InstallationGuid, StagingSuffix, plugin.BinaryUrl);
 
             this.SavePluginSettings();
-            Messenger.Default.Send(new Core.Messaging.RebootRequestMessage($"Reboot to Finish Updating {plugin.Name}"));
+            WeakReferenceMessenger.Default.Send(new Core.Messaging.RebootRequestMessage($"Reboot to Finish Updating {plugin.Name}"));
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace GroupMeClient.Core.Plugins
 
             this.PluginSettings.InstalledPlugins.Remove(plugin);
             this.SavePluginSettings();
-            Messenger.Default.Send(new Core.Messaging.RebootRequestMessage($"Reboot to Finish Uninstalling {plugin.PluginName}"));
+            WeakReferenceMessenger.Default.Send(new Core.Messaging.RebootRequestMessage($"Reboot to Finish Uninstalling {plugin.PluginName}"));
         }
 
         private async Task UnpackAndCopyPackage(string guid, string suffix, string binaryUrl)

@@ -2,17 +2,18 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Plugins.Repositories;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="ManageReposViewModel"/> provides a ViewModel for the <see cref="Views.Controls.ManageRepos"/> control.
     /// </summary>
-    public class ManageReposViewModel : ViewModelBase
+    public class ManageReposViewModel : ObservableObject
     {
         private bool isUpdatingPlugins;
         private bool showAddRepoTextbox;
@@ -30,11 +31,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.BeginAddingGitHubRepoCommand = new RelayCommand(this.BeginAddingGitHubRepo);
             this.RemoveSelectedRepoCommand = new RelayCommand(this.RemoveSelectedRepo);
-            this.InstallPluginsCommand = new RelayCommand(async () => await this.InstallPlugins(), true);
+            this.InstallPluginsCommand = new AsyncRelayCommand(this.InstallPlugins);
             this.CloseGitHubRepoCommand = new RelayCommand(this.CancelAddingGitHubRepo);
             this.FinishAddGitHubRepoCommand = new RelayCommand(this.FinishAddingGitHubRepo);
 
-            this.PluginInstaller = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<PluginInstaller>();
+            this.PluginInstaller = Ioc.Default.GetService<PluginInstaller>();
 
             foreach (var repo in this.PluginInstaller.AddedRepositories)
             {
@@ -85,7 +86,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsUpdatingPlugins
         {
             get => this.isUpdatingPlugins;
-            private set => this.Set(() => this.IsUpdatingPlugins, ref this.isUpdatingPlugins, value);
+            private set => this.SetProperty(ref this.isUpdatingPlugins, value);
         }
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool ShowAddRepoTextbox
         {
             get => this.showAddRepoTextbox;
-            private set => this.Set(() => this.ShowAddRepoTextbox, ref this.showAddRepoTextbox, value);
+            private set => this.SetProperty(ref this.showAddRepoTextbox, value);
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public string EnteredRepoUrl
         {
             get => this.enteredRepoUrl;
-            set => this.Set(() => this.EnteredRepoUrl, ref this.enteredRepoUrl, value);
+            set => this.SetProperty(ref this.enteredRepoUrl, value);
         }
 
         /// <summary>
@@ -112,7 +113,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public Repository SelectedRepo
         {
             get => this.selectedRepo;
-            set => this.Set(() => this.SelectedRepo, ref this.selectedRepo, value);
+            set => this.SetProperty(ref this.selectedRepo, value);
         }
 
         /// <summary>
@@ -121,7 +122,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public Repository.AvailablePlugin SelectedPlugin
         {
             get => this.selectedPlugin;
-            set => this.Set(() => this.SelectedPlugin, ref this.selectedPlugin, value);
+            set => this.SetProperty(ref this.selectedPlugin, value);
         }
 
         private PluginInstaller PluginInstaller { get; }

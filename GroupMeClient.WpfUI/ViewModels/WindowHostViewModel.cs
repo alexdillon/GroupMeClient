@@ -1,8 +1,8 @@
 ﻿using System;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Messaging;
 using GroupMeClient.Core.ViewModels.Controls;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace GroupMeClient.WpfUI.ViewModels
 {
@@ -34,8 +34,8 @@ namespace GroupMeClient.WpfUI.ViewModels
                 ClosePopupCallback = new RelayCommand(this.CloseBigTopMostPopup),
             };
 
-            Messenger.Default.Register<Core.Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
-            Messenger.Default.Register<Core.Messaging.DialogDismissMessage>(this, this.DismissCallback);
+            WeakReferenceMessenger.Default.Register<WindowHostViewModel, DialogRequestMessage>(this, (r, m) => r.OpenBigPopup(m));
+            WeakReferenceMessenger.Default.Register<WindowHostViewModel, DialogDismissMessage>(this, (r, m) => r.DismissCallback(m));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace GroupMeClient.WpfUI.ViewModels
 
         private string Tag { get; }
 
-        private void OpenBigPopup(Core.Messaging.DialogRequestMessage dialog)
+        private void OpenBigPopup(DialogRequestMessage dialog)
         {
             if (this.Tag == dialog.Destination || string.IsNullOrEmpty(this.Tag))
             {
@@ -84,7 +84,7 @@ namespace GroupMeClient.WpfUI.ViewModels
 
             var closeId = this.DialogManagerRegular.PopupId;
             this.DialogManagerRegular.ClosePopup();
-            Messenger.Default.Send(new DialogDismissMessage(closeId));
+            WeakReferenceMessenger.Default.Send(new DialogDismissMessage(closeId));
         }
 
         private void CloseBigTopMostPopup()
@@ -96,7 +96,7 @@ namespace GroupMeClient.WpfUI.ViewModels
 
             var closeId = this.DialogManagerTopMost.PopupId;
             this.DialogManagerTopMost.ClosePopup();
-            Messenger.Default.Send(new DialogDismissMessage(closeId));
+            WeakReferenceMessenger.Default.Send(new DialogDismissMessage(closeId));
         }
 
         private void DismissCallback(DialogDismissMessage dismissMessage)

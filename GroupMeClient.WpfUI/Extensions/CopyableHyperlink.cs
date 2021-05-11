@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.WpfUI.Extensions
 {
@@ -34,7 +34,7 @@ namespace GroupMeClient.WpfUI.Extensions
 
         private void CopyUrl()
         {
-            var clipboardService = SimpleIoc.Default.GetInstance<IClipboardService>();
+            var clipboardService = Ioc.Default.GetService<IClipboardService>();
             clipboardService.CopyText(this.NavigateUri.ToString());
         }
     }

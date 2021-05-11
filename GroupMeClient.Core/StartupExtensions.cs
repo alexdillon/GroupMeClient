@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Services;
@@ -7,27 +6,32 @@ using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Tasks;
 using GroupMeClient.Core.ViewModels;
 using GroupMeClientPlugin.GroupChat;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.Core
 {
     /// <summary>
-    /// <see cref="Startup"/> provides support for initializing the GMDC Core Engine.
+    /// <see cref="StartupExtensions"/> provides support for initializing the GMDC Core Engine.
     /// </summary>
-    public class Startup
+    public static class StartupExtensions
     {
         /// <summary>
         /// Initializes core services for the GMDC Core Engine.
         /// </summary>
+        /// <param name="services">The service collection to register into.</param>
         /// <param name="startupParameters">The startup parameters to use.</param>
-        public static void StartupCoreServices(StartupParameters startupParameters)
+        public static void UseGMDCCoreServices(this IServiceCollection services, StartupParameters startupParameters)
         {
-            SimpleIoc.Default.Register<TaskManager>();
-            SimpleIoc.Default.Register(() => startupParameters.ClientIdentity);
-            SimpleIoc.Default.Register(() => new CacheManager(startupParameters.CacheFilePath, SimpleIoc.Default.GetInstance<TaskManager>(), SimpleIoc.Default.GetInstance<SettingsManager>()));
-            SimpleIoc.Default.Register(() => new PersistManager(startupParameters.PersistFilePath));
-            SimpleIoc.Default.Register(() => new SettingsManager(startupParameters.SettingsFilePath));
-            SimpleIoc.Default.Register(() => new PluginInstaller(startupParameters.PluginPath));
-            SimpleIoc.Default.Register<PluginHost>();
+            services.AddSingleton<TaskManager>();
+            services.AddSingleton((s) => startupParameters.ClientIdentity);
+            services.AddSingleton((s) => new CacheManager(startupParameters.CacheFilePath, Ioc.Default.GetService<TaskManager>(), Ioc.Default.GetService<SettingsManager>()));
+            services.AddSingleton((s) => new PersistManager(startupParameters.PersistFilePath));
+            services.AddSingleton((s) => new SettingsManager(startupParameters.SettingsFilePath));
+            services.AddSingleton((s) => new PluginInstaller(startupParameters.PluginPath));
+            services.AddSingleton<PluginHost>();
+
+            services.AddSingleton<GroupMeClientApi.GroupMeClient, GroupMeClientService>();
 
             AdditionalStartupConfig();
         }
@@ -35,17 +39,17 @@ namespace GroupMeClient.Core
         /// <summary>
         /// Registers all top-level ViewModels with the service system.
         /// </summary>
-        public static void RegisterTopLevelViewModels()
+        /// <param name="services">The service collection to register into.</param>
+        public static void UseGMDCCoreViewModels(this IServiceCollection services)
         {
-            SimpleIoc.Default.Register<ChatsViewModel>(createInstanceImmediately: false);
-            SimpleIoc.Default.Register<SearchViewModel>(createInstanceImmediately: false);
-            SimpleIoc.Default.Register<StarsViewModel>(createInstanceImmediately: false);
-            SimpleIoc.Default.Register<SettingsViewModel>(createInstanceImmediately: false);
+            services.AddSingleton<ChatsViewModel>();
+            services.AddSingleton<SearchViewModel>();
+            services.AddSingleton<StarsViewModel>();
+            services.AddSingleton<SettingsViewModel>();
 
             // UI integration is provided via the Seach page for the show-in-context feature.
-            SimpleIoc.Default.Register<IPluginUIIntegration>(
-                () => SimpleIoc.Default.GetInstance<SearchViewModel>(),
-                createInstanceImmediately: false);
+            services.AddSingleton<IPluginUIIntegration>(
+                (s) => Ioc.Default.GetService<SearchViewModel>());
         }
 
         private static void AdditionalStartupConfig()

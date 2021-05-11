@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Data;
 using GroupMeClient.Core.Services;
 using GroupMeClient.WpfUI.Extensions;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.WpfUI.Converters
 {
@@ -83,7 +84,7 @@ namespace GroupMeClient.WpfUI.Converters
 
             result.RequestNavigate += (object sender, System.Windows.Navigation.RequestNavigateEventArgs e) =>
             {
-                var osService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
+                var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
                 osService.OpenWebBrowser(hyperlink.NavigateUri.ToString());
             };
 

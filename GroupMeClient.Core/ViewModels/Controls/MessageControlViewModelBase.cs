@@ -1,13 +1,13 @@
 ﻿using System;
-using GalaSoft.MvvmLight;
 using GroupMeClientApi.Models;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// Provides a base class for controls that can be displayed inline with messages.
     /// </summary>
-    public abstract class MessageControlViewModelBase : ViewModelBase, IDisposable
+    public abstract class MessageControlViewModelBase : ObservableObject, IDisposable
     {
         /// <summary>
         /// Gets the unique identifier for the message.

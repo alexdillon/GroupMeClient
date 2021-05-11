@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Subjects;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -83,7 +84,7 @@ namespace GroupMeClient.Core.Settings
             set
             {
                 this.theme.OnNext(value);
-                var themeService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IThemeService>();
+                var themeService = Ioc.Default.GetService<IThemeService>();
                 themeService.UpdateTheme(value);
             }
         }

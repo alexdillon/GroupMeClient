@@ -9,6 +9,7 @@ using GroupMeClient.Core.Services;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
 using GroupMeClientPlugin.MessageCompose;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.WpfUI.Plugins
 {
@@ -172,7 +173,7 @@ namespace GroupMeClient.WpfUI.Plugins
                     }
                 }
 
-                var pluginInstaller = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<PluginInstaller>();
+                var pluginInstaller = Ioc.Default.GetService<PluginInstaller>();
 
                 foreach (var type in pluginTypes)
                 {

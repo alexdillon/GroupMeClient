@@ -5,11 +5,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.ViewModels;
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin.Notifications.Display;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
@@ -32,7 +32,7 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
             DesktopNotificationManagerCompat.RegisterActivator<GroupMeNotificationActivator>();
 
             this.SettingsManager = settingsManager;
-            this.ChatsViewModel = SimpleIoc.Default.GetInstance<ChatsViewModel>();
+            this.ChatsViewModel = Ioc.Default.GetService<ChatsViewModel>();
         }
 
         /// <summary>

@@ -1,7 +1,8 @@
 ﻿using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
 using GroupMeClientApi;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 {
@@ -51,12 +52,12 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         protected override void MetadataDownloadCompleted()
         {
             _ = this.DownloadImageAsync(this.LinkInfo.ProfileImageUrl, 30, 30);
-            this.RaisePropertyChanged(string.Empty);
+            this.OnPropertyChanged(string.Empty);
         }
 
         private void ClickedAction()
         {
-            var osService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
+            var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
             osService.OpenWebBrowser(this.Url);
         }
     }

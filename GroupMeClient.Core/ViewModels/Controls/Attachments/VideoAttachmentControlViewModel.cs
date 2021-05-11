@@ -1,8 +1,9 @@
 ﻿using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
 using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 {
@@ -64,7 +65,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 
         private void ClickedAction()
         {
-            var osService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
+            var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
             osService.OpenWebBrowser(this.Url);
         }
     }

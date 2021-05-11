@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.WpfUI.Services
 {
@@ -27,7 +27,7 @@ namespace GroupMeClient.WpfUI.Services
         /// <inheritdoc/>
         public void SoftApplicationRestart()
         {
-            var updateService = SimpleIoc.Default.GetInstance<IUpdateService>();
+            var updateService = Ioc.Default.GetService<IUpdateService>();
 
             if (updateService.IsInstalled)
             {

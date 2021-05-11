@@ -1,5 +1,4 @@
-﻿using GalaSoft.MvvmLight.Messaging;
-using GroupMeClient.Core.ViewModels.Controls;
+﻿using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi.Models;
 
 namespace GroupMeClient.Core.Messaging

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Controls.Media;
 using GroupMeClient.Core.Services;
 using GroupMeClientApi;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 {
@@ -53,7 +54,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         public GenericImageSource FaviconImage
         {
             get => this.faviconImage;
-            private set => this.Set(() => this.FaviconImage, ref this.faviconImage, value);
+            private set => this.SetProperty(ref this.faviconImage, value);
         }
 
         /// <inheritdoc/>
@@ -67,7 +68,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         {
             _ = this.DownloadImageAsync(this.LinkInfo.AnyPreviewPictureUrl, 350, 300);
             _ = this.DownloadFaviconImage(this.LinkInfo.Favicon);
-            this.RaisePropertyChanged(string.Empty);
+            this.OnPropertyChanged(string.Empty);
         }
 
         private async Task DownloadFaviconImage(string url)
@@ -87,13 +88,13 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 
         private void ClickedAction()
         {
-            var osService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
+            var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
             osService.OpenWebBrowser(this.Url);
         }
 
         private void CopyLinkAction()
         {
-            var clipboardService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IClipboardService>();
+            var clipboardService = Ioc.Default.GetService<IClipboardService>();
             clipboardService.CopyText(this.Url);
         }
     }
