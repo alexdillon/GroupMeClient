@@ -54,7 +54,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.SendMessage = new AsyncRelayCommand(this.SendMessageAsync, () => !this.IsSending);
             this.SendAttachment = new RelayCommand(this.SendFileImageAttachment);
             this.OpenMessageSuggestions = new RelayCommand(this.OpenMessageSuggestionsDialog);
-            this.ReloadView = new AsyncRelayCommand(async () => await this.LoadMoreAsync());
+            this.ReloadView = new AsyncRelayCommand(this.LoadMoreAsync);
             this.GroupChatPluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>(this.ActivateGroupPlugin);
             this.SelectionChangedCommand = new RelayCommand<object>(this.SelectionChangedHandler);
             this.InitiateReply = new RelayCommand<MessageControlViewModel>(this.InitiateReplyCommand);
@@ -435,7 +435,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.ShowImageSendDialog(new List<Stream>() { memoryStream });
         }
 
-        private async Task LoadMoreAsync(bool updateNewest = false)
+        private Task LoadMoreAsync()
+        {
+            return this.LoadMoreAsync(updateNewest: false);
+        }
+
+        private async Task LoadMoreAsync(bool updateNewest)
         {
             await this.ReloadSem.WaitAsync();
 
@@ -485,7 +490,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             {
                 var maxTimeDifference = TimeSpan.FromMinutes(15);
 
-                this.AllMessages.Edit(innerList =>
+                this.AllMessages.Edit(async innerList =>
                 {
                     using (var persistContext = this.PersistManager.OpenNewContext())
                     {
@@ -584,7 +589,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                         if (lastReceivedMessage != null && this.MessageContainer is Chat c)
                         {
-                            var result = Task.Run(async () => await c.SendReadReceipt(lastReceivedMessage.Message)).Result;
+                            await c.SendReadReceipt(lastReceivedMessage.Message);
                         }
                     }
                 });
