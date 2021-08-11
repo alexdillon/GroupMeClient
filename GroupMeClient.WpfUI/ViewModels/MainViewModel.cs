@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.CommandWpf;
-using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Notifications;
 using GroupMeClient.Core.Services;
@@ -22,13 +17,17 @@ using GroupMeClient.WpfUI.Notifications.Display.WpfToast;
 using GroupMeClientApi.Models;
 using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace GroupMeClient.WpfUI.ViewModels
 {
     /// <summary>
     /// <see cref="MainViewModel"/> is the top-level ViewModel for the GroupMe Desktop Client, WPF implementation.
     /// </summary>
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : ObservableObject
     {
         private HamburgerMenuItemCollection menuItems = new HamburgerMenuItemCollection();
         private HamburgerMenuItemCollection menuOptionItems = new HamburgerMenuItemCollection();
@@ -43,31 +42,14 @@ namespace GroupMeClient.WpfUI.ViewModels
         /// </summary>
         public MainViewModel()
         {
-            Directory.CreateDirectory(this.DataRoot);
-
-            this.ClientIdentity = new Core.Services.KnownClients.GMDC();
-
-            var starupParams = new Core.Startup.StartupParameters()
-            {
-                ClientIdentity = this.ClientIdentity,
-                CacheFilePath = this.CachePath,
-                PersistFilePath = this.PersistPath,
-                SettingsFilePath = this.SettingsPath,
-                PluginPath = this.PluginsPath,
-            };
-            Core.Startup.StartupCoreServices(starupParams);
-
-            Core.Startup.RegisterTopLevelViewModels();
-            Startup.StartupServices();
-
-            Desktop.MigrationAssistant.MigrationManager.EnsureMigration(starupParams);
-
-            this.SettingsManager = SimpleIoc.Default.GetInstance<SettingsManager>();
+            Desktop.MigrationAssistant.MigrationManager.EnsureMigration(App.StartupParams);
+            this.SettingsManager = Ioc.Default.GetService<SettingsManager>();
+            this.ClientIdentity = Ioc.Default.GetService<IClientIdentityService>();
 
             // Create a throw-away DbContext to allow EF Core to begin allocating resouces
             // in the background, allowing for faster access later.
-            Task.Run(() => SimpleIoc.Default.GetInstance<CacheManager>().OpenNewContext());
-            Task.Run(() => SimpleIoc.Default.GetInstance<PersistManager>().OpenNewContext());
+            Task.Run(() => Ioc.Default.GetService<CacheManager>().OpenNewContext());
+            Task.Run(() => Ioc.Default.GetService<PersistManager>().OpenNewContext());
 
             Core.Utilities.TempFileUtils.InitializeTempStorage();
 
@@ -82,7 +64,7 @@ namespace GroupMeClient.WpfUI.ViewModels
         public HamburgerMenuItemCollection MenuItems
         {
             get => this.menuItems;
-            set => this.Set(() => this.MenuItems, ref this.menuItems, value);
+            set => this.SetProperty(ref this.menuItems, value);
         }
 
         /// <summary>
@@ -91,7 +73,7 @@ namespace GroupMeClient.WpfUI.ViewModels
         public HamburgerMenuItemCollection MenuOptionItems
         {
             get => this.menuOptionItems;
-            set => this.Set(() => this.MenuOptionItems, ref this.menuOptionItems, value);
+            set => this.SetProperty(ref this.menuOptionItems, value);
         }
 
         /// <summary>
@@ -100,7 +82,7 @@ namespace GroupMeClient.WpfUI.ViewModels
         public HamburgerMenuItemBase SelectedItem
         {
             get => this.selectedItem;
-            set => this.Set(() => this.SelectedItem, ref this.selectedItem, value);
+            set => this.SetProperty(ref this.selectedItem, value);
         }
 
         /// <summary>
@@ -110,7 +92,7 @@ namespace GroupMeClient.WpfUI.ViewModels
         public int UnreadCount
         {
             get => this.unreadCount;
-            set => this.Set(() => this.UnreadCount, ref this.unreadCount, value);
+            set => this.SetProperty(ref this.unreadCount, value);
         }
 
         /// <summary>
@@ -119,7 +101,7 @@ namespace GroupMeClient.WpfUI.ViewModels
         public bool IsReconnecting
         {
             get => this.isReconnecting;
-            set => this.Set(() => this.IsReconnecting, ref this.isReconnecting, value);
+            set => this.SetProperty(ref this.isReconnecting, value);
         }
 
         /// <summary>
@@ -128,7 +110,7 @@ namespace GroupMeClient.WpfUI.ViewModels
         public bool IsRefreshing
         {
             get => this.isRefreshing;
-            set => this.Set(() => this.IsRefreshing, ref this.isRefreshing, value);
+            set => this.SetProperty(ref this.isRefreshing, value);
         }
 
         /// <summary>
@@ -137,7 +119,7 @@ namespace GroupMeClient.WpfUI.ViewModels
         public ObservableCollection<string> RebootReasons
         {
             get => this.rebootReasons;
-            set => this.Set(() => this.RebootReasons, ref this.rebootReasons, value);
+            set => this.SetProperty(ref this.rebootReasons, value);
         }
 
         /// <summary>
@@ -174,18 +156,6 @@ namespace GroupMeClient.WpfUI.ViewModels
         /// Gets the Task Manager in use for this application.
         /// </summary>
         public TaskManager TaskManager { get; private set; }
-
-        private string DataRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicroCube", "GroupMe Desktop Client");
-
-        private string SettingsPath => Path.Combine(this.DataRoot, "settings.json");
-
-        private string CachePath => Path.Combine(this.DataRoot, "cache.db");
-
-        private string PersistPath => Path.Combine(this.DataRoot, "persist.db");
-
-        private string ImageCachePath => Path.Combine(this.DataRoot, "ImageCache");
-
-        private string PluginsPath => Path.Combine(this.DataRoot, "Plugins");
 
         private IClientIdentityService ClientIdentity { get; }
 
@@ -255,25 +225,25 @@ namespace GroupMeClient.WpfUI.ViewModels
         {
             // Setup plugins
             Task.Run(() =>
-                SimpleIoc.Default.GetInstance<IPluginManagerService>().LoadPlugins(this.PluginsPath));
+                Ioc.Default.GetService<IPluginManagerService>().LoadPlugins(WpfUI.App.PluginsPath));
 
             // Setup messaging
-            Messenger.Default.Register<Core.Messaging.UnreadRequestMessage>(this, this.UpdateNotificationCount);
-            Messenger.Default.Register<Core.Messaging.DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
-            Messenger.Default.Register<Core.Messaging.SwitchToPageRequestMessage>(this, this.SwitchToPageCommand);
-            Messenger.Default.Register<Core.Messaging.RebootRequestMessage>(this, (r) => this.RebootReasons.Add(r.Reason), true);
-            Messenger.Default.Register<Core.Messaging.DialogRequestMessage>(this, this.OpenBigPopup);
-            Messenger.Default.Register<Core.Messaging.DialogDismissMessage>(this, this.DismissCallback);
-            Messenger.Default.Register<Core.Messaging.RefreshAllMessage>(this, (s) => Task.Run(this.RefreshEverything), true);
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.UnreadRequestMessage>(this, (r, m) => r.UpdateNotificationCount(m));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.DisconnectedRequestMessage>(this, (r, m) => r.UpdateDisconnectedComponentsCount(m));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.SwitchToPageRequestMessage>(this, (r, m) => r.SwitchToPageCommand(m));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.RebootRequestMessage>(this, (r, m) => r.RebootReasons.Add(m.Reason));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.DialogRequestMessage>(this, (r, m) => r.OpenBigPopup(m));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.DialogDismissMessage>(this, (r, m) => r.DismissCallback(m));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.RefreshAllMessage>(this, (r, m) => Task.Run(r.RefreshEverything));
 
             // Setup updating
             Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
-            var updateService = SimpleIoc.Default.GetInstance<IUpdateService>();
+            var updateService = Ioc.Default.GetService<IUpdateService>();
             updateService.StartUpdateTimer(TimeSpan.FromMinutes(this.SettingsManager.CoreSettings.ApplicationUpdateFrequencyMinutes));
 
             this.RebootApplication = new RelayCommand(this.RestartCommand);
 
-            this.TaskManager = SimpleIoc.Default.GetInstance<TaskManager>();
+            this.TaskManager = Ioc.Default.GetService<TaskManager>();
             this.TaskManager.TaskCountChanged += this.TaskManager_TaskCountChanged;
 
             if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
@@ -289,18 +259,15 @@ namespace GroupMeClient.WpfUI.ViewModels
             else
             {
                 // Startup Regularly
-                this.GroupMeClient = new GroupMeClientApi.GroupMeClient(this.SettingsManager.CoreSettings.AuthToken);
-                this.GroupMeClient.ImageDownloader = new GroupMeClientApi.CachedImageDownloader(this.ImageCachePath);
-
-                // Submit the GroupMeClient to the IoC container now that it is initialized with an API Key
-                SimpleIoc.Default.Register(() => this.GroupMeClient);
+                this.GroupMeClient = Ioc.Default.GetRequiredService<GroupMeClientApi.GroupMeClient>();
+                this.GroupMeClient.ImageDownloader = new GroupMeClientApi.CachedImageDownloader(App.ImageCachePath);
 
                 this.NotificationRouter = new NotificationRouter(this.GroupMeClient);
 
-                this.ChatsViewModel = SimpleIoc.Default.GetInstance<ChatsViewModel>();
-                this.SearchViewModel = SimpleIoc.Default.GetInstance<SearchViewModel>();
-                this.StarsViewModel = SimpleIoc.Default.GetInstance<StarsViewModel>();
-                this.SettingsViewModel = SimpleIoc.Default.GetInstance<SettingsViewModel>();
+                this.ChatsViewModel = Ioc.Default.GetService<ChatsViewModel>();
+                this.SearchViewModel = Ioc.Default.GetService<SearchViewModel>();
+                this.StarsViewModel = Ioc.Default.GetService<StarsViewModel>();
+                this.SettingsViewModel = Ioc.Default.GetService<SettingsViewModel>();
 
                 this.RegisterNotifications();
 
@@ -377,7 +344,7 @@ namespace GroupMeClient.WpfUI.ViewModels
             this.MenuOptionItems.Add(settingsTab);
 
             // Enable the refresh button
-            this.RefreshEverythingCommand = new RelayCommand(async () => await this.RefreshEverything(), true);
+            this.RefreshEverythingCommand = new AsyncRelayCommand(this.RefreshEverything);
 
             // Set the section to the Chats tab
             this.SelectedItem = chatsTab;
@@ -420,7 +387,7 @@ namespace GroupMeClient.WpfUI.ViewModels
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
-            var updateService = SimpleIoc.Default.GetInstance<IUpdateService>();
+            var updateService = Ioc.Default.GetService<IUpdateService>();
 
             updateService.CanShutdown.Subscribe(canShutDown =>
             {
@@ -478,7 +445,7 @@ namespace GroupMeClient.WpfUI.ViewModels
 
             var closeId = this.DialogManagerRegular.PopupId;
             this.DialogManagerRegular.ClosePopup();
-            Messenger.Default.Send(new Core.Messaging.DialogDismissMessage(closeId));
+            WeakReferenceMessenger.Default.Send(new Core.Messaging.DialogDismissMessage(closeId));
         }
 
         private void CloseBigTopMostPopup()
@@ -490,7 +457,7 @@ namespace GroupMeClient.WpfUI.ViewModels
 
             var closeId = this.DialogManagerTopMost.PopupId;
             this.DialogManagerTopMost.ClosePopup();
-            Messenger.Default.Send(new Core.Messaging.DialogDismissMessage(closeId));
+            WeakReferenceMessenger.Default.Send(new Core.Messaging.DialogDismissMessage(closeId));
         }
 
         private void DismissCallback(Core.Messaging.DialogDismissMessage dismissMessage)
@@ -531,7 +498,7 @@ namespace GroupMeClient.WpfUI.ViewModels
 
         private void SwitchToPageCommand(Core.Messaging.SwitchToPageRequestMessage cmd)
         {
-            ViewModelBase selectedPage = null;
+            ObservableObject selectedPage = null;
 
             switch (cmd.SelectedPage)
             {
@@ -565,7 +532,7 @@ namespace GroupMeClient.WpfUI.ViewModels
 
         private void RestartCommand()
         {
-            var restoreService = SimpleIoc.Default.GetInstance<IRestoreService>();
+            var restoreService = Ioc.Default.GetService<IRestoreService>();
             restoreService.SoftApplicationRestart();
         }
     }

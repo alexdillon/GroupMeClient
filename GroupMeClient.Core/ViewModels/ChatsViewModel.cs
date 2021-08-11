@@ -9,9 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Caching.Models;
 using GroupMeClient.Core.Services;
@@ -22,6 +19,10 @@ using GroupMeClientApi.Models;
 using GroupMeClientApi.Push;
 using GroupMeClientApi.Push.Notifications;
 using GroupMeClientPlugin.Notifications;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 using ReactiveUI;
 
 namespace GroupMeClient.Core.ViewModels
@@ -29,7 +30,7 @@ namespace GroupMeClient.Core.ViewModels
     /// <summary>
     /// <see cref="ChatsViewModel"/> provides a ViewModel for the Chats page in the GroupMe Desktop Client.
     /// </summary>
-    public class ChatsViewModel : ViewModelBase, INotificationSink
+    public class ChatsViewModel : ObservableObject, INotificationSink
     {
         private string groupChatFilter = string.Empty;
         private bool miniBarModeEnabled = false;
@@ -52,7 +53,7 @@ namespace GroupMeClient.Core.ViewModels
             this.ActiveGroupsChats = new ObservableCollection<GroupContentsControlViewModel>();
             this.ActiveMiniChats = new ObservableCollection<GroupContentsControlViewModel>();
 
-            Messenger.Default.Register<Messaging.ShowChatRequestMessage>(this, this.ShowChatRequest);
+            WeakReferenceMessenger.Default.Register<ChatsViewModel, Messaging.ShowChatRequestMessage>(this, (r, m) => r.ShowChatRequest(m));
 
             this.MarkAllAsRead = new RelayCommand(this.MarkAllGroupsChatsRead);
             this.SearchToggled = new RelayCommand<bool>((t) => this.GroupChatFilter = t ? this.GroupChatFilter : string.Empty);
@@ -113,7 +114,7 @@ namespace GroupMeClient.Core.ViewModels
         public string GroupChatFilter
         {
             get => this.groupChatFilter;
-            set => this.Set(() => this.GroupChatFilter, ref this.groupChatFilter, value);
+            set => this.SetProperty(ref this.groupChatFilter, value);
         }
 
         /// <summary>
@@ -122,7 +123,7 @@ namespace GroupMeClient.Core.ViewModels
         public bool MiniBarModeEnabled
         {
             get => this.miniBarModeEnabled;
-            set => this.Set(() => this.MiniBarModeEnabled, ref this.miniBarModeEnabled, value);
+            set => this.SetProperty(ref this.miniBarModeEnabled, value);
         }
 
         private SourceList<GroupControlViewModel> AllGroupsChats { get; }
@@ -260,7 +261,7 @@ namespace GroupMeClient.Core.ViewModels
                     // Code to update the UI needs to be run on the Application Dispatcher
                     // This is typically the case, but Timer events from ReliabilityStateMachine for
                     // retry-callbacks will NOT run on the original thread.
-                    var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+                    var uiDispatcher = Ioc.Default.GetService<IUserInterfaceDispatchService>();
                     await uiDispatcher.InvokeAsync(() =>
                     {
                         // calculate how many new messages have been added since the group/chat was last read
@@ -280,7 +281,7 @@ namespace GroupMeClient.Core.ViewModels
                             // create a new GroupControl ViewModel for this Group
                             var vm = new GroupControlViewModel(group)
                             {
-                                GroupSelected = new RelayCommand<GroupControlViewModel>((g) => this.OpenNewGroupChat(g), (g) => true, true),
+                                GroupSelected = new RelayCommand<GroupControlViewModel>((g) => this.OpenNewGroupChat(g)),
                                 TotalUnreadCount = unreadMessages,
                             };
                             this.AllGroupsChats.Add(vm);
@@ -472,12 +473,12 @@ namespace GroupMeClient.Core.ViewModels
             }
 
             var updateRequest = new Messaging.UnreadRequestMessage(count);
-            Messenger.Default.Send(updateRequest);
+            WeakReferenceMessenger.Default.Send(updateRequest);
         }
 
         private void CheckForRestore()
         {
-            var restoreService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IRestoreService>();
+            var restoreService = Ioc.Default.GetService<IRestoreService>();
             if (restoreService.ShouldRestoreState)
             {
                 using (var persistContext = this.PersistManager.OpenNewContext())

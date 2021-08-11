@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.ViewModels;
 using GroupMeClient.WpfUI.ViewModels;
 using Microsoft.QueryStringDotNET;
+using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
@@ -47,10 +47,10 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
                         this.OpenWindowIfNeeded();
 
                         var openChatCommand = new Core.Messaging.ShowChatRequestMessage(args["conversationId"]);
-                        Messenger.Default.Send(openChatCommand);
+                        WeakReferenceMessenger.Default.Send(openChatCommand);
 
                         var showChatsPageCommand = new Core.Messaging.SwitchToPageRequestMessage(Core.Messaging.SwitchToPageRequestMessage.Page.Chats);
-                        Messenger.Default.Send(showChatsPageCommand);
+                        WeakReferenceMessenger.Default.Send(showChatsPageCommand);
 
                         break;
 

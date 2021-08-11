@@ -1,11 +1,12 @@
 ﻿using System;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="LoadingControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.LoadingControl"/> control.
     /// </summary>
-    public class LoadingControlViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class LoadingControlViewModel : ObservableObject
     {
         private string message;
 
@@ -22,7 +23,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public string Message
         {
             get => this.message;
-            set => this.Set(() => this.Message, ref this.message, value);
+            set => this.SetProperty(ref this.message, value);
         }
     }
 }

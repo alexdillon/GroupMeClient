@@ -3,18 +3,18 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.ViewModels.Controls;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels
 {
     /// <summary>
     /// <see cref="SettingsViewModel"/> provides a ViewModel for the <see cref="Views.SettingsView"/>.
     /// </summary>
-    public class SettingsViewModel : ViewModelBase
+    public class SettingsViewModel : ObservableObject
     {
         private string updateStatus;
         private bool isUpdating;
@@ -90,7 +90,7 @@ namespace GroupMeClient.Core.ViewModels
         public bool IsUpdating
         {
             get => this.isUpdating;
-            private set => this.Set(() => this.IsUpdating, ref this.isUpdating, value);
+            private set => this.SetProperty(ref this.isUpdating, value);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace GroupMeClient.Core.ViewModels
         public string UpdateStatus
         {
             get => this.updateStatus;
-            private set => this.Set(() => this.UpdateStatus, ref this.updateStatus, value);
+            private set => this.SetProperty(ref this.updateStatus, value);
         }
 
         /// <summary>
@@ -107,16 +107,12 @@ namespace GroupMeClient.Core.ViewModels
         /// </summary>
         public bool ShowPreviewsForMultiImages
         {
-            get
-            {
-                return this.SettingsManager.UISettings.ShowPreviewsForMultiImages;
-            }
-
+            get => this.SettingsManager.UISettings.ShowPreviewsForMultiImages;
             set
             {
                 this.SettingsManager.UISettings.ShowPreviewsForMultiImages = value;
-                this.RaisePropertyChanged(nameof(this.ShowPreviewsForMultiImages));
                 this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.ShowPreviewsForMultiImages));
             }
         }
 
@@ -125,16 +121,12 @@ namespace GroupMeClient.Core.ViewModels
         /// </summary>
         public int MaximumNumberOfMultiChats
         {
-            get
-            {
-                return this.SettingsManager.UISettings.MaximumNumberOfMultiChatsNormal;
-            }
-
+            get => this.SettingsManager.UISettings.MaximumNumberOfMultiChatsNormal;
             set
             {
                 this.SettingsManager.UISettings.MaximumNumberOfMultiChatsNormal = value;
-                this.RaisePropertyChanged(nameof(this.MaximumNumberOfMultiChats));
                 this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.MaximumNumberOfMultiChats));
             }
         }
 
@@ -143,16 +135,12 @@ namespace GroupMeClient.Core.ViewModels
         /// </summary>
         public int MaximumNumberOfMultiChatsMiniBar
         {
-            get
-            {
-                return this.SettingsManager.UISettings.MaximumNumberOfMultiChatsMinibar;
-            }
-
+            get => this.SettingsManager.UISettings.MaximumNumberOfMultiChatsMinibar;
             set
             {
                 this.SettingsManager.UISettings.MaximumNumberOfMultiChatsMinibar = value;
-                this.RaisePropertyChanged(nameof(this.MaximumNumberOfMultiChatsMiniBar));
                 this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.MaximumNumberOfMultiChatsMiniBar));
             }
         }
 
@@ -161,16 +149,12 @@ namespace GroupMeClient.Core.ViewModels
         /// </summary>
         public bool EnableNotificationInteractions
         {
-            get
-            {
-                return this.SettingsManager.UISettings.EnableNotificationInteractions;
-            }
-
+            get => this.SettingsManager.UISettings.EnableNotificationInteractions;
             set
             {
                 this.SettingsManager.UISettings.EnableNotificationInteractions = value;
-                this.RaisePropertyChanged(nameof(this.EnableNotificationInteractions));
                 this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.EnableNotificationInteractions));
             }
         }
 
@@ -179,16 +163,12 @@ namespace GroupMeClient.Core.ViewModels
         /// </summary>
         public double ScalingFactorForMessages
         {
-            get
-            {
-                return this.SettingsManager.UISettings.ScalingFactorForMessages;
-            }
-
+            get => this.SettingsManager.UISettings.ScalingFactorForMessages;
             set
             {
                 this.SettingsManager.UISettings.ScalingFactorForMessages = value;
-                this.RaisePropertyChanged(nameof(this.ScalingFactorForMessages));
                 this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.ScalingFactorForMessages));
             }
         }
 
@@ -197,16 +177,12 @@ namespace GroupMeClient.Core.ViewModels
         /// </summary>
         public Settings.ThemeOptions Theme
         {
-            get
-            {
-                return this.SettingsManager.UISettings.Theme;
-            }
-
+            get => this.SettingsManager.UISettings.Theme;
             set
             {
                 this.SettingsManager.UISettings.Theme = value;
-                this.RaisePropertyChanged(nameof(this.Theme));
                 this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.Theme));
             }
         }
 
@@ -216,7 +192,7 @@ namespace GroupMeClient.Core.ViewModels
 
         private void LoadPluginInfo()
         {
-            var pluginManager = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IPluginManagerService>();
+            var pluginManager = Ioc.Default.GetService<IPluginManagerService>();
 
             // Load Group Chat Plugins
             foreach (var plugin in pluginManager.GroupChatPluginsBuiltIn)

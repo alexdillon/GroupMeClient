@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Caching.Models;
 using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Tasks;
@@ -11,6 +10,7 @@ using GroupMeClientApi;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace GroupMeClient.Core.Caching
@@ -190,7 +190,7 @@ namespace GroupMeClient.Core.Caching
                         group = Placeholders.CreatePlaceholderGroup(id, "Deleted Group");
                     }
 
-                    group.AssociateWithClient(SimpleIoc.Default.GetInstance<GroupMeClientApi.GroupMeClient>());
+                    group.AssociateWithClient(Ioc.Default.GetService<GroupMeClientApi.GroupMeClient>());
                     results.Add(group);
                 }
 
@@ -208,7 +208,7 @@ namespace GroupMeClient.Core.Caching
                             conversationId: conversationId);
                     }
 
-                    chat.AssociateWithClient(SimpleIoc.Default.GetInstance<GroupMeClientApi.GroupMeClient>());
+                    chat.AssociateWithClient(Ioc.Default.GetService<GroupMeClientApi.GroupMeClient>());
                     results.Add(chat);
                 }
 

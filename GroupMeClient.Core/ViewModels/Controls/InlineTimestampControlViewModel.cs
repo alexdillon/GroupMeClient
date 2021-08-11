@@ -47,7 +47,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public DateTime Timestamp
         {
             get => this.timestamp;
-            private set => this.Set(() => this.Timestamp, ref this.timestamp, value);
+            private set => this.SetProperty(ref this.timestamp, value);
         }
 
         /// <summary>

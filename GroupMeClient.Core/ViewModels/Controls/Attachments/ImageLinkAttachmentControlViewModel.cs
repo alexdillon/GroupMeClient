@@ -1,20 +1,20 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Utilities;
 using GroupMeClientApi;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 {
     /// <summary>
     /// <see cref="ImageLinkAttachmentControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.ImageLinkAttachmentControl"/> control.
     /// </summary>
-    public class ImageLinkAttachmentControlViewModel : ViewModelBase, IHidesTextAttachment, IDisposable
+    public class ImageLinkAttachmentControlViewModel : ObservableObject, IHidesTextAttachment, IDisposable
     {
         private byte[] imageData;
         private bool isLoading;
@@ -65,7 +65,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         public bool IsLoading
         {
             get => this.isLoading;
-            private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
+            private set => this.SetProperty(ref this.isLoading, value);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             set
             {
                 this.imageData = value;
-                this.RaisePropertyChanged(nameof(this.ImageAttachmentStream));
+                this.OnPropertyChanged(nameof(this.ImageAttachmentStream));
             }
         }
 
@@ -121,14 +121,14 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 
         private void ClickedAction()
         {
-            var osService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
+            var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
             var navigateUrl = !string.IsNullOrEmpty(this.NavigateToUrl) ? this.NavigateToUrl : this.Url;
             osService.OpenWebBrowser(navigateUrl);
         }
 
         private void CopyLinkAction()
         {
-            var clipboardService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IClipboardService>();
+            var clipboardService = Ioc.Default.GetService<IClipboardService>();
             var navigateUrl = !string.IsNullOrEmpty(this.NavigateToUrl) ? this.NavigateToUrl : this.Url;
             clipboardService.CopyText(navigateUrl);
         }

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.Core.Tasks
 {
@@ -42,7 +43,7 @@ namespace GroupMeClient.Core.Tasks
         {
             var task = new GroupMeTask(name, tag, payload, cancellationTokenSource);
             payload.ContinueWith(x => this.TaskCompleted(task));
-            var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+            var uiDispatcher = Ioc.Default.GetService<IUserInterfaceDispatchService>();
             uiDispatcher.Invoke(() =>
             {
                 this.RunningTasks.Add(task);
@@ -57,7 +58,7 @@ namespace GroupMeClient.Core.Tasks
         /// <param name="loadCount">The number of background tasks running.</param>
         public void UpdateNumberOfBackgroundLoads(int loadCount)
         {
-            var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+            var uiDispatcher = Ioc.Default.GetService<IUserInterfaceDispatchService>();
 
             GroupMeTask currentBackgroundTask = this.RunningTasks.FirstOrDefault(t => t.Tag == "backgroundcount");
             if (currentBackgroundTask != null)
@@ -86,7 +87,7 @@ namespace GroupMeClient.Core.Tasks
 
         private void TaskCompleted(GroupMeTask taskWrapper)
         {
-            var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+            var uiDispatcher = Ioc.Default.GetService<IUserInterfaceDispatchService>();
             uiDispatcher.Invoke(() =>
             {
                 this.RunningTasks.Remove(taskWrapper);

@@ -1,14 +1,14 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Input;
 using GroupMeClientApi.Models;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="SendContentControlViewModelBase"/> provides a base ViewModel for dialogs that handle sending specialized content.
     /// </summary>
-    public abstract class SendContentControlViewModelBase : GalaSoft.MvvmLight.ViewModelBase, IDisposable
+    public abstract class SendContentControlViewModelBase : ObservableObject, IDisposable
     {
         private string typedMessageContents;
         private bool isSending;
@@ -34,7 +34,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public string TypedMessageContents
         {
             get => this.typedMessageContents;
-            set => this.Set(() => this.TypedMessageContents, ref this.typedMessageContents, value);
+            set => this.SetProperty(ref this.typedMessageContents, value);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsSending
         {
             get => this.isSending;
-            set => this.Set(() => this.IsSending, ref this.isSending, value);
+            set => this.SetProperty(ref this.isSending, value);
         }
 
         /// <inheritdoc/>

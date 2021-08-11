@@ -1,6 +1,5 @@
 ﻿using System;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Messaging;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace GroupMeClient.Core.Messaging
 {
@@ -16,7 +15,7 @@ namespace GroupMeClient.Core.Messaging
         /// <param name="dialog">The dialog to be displayed.</param>
         /// <param name="topMost">A value indicating whether this dialog should be displayed on top of any first-level dialogs.</param>
         /// <param name="destination">A optional tag value indicating which dialog manager(s) should respond to this request.</param>
-        public DialogRequestMessage(ViewModelBase dialog, bool topMost = false, string destination = "")
+        public DialogRequestMessage(ObservableObject dialog, bool topMost = false, string destination = "")
         {
             this.Dialog = dialog;
             this.TopMost = topMost;
@@ -28,7 +27,7 @@ namespace GroupMeClient.Core.Messaging
         /// <summary>
         /// Gets the dialog to be displayed.
         /// </summary>
-        public ViewModelBase Dialog { get; }
+        public ObservableObject Dialog { get; }
 
         /// <summary>
         /// Gets a value indicating whether this dialog should be displayed on top of any first-level dialogs.

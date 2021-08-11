@@ -13,7 +13,7 @@ namespace GroupMeClient.Desktop.MigrationAssistant
     {
         public const int MigrationVersion = 1;
 
-        public bool DoMigration(Startup.StartupParameters parameters)
+        public bool DoMigration(StartupExtensions.StartupParameters parameters)
         {
             // In GMDC 30:
             // - The Migration Version field in Core Settings is 1.0

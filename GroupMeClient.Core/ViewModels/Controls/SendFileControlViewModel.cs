@@ -4,9 +4,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -22,7 +22,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public SendFileControlViewModel()
         {
-            this.SendButtonClicked = new RelayCommand(async () => await this.Send(), () => !this.IsSending);
+            this.SendButtonClicked = new AsyncRelayCommand(this.Send, () => !this.IsSending);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public int UploadPercentage
         {
             get => this.uploadPercentage;
-            private set => this.Set(() => this.UploadPercentage, ref this.uploadPercentage, value);
+            private set => this.SetProperty(ref this.uploadPercentage, value);
         }
 
         /// <inheritdoc/>

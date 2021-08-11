@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="PopupViewModel"/> provides a ViewModel for the <see cref="GroupMeClient.Core.Views.Controls.Popup"/> control.
     /// </summary>
-    public class PopupViewModel : ViewModelBase
+    public class PopupViewModel : ObservableObject
     {
-        private ViewModelBase popupDialog;
+        private ObservableObject popupDialog;
         private ICommand closePopupCallback;
         private ICommand easyClosePopupCallback;
         private bool isShowingDialog;
@@ -26,12 +26,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// Gets the Popup Dialog that should be displayed.
         /// Null specifies that no popup is shown.
         /// </summary>
-        public ViewModelBase PopupDialog
+        public ObservableObject PopupDialog
         {
             get => this.popupDialog;
             private set
             {
-                this.Set(() => this.PopupDialog, ref this.popupDialog, value);
+                this.SetProperty(ref this.popupDialog, value);
                 this.IsShowingDialog = this.PopupDialog != null;
             }
         }
@@ -47,7 +47,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsShowingDialog
         {
             get => this.isShowingDialog;
-            private set => this.Set(() => this.IsShowingDialog, ref this.isShowingDialog, value);
+            private set => this.SetProperty(ref this.isShowingDialog, value);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ICommand ClosePopupCallback
         {
             get => this.closePopupCallback;
-            set => this.Set(() => this.ClosePopupCallback, ref this.closePopupCallback, value);
+            set => this.SetProperty(ref this.closePopupCallback, value);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ICommand EasyClosePopupCallback
         {
             get => this.easyClosePopupCallback;
-            set => this.Set(() => this.EasyClosePopupCallback, ref this.easyClosePopupCallback, value);
+            set => this.SetProperty(ref this.easyClosePopupCallback, value);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         /// <param name="content">The dialog to show as a popup.</param>
         /// <param name="id">The dialog unique ID.</param>
-        public void OpenPopup(ViewModelBase content, Guid id)
+        public void OpenPopup(ObservableObject content, Guid id)
         {
             this.PopupDialog = content;
             this.PopupId = id;

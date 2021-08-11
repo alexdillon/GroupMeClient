@@ -1,6 +1,4 @@
-﻿using GalaSoft.MvvmLight.Messaging;
-
-namespace GroupMeClient.Core.Messaging
+﻿namespace GroupMeClient.Core.Messaging
 {
     /// <summary>
     /// <see cref="UnreadRequestMessage"/> specifies a message to update the application-level number of notifications to display.

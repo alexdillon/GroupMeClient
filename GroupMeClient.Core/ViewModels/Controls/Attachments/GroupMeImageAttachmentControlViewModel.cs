@@ -2,21 +2,21 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Utilities;
 using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 {
     /// <summary>
     /// <see cref="GroupMeImageAttachmentControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.GroupMeImageAttachmentControl"/> control.
     /// </summary>
-    public class GroupMeImageAttachmentControlViewModel : ViewModelBase, IDisposable
+    public class GroupMeImageAttachmentControlViewModel : ObservableObject, IDisposable
     {
         private byte[] imageData;
         private bool isLoading;
@@ -92,7 +92,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         public bool IsLoading
         {
             get => this.isLoading;
-            private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
+            private set => this.SetProperty(ref this.isLoading, value);
         }
 
         private ImageAttachment ImageAttachment { get; }
@@ -109,7 +109,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             set
             {
                 this.imageData = value;
-                this.RaisePropertyChanged(nameof(this.ImageAttachmentStream));
+                this.OnPropertyChanged(nameof(this.ImageAttachmentStream));
             }
         }
 
@@ -153,7 +153,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             var vm = new ViewImageControlViewModel(this.ImageAttachment.Url, this.ImageDownloader);
 
             var request = new Messaging.DialogRequestMessage(vm, destination: this.GroupOrChatId);
-            Messenger.Default.Send(request);
+            WeakReferenceMessenger.Default.Send(request);
         }
 
         private void GenerateSizedPlaceholder()
@@ -161,7 +161,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             // Assign a dummy image of the same size to allow for immediate layout
             // operations to be completed accurately before the full image loads
             var dimensions = this.GetScaledImageDimensions();
-            var imageService = SimpleIoc.Default.GetInstance<IImageService>();
+            var imageService = Ioc.Default.GetService<IImageService>();
             this.ImageData = imageService.CreateTransparentPng(dimensions.Item1, dimensions.Item2);
         }
 
