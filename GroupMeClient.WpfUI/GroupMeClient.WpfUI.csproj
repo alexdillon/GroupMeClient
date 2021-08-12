@@ -90,7 +90,6 @@
     <Compile Include="Services\WpfDispatcherService.cs" />
     <Compile Include="Services\WpfImageService.cs" />
     <Compile Include="Services\WpfMessageBoxService.cs" />
-    <Compile Include="Services\WpfMessageRenderer.cs" />
     <Compile Include="Converters\IsGreaterThanConverter.cs" />
     <Compile Include="Converters\PercentageConverter.cs" />
     <Compile Include="Converters\ValueConverterGroup.cs" />
