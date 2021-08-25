@@ -164,6 +164,12 @@
                         <TextBlock Text="Ending Date" Grid.Row="1" Grid.Column="0" Padding="5" />
                         <DatePicker SelectedDate="{Binding FilterEndDate, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" />
                     </Grid>
+
+                    <WrapPanel Margin="0,3,0,2">
+                        <TextBlock Text="Match:" Margin="0,0,10,0"/>
+                        <RadioButton Content="Exact" IsChecked="{Binding FilterIsExact}" Margin="0,0,20,0" />
+                        <RadioButton Content="Contains Words" IsChecked="{Binding FilterIsANDTerm}"/>
+                    </WrapPanel>
                     
                     <CheckBox Content="Has Image Attachment" IsChecked="{Binding FilterHasAttachedImage, Mode=TwoWay}" />
                     <CheckBox Content="Has Linked Attachment" IsChecked="{Binding FilterHasAttachedLinkedImage, Mode=TwoWay}" />
