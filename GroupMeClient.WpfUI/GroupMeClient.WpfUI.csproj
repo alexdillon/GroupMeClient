@@ -82,6 +82,9 @@
     <Compile Include="Extensions\NotRightClickTrigger.cs" />
     <Compile Include="Extensions\SetFocusBehavior.cs" />
     <Compile Include="GlobalAssemblyInfo.cs" />
+    <Compile Include="Markdown\GMDCMarkdown.cs" />
+    <Compile Include="Markdown\GMDCMarkdownStyle.cs" />
+    <Compile Include="Markdown\GMDCXamlMarkdownWriter.cs" />
     <Compile Include="Native\WindowsThemeUtils.cs" />
     <Compile Include="Notifications\Display\NativeDesktopNotificationProvider.cs" />
     <Compile Include="Plugins\ImageGalleryPlugin.cs" />
@@ -243,6 +246,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\CopyableHyperlink.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\MarkdownStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -500,6 +507,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf">
       <Version>1.1.31</Version>
+    </PackageReference>
+    <PackageReference Include="Neo.Markdig.Xaml">
+      <Version>1.0.10</Version>
     </PackageReference>
     <PackageReference Include="Notification.WPF">
       <Version>2.0.0.8</Version>
