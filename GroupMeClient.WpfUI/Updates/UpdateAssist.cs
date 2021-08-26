@@ -7,6 +7,7 @@ using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using GroupMeClient.Core.Controls.Documents;
 using GroupMeClient.Core.Services;
 using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Microsoft.Toolkit.Mvvm.Messaging;
@@ -71,7 +72,14 @@ namespace GroupMeClient.WpfUI.Updates
             var isNewest = true;
             foreach (var release in releases)
             {
-                results.Add(new ReleaseInfo() { Version = release.Name, ReleaseNotes = release.Body, PreRelease = release.Prerelease, IsLatest = isNewest });
+                results.Add(new ReleaseInfo()
+                {
+                    Version = release.Name,
+                    ReleaseNotesText = release.Body,
+                    ReleaseNotes = new List<Inline>() { new MarkdownMessage(release.Body) },
+                    PreRelease = release.Prerelease,
+                    IsLatest = isNewest,
+                });
                 isNewest = false;
             }
 
