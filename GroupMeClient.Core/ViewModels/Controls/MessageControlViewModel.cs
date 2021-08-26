@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -30,6 +29,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private bool isStarred;
         private bool isHidden;
 
+        private bool skipMarkdown;
         private bool showDetails;
 
         /// <summary>
@@ -51,6 +51,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.StarAction = new RelayCommand(this.StarMessage);
             this.DeHideAction = new RelayCommand(this.DeHideMessage);
             this.ToggleMessageDetails = new RelayCommand(() => this.ShowDetails = !this.ShowDetails);
+            this.ToggleMarkdown = new RelayCommand(this.ToggleMarkdownHandler);
 
             this.ShowLikers = showLikers;
             this.ShowPreviewsOnlyForMultiImages = showPreviewsOnlyForMultiImages;
@@ -137,9 +138,14 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ICommand DeHideAction { get; }
 
         /// <summary>
-        /// Gets the command to be performed to toggle whether details are shwon for this <see cref="Message"/>.
+        /// Gets the command to be performed to toggle whether details are shown for this <see cref="Message"/>.
         /// </summary>
         public ICommand ToggleMessageDetails { get; }
+
+        /// <summary>
+        /// Gets the command to be performed to toggle whether Markdown is shown for this <see cref="Message"/>.
+        /// </summary>
+        public ICommand ToggleMarkdown { get; }
 
         /// <summary>
         /// Gets a value indicating the number of <see cref="MessageControlViewModel"/>s deep this <see cref="MessageControlViewModel"/> is nested. Top-level messages that
@@ -214,6 +220,16 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             get => this.showDetails;
             set => this.SetProperty(ref this.showDetails, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the message should be displayed in plain text,
+        /// and all Markdown processing is skipped.
+        /// </summary>
+        public bool SkipMarkdown
+        {
+            get => this.skipMarkdown;
+            set => this.SetProperty(ref this.skipMarkdown, value);
         }
 
         /// <summary>
@@ -693,6 +709,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void LoadInlinesForMessageBody()
         {
+            if (MessageUtils.IsGMDCMarkdown(this.Message) && !this.SkipMarkdown)
+            {
+                // If message is sent as Markdown, process it entirely in Markdown
+                // and bypass the normal tokenization process.
+                this.Inlines.Clear();
+                this.Inlines.Add(new MarkdownMessage(this.Message.Text));
+                return;
+            }
+
             var text = this.Message.Text ?? string.Empty;
 
             var inlinesTemp = new List<Inline>();
@@ -909,6 +934,13 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.OnPropertyChanged(nameof(this.LikeStatus));
             this.OnPropertyChanged(nameof(this.LikeCount));
             this.OnPropertyChanged(nameof(this.LikedByAvatars));
+        }
+
+        private void ToggleMarkdownHandler()
+        {
+            this.SkipMarkdown = !this.SkipMarkdown;
+            this.LoadInlinesForMessageBody();
+            this.OnPropertyChanged(string.Empty);
         }
 
         private void LoadStarAndHiddenStatus()
