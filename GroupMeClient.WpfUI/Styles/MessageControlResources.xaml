@@ -268,7 +268,7 @@
             </Canvas>
 
             <!--Message Right-Click Details-->
-            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"
                         Orientation="Vertical"
                         Background="{DynamicResource MessageDetailsBrush}"
                         Height="45"
@@ -296,7 +296,7 @@
 
             <Button Grid.Row="3"
                     Grid.Column="0"
-                    Grid.ColumnSpan="3"
+                    Grid.ColumnSpan="5"
                     HorizontalAlignment="Right"
                     Visibility="{Binding ShowDetails, Converter={StaticResource boolToVisibilityConverter}}"
                     Command="{Binding ToggleMarkdown}" />
