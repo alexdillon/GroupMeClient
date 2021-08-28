@@ -7,6 +7,7 @@
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="TextAlignment" Value="Left" />
         <Setter Property="FontSize" Value="15" />
+        <Setter Property="LineHeight" Value="1" />
     </Style>
     
     <Style TargetType="{x:Type List}">
@@ -25,12 +26,7 @@
         <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Text}"/>
         <Setter Property="FontFamily" Value="Consolas, Lucida Sans Typewriter, Courier New" />
     </Style>
-    
-    <!--<Style TargetType="{x:Type Hyperlink}" x:Key="{x:Static mdxaml:GMDCMarkdownStyle.HyperlinkStyleKey}">
-        <Setter Property="Command" Value="{x:Static mdxaml:GMDCMarkdownStyle.Hyperlink}" />
-        <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=NavigateUri}" />
-    </Style>-->
-    
+
     <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static mdxaml:GMDCMarkdownStyle.Heading1StyleKey}">
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontWeight" Value="Bold" />
