@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using GroupMeClient.Core.Services;
 using GroupMeClient.WpfUI.Extensions;
 using GroupMeClient.WpfUI.Markdown;
@@ -72,12 +72,16 @@ namespace GroupMeClient.WpfUI.Converters
                         Document = doc,
                         Background = System.Windows.Media.Brushes.Transparent,
                         IsReadOnly = true,
+                        IsDocumentEnabled = true,
                         VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
                         HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                         BorderThickness = new System.Windows.Thickness(0),
                         Padding = new System.Windows.Thickness(0),
                         Margin = new System.Windows.Thickness(0),
                     };
+
+                    reader.CommandBindings.Add(new CommandBinding(MarkdownXaml.Hyperlink, new ExecutedRoutedEventHandler(this.HyperlinkHandler)));
+
                     var wrapper = new System.Windows.Documents.InlineUIContainer(reader);
                     return wrapper;
                 }
@@ -126,11 +130,7 @@ namespace GroupMeClient.WpfUI.Converters
                 NavigateUri = hyperlink.NavigateUri,
             };
 
-            result.RequestNavigate += (object sender, System.Windows.Navigation.RequestNavigateEventArgs e) =>
-            {
-                var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
-                osService.OpenWebBrowser(hyperlink.NavigateUri.ToString());
-            };
+            result.RequestNavigate += this.HyperlinkHandler;
 
             return result;
         }
@@ -149,6 +149,25 @@ namespace GroupMeClient.WpfUI.Converters
                 default:
                     return System.Windows.FontWeights.Regular;
             }
+        }
+
+        private void HyperlinkHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Parameter is Uri uri)
+            {
+                this.HyperlinkHandler(uri);
+            }
+        }
+
+        private void HyperlinkHandler(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            this.HyperlinkHandler(e.Uri);
+        }
+
+        private void HyperlinkHandler(Uri uri)
+        {
+            var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
+            osService.OpenWebBrowser(uri.ToString());
         }
     }
 }

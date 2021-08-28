@@ -66,8 +66,6 @@ namespace GroupMeClient.WpfUI.Markdown
                     return GMDCMarkdownStyle.TaskListStyleKey;
                 case MarkdownXamlStyle.ThematicBreak:
                     return GMDCMarkdownStyle.ThematicBreakStyleKey;
-                case MarkdownXamlStyle.Hyperlink:
-                    return GMDCMarkdownStyle.HyperlinkStyleKey;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(style));
             }

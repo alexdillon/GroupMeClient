@@ -92,13 +92,6 @@ namespace GroupMeClient.WpfUI.Markdown
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public static ResourceKey ThematicBreakStyleKey { get; } = CreateResourceKey(nameof(ThematicBreakStyleKey));
 
-        /// <summary>Gets a resource key for the HyperLinkStyle.</summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public static ResourceKey HyperlinkStyleKey { get; } = CreateResourceKey(nameof(HyperlinkStyleKey));
-
-        /// <summary>Routed command for Hyperlink.</summary>
-        //public static RoutedCommand Hyperlink { get; } = CreateResourceKey(nameof(Hyperlink), typeof(GMDCMarkdownStyle));
-
         private static ComponentResourceKey CreateResourceKey(string caller = null)
         {
             return new ComponentResourceKey(typeof(GMDCMarkdownStyle), caller);
