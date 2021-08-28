@@ -19,8 +19,6 @@ namespace GroupMeClient.WpfUI
             services.AddSingleton<Core.Services.IUserInterfaceDispatchService, Services.WpfDispatcherService>();
             services.AddSingleton<Core.Services.IFileDialogService, Services.WpfFileDialogService>();
             services.AddSingleton<Core.Services.IMessageBoxService, Services.WpfMessageBoxService>();
-            services.AddSingleton<Core.Services.IMessageRendererService, Services.WpfMessageRenderer>();
-            services.AddSingleton<Core.Services.IUserInterfaceDispatchService, Services.WpfDispatcherService>();
             services.AddSingleton<Core.Services.IRestoreService, Services.WpfRestoreService>();
             services.AddSingleton<Core.Services.IImageService, Services.WpfImageService>();
             services.AddSingleton<Core.Services.IWindowService, Services.WpfWindowService>();

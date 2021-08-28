@@ -681,41 +681,19 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
         }
 
-        private async Task<Message> InjectReplyData(Message responseMessage)
+        private void InjectReplyData(Message responseMessage)
         {
-            var renderingService = Ioc.Default.GetService<IMessageRendererService>();
-            var currentlyDisplayedVersion = this.AllMessages.Items.FirstOrDefault(m => m.Id == this.MessageBeingRepliedTo.Id);
-
-            if (currentlyDisplayedVersion == null)
-            {
-                // This reply was initiated from somewhere else, so the message isn't displayed yet
-                currentlyDisplayedVersion = this.MessageBeingRepliedTo;
-            }
-
-            var renderedOriginalMessage = renderingService.RenderMessageToPngImage(this.MessageBeingRepliedTo.Message, currentlyDisplayedVersion);
-            var renderedImageAttachment = await ImageAttachment.CreateImageAttachment(renderedOriginalMessage, this.MessageContainer);
-
-            var attachments = responseMessage.Attachments.ToList();
-            attachments.Add(renderedImageAttachment);
-
-            var clientIdentity = Ioc.Default.GetService<IClientIdentityService>();
-
-            var amendedMessage = Message.CreateMessage(
-                responseMessage.Text,
-                attachments,
-                guidPrefix: $"{clientIdentity.ClientGuidReplyPrefix}{this.MessageBeingRepliedTo.Message.Id}",
-                guid: this.SendingMessageGuid);
-
-            return amendedMessage;
+            responseMessage.Attachments.RemoveAll(m => m is ReplyAttachment);
+            responseMessage.Attachments.Add(ReplyAttachment.CreateReplyAttachment(this.MessageBeingRepliedTo.Message));
         }
 
         private async Task<bool> SendMessageAsync(Message newMessage)
         {
             bool success;
 
-            if (this.messageBeingRepliedTo != null)
+            if (this.MessageBeingRepliedTo != null)
             {
-                newMessage = await this.InjectReplyData(newMessage);
+                this.InjectReplyData(newMessage);
             }
 
             success = await this.MessageContainer.SendMessage(newMessage);

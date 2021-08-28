@@ -483,27 +483,75 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void LoadAttachments()
         {
-            var groupOrChatId = this.Message.Group?.Id ?? this.Message.Chat?.Id;
-
             int totalAttachedImages = this.Message.Attachments.OfType<ImageAttachment>().Count();
 
-            // Check if this is a GroupMe Desktop Client Reply-extension message
+            // Check if this is a replied message, and if it's GM Native Reply or GMDC Extension reply
+            var (repliedMessageId, isGroupMeNativeReply) = this.CheckReplyStatus();
+
+            if (!string.IsNullOrEmpty(repliedMessageId) && !isGroupMeNativeReply)
+            {
+                // GMDC Extension replies include a screenshot of the replied image
+                // for non-GMDC clients to see the original quoted message. Decrement the count
+                // of attached images to adjust for this.
+                totalAttachedImages--;
+            }
+
+            // Load GroupMe Image and Video Attachments
+            var doneWithAttachments = this.HandleGroupMeAttachments(totalAttachedImages);
+
+            // Handle if this is a reply message
+            if (!string.IsNullOrEmpty(repliedMessageId))
+            {
+                var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
+                var repliedMessageAttachment = new RepliedMessageControlViewModel(repliedMessageId, container, this.NestLevel);
+
+                // If the reply type is GMDC-extension,
+                // replace the photo of the original message that is included for non-GMDC clients with the real message
+                if (this.AttachedItems.Count > 0 && !isGroupMeNativeReply)
+                {
+                    var lastIndexOfPhoto = -1;
+                    for (int i = 0; i < this.AttachedItems.Count; i++)
+                    {
+                        if (this.AttachedItems[i] is GroupMeImageAttachmentControlViewModel)
+                        {
+                            lastIndexOfPhoto = i;
+                        }
+                    }
+
+                    if (lastIndexOfPhoto >= 0)
+                    {
+                        this.AttachedItems.RemoveAt(lastIndexOfPhoto);
+                    }
+                }
+
+                this.RepliedMessage = repliedMessageAttachment;
+            }
+
+            if (!doneWithAttachments)
+            {
+                // If this message type is allowed to have additional attachments,
+                // scan the message body for supported link types.
+                this.HandleLinkBasedAttachments();
+            }
+        }
+
+        private (string replyId, bool isGroupMeNative) CheckReplyStatus()
+        {
             var repliedMessageId = string.Empty;
-            bool isGroupMeNativeReply = false;
+            var isGroupMeNativeReply = false;
+
             if (MessageUtils.IsReplyGen1(this.Message))
             {
                 // Method 1, where /rmid:<message-id> is appended to the end of the message body
                 var token = Regex.Match(this.Message.Text, MessageUtils.RepliedMessageRegex).Value;
                 this.HiddenText = token + this.HiddenText;
                 repliedMessageId = token.Replace("\n/rmid:", string.Empty);
-                totalAttachedImages--; // Don't count the preview bitmap as an image
             }
             else if (MessageUtils.IsReplyGen2(this.Message))
             {
                 // Method 2, where gmdc-r<message-id> is included as the prefix of the message GUID
                 var parts = this.Message.SourceGuid.Split('-');
                 repliedMessageId = parts[1].Substring(1);
-                totalAttachedImages--; // Don't count the preview bitmap as an image
             }
             else if (this.Message.Attachments.OfType<ReplyAttachment>().Count() > 0)
             {
@@ -513,10 +561,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 isGroupMeNativeReply = true;
             }
 
-            bool hasMultipleImages = totalAttachedImages > 1;
-            bool doneWithAttachments = false;
+            return (replyId: repliedMessageId, isGroupMeNative: isGroupMeNativeReply);
+        }
 
-            // Load GroupMe Image and Video Attachments
+        private bool HandleGroupMeAttachments(int totalAttachedImages)
+        {
+            var doneWithAttachments = false;
+            var hasMultipleImages = totalAttachedImages > 1;
+            var groupOrChatId = this.Message.Group?.Id ?? this.Message.Chat?.Id;
+
             foreach (var attachment in this.Message.Attachments)
             {
                 if (attachment is ImageAttachment imageAttach)
@@ -578,38 +631,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 }
             }
 
-            // Handle if this is a GroupMe Desktop Client Reply-extension message
-            if (!string.IsNullOrEmpty(repliedMessageId))
-            {
-                var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
-                var repliedMessageAttachment = new RepliedMessageControlViewModel(repliedMessageId, container, this.NestLevel);
+            return doneWithAttachments;
+        }
 
-                // Replace the photo of the original message that is included for non-GMDC clients with the real message
-                if (this.AttachedItems.Count > 0 && !isGroupMeNativeReply)
-                {
-                    var lastIndexOfPhoto = -1;
-                    for (int i = 0; i < this.AttachedItems.Count; i++)
-                    {
-                        if (this.AttachedItems[i] is GroupMeImageAttachmentControlViewModel)
-                        {
-                            lastIndexOfPhoto = i;
-                        }
-                    }
-
-                    if (lastIndexOfPhoto >= 0)
-                    {
-                        this.AttachedItems.RemoveAt(lastIndexOfPhoto);
-                    }
-                }
-
-                this.RepliedMessage = repliedMessageAttachment;
-            }
-
-            if (doneWithAttachments)
-            {
-                return;
-            }
-
+        private void HandleLinkBasedAttachments()
+        {
             // Load Link-Based Attachments (Tweets, Web Images, Websites, etc.)
             var text = this.Message.Text ?? string.Empty;
             if (text.IndexOf(" ") > 0)
