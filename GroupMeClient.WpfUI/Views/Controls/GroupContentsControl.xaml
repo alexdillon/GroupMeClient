@@ -355,8 +355,8 @@
         <Grid Grid.Row="3"
               Background="{DynamicResource MahApps.Brushes.Control.Background}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40" />
-                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
