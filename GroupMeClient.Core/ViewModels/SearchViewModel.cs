@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -36,6 +37,8 @@ namespace GroupMeClient.Core.ViewModels
         private DateTime filterStartDate;
         private DateTime filterEndDate = DateTime.Now.AddDays(1);
         private Member filterMessagesFrom;
+        private bool filterIsExact;
+        private bool filterIsANDTerms;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchViewModel"/> class.
@@ -200,6 +203,33 @@ namespace GroupMeClient.Core.ViewModels
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the search term should be queried exactly.
+        /// </summary>
+        public bool FilterIsExact
+        {
+            get => this.filterIsExact;
+            set
+            {
+                this.filterIsANDTerms = !value;
+                this.SetSearchProperty(ref this.filterIsExact, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the search term should match messages containing
+        /// each word in the query (word1 AND word2 AND word3).
+        /// </summary>
+        public bool FilterIsANDTerm
+        {
+            get => this.filterIsANDTerms;
+            set
+            {
+                this.filterIsExact = !value;
+                this.SetSearchProperty(ref this.filterIsANDTerms, value);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the <see cref="Member"/> from which to display messages.
         /// </summary>
         public Member FilterMessagesFrom
@@ -245,8 +275,10 @@ namespace GroupMeClient.Core.ViewModels
 
         private void SetSearchProperty<T>(ref T field, T newValue, [CallerMemberName] string callerName = "")
         {
-            this.SetProperty(ref field, newValue, callerName);
-            this.UpdateSearchResults();
+            if (this.SetProperty(ref field, newValue, callerName))
+            {
+                this.UpdateSearchResults();
+            }
         }
 
         private async Task LoadIndexedGroups()
@@ -364,6 +396,8 @@ namespace GroupMeClient.Core.ViewModels
             this.FilterHasAttachedVideo = false;
             this.FilterHasAttachedDocument = false;
 
+            this.FilterIsExact = true;
+
             this.DeferSearchUpdating = false;
             if (!skipUpdating)
             {
@@ -416,8 +450,23 @@ namespace GroupMeClient.Core.ViewModels
                     .Where(m => m.UserId == userId);
             }
 
-            var results = messagesFromMemberForGroupChat
-                .Where(m => m.Text.ToLower().Contains(this.SearchTerm.ToLower()))
+            var results = messagesFromMemberForGroupChat;
+
+            // Apply query terms
+            if (this.FilterIsExact)
+            {
+                results = results.Where(m => m.Text.ToLower().Contains(this.SearchTerm.ToLower()));
+            }
+            else if (this.FilterIsANDTerm)
+            {
+                foreach (var keyword in this.SearchTerm.ToLower().Split(' '))
+                {
+                    results = results.Where(m => m.Text.ToLower().Contains(keyword));
+                }
+            }
+
+            // Apply time range filter
+            results = results
                 .Where(m => m.CreatedAtUnixTime >= startDateUnix)
                 .Where(m => m.CreatedAtUnixTime <= endDateUnix);
 
