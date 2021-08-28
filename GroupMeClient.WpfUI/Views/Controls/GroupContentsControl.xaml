@@ -34,9 +34,13 @@
     <UserControl.InputBindings>
         <KeyBinding Command="{Binding ToggleMarkdownMode}"
                     Gesture="CTRL+M" />
-
+        
         <KeyBinding Command="{Binding OpenMessageSuggestions}"
                     Gesture="CTRL+E" />
+
+        <KeyBinding Command="{Binding CloseGroup}"
+                    CommandParameter="{Binding Path=.}"
+                    Gesture="CTRL+W" />
     </UserControl.InputBindings>
 
     <Grid>
@@ -431,8 +435,6 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-
-               
             </Button>
 
             <!--Message Text Box-->
