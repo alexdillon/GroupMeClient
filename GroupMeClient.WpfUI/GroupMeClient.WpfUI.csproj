@@ -474,7 +474,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MahApps.Metro">
-      <Version>2.4.4</Version>
+      <Version>2.4.7</Version>
     </PackageReference>
     <PackageReference Include="MahApps.Metro.IconPacks.Entypo">
       <Version>4.8.0</Version>
@@ -543,7 +543,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="VirtualizingWrapPanel">
-      <Version>1.5.3</Version>
+      <Version>1.5.4</Version>
     </PackageReference>
     <PackageReference Include="XamlAnimatedGif">
       <Version>1.2.3</Version>
