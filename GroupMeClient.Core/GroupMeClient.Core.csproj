@@ -32,11 +32,11 @@
     </PackageReference>
     <PackageReference Include="GroupMeClientApi" Version="1.1.1" />
     <PackageReference Include="GroupMeClientPlugin" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.13">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.18">
       <PrivateAssets>none</PrivateAssets>
       <ExcludeAssets>none</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.13">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.18">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
