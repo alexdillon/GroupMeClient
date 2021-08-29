@@ -504,7 +504,7 @@
       <Version>10.0.19041.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-      <Version>3.1.13</Version>
+      <Version>3.1.18</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -521,7 +521,7 @@
       <Version>2.0.0.8</Version>
     </PackageReference>
     <PackageReference Include="NuGet.CommandLine">
-      <Version>5.8.1</Version>
+      <Version>5.10.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
