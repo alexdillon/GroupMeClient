@@ -31,6 +31,18 @@
         </Style>
     </UserControl.Resources>
 
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding ToggleMarkdownMode}"
+                    Gesture="CTRL+M" />
+        
+        <KeyBinding Command="{Binding OpenMessageSuggestions}"
+                    Gesture="CTRL+E" />
+
+        <KeyBinding Command="{Binding CloseGroup}"
+                    CommandParameter="{Binding Path=.}"
+                    Gesture="CTRL+W" />
+    </UserControl.InputBindings>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -99,7 +111,6 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-                
             </Button>
 
             <!--Refresh Group Button-->
@@ -229,6 +240,19 @@
             </Button.Content>
         </Button>
 
+        <!--Markdown Preview -->
+        <Border Grid.Row="2"
+                Visibility="{Binding IsMarkdownMode, Converter={StaticResource boolToVisibilityConverter}}"
+                VerticalAlignment="Top"
+                Background="{DynamicResource MahApps.Brushes.Control.Background}"
+                BorderThickness="2,2,2,2"
+                Margin="1,0,18,0"
+                CornerRadius="5"
+                BorderBrush="{DynamicResource DividerLineBrush}">
+
+            <TextBlock extensions:TextBlockExtensions.InlineList="{Binding TypedMessageContents, Converter={StaticResource inlineConverter}}"/>
+        </Border>
+
         <!--Plugins Dropdown List-->
         <Border Grid.Row="2"
                 Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
@@ -331,7 +355,8 @@
         <Grid Grid.Row="3"
               Background="{DynamicResource MahApps.Brushes.Control.Background}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -342,7 +367,7 @@
             </Grid.RowDefinitions>
 
             <!--Send Bar Top Line-->
-            <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"
+            <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="5"
                     BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1"
                     Height="4"
                     Margin="0,0,0,0"
@@ -350,6 +375,7 @@
 
             <!--Box showing the message that is being replied to-->
             <Grid Grid.Column="1" 
+                  Grid.ColumnSpan="2"
                   HorizontalAlignment="Stretch" 
                   MaxHeight="100" 
                   Visibility="{Binding MessageBeingRepliedTo, Converter={StaticResource nullToVisibilityConverter}, ConverterParameter={StaticResource True}}"
@@ -358,7 +384,7 @@
                 <Border CornerRadius="2" BorderBrush="#637182" BorderThickness="2,2,2,0">
                     <Border CornerRadius="3" BorderBrush="{DynamicResource InProgressReplyBrush}" Margin="5,5,5,3" BorderThickness="2,2,2,2">
                         <UserControl Content="{Binding MessageBeingRepliedTo}"
-                                         Background="{DynamicResource InProgressReplyBrush}"/>
+                                     Background="{DynamicResource InProgressReplyBrush}"/>
                     </Border>
                 </Border>
 
@@ -383,9 +409,37 @@
                 <iconPacks:PackIconMaterial Kind="React" Width="15" Height="15" />
             </Button>
 
+            <!--Markdown Button-->
+            <Button Grid.Row="1" Grid.Column="1"
+                    Background="Transparent"
+                    Margin="0"
+                    Command="{Binding ToggleMarkdownMode}" >
+
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource bottomBarButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMarkdownMode}" Value="True">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <iconPacks:PackIconMaterial Kind="LanguageMarkdown" Width="15" Height="15" />
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsMarkdownMode}" Value="False">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <iconPacks:PackIconMaterial Kind="LanguageMarkdownOutline" Width="15" Height="15" />
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
             <!--Message Text Box-->
             <extensions:MultiLineSendBox
-                Grid.Row="1" Grid.Column="1"
+                Grid.Row="1" Grid.Column="2"
                 Style="{StaticResource GroupMeClient.Wpf.Styles.SendTextBox}"
                 IsReadOnly="{Binding IsSending}"
                 extensions:FileDragDropPasteHelper.IsFileDragDropPasteEnabled="True"
@@ -407,7 +461,7 @@
             </extensions:MultiLineSendBox>
 
             <!--Plus Button-->
-            <Button Grid.Row="1" Grid.Column="2"
+            <Button Grid.Row="1" Grid.Column="3"
                     Style="{StaticResource bottomBarButtonStyle}"
                     Background="Transparent"
                     Margin="0,0,10,0"
@@ -417,7 +471,7 @@
             </Button>
 
             <!--Send Message Button-->
-            <Button Grid.Row="1" Grid.Column="3"
+            <Button Grid.Row="1" Grid.Column="4"
                     Style="{StaticResource bottomBarButtonStyle}"
                     Background="Transparent"
                     Margin="0,0,24,0"

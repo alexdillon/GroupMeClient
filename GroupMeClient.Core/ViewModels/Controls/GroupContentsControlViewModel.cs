@@ -41,6 +41,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private double scalingFactor = 1.0;
         private bool showDisplayOptions;
         private bool showPluginOptions;
+        private bool isMarkdownMode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -63,6 +64,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.ShowMiniChat = new RelayCommand(this.PopoutMiniChat);
             this.GlobalRefreshAllCommand = new RelayCommand(this.SendGlobalRefresh);
             this.ToggleDisplayOptions = new RelayCommand(() => this.ShowDisplayOptions = !this.ShowDisplayOptions);
+            this.ToggleMarkdownMode = new RelayCommand(() => this.IsMarkdownMode = !this.IsMarkdownMode);
 
             this.SmallDialogManager = new PopupViewModel()
             {
@@ -138,19 +140,24 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ICommand RegisterAsMiniChat { get; set; }
 
         /// <summary>
-        /// Gets or sets the action to be performed when a message is ready to send.
+        /// Gets the action to be performed when a message is ready to send.
         /// </summary>
-        public ICommand SendMessage { get; set; }
+        public ICommand SendMessage { get; }
 
         /// <summary>
-        /// Gets or sets the action to be performed when the user wants to send an attachment file.
+        /// Gets the action to be performed when the user wants to send an attachment file.
         /// </summary>
-        public ICommand SendAttachment { get; set; }
+        public ICommand SendAttachment { get; }
 
         /// <summary>
-        /// Gets or sets the action to be performd when the user has selected the Message Effects Generator.
+        /// Gets the action to be performd when the user has selected the Message Effects Generator.
         /// </summary>
-        public ICommand OpenMessageSuggestions { get; set; }
+        public ICommand OpenMessageSuggestions { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when the user has selected markdown mode.
+        /// </summary>
+        public ICommand ToggleMarkdownMode { get; }
 
         /// <summary>
         /// Gets the action to be performed when more messages need to be loaded.
@@ -292,6 +299,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             get => this.scalingFactor;
             set => this.SetProperty(ref this.scalingFactor, value);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the current message is in markdown mode.
+        /// </summary>
+        public bool IsMarkdownMode
+        {
+            get => this.isMarkdownMode;
+            private set => this.SetProperty(ref this.isMarkdownMode, value);
         }
 
         /// <summary>
@@ -687,6 +703,16 @@ namespace GroupMeClient.Core.ViewModels.Controls
             responseMessage.Attachments.Add(ReplyAttachment.CreateReplyAttachment(this.MessageBeingRepliedTo.Message));
         }
 
+        private Message ConvertToMarkdown(Message msg)
+        {
+            var clientIdentity = Ioc.Default.GetService<IClientIdentityService>();
+            return Message.CreateMessage(
+                msg.Text,
+                msg.Attachments,
+                guidPrefix: $"{clientIdentity.ClientGuidMarkdownPrefix}",
+                guid: this.SendingMessageGuid);
+        }
+
         private async Task<bool> SendMessageAsync(Message newMessage)
         {
             bool success;
@@ -694,6 +720,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
             if (this.MessageBeingRepliedTo != null)
             {
                 this.InjectReplyData(newMessage);
+            }
+
+            if (this.IsMarkdownMode)
+            {
+                newMessage = this.ConvertToMarkdown(newMessage);
             }
 
             success = await this.MessageContainer.SendMessage(newMessage);
@@ -704,6 +735,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                 this.TypedMessageContents = string.Empty;
                 this.MessageBeingRepliedTo = null;
+                this.IsMarkdownMode = false;
                 this.SendingMessageGuid = Guid.NewGuid().ToString();
             }
             else

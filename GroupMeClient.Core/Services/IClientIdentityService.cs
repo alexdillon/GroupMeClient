@@ -26,6 +26,11 @@ namespace GroupMeClient.Core.Services
         string ClientGuidReplyPrefix { get; }
 
         /// <summary>
+        /// Gets the GUID prefix used for Markdown messages.
+        /// </summary>
+        string ClientGuidMarkdownPrefix { get; }
+
+        /// <summary>
         /// Gets the GUID prefix used for messages being quickly sent through interactive notifications.
         /// </summary>
         string ClientGuidQuickResponsePrefix { get; }

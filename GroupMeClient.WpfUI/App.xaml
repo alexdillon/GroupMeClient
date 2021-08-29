@@ -31,6 +31,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Styles/GroupNameDropdown.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/CopyableHyperlink.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/MessageControlResources.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/MarkdownStyles.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/PopupDialog.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/ScrollBar.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/SendTextBox.xaml" />

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" 
+             xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200"
              Width="600"
@@ -19,7 +20,7 @@
                     <Expander Header="{Binding Version}" 
                               controls:ControlsHelper.ContentCharacterCasing="Normal"
                               IsExpanded="{Binding IsLatest, Mode=OneTime}">
-                        <TextBlock Text="{Binding ReleaseNotes}"
+                        <TextBlock extensions:TextBlockExtensions.InlineList="{Binding ReleaseNotes, Converter={StaticResource inlineConverter}, Mode=OneWay}"
                                    Focusable="False"
                                    IsHitTestVisible="False"
                                    TextWrapping="Wrap"/>

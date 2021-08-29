@@ -24,6 +24,7 @@
     <Color x:Key="PluginMenuColor">#FFFFFF</Color>
     <Color x:Key="FileIconColor">#1873BA</Color>
     <Color x:Key="InProgressReplyColor">#DDDDDD</Color>
+    <Color x:Key="CodeSpanShadeColor">#ffd3d3d3</Color>
 
     <SolidColorBrush options:Freeze="True" x:Key="DividerLineBrush" Color="{DynamicResource DividerLineColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="MessageFontBrush" Color="{DynamicResource MessageFontColor}"/>
@@ -42,4 +43,5 @@
     <SolidColorBrush options:Freeze="True" x:Key="PluginMenuBrush" Color="{DynamicResource PluginMenuColor}" />
     <SolidColorBrush options:Freeze="True" x:Key="FileIconBrush" Color="{DynamicResource FileIconColor}" />
     <SolidColorBrush options:Freeze="True" x:Key="InProgressReplyBrush" Color="{DynamicResource InProgressReplyColor}" />
+    <SolidColorBrush options:Freeze="True" x:Key="CodeSpanShadeBrush" Color="{DynamicResource CodeSpanShadeColor}" />
 </ResourceDictionary>

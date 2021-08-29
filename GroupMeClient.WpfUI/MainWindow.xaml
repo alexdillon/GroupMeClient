@@ -26,6 +26,11 @@
         <viewModels:MainViewModel />
     </Window.DataContext>
 
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding RefreshEverythingCommand}"
+                    Gesture="CTRL+R" />
+    </Window.InputBindings>
+
     <Window.Resources>
         <DataTemplate x:Key="OverlayIcon">
             <Grid Width="16" Height="16">
