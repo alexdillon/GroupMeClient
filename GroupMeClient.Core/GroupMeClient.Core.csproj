@@ -25,28 +25,28 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="DynamicData" Version="7.1.1" />
-    <PackageReference Include="GitInfo" Version="2.0.26">
+    <PackageReference Include="DynamicData" Version="7.3.1" />
+    <PackageReference Include="GitInfo" Version="2.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="GroupMeClientApi" Version="1.1.1" />
     <PackageReference Include="GroupMeClientPlugin" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.13">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.18">
       <PrivateAssets>none</PrivateAssets>
       <ExcludeAssets>none</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.13">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.18">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.0.1" />
-    <PackageReference Include="NuGet.CommandLine" Version="5.8.1">
+    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.0.2" />
+    <PackageReference Include="NuGet.CommandLine" Version="5.10.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Octokit" Version="0.50.0" />
-    <PackageReference Include="ReactiveUI" Version="13.2.2" />
+    <PackageReference Include="ReactiveUI" Version="16.2.1" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.0.4" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>

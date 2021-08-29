@@ -82,7 +82,7 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win7
         }
 
         /// <inheritdoc/>
-        public void ShowProgressBar(out ProgressFinaly<(int? value, string message, string title, bool? showCancel)> progress, out CancellationToken Cancel, string Title = null, bool ShowCancelButton = true, bool ShowProgress = true, string areaName = "", bool TrimText = false, uint DefaultRowsCount = 1, string BaseWaitingMessage = "Calculation time")
+        public NotifierProgress<(double? value, string message, string title, bool? showCancel)> ShowProgressBar(string Title = null, bool ShowCancelButton = true, bool ShowProgress = true, string areaName = "", bool TrimText = false, uint DefaultRowsCount = 1, string BaseWaitingMessage = "Calculation time")
         {
             throw new NotImplementedException();
         }
