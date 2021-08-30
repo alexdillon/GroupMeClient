@@ -1,7 +1,7 @@
-﻿using GroupMeClient.Core.Controls.Documents;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GroupMeClient.Core.Controls.Documents;
 
 namespace GroupMeClient.Core.Services
 {
