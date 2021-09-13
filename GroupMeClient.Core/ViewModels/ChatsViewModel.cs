@@ -57,6 +57,7 @@ namespace GroupMeClient.Core.ViewModels
 
             this.MarkAllAsRead = new RelayCommand(this.MarkAllGroupsChatsRead);
             this.SearchToggled = new RelayCommand<bool>((t) => this.GroupChatFilter = t ? this.GroupChatFilter : string.Empty);
+            this.OpenTopChat = new RelayCommand<object>(this.OpenTopChatHandler);
 
             this.SortedFilteredGroupChats = new ObservableCollectionExtended<GroupControlViewModel>();
 
@@ -107,6 +108,11 @@ namespace GroupMeClient.Core.ViewModels
         /// Gets the action to be performed when the Group Search box is toggled.
         /// </summary>
         public ICommand SearchToggled { get; }
+
+        /// <summary>
+        /// Gets the action to be performed to open one of the user's top chats.
+        /// </summary>
+        public ICommand OpenTopChat { get; }
 
         /// <summary>
         /// Gets or sets the string entered to filter the available groups or chat with.
@@ -504,6 +510,26 @@ namespace GroupMeClient.Core.ViewModels
                 var state = this.PersistManager.GetDefaultRecoveryState(persistContext);
                 state.OpenChats = new List<string>(this.ActiveGroupsChats.Select(x => x.Id));
                 persistContext.SaveChanges();
+            }
+        }
+
+        private void OpenTopChatHandler(object indexObj)
+        {
+            int index = 0;
+            if (indexObj is int i)
+            {
+                index = i;
+            }
+            else
+            {
+                int.TryParse(indexObj.ToString(), out index);
+            }
+
+            if (index < this.SortedFilteredGroupChats.Count)
+            {
+                this.OpenNewGroupChat(
+                    group: this.SortedFilteredGroupChats[index],
+                    skipClose: false);
             }
         }
     }
