@@ -1,15 +1,16 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:mdxaml="clr-namespace:GroupMeClient.WpfUI.Markdown" >
+                    xmlns:mdxaml="clr-namespace:GroupMeClient.WpfUI.Markdown"
+                    xmlns:mdxaml2="clr-namespace:Neo.Markdig.Xaml;assembly=Neo.Markdig.Xaml">
 
     <!-- Document styles -->
     <Style TargetType="{x:Type FlowDocument}" x:Key="{x:Static mdxaml:GMDCMarkdownStyle.DocumentStyleKey}">
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="TextAlignment" Value="Left" />
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontSize" Value="{DynamicResource MarkdownFontSize}" />
         <Setter Property="LineHeight" Value="1" />
     </Style>
-    
+
     <Style TargetType="{x:Type List}">
         <Setter Property="Margin" Value="40,0,0,0" />
         <Setter Property="Padding" Value="0,0,0,0" />
@@ -69,13 +70,13 @@
     </Style>
     
     <Style TargetType="{x:Type Table}" x:Key="{x:Static mdxaml:GMDCMarkdownStyle.TableStyleKey}">
-        <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Text}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MarkdownTableBrush}"/>
         <Setter Property="BorderThickness" Value="0,0,1,1"/>
         <Setter Property="CellSpacing" Value="0"/>
     </Style>
     
     <Style TargetType="{x:Type TableCell}" x:Key="{x:Static mdxaml:GMDCMarkdownStyle.TableCellStyleKey}">
-        <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Text}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MarkdownTableBrush}"/>
         <Setter Property="BorderThickness" Value="1,1,0,0"/>
     </Style>
     
@@ -113,5 +114,11 @@
     <Style TargetType="{x:Type Span}" x:Key="{x:Static mdxaml:GMDCMarkdownStyle.MarkedStyleKey}">
         <Setter Property="Background" Value="Yellow" />
     </Style>
-    
+
+    <Style TargetType="{x:Type Hyperlink}" x:Key="{x:Static mdxaml2:MarkdownXaml.HyperlinkStyleKey}">
+        <Setter Property="Foreground" Value="{DynamicResource MarkdownLinkColor}" />
+        <Setter Property="Command" Value="{x:Static mdxaml2:MarkdownXaml.Hyperlink}" />
+        <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=NavigateUri}" />
+    </Style>
+
 </ResourceDictionary>

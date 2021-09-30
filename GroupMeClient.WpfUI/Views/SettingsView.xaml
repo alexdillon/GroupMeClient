@@ -7,6 +7,8 @@
              xmlns:settings="clr-namespace:GroupMeClient.Core.Settings;assembly=GroupMeClient.Core"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" 
              xmlns:controls1="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
+             xmlns:resx="clr-namespace:GroupMeClient.WpfUI.Properties"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="1024"
              d:DesignWidth="768"
              mc:Ignorable="d">
@@ -25,10 +27,10 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Column="0"
-                                   HorizontalAlignment="Left" VerticalAlignment="Center"
-                                   Padding="15,0,0,0"
-                                   Height="Auto" FontSize="17" FontWeight="SemiBold"
-                                   Text="Settings" />
+                               HorizontalAlignment="Left" VerticalAlignment="Center"
+                               Padding="15,0,0,0"
+                               Height="Auto" FontSize="17" FontWeight="SemiBold"
+                               Text="Settings" />
 
                     <Border Grid.Column="0" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
                 </Grid>
@@ -84,12 +86,12 @@
                         <TextBlock TextWrapping="Wrap" Grid.Row="0">
                             <Run FontWeight="SemiBold">GroupMe Desktop Client is a modular client for accessing GroupMe on Windows.</Run>
                             <LineBreak />
-                            By Alex Dillon, 2020
+                            By Alex Dillon, 2021
                             <LineBreak />
                             <LineBreak />
                             Version: <Run Text="{Binding ApplicationVersion, Mode=OneWay}"/>
                             <LineBreak />
-                            Built: <Run Text="{Binding ApplicationCommit, Mode=OneWay}"/>
+                            Build: <Run Text="{Binding ApplicationCommit, Mode=OneWay}"/>
                             <LineBreak />
                             <Hyperlink Command="{Binding ViewReleaseNotesCommand}">View Release Notes</Hyperlink>
                         </TextBlock>
@@ -183,68 +185,18 @@
                     <GroupBox.Header>
                         <TextBlock Foreground="White" Text="Open Source Credits"/>
                     </GroupBox.Header>
-
-                    <TextBlock TextWrapping="Wrap">
-                        GroupMe Desktop Client uses a lot of open source technologies. We would like to send a big thank you to the following projects and the thousands of contributors that help make this program possible!
-                        <LineBreak />
-                        <LineBreak />
-                
-                        <Hyperlink 
-                            NavigateUri="https://mahapps.com/"
-                            extensions:WebHyperlinkExtensions.IsWebLink="True">
-                            MahApps Metro UI Toolkit
-                        </Hyperlink>
-                        <LineBreak />
-                
-                        <Hyperlink 
-                            NavigateUri="http://www.mvvmlight.net/"
-                            extensions:WebHyperlinkExtensions.IsWebLink="True">
-                            MVVMLight
-                        </Hyperlink>
-                        <LineBreak />
-                
-                        <Hyperlink 
-                            NavigateUri="https://github.com/ericsink/SQLitePCL.raw"
-                            extensions:WebHyperlinkExtensions.IsWebLink="True">
-                            SQLitePCLRaw
-                        </Hyperlink>
-                        <LineBreak />
-                
-                        <Hyperlink 
-                            NavigateUri="https://github.com/aspnet/EntityFrameworkCore"
-                            extensions:WebHyperlinkExtensions.IsWebLink="True">
-                            Entity Framework Core
-                        </Hyperlink>
-                        <LineBreak />
-                
-                        <Hyperlink 
-                            NavigateUri="https://github.com/Squirrel/Squirrel.Windows"
-                            extensions:WebHyperlinkExtensions.IsWebLink="True">
-                            Squirrel for Windows
-                        </Hyperlink>
-                        <LineBreak />
                     
-                         <Hyperlink 
-                            NavigateUri="https://gitlab.com/sbaeumlisberger/virtualizing-wrap-panel/"
-                            extensions:WebHyperlinkExtensions.IsWebLink="True">
-                            Virtualizing Wrap Panel
-                        </Hyperlink>
-                        <LineBreak />
+                    <!--Open Source Credits Markdown Text-->
+                    <TextBlock
+                        Text="{x:Static resx:Resources.Credits}"
+                        extensions:TextBlockExtensions.InlineList="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Text, Converter={StaticResource inlineConverter}}">
 
-                        <Hyperlink 
-                            NavigateUri="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
-                            extensions:WebHyperlinkExtensions.IsWebLink="True">
-                            XAML Animated Gif
-                        </Hyperlink>
-                        <LineBreak />
-                
-                        <LineBreak />
-                        Main application icon made by 
-                        <Hyperlink NavigateUri="https://www.flaticon.com/authors/freepik" extensions:WebHyperlinkExtensions.IsWebLink="True">Freepik</Hyperlink>
-                        from 
-                        <Hyperlink NavigateUri="https://www.flaticon.com/" extensions:WebHyperlinkExtensions.IsWebLink="True">www.flaticon.com</Hyperlink>
-                        is licensed by
-                        <Hyperlink NavigateUri="http://creativecommons.org/licenses/by/3.0/" extensions:WebHyperlinkExtensions.IsWebLink="True">CC 3.0 BY</Hyperlink>
+                        <TextBlock.Resources>
+                            <sys:Double x:Key="MarkdownFontSize">12</sys:Double>
+                            <SolidColorBrush x:Key="MarkdownTableBrush" Color="Transparent"/>
+                            <SolidColorBrush x:Key="MarkdownLinkColor" Color="White"/>
+                            
+                        </TextBlock.Resources>
                     </TextBlock>
                 </GroupBox>
             </StackPanel>
