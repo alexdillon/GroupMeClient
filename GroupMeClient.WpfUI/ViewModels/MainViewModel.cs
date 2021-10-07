@@ -158,6 +158,11 @@ namespace GroupMeClient.WpfUI.ViewModels
         public ICommand GotoSearchPage { get; private set; }
 
         /// <summary>
+        /// Gets the command to be performed to show the help popup.
+        /// </summary>
+        public ICommand ShowHelp { get; private set; }
+
+        /// <summary>
         /// Gets the Toast Holder Manager for this application.
         /// </summary>
         public ToastHolderViewModel ToastHolderManager { get; private set; }
@@ -254,6 +259,7 @@ namespace GroupMeClient.WpfUI.ViewModels
             this.RebootApplication = new RelayCommand(this.RestartCommand);
             this.GotoChatsPage = new RelayCommand(() => this.SwitchToPageCommand(new Core.Messaging.SwitchToPageRequestMessage(Core.Messaging.SwitchToPageRequestMessage.Page.Chats)));
             this.GotoSearchPage = new RelayCommand(() => this.SwitchToPageCommand(new Core.Messaging.SwitchToPageRequestMessage(Core.Messaging.SwitchToPageRequestMessage.Page.Search)));
+            this.ShowHelp = new RelayCommand(() => this.OpenBigPopup(new Core.Messaging.DialogRequestMessage(new HotkeyHelpControlViewModel())));
 
             this.TaskManager = Ioc.Default.GetService<TaskManager>();
             this.TaskManager.TaskCountChanged += this.TaskManager_TaskCountChanged;

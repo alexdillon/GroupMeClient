@@ -36,6 +36,9 @@
         <KeyBinding Command="{Binding GotoSearchPage}"
                     Gesture="CTRL+F" />
 
+        <KeyBinding Command="{Binding ShowHelp}"
+                    Gesture="F1" />
+
     </Window.InputBindings>
 
     <Window.Resources>

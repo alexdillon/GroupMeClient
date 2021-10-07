@@ -161,6 +161,9 @@
     <Compile Include="Views\Controls\Attachments\VideoAttachmentControl.xaml.cs">
       <DependentUpon>VideoAttachmentControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\HotkeyHelpControl.xaml.cs">
+      <DependentUpon>HotkeyHelpControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\InlineReadSentMarkerControl.xaml.cs">
       <DependentUpon>InlineReadSentMarkerControl.xaml</DependentUpon>
     </Compile>
@@ -333,6 +336,10 @@
     <Page Include="Styles\MessageControlResources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\HotkeyHelpControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\InlineReadSentMarkerControl.xaml">
       <Generator>MSBuild:Compile</Generator>
