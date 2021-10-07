@@ -128,24 +128,39 @@ namespace GroupMeClient.WpfUI.ViewModels
         public bool IsFullGMDC => true;
 
         /// <summary>
-        /// Gets or sets the manager for the dialog that should be displayed as a large popup.
+        /// Gets the manager for the dialog that should be displayed as a large popup.
         /// </summary>
-        public PopupViewModel DialogManagerRegular { get; set; }
+        public PopupViewModel DialogManagerRegular { get; private set; }
 
         /// <summary>
-        /// Gets or sets the manager for the dialog that should be displayed as a large topmost popup.
+        /// Gets the manager for the dialog that should be displayed as a large topmost popup.
         /// </summary>
-        public PopupViewModel DialogManagerTopMost { get; set; }
+        public PopupViewModel DialogManagerTopMost { get; private set; }
 
         /// <summary>
-        /// Gets or sets the command to be performed to refresh all displayed messages and groups.
+        /// Gets the command to be performed to refresh all displayed messages and groups.
         /// </summary>
-        public ICommand RefreshEverythingCommand { get; set; }
+        public ICommand RefreshEverythingCommand { get; private set; }
 
         /// <summary>
-        /// Gets or sets the command to be performed to soft reboot the application.
+        /// Gets the command to be performed to soft reboot the application.
         /// </summary>
-        public ICommand RebootApplication { get; set; }
+        public ICommand RebootApplication { get; private set; }
+
+        /// <summary>
+        /// Gets the command to be performed to snap to the chats page.
+        /// </summary>
+        public ICommand GotoChatsPage { get; private set; }
+
+        /// <summary>
+        /// Gets the command to be performed to snap to the search page.
+        /// </summary>
+        public ICommand GotoSearchPage { get; private set; }
+
+        /// <summary>
+        /// Gets the command to be performed to show the help popup.
+        /// </summary>
+        public ICommand ShowHelp { get; private set; }
 
         /// <summary>
         /// Gets the Toast Holder Manager for this application.
@@ -242,6 +257,9 @@ namespace GroupMeClient.WpfUI.ViewModels
             updateService.StartUpdateTimer(TimeSpan.FromMinutes(this.SettingsManager.CoreSettings.ApplicationUpdateFrequencyMinutes));
 
             this.RebootApplication = new RelayCommand(this.RestartCommand);
+            this.GotoChatsPage = new RelayCommand(() => this.SwitchToPageCommand(new Core.Messaging.SwitchToPageRequestMessage(Core.Messaging.SwitchToPageRequestMessage.Page.Chats)));
+            this.GotoSearchPage = new RelayCommand(() => this.SwitchToPageCommand(new Core.Messaging.SwitchToPageRequestMessage(Core.Messaging.SwitchToPageRequestMessage.Page.Search)));
+            this.ShowHelp = new RelayCommand(() => this.OpenBigPopup(new Core.Messaging.DialogRequestMessage(new HotkeyHelpControlViewModel())));
 
             this.TaskManager = Ioc.Default.GetService<TaskManager>();
             this.TaskManager.TaskCountChanged += this.TaskManager_TaskCountChanged;

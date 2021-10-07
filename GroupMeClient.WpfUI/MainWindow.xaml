@@ -29,6 +29,16 @@
     <Window.InputBindings>
         <KeyBinding Command="{Binding RefreshEverythingCommand}"
                     Gesture="CTRL+R" />
+
+        <KeyBinding Command="{Binding GotoChatsPage}"
+                    Gesture="CTRL+G" />
+
+        <KeyBinding Command="{Binding GotoSearchPage}"
+                    Gesture="CTRL+F" />
+
+        <KeyBinding Command="{Binding ShowHelp}"
+                    Gesture="F1" />
+
     </Window.InputBindings>
 
     <Window.Resources>
