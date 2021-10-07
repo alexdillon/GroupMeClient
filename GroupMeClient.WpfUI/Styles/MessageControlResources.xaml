@@ -8,6 +8,9 @@
 
     <sys:Int32 x:Key="collapseNestLevel">1</sys:Int32>
 
+    <SolidColorBrush x:Key="MarkdownTableBrush" Color="{DynamicResource MahApps.Colors.ThemeForeground}"></SolidColorBrush>
+    <sys:Double x:Key="MarkdownFontSize">15</sys:Double>
+    
     <DataTemplate x:Key="MessageBody">
         <Grid>
             <Grid.ColumnDefinitions>
