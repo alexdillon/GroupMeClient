@@ -92,8 +92,8 @@ namespace GroupMeClient.WpfUI.Markdown
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public static ResourceKey ThematicBreakStyleKey { get; } = CreateResourceKey(nameof(ThematicBreakStyleKey));
 
-        /// <summary>Gets a resource Key for the HyperlinkStyleKey</summary>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
+        /// <summary>Gets a resource Key for the HyperlinkStyleKey.</summary>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public static ResourceKey HyperlinkStyleKey { get; } = CreateResourceKey(nameof(HyperlinkStyleKey));
 
         private static ComponentResourceKey CreateResourceKey(string caller = null)
