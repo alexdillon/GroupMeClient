@@ -43,6 +43,16 @@
                     Gesture="CTRL+W" />
     </UserControl.InputBindings>
 
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="GotFocus" >
+            <behaviors:ChangePropertyAction TargetObject="{Binding .}" PropertyName="IsFocused" Value="{StaticResource True}" />
+        </behaviors:EventTrigger>
+
+        <behaviors:EventTrigger EventName="LostFocus" >
+            <behaviors:ChangePropertyAction TargetObject="{Binding .}" PropertyName="IsFocused" Value="{StaticResource False}" />
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />

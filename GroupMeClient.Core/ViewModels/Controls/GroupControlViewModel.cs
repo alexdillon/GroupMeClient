@@ -16,6 +16,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private IMessageContainer messageContainer;
         private AvatarControlViewModel avatar;
         private int unreadMessagesCounter;
+        private bool isHighlighted;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupControlViewModel"/> class.
@@ -36,6 +37,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// Gets or sets a value indicating whether this group is loaded purely from cache.
         /// </summary>
         public bool IsHistorical { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this group should be highlighted or specially indicated.
+        /// </summary>
+        public bool IsHighlighted
+        {
+            get => this.isHighlighted;
+            set => this.SetProperty(ref this.isHighlighted, value);
+        }
 
         /// <summary>
         /// Gets the title of this Group or Chat.

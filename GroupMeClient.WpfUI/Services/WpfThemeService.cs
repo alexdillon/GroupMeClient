@@ -19,8 +19,14 @@ namespace GroupMeClient.WpfUI.Services
             { ThemeOptions.Dark, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.Colors.Dark.xaml") } },
         };
 
+        private string GMDCAccessibilityChatFocusPrefix => "GMDC.Accessibility.ChatFocus";
 
+        private Dictionary<AccessibilityChatFocusOptions, ResourceDictionary> GMDCAccessibilityChatFocus { get; } = new Dictionary<AccessibilityChatFocusOptions, ResourceDictionary>()
         {
+            { AccessibilityChatFocusOptions.None, null },
+            { AccessibilityChatFocusOptions.Bar, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.ChatFocus.Bar.xaml") } },
+            { AccessibilityChatFocusOptions.Border, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.ChatFocus.Border.xaml") } },
+        };
 
         /// <inheritdoc/>
         public void Initialize()
@@ -49,6 +55,15 @@ namespace GroupMeClient.WpfUI.Services
                     this.SetSystemTheme();
                     break;
             }
+        }
+
+        /// <summary>
+        /// Updates the current accessibility theming for the indicator that is applied to focused chats.
+        /// </summary>
+        /// <param name="option">The new option to apply.</param>
+        public void UpdateTheme(AccessibilityChatFocusOptions option)
+        {
+            this.ChangeTheme(this.GMDCAccessibilityChatFocusPrefix, this.GMDCAccessibilityChatFocus[option]);
         }
 
         /// <summary>

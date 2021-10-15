@@ -18,5 +18,11 @@ namespace GroupMeClient.Core.Services
         /// </summary>
         /// <param name="theme">The theme to apply.</param>
         void UpdateTheme(ThemeOptions theme);
+
+        /// <summary>
+        /// Updates the current accessibility theming for the indicator that is applied to focused chats.
+        /// </summary>
+        /// <param name="option">The new option to apply.</param>
+        void UpdateTheme(AccessibilityChatFocusOptions option);
     }
 }

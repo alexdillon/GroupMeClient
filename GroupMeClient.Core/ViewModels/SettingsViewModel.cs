@@ -186,6 +186,20 @@ namespace GroupMeClient.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating which accessibility option should be applied for chat focus.
+        /// </summary>
+        public Settings.Themes.AccessibilityChatFocusOptions AccessibilityChatFocusOption
+        {
+            get => this.SettingsManager.UISettings.AccessibilityChatFocusOption;
+            set
+            {
+                this.SettingsManager.UISettings.AccessibilityChatFocusOption = value;
+                this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.AccessibilityChatFocusOption));
+            }
+        }
+
         private Settings.SettingsManager SettingsManager { get; }
 
         private IUpdateService UpdateAssist { get; }

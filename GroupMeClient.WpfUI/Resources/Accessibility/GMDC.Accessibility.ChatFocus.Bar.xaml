@@ -1,0 +1,16 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ControlTemplate x:Key="GMDC.Accessibility.ChatFocus">
+        <Border HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="#1873BA"
+                BorderBrush="#1873BA"
+                CornerRadius="3"
+                Width="5"
+                Height="50"
+                Margin="5,-9,0,0"
+                Visibility="{Binding IsHighlighted, Converter={StaticResource BooleanToVisibilityConverter}}"
+               />
+    </ControlTemplate>
+</ResourceDictionary>
