@@ -175,7 +175,7 @@ namespace GroupMeClient.Core.ViewModels
         /// <summary>
         /// Gets or sets a value indicating which UI theme should be applied.
         /// </summary>
-        public Settings.ThemeOptions Theme
+        public Settings.Themes.ThemeOptions Theme
         {
             get => this.SettingsManager.UISettings.Theme;
             set

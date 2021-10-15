@@ -1,4 +1,5 @@
 ﻿using GroupMeClient.Core.Settings;
+using GroupMeClient.Core.Settings.Themes;
 
 namespace GroupMeClient.Core.Services
 {

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using GroupMeClient.Core.Services;
-using GroupMeClient.Core.Settings;
-using MahApps.Metro;
+using GroupMeClient.Core.Settings.Themes;
 
 namespace GroupMeClient.WpfUI.Services
 {
@@ -11,43 +11,16 @@ namespace GroupMeClient.WpfUI.Services
     /// </summary>
     public class WpfThemeService : IThemeService
     {
-        private readonly ResourceDictionary groupMeLightTheme = new ResourceDictionary()
+        private string GMDCColorThemePrefix => "GMDC.Colors";
+
+        private Dictionary<ThemeOptions, ResourceDictionary> GMDCColorThemes { get; } = new Dictionary<ThemeOptions, ResourceDictionary>()
         {
-            Source = new Uri("pack://application:,,,/Styles/GroupMeLight.xaml"),
+            { ThemeOptions.Light, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.Colors.Light.xaml") } },
+            { ThemeOptions.Dark, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.Colors.Dark.xaml") } },
         };
 
-        private readonly ResourceDictionary groupMeDarkTheme = new ResourceDictionary()
+
         {
-            Source = new Uri("pack://application:,,,/Styles/GroupMeDark.xaml"),
-        };
-
-        private ResourceDictionary currentGroupMeTheme = null;
-
-        private ResourceDictionary CurrentGroupMeTheme
-        {
-            get
-            {
-                if (this.currentGroupMeTheme == null)
-                {
-                    foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
-                    {
-                        if (dictionary.Source?.ToString().Contains("GroupMe") ?? false)
-                        {
-                            this.currentGroupMeTheme = dictionary;
-                        }
-                    }
-                }
-
-                return this.currentGroupMeTheme;
-            }
-
-            set
-            {
-                Application.Current.Resources.MergedDictionaries.Remove(this.CurrentGroupMeTheme);
-                Application.Current.Resources.MergedDictionaries.Add(value);
-                this.currentGroupMeTheme = value;
-            }
-        }
 
         /// <inheritdoc/>
         public void Initialize()
@@ -84,7 +57,7 @@ namespace GroupMeClient.WpfUI.Services
         private void SetLightTheme()
         {
             ControlzEx.Theming.ThemeManager.Current.ChangeTheme(Application.Current, "Light.Cyan");
-            this.CurrentGroupMeTheme = this.groupMeLightTheme;
+            this.ChangeTheme(this.GMDCColorThemePrefix, this.GMDCColorThemes[ThemeOptions.Light]);
         }
 
         /// <summary>
@@ -93,7 +66,7 @@ namespace GroupMeClient.WpfUI.Services
         private void SetDarkTheme()
         {
             ControlzEx.Theming.ThemeManager.Current.ChangeTheme(Application.Current, "Dark.Cyan");
-            this.CurrentGroupMeTheme = this.groupMeDarkTheme;
+            this.ChangeTheme(this.GMDCColorThemePrefix, this.GMDCColorThemes[ThemeOptions.Dark]);
         }
 
         /// <summary>
@@ -117,6 +90,29 @@ namespace GroupMeClient.WpfUI.Services
         private void Windows_ThemeChangedEvent()
         {
             this.SetSystemTheme();
+        }
+
+        private void ChangeTheme(string themePrefix, ResourceDictionary newTheme)
+        {
+            ResourceDictionary currentTheme = null;
+
+            foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
+            {
+                if (dictionary.Source?.ToString().Contains(themePrefix) ?? false)
+                {
+                    currentTheme = dictionary;
+                }
+            }
+
+            if (currentTheme != null)
+            {
+                Application.Current.Resources.MergedDictionaries.Remove(currentTheme);
+            }
+
+            if (newTheme != null)
+            {
+                Application.Current.Resources.MergedDictionaries.Add(newTheme);
+            }
         }
     }
 }

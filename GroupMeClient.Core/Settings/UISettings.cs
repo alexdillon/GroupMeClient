@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Subjects;
 using GroupMeClient.Core.Services;
+using GroupMeClient.Core.Settings.Themes;
 using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;

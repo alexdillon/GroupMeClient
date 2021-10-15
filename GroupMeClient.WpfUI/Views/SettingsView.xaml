@@ -4,7 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
-             xmlns:settings="clr-namespace:GroupMeClient.Core.Settings;assembly=GroupMeClient.Core"
+             xmlns:themes="clr-namespace:GroupMeClient.Core.Settings.Themes;assembly=GroupMeClient.Core"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" 
              xmlns:controls1="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
              xmlns:resx="clr-namespace:GroupMeClient.WpfUI.Properties"
@@ -69,7 +69,7 @@
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <TextBlock Text="Theme: " Padding="5" />
                             <ComboBox MinWidth="150"
-                                      ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type settings:ThemeOptions}}}"
+                                      ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type themes:ThemeOptions}}}"
                                       SelectedValue="{Binding Theme}"/> 
                         </StackPanel>
                     </StackPanel>
