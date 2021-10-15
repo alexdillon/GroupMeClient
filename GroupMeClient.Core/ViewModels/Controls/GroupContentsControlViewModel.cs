@@ -42,7 +42,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private bool showDisplayOptions;
         private bool showPluginOptions;
         private bool isMarkdownMode;
-        public bool isFocused;
+        private bool isFocused;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.

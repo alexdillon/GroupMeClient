@@ -76,6 +76,7 @@
     <Compile Include="Converters\Core\LikeStatusToBool.cs" />
     <Compile Include="Converters\Core\GMDCInlineToWPFInline.cs" />
     <Compile Include="Converters\Core\LikeStatusToIcon.cs" />
+    <Compile Include="Extensions\FocusedUserControl.cs" />
     <Compile Include="Extensions\InputBindingBehavior.cs" />
     <Compile Include="Converters\PlusOneConverter.cs" />
     <Compile Include="Extensions\CopyableHyperlink.cs" />
