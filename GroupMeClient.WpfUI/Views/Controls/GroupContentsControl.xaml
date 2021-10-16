@@ -1,15 +1,16 @@
-﻿<UserControl x:Class="GroupMeClient.WpfUI.Views.Controls.GroupContentsControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
-             xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-             mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="500">
+﻿<extensions:FocusedUserControl 
+    x:Class="GroupMeClient.WpfUI.Views.Controls.GroupContentsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
+    xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    mc:Ignorable="d"
+    d:DesignHeight="700" d:DesignWidth="500">
 
     <UserControl.Resources>
         <Style x:Key="bottomBarButtonStyle" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button">
@@ -43,6 +44,15 @@
                     Gesture="CTRL+W" />
     </UserControl.InputBindings>
 
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="ContainsKeyboardFocusChanged" >
+            <behaviors:ChangePropertyAction 
+                TargetObject="{Binding .}" 
+                PropertyName="IsFocused"
+                Value="{Binding IsKeyboardFocusWithin, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -178,10 +188,10 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                <Border BorderThickness="0"
-                                        x:Name="highlightBorder"
+                                <Border x:Name="highlightBorder"
                                         Margin="0" >
                                     <ContentPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                                      x:Name="PART_MessageListBoxItem_Presenter"
                                                       Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:GroupContentsControl}}}">
                                         <ContentPresenter.ContextMenu>
                                             <ContextMenu>
@@ -196,6 +206,21 @@
                                             </ContextMenu>
                                         </ContentPresenter.ContextMenu>
                                     </ContentPresenter>
+
+                                    <Border.Style>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="BorderThickness" Value="0"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            
+                                            <Style.Triggers>
+                                                <!--Border around selected (right clicked) message if accessibility border is turned on-->
+                                                <DataTrigger Binding="{Binding ElementName=PART_MessageListBoxItem_Presenter, Path=ContextMenu.IsOpen}" Value="True">
+                                                    <Setter Property="BorderThickness" Value="{DynamicResource GMDC.Accessibility.MessageFocus.BorderThickness}"/>
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource GMDC.Accessibility.MessageFocus.BorderBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                 </Border>
 
                                 <ControlTemplate.Triggers>
@@ -486,4 +511,4 @@
                         Grid.ColumnSpan="1"
                         DataContext="{Binding SmallDialogManager}" />
     </Grid>
-</UserControl>
+</extensions:FocusedUserControl>

@@ -76,6 +76,7 @@
     <Compile Include="Converters\Core\LikeStatusToBool.cs" />
     <Compile Include="Converters\Core\GMDCInlineToWPFInline.cs" />
     <Compile Include="Converters\Core\LikeStatusToIcon.cs" />
+    <Compile Include="Extensions\FocusedUserControl.cs" />
     <Compile Include="Extensions\InputBindingBehavior.cs" />
     <Compile Include="Converters\PlusOneConverter.cs" />
     <Compile Include="Extensions\CopyableHyperlink.cs" />
@@ -245,7 +246,27 @@
     <Compile Include="Views\WindowHost.xaml.cs">
       <DependentUpon>WindowHost.xaml</DependentUpon>
     </Compile>
-    <Page Include="Styles\GMDCGlobalResources.xaml">
+    <Page Include="Resources\Accessibility\GMDC.Accessibility.ChatFocus.Bar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Accessibility\GMDC.Accessibility.ChatFocus.Border.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Accessibility\GMDC.Accessibility.MessageFocus.None.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Accessibility\GMDC.Accessibility.MessageFocus.Border.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Resources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\GMDCGlobalResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -273,11 +294,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Styles\GroupMeDark.xaml">
+    <Page Include="Resources\Themes\GMDC.Colors.Dark.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Styles\GroupMeLight.xaml">
+    <Page Include="Resources\Themes\GMDC.Colors.Light.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -310,6 +331,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Plugins\Views\ImageGalleryWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

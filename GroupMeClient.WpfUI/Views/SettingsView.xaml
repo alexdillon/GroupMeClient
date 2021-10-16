@@ -4,7 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
-             xmlns:settings="clr-namespace:GroupMeClient.Core.Settings;assembly=GroupMeClient.Core"
+             xmlns:themes="clr-namespace:GroupMeClient.Core.Settings.Themes;assembly=GroupMeClient.Core"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" 
              xmlns:controls1="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
              xmlns:resx="clr-namespace:GroupMeClient.WpfUI.Properties"
@@ -65,13 +65,35 @@
                             <Slider Width="265" Minimum="0.50" Maximum="1.50" Value="{Binding ScalingFactorForMessages, Mode=TwoWay}" TickPlacement="BottomRight" TickFrequency="0.10" />
                         </StackPanel>
 
-
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                             <TextBlock Text="Theme: " Padding="5" />
                             <ComboBox MinWidth="150"
-                                      ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type settings:ThemeOptions}}}"
+                                      ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type themes:ThemeOptions}}}"
                                       SelectedValue="{Binding Theme}"/> 
                         </StackPanel>
+
+                        <Expander Header="Accessibility Settings" Margin="0,5,0,0">
+                            <Expander.Style>
+                                <Style TargetType="Expander">
+                                </Style>
+                            </Expander.Style>
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Chat Focus: " Padding="5" Width="100" />
+                                    <ComboBox MinWidth="150"
+                                              ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type themes:AccessibilityChatFocusOptions}}}"
+                                              SelectedValue="{Binding AccessibilityChatFocusOption}"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                    <TextBlock Text="Message Focus: " Padding="5" Width="100" />
+                                    <ComboBox MinWidth="150"
+                                              ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type themes:AccessibilityMessageFocusOptions}}}"
+                                              SelectedValue="{Binding AccessibilityMessageFocusOption}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Expander>
+                        
                     </StackPanel>
                 </GroupBox>
 

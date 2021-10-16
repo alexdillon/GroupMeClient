@@ -308,8 +308,8 @@
 
     <DataTemplate x:Key="NestedWithDropDown" >
         <Expander IsExpanded="{Binding NestLevel, Mode=OneWay, FallbackValue={StaticResource True}, Converter={StaticResource isDeeplyNestedConverter}, ConverterParameter={StaticResource collapseNestLevel}}"
-                      Content="{Binding}"
-                      ContentTemplate="{StaticResource MessageBody}">
+                  Content="{Binding}"
+                  ContentTemplate="{StaticResource MessageBody}">
 
             <Expander.Style>
                 <Style TargetType="Expander">

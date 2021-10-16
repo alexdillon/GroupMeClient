@@ -175,7 +175,7 @@ namespace GroupMeClient.Core.ViewModels
         /// <summary>
         /// Gets or sets a value indicating which UI theme should be applied.
         /// </summary>
-        public Settings.ThemeOptions Theme
+        public Settings.Themes.ThemeOptions Theme
         {
             get => this.SettingsManager.UISettings.Theme;
             set
@@ -183,6 +183,34 @@ namespace GroupMeClient.Core.ViewModels
                 this.SettingsManager.UISettings.Theme = value;
                 this.SettingsManager.SaveSettings();
                 this.OnPropertyChanged(nameof(this.Theme));
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating which accessibility option should be applied for chat focus.
+        /// </summary>
+        public Settings.Themes.AccessibilityChatFocusOptions AccessibilityChatFocusOption
+        {
+            get => this.SettingsManager.UISettings.AccessibilityChatFocusOption;
+            set
+            {
+                this.SettingsManager.UISettings.AccessibilityChatFocusOption = value;
+                this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.AccessibilityChatFocusOption));
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating which accessibility option should be applied for message focus.
+        /// </summary>
+        public Settings.Themes.AccessibilityMessageFocusOptions AccessibilityMessageFocusOption
+        {
+            get => this.SettingsManager.UISettings.AccessibilityMessageFocusOption;
+            set
+            {
+                this.SettingsManager.UISettings.AccessibilityMessageFocusOption = value;
+                this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.AccessibilityMessageFocusOption));
             }
         }
 

@@ -79,7 +79,6 @@
                    TextAlignment="Center"
                    Height="30"
                    Width="30"
-                   
                    Padding="0,7,0,0"
                    Text="{Binding TotalUnreadCount}"
                    Foreground="White"
@@ -114,6 +113,9 @@
                 </VisualBrush>
             </TextBlock.Background>
         </TextBlock>
+        
+        <!--Highlight Indicator (shows the focused chat)-->
+        <ContentControl Template="{DynamicResource GMDC.Accessibility.ChatFocus}" />
     </Grid>
 
 </UserControl>

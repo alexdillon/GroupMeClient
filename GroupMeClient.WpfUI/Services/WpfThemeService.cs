@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using GroupMeClient.Core.Services;
-using GroupMeClient.Core.Settings;
-using MahApps.Metro;
+using GroupMeClient.Core.Settings.Themes;
 
 namespace GroupMeClient.WpfUI.Services
 {
@@ -11,43 +11,30 @@ namespace GroupMeClient.WpfUI.Services
     /// </summary>
     public class WpfThemeService : IThemeService
     {
-        private readonly ResourceDictionary groupMeLightTheme = new ResourceDictionary()
+        private string GMDCColorThemePrefix => "GMDC.Colors";
+
+        private Dictionary<ThemeOptions, ResourceDictionary> GMDCColorThemes { get; } = new Dictionary<ThemeOptions, ResourceDictionary>()
         {
-            Source = new Uri("pack://application:,,,/Styles/GroupMeLight.xaml"),
+            { ThemeOptions.Light, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.Colors.Light.xaml") } },
+            { ThemeOptions.Dark, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.Colors.Dark.xaml") } },
         };
 
-        private readonly ResourceDictionary groupMeDarkTheme = new ResourceDictionary()
+        private string GMDCAccessibilityChatFocusPrefix => "GMDC.Accessibility.ChatFocus";
+
+        private Dictionary<AccessibilityChatFocusOptions, ResourceDictionary> GMDCAccessibilityChatFocus { get; } = new Dictionary<AccessibilityChatFocusOptions, ResourceDictionary>()
         {
-            Source = new Uri("pack://application:,,,/Styles/GroupMeDark.xaml"),
+            { AccessibilityChatFocusOptions.None, null },
+            { AccessibilityChatFocusOptions.Bar, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.ChatFocus.Bar.xaml") } },
+            { AccessibilityChatFocusOptions.Border, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.ChatFocus.Border.xaml") } },
         };
 
-        private ResourceDictionary currentGroupMeTheme = null;
+        private string GMDCAccessibilityMessageFocusPrefix => "GMDC.Accessibility.MessageFocus";
 
-        private ResourceDictionary CurrentGroupMeTheme
+        private Dictionary<AccessibilityMessageFocusOptions, ResourceDictionary> GMDCAccessibilityMessageFocus { get; } = new Dictionary<AccessibilityMessageFocusOptions, ResourceDictionary>()
         {
-            get
-            {
-                if (this.currentGroupMeTheme == null)
-                {
-                    foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
-                    {
-                        if (dictionary.Source?.ToString().Contains("GroupMe") ?? false)
-                        {
-                            this.currentGroupMeTheme = dictionary;
-                        }
-                    }
-                }
-
-                return this.currentGroupMeTheme;
-            }
-
-            set
-            {
-                Application.Current.Resources.MergedDictionaries.Remove(this.CurrentGroupMeTheme);
-                Application.Current.Resources.MergedDictionaries.Add(value);
-                this.currentGroupMeTheme = value;
-            }
-        }
+            { AccessibilityMessageFocusOptions.None, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.MessageFocus.None.xaml") } },
+            { AccessibilityMessageFocusOptions.Border, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.MessageFocus.Border.xaml") } },
+        };
 
         /// <inheritdoc/>
         public void Initialize()
@@ -79,12 +66,30 @@ namespace GroupMeClient.WpfUI.Services
         }
 
         /// <summary>
+        /// Updates the current accessibility theming for the indicator that is applied to focused chats.
+        /// </summary>
+        /// <param name="option">The new option to apply.</param>
+        public void UpdateTheme(AccessibilityChatFocusOptions option)
+        {
+            this.ChangeTheme(this.GMDCAccessibilityChatFocusPrefix, this.GMDCAccessibilityChatFocus[option]);
+        }
+
+        /// <summary>
+        /// Updates the current accessibility theming for the indicator that is applied to selected messages.
+        /// </summary>
+        /// <param name="option">The new option to apply.</param>
+        public void UpdateTheme(AccessibilityMessageFocusOptions option)
+        {
+            this.ChangeTheme(this.GMDCAccessibilityMessageFocusPrefix, this.GMDCAccessibilityMessageFocus[option]);
+        }
+
+        /// <summary>
         /// Applies the light mode theme.
         /// </summary>
         private void SetLightTheme()
         {
             ControlzEx.Theming.ThemeManager.Current.ChangeTheme(Application.Current, "Light.Cyan");
-            this.CurrentGroupMeTheme = this.groupMeLightTheme;
+            this.ChangeTheme(this.GMDCColorThemePrefix, this.GMDCColorThemes[ThemeOptions.Light]);
         }
 
         /// <summary>
@@ -93,7 +98,7 @@ namespace GroupMeClient.WpfUI.Services
         private void SetDarkTheme()
         {
             ControlzEx.Theming.ThemeManager.Current.ChangeTheme(Application.Current, "Dark.Cyan");
-            this.CurrentGroupMeTheme = this.groupMeDarkTheme;
+            this.ChangeTheme(this.GMDCColorThemePrefix, this.GMDCColorThemes[ThemeOptions.Dark]);
         }
 
         /// <summary>
@@ -117,6 +122,29 @@ namespace GroupMeClient.WpfUI.Services
         private void Windows_ThemeChangedEvent()
         {
             this.SetSystemTheme();
+        }
+
+        private void ChangeTheme(string themePrefix, ResourceDictionary newTheme)
+        {
+            ResourceDictionary currentTheme = null;
+
+            foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
+            {
+                if (dictionary.Source?.ToString().Contains(themePrefix) ?? false)
+                {
+                    currentTheme = dictionary;
+                }
+            }
+
+            if (currentTheme != null)
+            {
+                Application.Current.Resources.MergedDictionaries.Remove(currentTheme);
+            }
+
+            if (newTheme != null)
+            {
+                Application.Current.Resources.MergedDictionaries.Add(newTheme);
+            }
         }
     }
 }

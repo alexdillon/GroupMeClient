@@ -42,6 +42,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private bool showDisplayOptions;
         private bool showPluginOptions;
         private bool isMarkdownMode;
+        private bool isFocused;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -308,6 +309,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             get => this.isMarkdownMode;
             private set => this.SetProperty(ref this.isMarkdownMode, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this chat currently has input focus.
+        /// </summary>
+        public bool IsFocused
+        {
+            get => this.isFocused;
+            set => this.SetProperty(ref this.isFocused, value);
         }
 
         /// <summary>

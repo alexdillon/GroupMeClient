@@ -370,6 +370,12 @@ namespace GroupMeClient.Core.ViewModels
                     RegisterAsMiniChat = new RelayCommand<GroupContentsControlViewModel>(this.RegisterMiniChat),
                 };
 
+                groupContentsDisplay.ObservableForProperty(x => x.IsFocused)
+                    .Subscribe(prop =>
+                    {
+                        group.IsHighlighted = prop.Value;
+                    });
+
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
 
                 Task.Run(async () => await this.PushClient.SubscribeAsync(group.MessageContainer));

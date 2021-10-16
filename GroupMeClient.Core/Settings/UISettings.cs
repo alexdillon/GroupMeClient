@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Subjects;
 using GroupMeClient.Core.Services;
+using GroupMeClient.Core.Settings.Themes;
 using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -13,6 +14,10 @@ namespace GroupMeClient.Core.Settings
     public class UISettings
     {
         private readonly BehaviorSubject<ThemeOptions> theme = new BehaviorSubject<ThemeOptions>(ThemeOptions.Default);
+
+        private readonly BehaviorSubject<AccessibilityChatFocusOptions> accessibilityChatFocusOption = new BehaviorSubject<AccessibilityChatFocusOptions>(AccessibilityChatFocusOptions.None);
+
+        private readonly BehaviorSubject<AccessibilityMessageFocusOptions> accessibilityMessageFocusOptions = new BehaviorSubject<AccessibilityMessageFocusOptions>(AccessibilityMessageFocusOptions.None);
 
         /// <summary>
         /// Gets or sets a value indicating whether messages containing mutliple images are shown as previews.
@@ -84,6 +89,36 @@ namespace GroupMeClient.Core.Settings
             set
             {
                 this.theme.OnNext(value);
+                var themeService = Ioc.Default.GetService<IThemeService>();
+                themeService.UpdateTheme(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the user selected accessibility option that is applied to focused chats.
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public AccessibilityChatFocusOptions AccessibilityChatFocusOption
+        {
+            get => this.accessibilityChatFocusOption.Value;
+            set
+            {
+                this.accessibilityChatFocusOption.OnNext(value);
+                var themeService = Ioc.Default.GetService<IThemeService>();
+                themeService.UpdateTheme(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the user selected accessibility option that is applied to selected messages.
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public AccessibilityMessageFocusOptions AccessibilityMessageFocusOption
+        {
+            get => this.accessibilityMessageFocusOptions.Value;
+            set
+            {
+                this.accessibilityMessageFocusOptions.OnNext(value);
                 var themeService = Ioc.Default.GetService<IThemeService>();
                 themeService.UpdateTheme(value);
             }
