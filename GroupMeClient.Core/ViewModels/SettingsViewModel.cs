@@ -200,6 +200,20 @@ namespace GroupMeClient.Core.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating which accessibility option should be applied for message focus.
+        /// </summary>
+        public Settings.Themes.AccessibilityMessageFocusOptions AccessibilityMessageFocusOption
+        {
+            get => this.SettingsManager.UISettings.AccessibilityMessageFocusOption;
+            set
+            {
+                this.SettingsManager.UISettings.AccessibilityMessageFocusOption = value;
+                this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.AccessibilityMessageFocusOption));
+            }
+        }
+
         private Settings.SettingsManager SettingsManager { get; }
 
         private IUpdateService UpdateAssist { get; }

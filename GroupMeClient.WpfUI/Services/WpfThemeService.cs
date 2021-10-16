@@ -28,6 +28,14 @@ namespace GroupMeClient.WpfUI.Services
             { AccessibilityChatFocusOptions.Border, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.ChatFocus.Border.xaml") } },
         };
 
+        private string GMDCAccessibilityMessageFocusPrefix => "GMDC.Accessibility.MessageFocus";
+
+        private Dictionary<AccessibilityMessageFocusOptions, ResourceDictionary> GMDCAccessibilityMessageFocus { get; } = new Dictionary<AccessibilityMessageFocusOptions, ResourceDictionary>()
+        {
+            { AccessibilityMessageFocusOptions.None, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.MessageFocus.None.xaml") } },
+            { AccessibilityMessageFocusOptions.Border, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.MessageFocus.Border.xaml") } },
+        };
+
         /// <inheritdoc/>
         public void Initialize()
         {
@@ -64,6 +72,15 @@ namespace GroupMeClient.WpfUI.Services
         public void UpdateTheme(AccessibilityChatFocusOptions option)
         {
             this.ChangeTheme(this.GMDCAccessibilityChatFocusPrefix, this.GMDCAccessibilityChatFocus[option]);
+        }
+
+        /// <summary>
+        /// Updates the current accessibility theming for the indicator that is applied to selected messages.
+        /// </summary>
+        /// <param name="option">The new option to apply.</param>
+        public void UpdateTheme(AccessibilityMessageFocusOptions option)
+        {
+            this.ChangeTheme(this.GMDCAccessibilityMessageFocusPrefix, this.GMDCAccessibilityMessageFocus[option]);
         }
 
         /// <summary>

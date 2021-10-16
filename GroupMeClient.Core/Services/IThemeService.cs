@@ -1,5 +1,4 @@
-﻿using GroupMeClient.Core.Settings;
-using GroupMeClient.Core.Settings.Themes;
+﻿using GroupMeClient.Core.Settings.Themes;
 
 namespace GroupMeClient.Core.Services
 {
@@ -24,5 +23,11 @@ namespace GroupMeClient.Core.Services
         /// </summary>
         /// <param name="option">The new option to apply.</param>
         void UpdateTheme(AccessibilityChatFocusOptions option);
+
+        /// <summary>
+        /// Updates the current accessibility theming for the indicator that is applied to selected messages.
+        /// </summary>
+        /// <param name="option">The new option to apply.</param>
+        void UpdateTheme(AccessibilityMessageFocusOptions option);
     }
 }

@@ -17,6 +17,8 @@ namespace GroupMeClient.Core.Settings
 
         private readonly BehaviorSubject<AccessibilityChatFocusOptions> accessibilityChatFocusOption = new BehaviorSubject<AccessibilityChatFocusOptions>(AccessibilityChatFocusOptions.None);
 
+        private readonly BehaviorSubject<AccessibilityMessageFocusOptions> accessibilityMessageFocusOptions = new BehaviorSubject<AccessibilityMessageFocusOptions>(AccessibilityMessageFocusOptions.None);
+
         /// <summary>
         /// Gets or sets a value indicating whether messages containing mutliple images are shown as previews.
         /// GroupMe UWP and Web display small-resolution preview versions when multiple images are contained in a single message.
@@ -102,6 +104,21 @@ namespace GroupMeClient.Core.Settings
             set
             {
                 this.accessibilityChatFocusOption.OnNext(value);
+                var themeService = Ioc.Default.GetService<IThemeService>();
+                themeService.UpdateTheme(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the user selected accessibility option that is applied to selected messages.
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public AccessibilityMessageFocusOptions AccessibilityMessageFocusOption
+        {
+            get => this.accessibilityMessageFocusOptions.Value;
+            set
+            {
+                this.accessibilityMessageFocusOptions.OnNext(value);
                 var themeService = Ioc.Default.GetService<IThemeService>();
                 themeService.UpdateTheme(value);
             }

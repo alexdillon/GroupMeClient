@@ -79,10 +79,17 @@
                             </Expander.Style>
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                    <TextBlock Text="Chat Focus: " Padding="5" />
+                                    <TextBlock Text="Chat Focus: " Padding="5" Width="100" />
                                     <ComboBox MinWidth="150"
-                                      ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type themes:AccessibilityChatFocusOptions}}}"
-                                      SelectedValue="{Binding AccessibilityChatFocusOption}"/>
+                                              ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type themes:AccessibilityChatFocusOptions}}}"
+                                              SelectedValue="{Binding AccessibilityChatFocusOption}"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                    <TextBlock Text="Message Focus: " Padding="5" Width="100" />
+                                    <ComboBox MinWidth="150"
+                                              ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type themes:AccessibilityMessageFocusOptions}}}"
+                                              SelectedValue="{Binding AccessibilityMessageFocusOption}"/>
                                 </StackPanel>
                             </StackPanel>
                         </Expander>
