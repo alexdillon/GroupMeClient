@@ -521,7 +521,7 @@ namespace GroupMeClient.Core.ViewModels
 
         private void OpenTopChatHandler(object indexObj)
         {
-            int index = 0;
+            int index;
             if (indexObj is int i)
             {
                 index = i;
