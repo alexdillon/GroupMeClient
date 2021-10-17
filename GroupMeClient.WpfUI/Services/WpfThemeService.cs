@@ -24,6 +24,10 @@ namespace GroupMeClient.WpfUI.Services
 
         private bool IsLightTheme { get; set; } = true;
 
+        private string GMDCDynamicColorsPrefix => "GMDC.BaseColors";
+
+        private ResourceDictionary GMDCDynamicColors => new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.BaseColors.xaml") };
+
         private string GMDCColorThemePrefix => "GMDC.Colors";
 
         private Dictionary<ThemeOptions, ResourceDictionary> GMDCColorThemes { get; } = new Dictionary<ThemeOptions, ResourceDictionary>()
@@ -245,6 +249,23 @@ namespace GroupMeClient.WpfUI.Services
             {
                 Application.Current.Resources.MergedDictionaries.Add(targetStyle);
             }
+
+            this.ResetDynamicBaseColors();
+        }
+
+        private void ResetDynamicBaseColors()
+        {
+            // Remove the existing custom style
+            foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
+            {
+                if (dictionary.Source?.ToString().Contains(this.GMDCDynamicColorsPrefix) ?? false)
+                {
+                    Application.Current.Resources.MergedDictionaries.Remove(dictionary);
+                    break;
+                }
+            }
+
+            Application.Current.Resources.MergedDictionaries.Add(this.GMDCDynamicColors);
         }
     }
 }

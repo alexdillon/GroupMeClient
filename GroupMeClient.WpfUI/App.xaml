@@ -25,7 +25,11 @@
 
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
 
-                <ResourceDictionary Source="pack://application:,,,/Resources/Resources.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Resources/GMDCGlobalResources.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/Resources/Themes/GMDC.BaseColors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Resources/Themes/GMDC.Colors.Light.xaml" />
+                
                 <ResourceDictionary Source="pack://application:,,,/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
