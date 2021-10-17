@@ -27,7 +27,6 @@
 
                 <ResourceDictionary Source="pack://application:,,,/Resources/Resources.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/Styles.xaml" />
-                
             </ResourceDictionary.MergedDictionaries>
 
             <!--
