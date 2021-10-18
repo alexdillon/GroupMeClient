@@ -4,12 +4,12 @@
 
     <Style BasedOn="{StaticResource {x:Type Hyperlink}}"
            TargetType="{x:Type extensions:CopyableHyperlink}">
-        <Setter Property="Foreground" Value="#0066CC" />
+        <Setter Property="Foreground" Value="{DynamicResource HyperlinkBrush}" />
         <Setter Property="TextDecorations" Value="Underline" />
 
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="#FF0000" />
+                <Setter Property="Foreground" Value="{DynamicResource HyperlinkBrush.Hover}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />

@@ -105,7 +105,7 @@
                     BorderThickness="0"
                     Command="{Binding Path=CloseGroup}"
                     CommandParameter="{Binding Path=.}">
-                <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
+                <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" Kind="X"/>
 
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
@@ -147,7 +147,7 @@
             </Button>
 
             <!--Top Bar Underline-->
-            <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1"/>
+            <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1"/>
         </Grid>
 
         <!--Messages List-->
@@ -226,7 +226,7 @@
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="true">
                                         <Setter TargetName="highlightBorder" Property="BorderThickness" Value="3"/>
-                                        <Setter TargetName="highlightBorder" Property="BorderBrush" Value="#1873BA"/>
+                                        <Setter TargetName="highlightBorder" Property="BorderBrush" Value="{DynamicResource SelectionBorderBrush}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -405,8 +405,8 @@
                   MaxHeight="100" 
                   Visibility="{Binding MessageBeingRepliedTo, Converter={StaticResource nullToVisibilityConverter}, ConverterParameter={StaticResource True}}"
                   Background="{DynamicResource MahApps.Brushes.Control.Background}">
-          
-                <Border CornerRadius="2" BorderBrush="#637182" BorderThickness="2,2,2,0">
+
+                <Border CornerRadius="2" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="2,2,2,0">
                     <Border CornerRadius="3" BorderBrush="{DynamicResource InProgressReplyBrush}" Margin="5,5,5,3" BorderThickness="2,2,2,2">
                         <UserControl Content="{Binding MessageBeingRepliedTo}"
                                      Background="{DynamicResource InProgressReplyBrush}"/>

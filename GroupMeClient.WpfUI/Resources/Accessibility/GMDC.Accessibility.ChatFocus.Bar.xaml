@@ -4,13 +4,12 @@
     <ControlTemplate x:Key="GMDC.Accessibility.ChatFocus">
         <Border HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                Background="#1873BA"
-                BorderBrush="#1873BA"
+                Background="{DynamicResource SelectionBorderBrush}"
+                BorderBrush="{DynamicResource SelectionBorderBrush}"
                 CornerRadius="3"
                 Width="5"
                 Height="50"
                 Margin="5,-9,0,0"
-                Visibility="{Binding IsHighlighted, Converter={StaticResource BooleanToVisibilityConverter}}"
-               />
+                Visibility="{Binding IsHighlighted, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </ControlTemplate>
 </ResourceDictionary>

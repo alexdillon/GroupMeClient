@@ -12,6 +12,7 @@
     <Color x:Key="GroupsSidebarFontColor">#637182</Color>
     <Color x:Key="ScrollToBottomButtonColor">#637182</Color>
     <Color x:Key="SidebarColor">#1873BA</Color>
+    <Color x:Key="SidebarColor.Hover">#1584C7</Color>
     <Color x:Key="PluginButtonFontColor">#414A59</Color>
     <Color x:Key="MessageISentBackdropColor">#DBF4FD</Color>
     <Color x:Key="MessageTheySentBackdropColor">#F7F7F7</Color>
@@ -24,4 +25,8 @@
     <Color x:Key="FileIconColor">#1873BA</Color>
     <Color x:Key="InProgressReplyColor">#DDDDDD</Color>
     <Color x:Key="CodeSpanShadeColor">#ffd3d3d3</Color>
+    <Color x:Key="SelectionBorderColor">#1873BA</Color>
+    <Color x:Key="HyperlinkColor">#0066CC</Color>
+    <Color x:Key="HyperlinkColor.Hover">#FF0000</Color>
+    <Color x:Key="UnreadBadgeColor">#1873BA</Color>
 </ResourceDictionary>

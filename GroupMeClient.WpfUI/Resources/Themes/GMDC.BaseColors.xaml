@@ -8,6 +8,7 @@
     <SolidColorBrush options:Freeze="True" x:Key="GroupsSidebarFontBrush" Color="{DynamicResource GroupsSidebarFontColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="ScrollToBottomButtonBrush" Color="{DynamicResource ScrollToBottomButtonColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="SidebarBrush" Color="{DynamicResource SidebarColor}"/>
+    <SolidColorBrush options:Freeze="True" x:Key="SidebarBrush.Hover" Color="{DynamicResource SidebarColor.Hover}"/>
     <SolidColorBrush options:Freeze="True" x:Key="PluginButtonFontBrush" Color="{DynamicResource PluginButtonFontColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="MessageISentBackdropBrush" Color="{DynamicResource MessageISentBackdropColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="MessageTheySentBackdropBrush" Color="{DynamicResource MessageTheySentBackdropColor}"/>
@@ -20,5 +21,9 @@
     <SolidColorBrush options:Freeze="True" x:Key="FileIconBrush" Color="{DynamicResource FileIconColor}" />
     <SolidColorBrush options:Freeze="True" x:Key="InProgressReplyBrush" Color="{DynamicResource InProgressReplyColor}" />
     <SolidColorBrush options:Freeze="True" x:Key="CodeSpanShadeBrush" Color="{DynamicResource CodeSpanShadeColor}" />
+    <SolidColorBrush options:Freeze="True" x:Key="SelectionBorderBrush" Color="{DynamicResource SelectionBorderColor}" />
+    <SolidColorBrush options:Freeze="True" x:Key="HyperlinkBrush" Color="{DynamicResource HyperlinkColor}" />
+    <SolidColorBrush options:Freeze="True" x:Key="HyperlinkBrush.Hover" Color="{DynamicResource HyperlinkColor.Hover}" />
+    <SolidColorBrush options:Freeze="True" x:Key="UnreadBadgeBrush" Color="{DynamicResource UnreadBadgeColor}" />
 
 </ResourceDictionary>

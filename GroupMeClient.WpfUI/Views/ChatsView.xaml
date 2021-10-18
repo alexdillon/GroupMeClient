@@ -149,7 +149,7 @@
                                   extensions:EventButtonFocusExtensions.ElementToFocus="{Binding ElementName=searchTextBox}">
                         <ToggleButton.ContentTemplate>
                             <DataTemplate>
-                                <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="#637182" Kind="Magnify"/>
+                                <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" Kind="Magnify"/>
                             </DataTemplate>
                         </ToggleButton.ContentTemplate>
                     </ToggleButton>
@@ -157,7 +157,7 @@
                     <Button Grid.Column="3"
                             Width="35" Height="35"
                             BorderThickness="0"
-                            Foreground="#637182"
+                            Foreground="{DynamicResource DividerLineBrush}"
                             Style="{DynamicResource MahApps.Styles.Button}"
                             ToolTip="Mark All Messages as Read"
                             Margin="5,0,0,0"
