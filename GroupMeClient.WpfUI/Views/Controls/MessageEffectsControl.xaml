@@ -121,7 +121,7 @@
                     Command="{Binding Path=UpdateMessage}">
                 <Button.ContentTemplate>
                     <DataTemplate>
-                        <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" Kind="KeyboardReturn"/>
+                        <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="{DynamicResource ButtonGlyphBrush}" Kind="KeyboardReturn"/>
                     </DataTemplate>
                 </Button.ContentTemplate>
             </Button>

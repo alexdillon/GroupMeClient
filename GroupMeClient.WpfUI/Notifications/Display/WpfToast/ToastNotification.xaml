@@ -46,7 +46,7 @@
                 CommandParameter="{Binding Path=.}">
             <Button.ContentTemplate>
                 <DataTemplate>
-                    <iconPacks:PackIconOcticons Width="8" Height="8" Foreground="{DynamicResource DividerLineBrush}" Kind="X"/>
+                    <iconPacks:PackIconOcticons Width="8" Height="8" Foreground="{DynamicResource ButtonGlyphBrush}" Kind="X"/>
                 </DataTemplate>
             </Button.ContentTemplate>
         </Button>

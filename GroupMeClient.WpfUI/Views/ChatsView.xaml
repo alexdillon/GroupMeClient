@@ -149,7 +149,7 @@
                                   extensions:EventButtonFocusExtensions.ElementToFocus="{Binding ElementName=searchTextBox}">
                         <ToggleButton.ContentTemplate>
                             <DataTemplate>
-                                <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" Kind="Magnify"/>
+                                <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="{DynamicResource ButtonGlyphBrush}" Kind="Magnify"/>
                             </DataTemplate>
                         </ToggleButton.ContentTemplate>
                     </ToggleButton>
@@ -165,7 +165,7 @@
 
                         <Button.ContentTemplate>
                             <DataTemplate>
-                                <iconPacks:PackIconEntypo Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" Kind="Unread"/>
+                                <iconPacks:PackIconEntypo Width="15" Height="15" Foreground="{DynamicResource ButtonGlyphBrush}" Kind="Unread"/>
                             </DataTemplate>
                         </Button.ContentTemplate>
                     </Button>
