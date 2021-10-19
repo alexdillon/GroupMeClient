@@ -88,7 +88,11 @@
     <Compile Include="Markdown\GMDCMarkdownStyle.cs" />
     <Compile Include="Markdown\GMDCXamlMarkdownWriter.cs" />
     <Compile Include="Native\WindowsThemeUtils.cs" />
+    <Compile Include="Notifications\Activation\ActivationHandler.cs" />
+    <Compile Include="Notifications\Activation\LaunchActions.cs" />
     <Compile Include="Notifications\Display\NativeDesktopNotificationProvider.cs" />
+    <Compile Include="Notifications\Activation\NotificationArguments.cs" />
+    <Compile Include="Notifications\Display\Win10\GMDCToastActivationHandler.cs" />
     <Compile Include="Plugins\ImageGalleryPlugin.cs" />
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Services\WpfClipboardService.cs" />
@@ -135,7 +139,6 @@
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\ScrollIntoViewForListBox.cs" />
     <Compile Include="Extensions\WebHyperlinkExtensions.cs" />
-    <Compile Include="Notifications\Display\Win10\GroupMeNotificationActivator.cs" />
     <Compile Include="Notifications\Display\WpfToast\ToastNotification.xaml.cs">
       <DependentUpon>ToastNotification.xaml</DependentUpon>
     </Compile>
@@ -144,6 +147,7 @@
     <Compile Include="Notifications\Display\Win10\Win10ToastNotificationsProvider.cs" />
     <Compile Include="SelectedItemToContentConverter.cs" />
     <Compile Include="Updates\UpdateAssist.cs" />
+    <Compile Include="Utilities\HashUtils.cs" />
     <Compile Include="Utilities\ImageUtils.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\WindowHostViewModel.cs" />

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.ViewModels;
+using GroupMeClient.WpfUI.Notifications.Activation;
+using GroupMeClient.WpfUI.Utilities;
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin.Notifications.Display;
 using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Microsoft.Toolkit.Uwp.Notifications;
-using Windows.Data.Xml.Dom;
-using Windows.UI.Notifications;
 
 namespace GroupMeClient.WpfUI.Notifications.Display.Win10
 {
@@ -27,44 +25,14 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
         /// <param name="settingsManager">The settings instance to use.</param>
         public Win10ToastNotificationsProvider(SettingsManager settingsManager)
         {
-            // Register AUMID and COM server (for Desktop Bridge apps, this no-ops)
-            DesktopNotificationManagerCompat.RegisterAumidAndComServer<GroupMeNotificationActivator>(ApplicationId);
-            DesktopNotificationManagerCompat.RegisterActivator<GroupMeNotificationActivator>();
+            this.ToastManager = ToastNotificationManagerCompat.CreateToastNotifier();
+            ToastNotificationManagerCompat.OnActivated += this.ToastNotificationManagerCompat_OnActivated;
 
             this.SettingsManager = settingsManager;
             this.ChatsViewModel = Ioc.Default.GetService<ChatsViewModel>();
         }
 
-        /// <summary>
-        /// <see cref="LaunchActions"/> define the actions that can be performed upon activation of a Windows 10 Notification.
-        /// </summary>
-        public enum LaunchActions
-        {
-            /// <summary>
-            /// The <see cref="Group"/> or <see cref="Chat"/> should be opened and displayed.
-            /// </summary>
-            ShowGroup,
-
-            /// <summary>
-            /// The <see cref="Member"/> should be liked.
-            /// </summary>
-            LikeMessage,
-
-            /// <summary>
-            /// A quick reply should be initiated.
-            /// </summary>
-            InitiateReplyMessage,
-
-            /// <summary>
-            /// A quick reply is completed and ready to send.
-            /// </summary>
-            SendReplyMessage,
-        }
-
-        /// <summary>
-        /// Gets the AUMID identifier used for Windows 10 Toast Notifications.
-        /// </summary>
-        public static string ApplicationId => "com.squirrel.GroupMeDesktopClient.GroupMeClient";
+        private ToastNotifierCompat ToastManager { get; }
 
         private bool HasPerformedCleanup { get; set; } = false;
 
@@ -79,188 +47,85 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
         /// <inheritdoc/>
         async Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar, string containerId)
         {
-            ToastContent toastContent = new ToastContent()
+            if (this.ShouldShowToast(containerId))
             {
-                Launch = $"action={LaunchActions.ShowGroup}&conversationId={containerId}",
-
-                Visual = new ToastVisual()
-                {
-                    BindingGeneric = new ToastBindingGeneric()
+                new ToastContentBuilder()
+                    .AddArgument(NotificationArguments.ConversationId, containerId)
+                    .AddText(title, AdaptiveTextStyle.Title)
+                    .AddText(body, AdaptiveTextStyle.Body)
+                    .AddAppLogoOverride(
+                        uri: new Uri(await this.DownloadImageToDiskCached(
+                                    image: avatarUrl,
+                                    isAvatar: true,
+                                    isRounded: roundedAvatar)),
+                        hintCrop: roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default)
+                    .Show(toast =>
                     {
-                        Children =
-                        {
-                            new AdaptiveText()
-                            {
-                                Text = title,
-                            },
-                            new AdaptiveText()
-                            {
-                                Text = body,
-                            },
-                        },
-                        AppLogoOverride = new ToastGenericAppLogo()
-                        {
-                            Source = await this.DownloadImageToDiskCached(
-                                image: avatarUrl,
-                                isAvatar: true,
-                                isRounded: roundedAvatar),
-                            HintCrop = roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default,
-                        },
-                    },
-                },
-            };
-
-            this.ShowToast(
-                toastContent: toastContent,
-                containerId: containerId);
+                        toast.Tag = Guid.NewGuid().ToString().Substring(0, 15);
+                        toast.Group = containerId;
+                    });
+            }
         }
 
         /// <inheritdoc/>
         async Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl, string containerId, string messageId)
         {
-            var avatar = await this.DownloadImageToDiskCached(
-                              image: avatarUrl,
-                              isAvatar: true,
-                              isRounded: roundedAvatar);
-
-            ToastActionsCustom actions = null;
-
-            if (this.SettingsManager.UISettings.EnableNotificationInteractions)
+            if (this.ShouldShowToast(containerId))
             {
-                var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
-                var source = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
+                var avatar = await this.DownloadImageToDiskCached(
+                                  image: avatarUrl,
+                                  isAvatar: true,
+                                  isRounded: roundedAvatar);
 
-                actions = new ToastActionsCustom()
-                {
-                    Buttons =
+                var toastBuilder = new ToastContentBuilder()
+                    .AddArgument(NotificationArguments.ConversationId, containerId)
+                    .AddArgument(NotificationArguments.MessageId, messageId)
+                    .AddText(title, AdaptiveTextStyle.Title)
+                    .AddText(body, AdaptiveTextStyle.Body)
+                    .AddInlineImage(new Uri(await this.DownloadImageToDiskCached(imageUrl)))
+                    .AddAppLogoOverride(
+                        uri: new Uri(avatar),
+                        hintCrop: roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default);
+
+                this.AddInteractiveElements(toastBuilder, containerId, avatar);
+
+                toastBuilder
+                    .Show(toast =>
                     {
-                        new ToastButton("Like", $"action={LaunchActions.LikeMessage}&conversationId={containerId}&messageId={messageId}")
-                        {
-                            ActivationType = ToastActivationType.Background,
-                        },
-
-                        new ToastButton("Reply", $"action={LaunchActions.InitiateReplyMessage}&conversationId={containerId}&messageId={messageId}&containerName={source.Name}&containerAvatar={avatar}")
-                        {
-                            ActivationType = ToastActivationType.Background,
-                            ActivationOptions = new ToastActivationOptions()
-                            {
-                                AfterActivationBehavior = ToastAfterActivationBehavior.PendingUpdate,
-                            },
-                        },
-                    },
-                };
+                        toast.Tag = $"{containerId}{messageId}";
+                        toast.Group = containerId;
+                    });
             }
-
-            ToastContent toastContent = new ToastContent()
-            {
-                Launch = $"action={LaunchActions.ShowGroup}&conversationId={containerId}",
-
-                Actions = actions,
-
-                Visual = new ToastVisual()
-                {
-                    BindingGeneric = new ToastBindingGeneric()
-                    {
-                        Children =
-                        {
-                            new AdaptiveText()
-                            {
-                                Text = title,
-                            },
-                            new AdaptiveText()
-                            {
-                                Text = body,
-                            },
-                            new AdaptiveImage()
-                            {
-                                 Source = await this.DownloadImageToDiskCached(imageUrl),
-                            },
-                        },
-                        AppLogoOverride = new ToastGenericAppLogo()
-                        {
-                            Source = avatar,
-                            HintCrop = roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default,
-                        },
-                    },
-                },
-            };
-
-            this.ShowToast(
-                toastContent: toastContent,
-                tag: $"{containerId}{messageId}",
-                containerId: containerId);
         }
 
         /// <inheritdoc/>
         async Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar, string containerId, string messageId)
         {
-            var avatar = await this.DownloadImageToDiskCached(
-                                image: avatarUrl,
-                                isAvatar: true,
-                                isRounded: roundedAvatar);
-
-            ToastActionsCustom actions = null;
-
-            if (this.SettingsManager.UISettings.EnableNotificationInteractions)
+            if (this.ShouldShowToast(containerId))
             {
-                var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
-                var source = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
+                var avatar = await this.DownloadImageToDiskCached(
+                                  image: avatarUrl,
+                                  isAvatar: true,
+                                  isRounded: roundedAvatar);
 
-                actions = new ToastActionsCustom()
-                {
-                    Buttons =
+                var toastBuilder = new ToastContentBuilder()
+                    .AddArgument(NotificationArguments.ConversationId, containerId)
+                    .AddArgument(NotificationArguments.MessageId, messageId)
+                    .AddText(title, AdaptiveTextStyle.Title)
+                    .AddText(body, AdaptiveTextStyle.Body)
+                    .AddAppLogoOverride(
+                        uri: new Uri(avatar),
+                        hintCrop: roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default);
+
+                this.AddInteractiveElements(toastBuilder, containerId, avatar);
+
+                toastBuilder
+                    .Show(toast =>
                     {
-                        new ToastButton("Like", $"action={LaunchActions.LikeMessage}&conversationId={containerId}&messageId={messageId}")
-                        {
-                            ActivationType = ToastActivationType.Background,
-                        },
-
-                        new ToastButton("Reply", $"action={LaunchActions.InitiateReplyMessage}&conversationId={containerId}&messageId={messageId}&containerName={source.Name}&containerAvatar={avatar}")
-                        {
-                            ActivationType = ToastActivationType.Background,
-                            ActivationOptions = new ToastActivationOptions()
-                            {
-                                AfterActivationBehavior = ToastAfterActivationBehavior.PendingUpdate,
-                            },
-                        },
-                    },
-                };
+                        toast.Tag = $"{containerId}{messageId}";
+                        toast.Group = containerId;
+                    });
             }
-
-            ToastContent toastContent = new ToastContent()
-            {
-                Launch = $"action={LaunchActions.ShowGroup}&conversationId={containerId}",
-
-                Actions = actions,
-
-                Visual = new ToastVisual()
-                {
-                    BindingGeneric = new ToastBindingGeneric()
-                    {
-                        Children =
-                        {
-                            new AdaptiveText()
-                            {
-                                Text = title,
-                            },
-                            new AdaptiveText()
-                            {
-                                Text = body,
-                            },
-                        },
-                        AppLogoOverride = new ToastGenericAppLogo()
-                        {
-                            Source = avatar,
-                            HintCrop = roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default,
-                        },
-                    },
-                },
-            };
-
-            this.ShowToast(
-                toastContent: toastContent,
-                tag: $"{containerId}{messageId}",
-                containerId: containerId);
         }
 
         /// <inheritdoc/>
@@ -269,7 +134,19 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
             this.GroupMeClient = client;
         }
 
-        private void ShowToast(ToastContent toastContent, string tag = "", string containerId = "")
+        private void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
+        {
+            ActivationHandler.HandleActivation(e.Argument, e.UserInput);
+        }
+
+        /// <summary>
+        /// Determines whether notifications should be shown for a given chat.
+        /// If the main GMDC window is active or the given chat is open as a MiniChat, UWP notifications
+        /// will be skipped.
+        /// </summary>
+        /// <param name="containerId">The ID of the group or chat generating the notification.</param>
+        /// <returns>A value indicating whether the notification should be shown.</returns>
+        private bool ShouldShowToast(string containerId)
         {
             bool isActive = false;
             Application.Current.Dispatcher.Invoke(() =>
@@ -285,29 +162,29 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
                 }
             });
 
-            if (isActive)
+            return !isActive;
+        }
+
+        private void AddInteractiveElements(ToastContentBuilder toastBuilder, string containerId, string avatarUri)
+        {
+            if (this.SettingsManager.UISettings.EnableNotificationInteractions)
             {
-                // don't show Windows 10 Notifications if the window is focused.
-                return;
+                var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
+                var source = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
+
+                toastBuilder
+                    .AddArgument(NotificationArguments.ContainerName, source.Name)
+                    .AddArgument(NotificationArguments.ContainerAvatar, avatarUri)
+                    .AddButton(new ToastButton()
+                        .SetContent("Like")
+                        .AddArgument(NotificationArguments.Action, LaunchActions.LikeMessage)
+                        .SetBackgroundActivation())
+                    .AddButton(new ToastButton()
+                        .SetContent("Reply")
+                        .AddArgument(NotificationArguments.Action, LaunchActions.InitiateReplyMessage)
+                        .SetBackgroundActivation()
+                        .SetAfterActivationBehavior(ToastAfterActivationBehavior.PendingUpdate));
             }
-
-            var doc = new XmlDocument();
-            doc.LoadXml(toastContent.GetContent());
-
-            if (string.IsNullOrEmpty(tag))
-            {
-                // Windows 10 likes to not show Toasts with a blank tag
-                tag = Guid.NewGuid().ToString().Substring(0, 15);
-            }
-
-            // And create the toast notification
-            var toast = new ToastNotification(doc)
-            {
-                Tag = tag,
-            };
-
-            // And then show it
-            DesktopNotificationManagerCompat.CreateToastNotifier().Show(toast);
         }
 
         private async Task<string> DownloadImageToDiskCached(string image, bool isAvatar = false, bool isRounded = false)
@@ -338,7 +215,7 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
                     }
                 }
 
-                string hashName = this.Hash(image) + ".png";
+                string hashName = HashUtils.SHA1Hash(image) + ".png";
                 string imagePath = Path.Combine(directory.FullName, hashName);
 
                 if (File.Exists(imagePath))
@@ -367,15 +244,6 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
             catch (Exception)
             {
                 return string.Empty;
-            }
-        }
-
-        private string Hash(string input)
-        {
-            using (var sha1Managed = new SHA1Managed())
-            {
-                var hash = sha1Managed.ComputeHash(Encoding.UTF8.GetBytes(input));
-                return string.Concat(hash.Select(b => b.ToString("x2")));
             }
         }
     }

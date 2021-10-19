@@ -36,7 +36,7 @@ namespace GroupMeClient.WpfUI
             services.AddSingleton<Core.Services.IPluginManagerService, Plugins.PluginManager>();
 
             // Register the app AUMID for taskbar grouping
-            Desktop.Native.Windows.TaskBar.SetCurrentProcessExplicitAppUserModelID(Notifications.Display.Win10.Win10ToastNotificationsProvider.ApplicationId);
+            Desktop.Native.Windows.TaskBar.SetCurrentProcessExplicitAppUserModelID(App.ApplicationId);
         }
     }
 }

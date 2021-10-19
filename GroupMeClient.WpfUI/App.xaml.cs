@@ -49,6 +49,11 @@ namespace GroupMeClient.WpfUI
         }
 
         /// <summary>
+        /// Gets the AUMID identifier used for Windows.
+        /// </summary>
+        public static string ApplicationId => "com.squirrel.GroupMeDesktopClient.GroupMeClient";
+
+        /// <summary>
         /// Gets the data root for the GMDC/WPF Application.
         /// </summary>
         public static string DataRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicroCube", "GroupMe Desktop Client");
