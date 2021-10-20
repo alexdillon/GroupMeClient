@@ -6,7 +6,6 @@ using GroupMeClient.Core.Settings;
 using GroupMeClient.WpfUI.Notifications.Activation;
 using GroupMeClientPlugin.Notifications.Display;
 using Notification.Wpf;
-using static GroupMeClient.WpfUI.Notifications.Display.Win10.Win10ToastNotificationsProvider;
 
 namespace GroupMeClient.WpfUI.Notifications.Display.Win7
 {

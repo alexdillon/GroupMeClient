@@ -7,8 +7,16 @@ using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace GroupMeClient.WpfUI.Notifications.Activation
 {
+    /// <summary>
+    /// Handler for activating the GMDC UI in response to a user action on a notification card.
+    /// </summary>
     public class ActivationHandler
     {
+        /// <summary>
+        /// Handles application activation when a notification is opened.
+        /// </summary>
+        /// <param name="arguments">The argument string associated with the selected notification or action.</param>
+        /// <param name="userInput">A dictionary of user inputs provided from the notification system.</param>
         public static void HandleActivation(string arguments, IDictionary<string, object> userInput)
         {
             Application.Current.Dispatcher.InvokeAsync(async () =>
