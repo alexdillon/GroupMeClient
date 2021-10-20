@@ -92,7 +92,6 @@
     <Compile Include="Notifications\Activation\LaunchActions.cs" />
     <Compile Include="Notifications\Display\NativeDesktopNotificationProvider.cs" />
     <Compile Include="Notifications\Activation\NotificationArguments.cs" />
-    <Compile Include="Notifications\Display\Win10\GMDCToastActivationHandler.cs" />
     <Compile Include="Plugins\ImageGalleryPlugin.cs" />
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Services\WpfClipboardService.cs" />

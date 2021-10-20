@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
 using GroupMeClient.Core.Settings;
@@ -49,17 +50,21 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
         {
             if (this.ShouldShowToast(containerId))
             {
-                new ToastContentBuilder()
+                var toastBuilder = new ToastContentBuilder();
+
+                this.AddGrouping(toastBuilder, title, containerId);
+
+                toastBuilder
                     .AddArgument(NotificationArguments.ConversationId, containerId)
-                    .AddText(title, AdaptiveTextStyle.Title)
                     .AddText(body, AdaptiveTextStyle.Body)
                     .AddAppLogoOverride(
                         uri: new Uri(await this.DownloadImageToDiskCached(
                                     image: avatarUrl,
                                     isAvatar: true,
                                     isRounded: roundedAvatar)),
-                        hintCrop: roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default)
-                    .Show(toast =>
+                        hintCrop: roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default);
+
+                toastBuilder.Show(toast =>
                     {
                         toast.Tag = Guid.NewGuid().ToString().Substring(0, 15);
                         toast.Group = containerId;
@@ -77,10 +82,13 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
                                   isAvatar: true,
                                   isRounded: roundedAvatar);
 
-                var toastBuilder = new ToastContentBuilder()
+                var toastBuilder = new ToastContentBuilder();
+
+                this.AddGrouping(toastBuilder, title, containerId);
+
+                toastBuilder
                     .AddArgument(NotificationArguments.ConversationId, containerId)
                     .AddArgument(NotificationArguments.MessageId, messageId)
-                    .AddText(title, AdaptiveTextStyle.Title)
                     .AddText(body, AdaptiveTextStyle.Body)
                     .AddInlineImage(new Uri(await this.DownloadImageToDiskCached(imageUrl)))
                     .AddAppLogoOverride(
@@ -108,10 +116,13 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
                                   isAvatar: true,
                                   isRounded: roundedAvatar);
 
-                var toastBuilder = new ToastContentBuilder()
+                var toastBuilder = new ToastContentBuilder();
+
+                this.AddGrouping(toastBuilder, title, containerId);
+
+                toastBuilder
                     .AddArgument(NotificationArguments.ConversationId, containerId)
                     .AddArgument(NotificationArguments.MessageId, messageId)
-                    .AddText(title, AdaptiveTextStyle.Title)
                     .AddText(body, AdaptiveTextStyle.Body)
                     .AddAppLogoOverride(
                         uri: new Uri(avatar),
@@ -184,6 +195,26 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
                         .AddArgument(NotificationArguments.Action, LaunchActions.InitiateReplyMessage)
                         .SetBackgroundActivation()
                         .SetAfterActivationBehavior(ToastAfterActivationBehavior.PendingUpdate));
+            }
+        }
+
+        private void AddGrouping(ToastContentBuilder toastBuilder, string title, string containerId)
+        {
+            if (this.SettingsManager.UISettings.EnableNotificationGrouping)
+            {
+                var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Groups(), this.GroupMeClient.Chats());
+                var source = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
+
+                toastBuilder.AddHeader(
+                    id: containerId,
+                    title: source.Name,
+                    arguments:
+                        new ToastArguments()
+                            .Add(NotificationArguments.ConversationId, containerId));
+            }
+            else
+            {
+                toastBuilder.AddText(title, AdaptiveTextStyle.Title);
             }
         }
 

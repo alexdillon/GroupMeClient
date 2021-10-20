@@ -65,6 +65,11 @@ namespace GroupMeClient.Core.Settings
         public bool EnableUWPNotificationQuickExpiration { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether UWP notifications should be grouped together by group and chat.
+        /// </summary>
+        public bool EnableNotificationGrouping { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the starting window placement for new MiniChat instances.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
