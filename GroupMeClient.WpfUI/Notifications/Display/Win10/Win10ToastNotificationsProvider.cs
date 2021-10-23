@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
 using GroupMeClient.Core.Settings;
@@ -26,14 +25,14 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
         /// <param name="settingsManager">The settings instance to use.</param>
         public Win10ToastNotificationsProvider(SettingsManager settingsManager)
         {
-            this.ToastManager = ToastNotificationManagerCompat.CreateToastNotifier();
+            this.ToastNotifier = ToastNotificationManagerCompat.CreateToastNotifier();
             ToastNotificationManagerCompat.OnActivated += this.ToastNotificationManagerCompat_OnActivated;
 
             this.SettingsManager = settingsManager;
             this.ChatsViewModel = Ioc.Default.GetService<ChatsViewModel>();
         }
 
-        private ToastNotifierCompat ToastManager { get; }
+        private ToastNotifierCompat ToastNotifier { get; }
 
         private bool HasPerformedCleanup { get; set; } = false;
 
@@ -50,6 +49,8 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
         {
             if (this.ShouldShowToast(containerId))
             {
+                this.GotNewNotification(containerId);
+
                 var toastBuilder = new ToastContentBuilder();
 
                 this.AddGrouping(toastBuilder, title, containerId);
@@ -77,6 +78,8 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
         {
             if (this.ShouldShowToast(containerId))
             {
+                this.GotNewNotification(containerId);
+
                 var avatar = await this.DownloadImageToDiskCached(
                                   image: avatarUrl,
                                   isAvatar: true,
@@ -111,6 +114,8 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
         {
             if (this.ShouldShowToast(containerId))
             {
+                this.GotNewNotification(containerId);
+
                 var avatar = await this.DownloadImageToDiskCached(
                                   image: avatarUrl,
                                   isAvatar: true,
@@ -215,6 +220,14 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win10
             else
             {
                 toastBuilder.AddText(title, AdaptiveTextStyle.Title);
+            }
+        }
+
+        private void GotNewNotification(string containerId)
+        {
+            if (this.SettingsManager.UISettings.EnableUWPNotificationQuickExpiration)
+            {
+                ToastNotificationManagerCompat.History.RemoveGroup(containerId);
             }
         }
 

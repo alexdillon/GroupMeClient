@@ -62,6 +62,10 @@ namespace GroupMeClient.Core.Settings
         /// </summary>
         public bool EnableNonNativeNotifications { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether UWP notifications will be quickly expired to avoid outdated notifications backing up.
+        /// This is particularly a problem in Windows 10 when messages are sent faster than the default notification duration.
+        /// </summary>
         public bool EnableUWPNotificationQuickExpiration { get; set; } = false;
 
         /// <summary>
