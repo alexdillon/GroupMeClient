@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using GroupMeClient.Core.Settings;
+using GroupMeClient.WpfUI.Notifications.Activation;
 using GroupMeClientPlugin.Notifications.Display;
 using Notification.Wpf;
-using static GroupMeClient.WpfUI.Notifications.Display.Win10.Win10ToastNotificationsProvider;
 
 namespace GroupMeClient.WpfUI.Notifications.Display.Win7
 {
@@ -21,7 +22,6 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win7
         {
             this.SettingsManager = settingsManager;
             this.NotificationManager = new SingularNotificationManager();
-            this.NotificationActivator = new Win10.GroupMeNotificationActivator();
         }
 
         private SettingsManager SettingsManager { get; }
@@ -30,12 +30,10 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win7
 
         private INotificationManager NotificationManager { get; }
 
-        private Win10.GroupMeNotificationActivator NotificationActivator { get; }
-
         /// <inheritdoc/>
         async Task IPopupNotificationSink.ShowNotification(string title, string body, string avatarUrl, bool roundedAvatar, string containerId)
         {
-            var action = $"action={LaunchActions.ShowGroup}&conversationId={containerId}";
+            var action = $"action={LaunchActions.ShowGroup};conversationId={containerId}";
             var notification = new Win7ToastNotificationViewModel(
                 title: title,
                 message: body,
@@ -47,7 +45,7 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win7
         /// <inheritdoc/>
         async Task IPopupNotificationSink.ShowLikableImageMessage(string title, string body, string avatarUrl, bool roundedAvatar, string imageUrl, string containerId, string messageId)
         {
-            var action = $"action={LaunchActions.ShowGroup}&conversationId={containerId}";
+            var action = $"action={LaunchActions.ShowGroup};conversationId={containerId}";
             var notification = new Win7ToastNotificationViewModel(
                title: title,
                message: body,
@@ -59,7 +57,7 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win7
         /// <inheritdoc/>
         async Task IPopupNotificationSink.ShowLikableMessage(string title, string body, string avatarUrl, bool roundedAvatar, string containerId, string messageId)
         {
-            var action = $"action={LaunchActions.ShowGroup}&conversationId={containerId}";
+            var action = $"action={LaunchActions.ShowGroup};conversationId={containerId}";
             var notification = new Win7ToastNotificationViewModel(
                title: title,
                message: body,
@@ -88,11 +86,9 @@ namespace GroupMeClient.WpfUI.Notifications.Display.Win7
                 return;
             }
 
-            void ActivationAction() => this.NotificationActivator.Activate(
-                appUserModelId: "unused",
-                invokedArgs: activationCommand,
-                data: null,
-                dataCount: 0);
+            void ActivationAction() => ActivationHandler.HandleActivation(
+                arguments: activationCommand,
+                userInput: new Dictionary<string, object>());
 
             this.NotificationManager.Show(toastContent, onClick: ActivationAction);
         }

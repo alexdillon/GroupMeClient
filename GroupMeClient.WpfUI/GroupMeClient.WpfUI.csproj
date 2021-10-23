@@ -88,7 +88,10 @@
     <Compile Include="Markdown\GMDCMarkdownStyle.cs" />
     <Compile Include="Markdown\GMDCXamlMarkdownWriter.cs" />
     <Compile Include="Native\WindowsThemeUtils.cs" />
+    <Compile Include="Notifications\Activation\ActivationHandler.cs" />
+    <Compile Include="Notifications\Activation\LaunchActions.cs" />
     <Compile Include="Notifications\Display\NativeDesktopNotificationProvider.cs" />
+    <Compile Include="Notifications\Activation\NotificationArguments.cs" />
     <Compile Include="Plugins\ImageGalleryPlugin.cs" />
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Services\WpfClipboardService.cs" />
@@ -135,7 +138,6 @@
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\ScrollIntoViewForListBox.cs" />
     <Compile Include="Extensions\WebHyperlinkExtensions.cs" />
-    <Compile Include="Notifications\Display\Win10\GroupMeNotificationActivator.cs" />
     <Compile Include="Notifications\Display\WpfToast\ToastNotification.xaml.cs">
       <DependentUpon>ToastNotification.xaml</DependentUpon>
     </Compile>
@@ -144,6 +146,7 @@
     <Compile Include="Notifications\Display\Win10\Win10ToastNotificationsProvider.cs" />
     <Compile Include="SelectedItemToContentConverter.cs" />
     <Compile Include="Updates\UpdateAssist.cs" />
+    <Compile Include="Utilities\HashUtils.cs" />
     <Compile Include="Utilities\ImageUtils.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\WindowHostViewModel.cs" />
@@ -533,10 +536,10 @@
       <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
-      <Version>7.0.2</Version>
+      <Version>7.1.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.19041.1</Version>
+      <Version>10.0.22000.194</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <Version>3.1.18</Version>

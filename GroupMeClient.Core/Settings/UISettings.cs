@@ -41,12 +41,6 @@ namespace GroupMeClient.Core.Settings
         public int MaximumNumberOfMultiChatsMinibar { get; set; } = 4;
 
         /// <summary>
-        /// Gets or sets a value indicating whether interacting with system notifications is permitted. Interactions include
-        /// shortcuts for liking messages and quickly replying to a group or chat.
-        /// </summary>
-        public bool EnableNotificationInteractions { get; set; } = true;
-
-        /// <summary>
         /// Gets or sets a value indicating that scaling factor that should be applied when displaying messages.
         /// </summary>
         public double ScalingFactorForMessages { get; set; } = 1.0;
@@ -60,9 +54,26 @@ namespace GroupMeClient.Core.Settings
         public bool StrictlyEnforceMultiChatLimits { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether interacting with system notifications is permitted. Interactions include
+        /// shortcuts for liking messages and quickly replying to a group or chat.
+        /// </summary>
+        public bool EnableNotificationInteractions { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether non-native (simulated) notifications will be used on pre-Windows 10 platforms.
         /// </summary>
         public bool EnableNonNativeNotifications { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether UWP notifications will be quickly expired to avoid outdated notifications backing up.
+        /// This is particularly a problem in Windows 10 when messages are sent faster than the default notification duration.
+        /// </summary>
+        public bool EnableUWPNotificationQuickExpiration { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether UWP notifications should be grouped together by group and chat.
+        /// </summary>
+        public bool EnableNotificationGrouping { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the starting window placement for new MiniChat instances.

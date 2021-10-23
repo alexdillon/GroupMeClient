@@ -167,6 +167,34 @@ namespace GroupMeClient.Core.ViewModels
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether interactions with system notifications are allowed.
+        /// </summary>
+        public bool EnableNotificationGrouping
+        {
+            get => this.SettingsManager.UISettings.EnableNotificationGrouping;
+            set
+            {
+                this.SettingsManager.UISettings.EnableNotificationGrouping = value;
+                this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.EnableNotificationGrouping));
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether interactions with system notifications are allowed.
+        /// </summary>
+        public bool EnableUWPNotificationQuickExpiration
+        {
+            get => this.SettingsManager.UISettings.EnableUWPNotificationQuickExpiration;
+            set
+            {
+                this.SettingsManager.UISettings.EnableUWPNotificationQuickExpiration = value;
+                this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.EnableUWPNotificationQuickExpiration));
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating the scaling factor used when rendering messages.
         /// </summary>
         public double ScalingFactorForMessages
