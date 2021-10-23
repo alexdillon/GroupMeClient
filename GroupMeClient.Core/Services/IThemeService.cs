@@ -1,5 +1,5 @@
-﻿using GroupMeClient.Core.Settings.Themes;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using GroupMeClient.Core.Settings.Themes;
 
 namespace GroupMeClient.Core.Services
 {
