@@ -15,6 +15,8 @@ namespace GroupMeClient.Core.Settings
     {
         private readonly BehaviorSubject<ThemeOptions> theme = new BehaviorSubject<ThemeOptions>(ThemeOptions.Default);
 
+        private readonly BehaviorSubject<string> themeStyle = new BehaviorSubject<string>(string.Empty);
+
         private readonly BehaviorSubject<AccessibilityChatFocusOptions> accessibilityChatFocusOption = new BehaviorSubject<AccessibilityChatFocusOptions>(AccessibilityChatFocusOptions.None);
 
         private readonly BehaviorSubject<AccessibilityMessageFocusOptions> accessibilityMessageFocusOptions = new BehaviorSubject<AccessibilityMessageFocusOptions>(AccessibilityMessageFocusOptions.None);
@@ -91,6 +93,20 @@ namespace GroupMeClient.Core.Settings
                 this.theme.OnNext(value);
                 var themeService = Ioc.Default.GetService<IThemeService>();
                 themeService.UpdateTheme(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the user selected theme styling to apply on top of the base light or dark <see cref="Theme"/>.
+        /// </summary>
+        public string ThemeStyle
+        {
+            get => this.themeStyle.Value;
+            set
+            {
+                this.themeStyle.OnNext(value);
+                var themeService = Ioc.Default.GetService<IThemeService>();
+                themeService.UpdateThemeStyle(value);
             }
         }
 

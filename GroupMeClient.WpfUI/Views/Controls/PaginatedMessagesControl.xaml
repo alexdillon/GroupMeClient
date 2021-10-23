@@ -69,7 +69,7 @@
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="true">
                                         <Setter TargetName="highlightBorder" Property="BorderThickness" Value="3"/>
-                                        <Setter TargetName="highlightBorder" Property="BorderBrush" Value="#1873BA"/>
+                                        <Setter TargetName="highlightBorder" Property="BorderBrush" Value="{DynamicResource SelectionBorderBrush}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>

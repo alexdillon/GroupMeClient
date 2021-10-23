@@ -161,7 +161,7 @@
                     Command="{Binding Path=SendButtonClicked}">
                 <Button.ContentTemplate>
                     <DataTemplate>
-                        <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" Kind="Send"/>
+                        <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="{DynamicResource ButtonGlyphBrush}" Kind="Send"/>
                     </DataTemplate>
                 </Button.ContentTemplate>
             </Button>

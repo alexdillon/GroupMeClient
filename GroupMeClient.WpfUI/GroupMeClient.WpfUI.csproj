@@ -262,11 +262,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\Resources.xaml">
+    <Page Include="Resources\GMDCGlobalResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\GMDCGlobalResources.xaml">
+    <Page Include="Resources\Themes\GMDC.BaseColors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

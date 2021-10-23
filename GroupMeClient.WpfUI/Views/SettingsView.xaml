@@ -66,10 +66,17 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <TextBlock Text="Theme: " Padding="5" />
+                            <TextBlock Text="Theme: " Padding="5" Width="50" />
                             <ComboBox MinWidth="150"
                                       ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type themes:ThemeOptions}}}"
                                       SelectedValue="{Binding Theme}"/> 
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <TextBlock Text="Style: " Padding="5" Width="50" />
+                            <ComboBox MinWidth="150"
+                                      ItemsSource="{Binding AvailableThemeStyles}"
+                                      SelectedValue="{Binding ThemeStyle}"/>
                         </StackPanel>
 
                         <Expander Header="Accessibility Settings" Margin="0,5,0,0">

@@ -54,7 +54,7 @@
             </controls:AvatarControl>
 
             <StackPanel Grid.Column="1" Grid.Row="1">
-                <TextBlock Text="{Binding Sender, Mode=OneTime}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" />
+                <TextBlock Text="{Binding Sender, Mode=OneTime}" FontSize="12" Foreground="{DynamicResource MessageFontBrush}" />
 
                 <ContentControl Content="{Binding RepliedMessage}" 
                                 HorizontalAlignment="Left"
@@ -229,9 +229,12 @@
                 </Canvas.Style>
 
                 <Grid Width="{Binding ActualWidth, ElementName=likesCanvas}">
-                    <Border BorderThickness="1" CornerRadius="5" 
-                                BorderBrush="{DynamicResource DividerLineBrush}" Background="{DynamicResource LikerAreaBackgroundBrush}"
-                                Width="Auto" Height="65" HorizontalAlignment="Right">
+                    <Border BorderThickness="1" 
+                            CornerRadius="5" 
+                            BorderBrush="{DynamicResource DividerLineBrush}" 
+                            Background="{DynamicResource LikerAreaBackgroundBrush}"
+                            Width="Auto" Height="65" 
+                            HorizontalAlignment="Right">
 
                         <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                                           Margin="7"

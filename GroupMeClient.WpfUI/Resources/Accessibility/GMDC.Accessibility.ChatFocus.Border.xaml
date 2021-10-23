@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <ControlTemplate x:Key="GMDC.Accessibility.ChatFocus">
-        <Border BorderBrush="#1873BA" 
+        <Border BorderBrush="{DynamicResource SelectionBorderBrush}" 
                 BorderThickness="3"
                 Visibility="{Binding IsHighlighted, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </ControlTemplate>

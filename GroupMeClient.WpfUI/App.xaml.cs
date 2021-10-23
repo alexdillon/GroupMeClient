@@ -78,6 +78,14 @@ namespace GroupMeClient.WpfUI
         /// </summary>
         public static string PluginsPath => Path.Combine(DataRoot, "Plugins");
 
+        /// <summary>
+        /// Gets the themes directory for the GMDC/WPF application.
+        /// </summary>
+        public static string ThemesPath => Path.Combine(DataRoot, "Themes");
+
+        /// <summary>
+        /// Gets or sets the GMDC application parameters required to start this instance of GMDC.
+        /// </summary>
         public static Core.StartupExtensions.StartupParameters StartupParams { get; set; }
     }
 }

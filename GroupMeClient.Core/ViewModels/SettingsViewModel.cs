@@ -24,11 +24,13 @@ namespace GroupMeClient.Core.ViewModels
         /// </summary>
         /// <param name="settingsManager">The settings manager to use.</param>
         /// <param name="updateAssist">The update manager to use.</param>
-        public SettingsViewModel(Settings.SettingsManager settingsManager, IUpdateService updateAssist)
+        /// <param name="themeService">The theming service to use.</param>
+        public SettingsViewModel(Settings.SettingsManager settingsManager, IUpdateService updateAssist, IThemeService themeService)
         {
             this.InstalledPlugins = new ObservableCollection<Plugin>();
             this.SettingsManager = settingsManager;
             this.UpdateAssist = updateAssist;
+            this.ThemeService = themeService;
 
             this.ManageReposCommand = new RelayCommand(this.ManageRepos);
             this.ManageUpdatesCommand = new RelayCommand(this.ManageUpdates);
@@ -42,12 +44,18 @@ namespace GroupMeClient.Core.ViewModels
             };
 
             this.LoadPluginInfo();
+            this.AvailableThemeStyles = new ObservableCollection<string>(this.ThemeService.GetAvailableThemeStyles());
         }
 
         /// <summary>
         /// Gets a collection installed plugins.
         /// </summary>
         public ObservableCollection<Plugin> InstalledPlugins { get; } = new ObservableCollection<Plugin>();
+
+        /// <summary>
+        /// Gets a collection available theme styles.
+        /// </summary>
+        public ObservableCollection<string> AvailableThemeStyles { get; } = new ObservableCollection<string>();
 
         /// <summary>
         /// Gets a string displaying the friendly version number for the application.
@@ -187,6 +195,21 @@ namespace GroupMeClient.Core.ViewModels
         }
 
         /// <summary>
+        /// Gets or sets the name of the theme styling options that should be applied on top of the
+        /// base light or base dark theme.
+        /// </summary>
+        public string ThemeStyle
+        {
+            get => this.SettingsManager.UISettings.ThemeStyle;
+            set
+            {
+                this.SettingsManager.UISettings.ThemeStyle = value;
+                this.SettingsManager.SaveSettings();
+                this.OnPropertyChanged(nameof(this.ThemeStyle));
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating which accessibility option should be applied for chat focus.
         /// </summary>
         public Settings.Themes.AccessibilityChatFocusOptions AccessibilityChatFocusOption
@@ -217,6 +240,8 @@ namespace GroupMeClient.Core.ViewModels
         private Settings.SettingsManager SettingsManager { get; }
 
         private IUpdateService UpdateAssist { get; }
+
+        private IThemeService ThemeService { get; }
 
         private void LoadPluginInfo()
         {

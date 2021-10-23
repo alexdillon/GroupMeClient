@@ -126,7 +126,7 @@
                                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                 Command="{Binding Path=DataContext.CloseGroup, RelativeSource={RelativeSource AncestorType=views:StarsView}}"
                                 CommandParameter="{Binding Path=.}">
-                            <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
+                            <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="{DynamicResource ButtonGlyphBrush}" Kind="X"/>
                         </Button>
 
                         <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1" Margin="0,0,0,0"/>

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Settings.Themes;
@@ -11,6 +13,21 @@ namespace GroupMeClient.WpfUI.Services
     /// </summary>
     public class WpfThemeService : IThemeService
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WpfThemeService"/> class.
+        /// </summary>
+        public WpfThemeService()
+        {
+            // None of the WPF themeing needs delayed initialization.
+            this.Initialize();
+        }
+
+        private bool IsLightTheme { get; set; } = true;
+
+        private string GMDCDynamicColorsPrefix => "GMDC.BaseColors";
+
+        private ResourceDictionary GMDCDynamicColors => new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.BaseColors.xaml") };
+
         private string GMDCColorThemePrefix => "GMDC.Colors";
 
         private Dictionary<ThemeOptions, ResourceDictionary> GMDCColorThemes { get; } = new Dictionary<ThemeOptions, ResourceDictionary>()
@@ -18,6 +35,12 @@ namespace GroupMeClient.WpfUI.Services
             { ThemeOptions.Light, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.Colors.Light.xaml") } },
             { ThemeOptions.Dark, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.Colors.Dark.xaml") } },
         };
+
+        private string DefaultThemeStyle => "GMDC";
+
+        private string CurrentThemeStyle { get; set; }
+
+        private Dictionary<string, (ResourceDictionary light, ResourceDictionary dark)> ThemeStyles { get; } = new Dictionary<string, (ResourceDictionary light, ResourceDictionary dark)>();
 
         private string GMDCAccessibilityChatFocusPrefix => "GMDC.Accessibility.ChatFocus";
 
@@ -39,7 +62,38 @@ namespace GroupMeClient.WpfUI.Services
         /// <inheritdoc/>
         public void Initialize()
         {
-            // No initialization needed.
+            // Load custom themes
+            var files = Directory.GetFiles(App.ThemesPath, "*.xaml");
+            var themes = files
+                .Select(f => Path.GetFileNameWithoutExtension(f))
+                .Where(f => f.EndsWith(".Light", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".Dark", StringComparison.OrdinalIgnoreCase))
+                .Select(f => f.Substring(0, f.LastIndexOf(".")))
+                .Distinct();
+
+            this.ThemeStyles.Add(this.DefaultThemeStyle, (null, null));
+
+            foreach (var theme in themes)
+            {
+                var lightThemePath = Path.Combine(App.ThemesPath, $"{theme}.Light.xaml");
+                var darkThemePath = Path.Combine(App.ThemesPath, $"{theme}.Dark.xaml");
+                ResourceDictionary lightDictionary = null;
+                ResourceDictionary darkDictionary = null;
+
+                if (File.Exists(lightThemePath))
+                {
+                    lightDictionary = new ResourceDictionary() { Source = new Uri(lightThemePath) };
+                }
+
+                if (File.Exists(darkThemePath))
+                {
+                    darkDictionary = new ResourceDictionary() { Source = new Uri(darkThemePath) };
+                }
+
+                if (!this.ThemeStyles.ContainsKey(theme))
+                {
+                    this.ThemeStyles.Add(theme, (lightDictionary, darkDictionary));
+                }
+            }
         }
 
         /// <summary>
@@ -63,6 +117,24 @@ namespace GroupMeClient.WpfUI.Services
                     this.SetSystemTheme();
                     break;
             }
+
+            // Change the user applied styling to match the new base theme
+            this.UpdateThemeStyle(this.CurrentThemeStyle);
+        }
+
+        /// <inheritdoc/>
+        public void UpdateThemeStyle(string themeStyle)
+        {
+            if (string.IsNullOrEmpty(themeStyle) || !this.ThemeStyles.ContainsKey(themeStyle))
+            {
+                this.CurrentThemeStyle = this.DefaultThemeStyle;
+                this.ChangeStyle(this.ThemeStyles[this.DefaultThemeStyle]);
+            }
+            else
+            {
+                this.CurrentThemeStyle = themeStyle;
+                this.ChangeStyle(this.ThemeStyles[themeStyle]);
+            }
         }
 
         /// <summary>
@@ -83,11 +155,18 @@ namespace GroupMeClient.WpfUI.Services
             this.ChangeTheme(this.GMDCAccessibilityMessageFocusPrefix, this.GMDCAccessibilityMessageFocus[option]);
         }
 
+        /// <inheritdoc/>
+        public List<string> GetAvailableThemeStyles()
+        {
+            return this.ThemeStyles.Keys.ToList();
+        }
+
         /// <summary>
         /// Applies the light mode theme.
         /// </summary>
         private void SetLightTheme()
         {
+            this.IsLightTheme = true;
             ControlzEx.Theming.ThemeManager.Current.ChangeTheme(Application.Current, "Light.Cyan");
             this.ChangeTheme(this.GMDCColorThemePrefix, this.GMDCColorThemes[ThemeOptions.Light]);
         }
@@ -97,6 +176,7 @@ namespace GroupMeClient.WpfUI.Services
         /// </summary>
         private void SetDarkTheme()
         {
+            this.IsLightTheme = false;
             ControlzEx.Theming.ThemeManager.Current.ChangeTheme(Application.Current, "Dark.Cyan");
             this.ChangeTheme(this.GMDCColorThemePrefix, this.GMDCColorThemes[ThemeOptions.Dark]);
         }
@@ -122,6 +202,9 @@ namespace GroupMeClient.WpfUI.Services
         private void Windows_ThemeChangedEvent()
         {
             this.SetSystemTheme();
+
+            // Change the user applied styling to match the new base theme
+            this.UpdateThemeStyle(this.CurrentThemeStyle);
         }
 
         private void ChangeTheme(string themePrefix, ResourceDictionary newTheme)
@@ -133,6 +216,7 @@ namespace GroupMeClient.WpfUI.Services
                 if (dictionary.Source?.ToString().Contains(themePrefix) ?? false)
                 {
                     currentTheme = dictionary;
+                    break;
                 }
             }
 
@@ -145,6 +229,43 @@ namespace GroupMeClient.WpfUI.Services
             {
                 Application.Current.Resources.MergedDictionaries.Add(newTheme);
             }
+        }
+
+        private void ChangeStyle((ResourceDictionary lightTheme, ResourceDictionary darkTheme) themeStyle)
+        {
+            // Remove the existing custom style
+            foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
+            {
+                if (dictionary.Contains("IsCustomStyle"))
+                {
+                    Application.Current.Resources.MergedDictionaries.Remove(dictionary);
+                    break;
+                }
+            }
+
+            // Apply a new custom style if available for the current base theme
+            var targetStyle = this.IsLightTheme ? themeStyle.lightTheme : themeStyle.darkTheme;
+            if (targetStyle != null)
+            {
+                Application.Current.Resources.MergedDictionaries.Add(targetStyle);
+            }
+
+            this.ResetDynamicBaseColors();
+        }
+
+        private void ResetDynamicBaseColors()
+        {
+            // Remove the existing custom style
+            foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
+            {
+                if (dictionary.Source?.ToString().Contains(this.GMDCDynamicColorsPrefix) ?? false)
+                {
+                    Application.Current.Resources.MergedDictionaries.Remove(dictionary);
+                    break;
+                }
+            }
+
+            Application.Current.Resources.MergedDictionaries.Add(this.GMDCDynamicColors);
         }
     }
 }

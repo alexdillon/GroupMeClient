@@ -108,7 +108,7 @@
                     <VisualBrush.Visual>
                         <Ellipse Height="30"
                                  Width="30"
-                                 Fill="#1873BA" />
+                                 Fill="{DynamicResource UnreadBadgeBrush}" />
                     </VisualBrush.Visual>
                 </VisualBrush>
             </TextBlock.Background>
