@@ -62,36 +62,40 @@ namespace GroupMeClient.WpfUI.Services
         /// <inheritdoc/>
         public void Initialize()
         {
-            // Load custom themes
-            var files = Directory.GetFiles(App.ThemesPath, "*.xaml");
-            var themes = files
-                .Select(f => Path.GetFileNameWithoutExtension(f))
-                .Where(f => f.EndsWith(".Light", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".Dark", StringComparison.OrdinalIgnoreCase))
-                .Select(f => f.Substring(0, f.LastIndexOf(".")))
-                .Distinct();
-
+            // Add default theme style
             this.ThemeStyles.Add(this.DefaultThemeStyle, (null, null));
 
-            foreach (var theme in themes)
+            // Load custom theme style
+            if (Directory.Exists(App.ThemesPath))
             {
-                var lightThemePath = Path.Combine(App.ThemesPath, $"{theme}.Light.xaml");
-                var darkThemePath = Path.Combine(App.ThemesPath, $"{theme}.Dark.xaml");
-                ResourceDictionary lightDictionary = null;
-                ResourceDictionary darkDictionary = null;
+                var files = Directory.GetFiles(App.ThemesPath, "*.xaml");
+                var themes = files
+                    .Select(f => Path.GetFileNameWithoutExtension(f))
+                    .Where(f => f.EndsWith(".Light", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".Dark", StringComparison.OrdinalIgnoreCase))
+                    .Select(f => f.Substring(0, f.LastIndexOf(".")))
+                    .Distinct();
 
-                if (File.Exists(lightThemePath))
+                foreach (var theme in themes)
                 {
-                    lightDictionary = new ResourceDictionary() { Source = new Uri(lightThemePath) };
-                }
+                    var lightThemePath = Path.Combine(App.ThemesPath, $"{theme}.Light.xaml");
+                    var darkThemePath = Path.Combine(App.ThemesPath, $"{theme}.Dark.xaml");
+                    ResourceDictionary lightDictionary = null;
+                    ResourceDictionary darkDictionary = null;
 
-                if (File.Exists(darkThemePath))
-                {
-                    darkDictionary = new ResourceDictionary() { Source = new Uri(darkThemePath) };
-                }
+                    if (File.Exists(lightThemePath))
+                    {
+                        lightDictionary = new ResourceDictionary() { Source = new Uri(lightThemePath) };
+                    }
 
-                if (!this.ThemeStyles.ContainsKey(theme))
-                {
-                    this.ThemeStyles.Add(theme, (lightDictionary, darkDictionary));
+                    if (File.Exists(darkThemePath))
+                    {
+                        darkDictionary = new ResourceDictionary() { Source = new Uri(darkThemePath) };
+                    }
+
+                    if (!this.ThemeStyles.ContainsKey(theme))
+                    {
+                        this.ThemeStyles.Add(theme, (lightDictionary, darkDictionary));
+                    }
                 }
             }
         }
