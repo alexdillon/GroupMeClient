@@ -228,8 +228,7 @@
                         <TextBlock.Resources>
                             <sys:Double x:Key="MarkdownFontSize">12</sys:Double>
                             <SolidColorBrush x:Key="MarkdownTableBrush" Color="Transparent"/>
-                            <SolidColorBrush x:Key="MarkdownLinkColor" Color="White"/>
-                            
+                            <SolidColorBrush x:Key="MarkdownLinkColor" Color="{DynamicResource MahApps.Colors.ThemeForeground}"/>
                         </TextBlock.Resources>
                     </TextBlock>
                 </GroupBox>

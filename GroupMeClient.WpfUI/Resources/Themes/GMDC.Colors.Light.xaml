@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <FontFamily x:Key="GroupMeFont">Segoe UI</FontFamily>
 
@@ -30,4 +31,10 @@
     <Color x:Key="HyperlinkColor">#0066CC</Color>
     <Color x:Key="HyperlinkColor.Hover">#FF0000</Color>
     <Color x:Key="UnreadBadgeColor">#1873BA</Color>
+
+
+    <Color x:Key="MessageComposeColor.Error">#FF0000</Color>
+
+    <SolidColorBrush options:Freeze="True" x:Key="MessageComposeBrush" Color="{DynamicResource MahApps.Colors.ThemeForeground}" />
+    <SolidColorBrush options:Freeze="True" x:Key="MessageComposeBrush.Error" Color="{DynamicResource MessageComposeColor.Error}" />
 </ResourceDictionary>

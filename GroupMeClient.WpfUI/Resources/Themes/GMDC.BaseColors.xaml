@@ -26,5 +26,4 @@
     <SolidColorBrush options:Freeze="True" x:Key="HyperlinkBrush" Color="{DynamicResource HyperlinkColor}" />
     <SolidColorBrush options:Freeze="True" x:Key="HyperlinkBrush.Hover" Color="{DynamicResource HyperlinkColor.Hover}" />
     <SolidColorBrush options:Freeze="True" x:Key="UnreadBadgeBrush" Color="{DynamicResource UnreadBadgeColor}" />
-
 </ResourceDictionary>
