@@ -77,6 +77,7 @@
     <Compile Include="Converters\Core\GMDCInlineToWPFInline.cs" />
     <Compile Include="Converters\Core\LikeStatusToIcon.cs" />
     <Compile Include="Extensions\FocusedUserControl.cs" />
+    <Compile Include="Extensions\GMDCWindow.cs" />
     <Compile Include="Extensions\InputBindingBehavior.cs" />
     <Compile Include="Converters\PlusOneConverter.cs" />
     <Compile Include="Extensions\CopyableHyperlink.cs" />
@@ -274,6 +275,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\CopyableHyperlink.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\GMDCWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
