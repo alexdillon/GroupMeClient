@@ -3,7 +3,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace GroupMeClient.WpfUI.Utilities
+namespace GroupMeClient.Core.Utilities
 {
     /// <summary>
     /// Utilities for hashing data.

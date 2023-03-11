@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GroupMeClient.WpfUI.Notifications.Activation
+namespace GroupMeClient.Desktop.Notifications.Activation
 {
     /// <summary>
     /// Arguments that can be included in a toast notification argument string.
