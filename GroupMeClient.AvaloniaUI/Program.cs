@@ -6,6 +6,7 @@ using Avalonia.ReactiveUI;
 using GroupMeClient.AvaloniaUI.ViewModels;
 using GroupMeClient.AvaloniaUI.Views;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.AvaloniaUI
 {
@@ -45,7 +46,7 @@ namespace GroupMeClient.AvaloniaUI
             };
 
             // Initialize the theme engine now that the UI has been defined
-            var themeService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IThemeService>();
+            var themeService = Ioc.Default.GetRequiredService<IThemeService>();
             themeService.Initialize();
 
             app.Run(GroupMeMainWindow);

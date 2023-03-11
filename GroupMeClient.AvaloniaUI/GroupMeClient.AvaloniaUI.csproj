@@ -156,8 +156,10 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0" />
     <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.0" />
     <PackageReference Include="MessageBox.Avalonia" Version="0.9.6.1" />
-    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="6.1.1" />
-    <PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.0" />
     <PackageReference Include="QueryString.NET" Version="1.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>

@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Avalonia.Markup.Xaml.Styling;
 using GroupMeClient.Core.Services;
-using GroupMeClient.Core.Settings;
+using GroupMeClient.Core.Settings.Themes;
 
 namespace GroupMeClient.AvaloniaUI.Services
 {
@@ -83,6 +84,21 @@ namespace GroupMeClient.AvaloniaUI.Services
             }
         }
 
+        /// <inheritdoc/>
+        public void UpdateThemeStyle(string themeStyle)
+        {
+        }
+
+        /// <inheritdoc/>
+        public void UpdateTheme(AccessibilityChatFocusOptions option)
+        {
+        }
+
+        /// <inheritdoc/>
+        public void UpdateTheme(AccessibilityMessageFocusOptions option)
+        {
+        }
+
         /// <summary>
         /// Applies the light mode theme.
         /// </summary>
@@ -148,6 +164,12 @@ namespace GroupMeClient.AvaloniaUI.Services
         {
             Program.GroupMeMainWindow.Styles[0] = this.CurrentAvaloniaTheme;
             Program.GroupMeMainWindow.Styles[1] = this.CurrentGroupMeTheme;
+        }
+
+        /// <inheritdoc/>
+        public List<string> GetAvailableThemeStyles()
+        {
+            return new List<string>();
         }
     }
 }

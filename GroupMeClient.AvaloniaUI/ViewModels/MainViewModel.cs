@@ -7,10 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Collections;
 using Avalonia.Media;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.AvaloniaUI.Notifications.Display;
 using GroupMeClient.AvaloniaUI.Notifications.Display.WpfToast;
 using GroupMeClient.Core.Caching;
@@ -25,13 +21,17 @@ using GroupMeClientApi.Models;
 using MicroCubeAvalonia.Controls;
 using MicroCubeAvalonia.IconPack;
 using MicroCubeAvalonia.IconPack.Icons;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace GroupMeClient.AvaloniaUI.ViewModels
 {
     /// <summary>
     /// <see cref="MainViewModel"/> is the top-level ViewModel for the GroupMe Desktop Client Avalonia.
     /// </summary>
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : ObservableObject
     {
         private AvaloniaList<HamburgerMenuItem> menuItems = new AvaloniaList<HamburgerMenuItem>();
         private AvaloniaList<HamburgerMenuItem> menuOptionItems = new AvaloniaList<HamburgerMenuItem>();
@@ -46,31 +46,14 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         /// </summary>
         public MainViewModel()
         {
-            Directory.CreateDirectory(this.DataRoot);
-
-            this.ClientIdentity = new Core.Services.KnownClients.GMDCA();
-
-            var starupParams = new Core.Startup.StartupParameters()
-            {
-                ClientIdentity = this.ClientIdentity,
-                CacheFilePath = this.CachePath,
-                PersistFilePath = this.PersistPath,
-                SettingsFilePath = this.SettingsPath,
-                PluginPath = this.PluginsPath,
-            };
-            Core.Startup.StartupCoreServices(starupParams);
-
-            Core.Startup.RegisterTopLevelViewModels();
-            Startup.StartupServices();
-
-            Desktop.MigrationAssistant.MigrationManager.EnsureMigration(starupParams);
-
-            this.SettingsManager = SimpleIoc.Default.GetInstance<SettingsManager>();
+            Desktop.MigrationAssistant.MigrationManager.EnsureMigration(App.StartupParams);
+            this.SettingsManager = Ioc.Default.GetService<SettingsManager>();
+            this.ClientIdentity = Ioc.Default.GetService<IClientIdentityService>();
 
             // Create a throw-away DbContext to allow EF Core to begin allocating resouces
             // in the background, allowing for faster access later.
-            Task.Run(() => SimpleIoc.Default.GetInstance<CacheManager>().OpenNewContext());
-            Task.Run(() => SimpleIoc.Default.GetInstance<PersistManager>().OpenNewContext());
+            Task.Run(() => Ioc.Default.GetService<CacheManager>().OpenNewContext());
+            Task.Run(() => Ioc.Default.GetService<PersistManager>().OpenNewContext());
 
             Core.Utilities.TempFileUtils.InitializeTempStorage();
 
@@ -85,7 +68,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         public AvaloniaList<HamburgerMenuItem> MenuItems
         {
             get => this.menuItems;
-            private set => this.Set(() => this.MenuItems, ref this.menuItems, value);
+            private set => this.SetProperty(ref this.menuItems, value);
         }
 
         /// <summary>
@@ -94,7 +77,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         public AvaloniaList<HamburgerMenuItem> MenuOptionItems
         {
             get => this.menuOptionItems;
-            private set => this.Set(() => this.MenuOptionItems, ref this.menuOptionItems, value);
+            private set => this.SetProperty(ref this.menuOptionItems, value);
         }
 
         /// <summary>
@@ -103,7 +86,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         public HamburgerMenuItem SelectedItem
         {
             get => this.selectedItem;
-            set => this.Set(() => this.SelectedItem, ref this.selectedItem, value);
+            set => this.SetProperty(ref this.selectedItem, value);
         }
 
         /// <summary>
@@ -113,7 +96,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         public int UnreadCount
         {
             get => this.unreadCount;
-            private set => this.Set(() => this.UnreadCount, ref this.unreadCount, value);
+            private set => this.SetProperty(ref this.unreadCount, value);
         }
 
         /// <summary>
@@ -122,7 +105,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         public bool IsReconnecting
         {
             get => this.isReconnecting;
-            private set => this.Set(() => this.IsReconnecting, ref this.isReconnecting, value);
+            private set => this.SetProperty(ref this.isReconnecting, value);
         }
 
         /// <summary>
@@ -131,7 +114,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         public bool IsRefreshing
         {
             get => this.isRefreshing;
-            private set => this.Set(() => this.IsRefreshing, ref this.isRefreshing, value);
+            private set => this.SetProperty(ref this.isRefreshing, value);
         }
 
         /// <summary>
@@ -140,7 +123,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         public ObservableCollection<string> RebootReasons
         {
             get => this.rebootReasons;
-            private set => this.Set(() => this.RebootReasons, ref this.rebootReasons, value);
+            private set => this.SetProperty(ref this.rebootReasons, value);
         }
 
         /// <summary>
@@ -173,23 +156,11 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         /// </summary>
         public TaskManager TaskManager { get; private set; }
 
-        private string DataRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicroCube", "GroupMe Desktop Client");
-
-        private string SettingsPath => Path.Combine(this.DataRoot, "settings.json");
-
-        private string CachePath => Path.Combine(this.DataRoot, "cache.db");
-
-        private string PersistPath => Path.Combine(this.DataRoot, "persist.db");
-
-        private string ImageCachePath => Path.Combine(this.DataRoot, "ImageCache");
-
-        private string PluginsPath => Path.Combine(this.DataRoot, "Plugins");
-
         private IClientIdentityService ClientIdentity { get; }
 
-        private GroupMeClientApi.GroupMeClient Client { get; set; }
+        private GroupMeClientApi.GroupMeClient GroupMeClient { get; set; }
 
-        private Core.Settings.SettingsManager SettingsManager { get; set; }
+        private SettingsManager SettingsManager { get; set; }
 
         private NotificationRouter NotificationRouter { get; set; }
 
@@ -215,7 +186,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         /// /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<bool> NotificationQuickReplyMessage(string containerId, string messageText)
         {
-            var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.Client.Chats(), this.Client.Groups());
+            var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Chats(), this.GroupMeClient.Groups());
             var group = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
             var msg = Message.CreateMessage(
                 body: messageText,
@@ -237,7 +208,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<bool> NotificationLikeMessage(string containerId, string messageId)
         {
-            var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.Client.Chats(), this.Client.Groups());
+            var groupsAndChats = Enumerable.Concat<IMessageContainer>(this.GroupMeClient.Chats(), this.GroupMeClient.Groups());
             var group = groupsAndChats.FirstOrDefault(g => g.Id == containerId);
             var message = group?.Messages.FirstOrDefault(m => m.Id == messageId);
 
@@ -252,14 +223,17 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         private void InitializeClient()
         {
             // Setup plugins
-            SimpleIoc.Default.GetInstance<IPluginManagerService>().LoadPlugins(this.PluginsPath);
+            Task.Run(() =>
+               Ioc.Default.GetService<IPluginManagerService>().LoadPlugins(App.PluginsPath));
 
             // Setup messaging
-            Messenger.Default.Register<UnreadRequestMessage>(this, this.UpdateNotificationCount);
-            Messenger.Default.Register<DisconnectedRequestMessage>(this, this.UpdateDisconnectedComponentsCount);
-            Messenger.Default.Register<SwitchToPageRequestMessage>(this, this.SwitchToPageCommand);
-            Messenger.Default.Register<RebootRequestMessage>(this, (r) => this.RebootReasons.Add(r.Reason), true);
-            Messenger.Default.Register<DialogRequestMessage>(this, this.OpenBigPopup);
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.UnreadRequestMessage>(this, (r, m) => r.UpdateNotificationCount(m));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.DisconnectedRequestMessage>(this, (r, m) => r.UpdateDisconnectedComponentsCount(m));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.SwitchToPageRequestMessage>(this, (r, m) => r.SwitchToPageCommand(m));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.RebootRequestMessage>(this, (r, m) => r.RebootReasons.Add(m.Reason));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.DialogRequestMessage>(this, (r, m) => r.OpenBigPopup(m));
+            //WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.DialogDismissMessage>(this, (r, m) => r.DismissCallback(m));
+            WeakReferenceMessenger.Default.Register<MainViewModel, Core.Messaging.RefreshAllMessage>(this, (r, m) => Task.Run(r.RefreshEverything));
 
             // Setup updating
             //Application.Current.MainWindow.Closing += new CancelEventHandler(this.MainWindow_Closing);
@@ -268,7 +242,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
 
             this.RebootApplication = new RelayCommand(this.RestartCommand);
 
-            this.TaskManager = SimpleIoc.Default.GetInstance<TaskManager>();
+            this.TaskManager = Ioc.Default.GetService<TaskManager>();
             this.TaskManager.TaskCountChanged += this.TaskManager_TaskCountChanged;
 
             if (string.IsNullOrEmpty(this.SettingsManager.CoreSettings.AuthToken))
@@ -284,18 +258,15 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
             else
             {
                 // Startup Regularly
-                this.Client = new GroupMeClientApi.GroupMeClient(this.SettingsManager.CoreSettings.AuthToken);
-                this.Client.ImageDownloader = new GroupMeClientApi.CachedImageDownloader(this.ImageCachePath);
+                this.GroupMeClient = Ioc.Default.GetRequiredService<GroupMeClientApi.GroupMeClient>();
+                this.GroupMeClient.ImageDownloader = new GroupMeClientApi.CachedImageDownloader(App.ImageCachePath);
 
-                // Submit the GroupMeClient to the IoC container now that it is initialized with an API Key
-                SimpleIoc.Default.Register(() => this.Client);
+                this.NotificationRouter = new NotificationRouter(this.GroupMeClient);
 
-                this.NotificationRouter = new NotificationRouter(this.Client);
-
-                this.ChatsViewModel = SimpleIoc.Default.GetInstance<ChatsViewModel>();
-                this.SearchViewModel = SimpleIoc.Default.GetInstance<SearchViewModel>();
-                this.StarsViewModel = SimpleIoc.Default.GetInstance<StarsViewModel>();
-                this.SettingsViewModel = SimpleIoc.Default.GetInstance<SettingsViewModel>();
+                this.ChatsViewModel = Ioc.Default.GetService<ChatsViewModel>();
+                this.SearchViewModel = Ioc.Default.GetService<SearchViewModel>();
+                this.StarsViewModel = Ioc.Default.GetService<StarsViewModel>();
+                this.SettingsViewModel = Ioc.Default.GetService<SettingsViewModel>();
 
                 this.RegisterNotifications();
 
@@ -304,20 +275,18 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
 
             this.DialogManagerRegular = new PopupViewModel()
             {
-                EasyClosePopup = new RelayCommand(this.CloseBigPopup),
-                ClosePopup = new RelayCommand(this.CloseBigPopup),
-                PopupDialog = null,
+                ClosePopupCallback = new RelayCommand(this.CloseBigPopup),
+                EasyClosePopupCallback = new RelayCommand(this.CloseBigPopup),
             };
 
             this.DialogManagerTopMost = new PopupViewModel()
             {
-                EasyClosePopup = new RelayCommand(this.CloseBigTopMostPopup),
-                ClosePopup = new RelayCommand(this.CloseBigTopMostPopup),
-                PopupDialog = null,
+                ClosePopupCallback = new RelayCommand(this.CloseBigTopMostPopup),
+                EasyClosePopupCallback = new RelayCommand(this.CloseBigTopMostPopup),
             };
 
-            //Wpf.Native.RecoveryManager.RegisterForRecovery();
-            //Wpf.Native.RecoveryManager.RegisterForRestart();
+            //Desktop.Native.Windows.RecoveryManager.RegisterForRecovery();
+            //Desktop.Native.Windows.RecoveryManager.RegisterForRestart();
         }
 
         private void RegisterNotifications()
@@ -378,7 +347,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
             this.SelectedItem = chatsTab;
 
             // Enable the refresh button
-            this.RefreshEverythingCommand = new RelayCommand(async () => await this.RefreshEverything(), true);
+            this.RefreshEverythingCommand = new RelayCommand(async () => await this.RefreshEverything());
         }
 
         private void CreateMenuItemsLoginOnly()
@@ -403,7 +372,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
-            var updateService = SimpleIoc.Default.GetInstance<IUpdateService>();
+            var updateService = Ioc.Default.GetService<IUpdateService>();
 
             updateService.CanShutdown.Subscribe(canShutDown =>
             {
@@ -444,11 +413,11 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
         {
             if (dialog.TopMost)
             {
-                this.DialogManagerTopMost.PopupDialog = dialog.Dialog;
+                this.DialogManagerTopMost.OpenPopup(dialog.Dialog, dialog.DialogId);
             }
             else
             {
-                this.DialogManagerRegular.PopupDialog = dialog.Dialog;
+                this.DialogManagerRegular.OpenPopup(dialog.Dialog, dialog.DialogId);
             }
         }
 
@@ -459,7 +428,9 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
                 d.Dispose();
             }
 
-            this.DialogManagerRegular.PopupDialog = null;
+            var closeId = this.DialogManagerRegular.PopupId;
+            this.DialogManagerRegular.ClosePopup();
+            WeakReferenceMessenger.Default.Send(new Core.Messaging.DialogDismissMessage(closeId));
         }
 
         private void CloseBigTopMostPopup()
@@ -469,7 +440,9 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
                 d.Dispose();
             }
 
-            this.DialogManagerTopMost.PopupDialog = null;
+            var closeId = this.DialogManagerTopMost.PopupId;
+            this.DialogManagerTopMost.ClosePopup();
+            WeakReferenceMessenger.Default.Send(new Core.Messaging.DialogDismissMessage(closeId));
         }
 
         private void UpdateNotificationCount(UnreadRequestMessage update)
@@ -498,7 +471,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
 
         private void SwitchToPageCommand(SwitchToPageRequestMessage cmd)
         {
-            ViewModelBase selectedPage = null;
+            ObservableObject selectedPage = null;
 
             switch (cmd.SelectedPage)
             {
@@ -532,7 +505,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
 
         private void RestartCommand()
         {
-            var restoreService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IRestoreService>();
+            var restoreService = Ioc.Default.GetService<IRestoreService>();
             restoreService.SoftApplicationRestart();
         }
     }

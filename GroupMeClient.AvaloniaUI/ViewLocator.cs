@@ -1,7 +1,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using GalaSoft.MvvmLight;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace GroupMeClient.AvaloniaUI
 {
@@ -50,7 +50,7 @@ namespace GroupMeClient.AvaloniaUI
         /// <inheritdoc/>
         public bool Match(object data)
         {
-            return data is ViewModelBase;
+            return data is ObservableObject;
         }
     }
 }

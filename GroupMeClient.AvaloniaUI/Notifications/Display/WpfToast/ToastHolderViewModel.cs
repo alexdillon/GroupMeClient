@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 
 namespace GroupMeClient.AvaloniaUI.Notifications.Display.WpfToast
 {
@@ -11,7 +11,7 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display.WpfToast
     /// <see cref="ToastHolderViewModel"/> provides a ViewModel for the <see cref="ToastHolder"/> control.
     /// Controls for sending messages are also included.
     /// </summary>
-    public class ToastHolderViewModel : ViewModelBase
+    public class ToastHolderViewModel : ObservableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ToastHolderViewModel"/> class.
