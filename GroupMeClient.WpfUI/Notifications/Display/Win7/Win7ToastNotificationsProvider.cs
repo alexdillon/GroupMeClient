@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using GroupMeClient.Core.Settings;
+using GroupMeClient.Desktop.Notifications.Activation;
 using GroupMeClient.WpfUI.Notifications.Activation;
 using GroupMeClientPlugin.Notifications.Display;
 using Notification.Wpf;

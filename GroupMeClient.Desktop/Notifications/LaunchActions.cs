@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GroupMeClient.WpfUI.Notifications.Activation
+namespace GroupMeClient.Desktop.Notifications.Activation
 {
     /// <summary>
     /// <see cref="LaunchActions"/> define the actions that can be performed upon activation of a Windows 10 Notification.
