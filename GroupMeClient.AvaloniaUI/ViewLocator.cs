@@ -11,9 +11,6 @@ namespace GroupMeClient.AvaloniaUI
     public class ViewLocator : IDataTemplate
     {
         /// <inheritdoc/>
-        public bool SupportsRecycling => false;
-
-        /// <inheritdoc/>
         public IControl Build(object data)
         {
             var originalName = data.GetType().FullName;
