@@ -32,11 +32,11 @@
     </PackageReference>
     <PackageReference Include="GroupMeClientApi" Version="1.1.1" />
     <PackageReference Include="GroupMeClientPlugin" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.18">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.32">
       <PrivateAssets>none</PrivateAssets>
       <ExcludeAssets>none</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.18">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.32">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -45,7 +45,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Octokit" Version="5.0.0" />
+    <PackageReference Include="Octokit" Version="5.0.2" />
     <PackageReference Include="ReactiveUI" Version="18.4.25" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.4" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">

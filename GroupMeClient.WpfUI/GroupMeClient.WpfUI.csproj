@@ -547,7 +547,7 @@
       <Version>10.0.22621.755</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-      <Version>3.1.18</Version>
+      <Version>3.1.32</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -569,7 +569,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Octokit">
-      <Version>5.0.0</Version>
+      <Version>5.0.2</Version>
     </PackageReference>
     <PackageReference Include="QueryString.NET">
       <Version>1.0.0</Version>
