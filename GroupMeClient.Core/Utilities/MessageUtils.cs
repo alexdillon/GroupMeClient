@@ -66,5 +66,30 @@ namespace GroupMeClient.Core.Utilities
                 IsReplyGen2(message) ||
                 IsReplyGen1(message);
         }
+
+        /// <summary>
+        /// Determines if a specific <see cref="Message"/> is sent using the GMDC-specific Markdown formatting extensions.
+        /// This method tests for Markdown sent using any generation of the GMDC client.
+        /// </summary>
+        /// <param name="message">The message to check for being in Markdown.</param>
+        /// <returns>True if the given <see cref="Message"/> is in Markdown, otherwise, false.</returns>
+        public static bool IsGMDCMarkdown(Message message)
+        {
+            string[] knownClientReplyPrefixes =
+            {
+                Services.KnownClients.GMDC.GMDCGuidMarkdownPrefix,
+                Services.KnownClients.GMDCA.GMDCAGuidMarkdownPrefix,
+            };
+
+            foreach (var clientPrefix in knownClientReplyPrefixes)
+            {
+                if (message.SourceGuid.StartsWith(clientPrefix))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

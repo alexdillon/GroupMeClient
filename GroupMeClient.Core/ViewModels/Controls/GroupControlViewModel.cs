@@ -2,20 +2,21 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
 using GroupMeClient.Core.Controls.Documents;
 using GroupMeClientApi.Models;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="GroupControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.GroupControl"/> control.
     /// </summary>
-    public class GroupControlViewModel : ViewModelBase
+    public class GroupControlViewModel : ObservableObject
     {
         private IMessageContainer messageContainer;
         private AvatarControlViewModel avatar;
         private int unreadMessagesCounter;
+        private bool isHighlighted;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupControlViewModel"/> class.
@@ -31,6 +32,20 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// Gets or sets the command to be performed when this Group or Chat is clicked.
         /// </summary>
         public ICommand GroupSelected { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this group is loaded purely from cache.
+        /// </summary>
+        public bool IsHistorical { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this group should be highlighted or specially indicated.
+        /// </summary>
+        public bool IsHighlighted
+        {
+            get => this.isHighlighted;
+            set => this.SetProperty(ref this.isHighlighted, value);
+        }
 
         /// <summary>
         /// Gets the title of this Group or Chat.
@@ -59,7 +74,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             set
             {
-                this.Set(() => this.MessageContainer, ref this.messageContainer, value);
+                this.SetProperty(ref this.messageContainer, value);
 
                 if (this.Avatar != null && this.MessageContainer.ImageOrAvatarUrl != this.Avatar.CurrentlyRenderedUrl)
                 {
@@ -77,7 +92,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public AvatarControlViewModel Avatar
         {
             get => this.avatar;
-            private set => this.Set(() => this.Avatar, ref this.avatar, value);
+            private set => this.SetProperty(ref this.avatar, value);
         }
 
         /// <summary>
@@ -86,7 +101,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public int TotalUnreadCount
         {
             get => this.unreadMessagesCounter;
-            set => this.Set(() => this.TotalUnreadCount, ref this.unreadMessagesCounter, value);
+            set => this.SetProperty(ref this.unreadMessagesCounter, value);
         }
 
         /// <summary>
@@ -119,6 +134,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
             {
                 var latestPreviewMessage = this.MessageContainer.LatestMessage;
 
+                if (latestPreviewMessage == null)
+                {
+                    return new ObservableCollection<Inline>();
+                }
+
                 var sender = latestPreviewMessage.Name;
                 var attachments = latestPreviewMessage.Attachments;
                 var message = latestPreviewMessage.Text;
@@ -150,12 +170,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void RaisePropertyChangeForAll()
         {
-            // since RaisePropertyChanged(string.empty) doesn't seem to work correctly...
-            this.RaisePropertyChanged(nameof(this.Avatar));
-            this.RaisePropertyChanged(nameof(this.LastUpdatedFriendlyTime));
-            this.RaisePropertyChanged(nameof(this.QuickPreview));
-            this.RaisePropertyChanged(nameof(this.Title));
-            this.RaisePropertyChanged(nameof(this.LastUpdated));
+            this.OnPropertyChanged(nameof(this.Avatar));
+            this.OnPropertyChanged(nameof(this.LastUpdatedFriendlyTime));
+            this.OnPropertyChanged(nameof(this.QuickPreview));
+            this.OnPropertyChanged(nameof(this.Title));
+            this.OnPropertyChanged(nameof(this.LastUpdated));
         }
     }
 }

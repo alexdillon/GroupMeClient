@@ -2,18 +2,18 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi;
 using GroupMeClientApi.Models;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.Plugins.ViewModels
 {
     /// <summary>
     /// <see cref="ImageDetailsControlViewModel"/> provides a ViewModel for the <see cref="ImageDetailsControl"/> control.
     /// </summary>
-    public class ImageDetailsControlViewModel : ViewModelBase, IDisposable
+    public class ImageDetailsControlViewModel : ObservableObject, IDisposable
     {
         private bool isLoading;
         private Stream imageData;
@@ -28,7 +28,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
         /// <param name="showPopupAction">The <see cref="Action"/> used to open popups to display the image viewer.</param>
         /// <param name="showNext">The <see cref="Action"/> used to navigate to the next image in the gallery.</param>
         /// <param name="showPrevious">The <see cref="Action"/> used to navigate to the previous image in the gallery.</param>
-        public ImageDetailsControlViewModel(Message message, int imageIndex, ImageDownloader downloader, Action gotoContextAction, Action<ViewModelBase> showPopupAction, Action showNext, Action showPrevious)
+        public ImageDetailsControlViewModel(Message message, int imageIndex, ImageDownloader downloader, Action gotoContextAction, Action<ObservableObject> showPopupAction, Action showNext, Action showPrevious)
         {
             this.Message = message;
             this.ImageDownloader = downloader;
@@ -36,8 +36,8 @@ namespace GroupMeClient.Core.Plugins.ViewModels
             this.ShowPopupAction = showPopupAction;
 
             this.Clicked = new RelayCommand(this.ClickedAction);
-            this.ShowNextImage = new RelayCommand(showNext, true);
-            this.ShowPreviousImage = new RelayCommand(showPrevious, true);
+            this.ShowNextImage = new RelayCommand(showNext);
+            this.ShowPreviousImage = new RelayCommand(showPrevious);
             this.GotoContext = new RelayCommand(gotoContextAction);
 
             this.SenderAvatar = new AvatarControlViewModel(this.Message, this.ImageDownloader);
@@ -82,7 +82,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
         public Stream ImageData
         {
             get => this.imageData;
-            private set => this.Set(() => this.ImageData, ref this.imageData, value);
+            private set => this.SetProperty(ref this.imageData, value);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
         public bool IsLoading
         {
             get => this.isLoading;
-            private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
+            private set => this.SetProperty(ref this.isLoading, value);
         }
 
         private ImageDownloader ImageDownloader { get; }
@@ -100,7 +100,7 @@ namespace GroupMeClient.Core.Plugins.ViewModels
 
         private string ImageUrl { get; }
 
-        private Action<ViewModelBase> ShowPopupAction { get; }
+        private Action<ObservableObject> ShowPopupAction { get; }
 
         /// <inheritdoc/>
         public void Dispose()

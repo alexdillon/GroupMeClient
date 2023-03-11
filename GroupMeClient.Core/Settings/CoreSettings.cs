@@ -1,4 +1,6 @@
-﻿namespace GroupMeClient.Core.Settings
+﻿using System;
+
+namespace GroupMeClient.Core.Settings
 {
     /// <summary>
     /// <see cref="CoreSettings"/> defines the settings needed for basic operation.
@@ -21,5 +23,10 @@
         /// settings, plugins, cache, and persist data.
         /// </summary>
         public int MigrationVersion { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the time interval that controls when group and chat metadata is written to the cache.
+        /// </summary>
+        public TimeSpan MetadataCacheInterval { get; set; } = TimeSpan.FromMinutes(5);
     }
 }

@@ -7,8 +7,10 @@ using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using GalaSoft.MvvmLight.Messaging;
+using GroupMeClient.Core.Controls.Documents;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Messaging;
 using Octokit;
 
 namespace GroupMeClient.WpfUI.Updates
@@ -70,7 +72,14 @@ namespace GroupMeClient.WpfUI.Updates
             var isNewest = true;
             foreach (var release in releases)
             {
-                results.Add(new ReleaseInfo() { Version = release.Name, ReleaseNotes = release.Body, PreRelease = release.Prerelease, IsLatest = isNewest });
+                results.Add(new ReleaseInfo()
+                {
+                    Version = release.Name,
+                    ReleaseNotesText = release.Body,
+                    ReleaseNotes = new List<Inline>() { new MarkdownMessage(release.Body) },
+                    PreRelease = release.Prerelease,
+                    IsLatest = isNewest,
+                });
                 isNewest = false;
             }
 
@@ -132,10 +141,10 @@ namespace GroupMeClient.WpfUI.Updates
                 this.HasAlreadyUpdated = true;
 
                 // Show the update notification in the UI
-                var uiDispatchService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+                var uiDispatchService = Ioc.Default.GetService<IUserInterfaceDispatchService>();
                 uiDispatchService.Invoke(() =>
                 {
-                    Messenger.Default.Send(new Core.Messaging.RebootRequestMessage($"Reboot to Finish Updating GMDC"));
+                    WeakReferenceMessenger.Default.Send(new Core.Messaging.RebootRequestMessage($"Reboot to Finish Updating GMDC"));
                 });
             }
 

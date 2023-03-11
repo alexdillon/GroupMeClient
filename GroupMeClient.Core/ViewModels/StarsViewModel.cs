@@ -9,21 +9,21 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Utilities;
 using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi.Models;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using ReactiveUI;
 
 namespace GroupMeClient.Core.ViewModels
 {
     /// <summary>
-    /// <see cref="SearchViewModel"/> provides a ViewModel for the <see cref="Controls.SearchView"/> view.
+    /// <see cref="StarsViewModel"/> provides a ViewModel for the Starred Chats view.
     /// </summary>
-    public class StarsViewModel : ViewModelBase
+    public class StarsViewModel : ObservableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StarsViewModel"/> class.
@@ -58,7 +58,7 @@ namespace GroupMeClient.Core.ViewModels
                 .Bind(this.SortedGroupChats)
                 .Subscribe();
 
-            this.Loaded = new RelayCommand(async () => await this.LoadIndexedGroups(), true);
+            this.Loaded = new RelayCommand(() => Task.Run(this.LoadIndexedGroups));
             this.CloseGroup = new RelayCommand<StarredMessageGroup>(this.CloseChat);
         }
 
@@ -125,7 +125,7 @@ namespace GroupMeClient.Core.ViewModels
                     // Add Group/Chat to the list
                     var vm = new GroupControlViewModel(group)
                     {
-                        GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s.MessageContainer), (g) => true, true),
+                        GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s.MessageContainer), (g) => true),
                     };
                     this.AllGroupsChats.Add(vm);
                 }
@@ -176,7 +176,7 @@ namespace GroupMeClient.Core.ViewModels
         /// <summary>
         /// <see cref="StarredMessageGroup"/> provides a displayable collection of starred messages for a specific <see cref="IMessageContainer"/>.
         /// </summary>
-        public class StarredMessageGroup : ViewModelBase
+        public class StarredMessageGroup : ObservableObject
         {
             private bool isShowingStars;
             private bool isShowingHidden;
@@ -231,7 +231,7 @@ namespace GroupMeClient.Core.ViewModels
             public string Type
             {
                 get => this.type;
-                private set => this.Set(() => this.Type, ref this.type, value);
+                private set => this.SetProperty(ref this.type, value);
             }
 
             /// <summary>
@@ -240,7 +240,7 @@ namespace GroupMeClient.Core.ViewModels
             public bool IsEmpty
             {
                 get => this.isEmpty;
-                private set => this.Set(() => this.IsEmpty, ref this.isEmpty, value);
+                private set => this.SetProperty(ref this.isEmpty, value);
             }
 
             /// <summary>
@@ -251,7 +251,7 @@ namespace GroupMeClient.Core.ViewModels
                 get => this.isShowingStars;
                 set
                 {
-                    this.Set(() => this.IsShowingStars, ref this.isShowingStars, value);
+                    this.SetProperty(ref this.isShowingStars, value);
                     if (value)
                     {
                         this.LoadStarredMessages();
@@ -267,7 +267,7 @@ namespace GroupMeClient.Core.ViewModels
                 get => this.isShowingHidden;
                 set
                 {
-                    this.Set(() => this.IsShowingHidden, ref this.isShowingHidden, value);
+                    this.SetProperty(ref this.isShowingHidden, value);
                     if (value)
                     {
                         this.LoadHiddenMessages();

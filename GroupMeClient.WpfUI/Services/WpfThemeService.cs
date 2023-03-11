@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using GroupMeClient.Core.Services;
-using GroupMeClient.Core.Settings;
-using MahApps.Metro;
+using GroupMeClient.Core.Settings.Themes;
 
 namespace GroupMeClient.WpfUI.Services
 {
@@ -11,48 +13,91 @@ namespace GroupMeClient.WpfUI.Services
     /// </summary>
     public class WpfThemeService : IThemeService
     {
-        private readonly ResourceDictionary groupMeLightTheme = new ResourceDictionary()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WpfThemeService"/> class.
+        /// </summary>
+        public WpfThemeService()
         {
-            Source = new Uri("pack://application:,,,/Styles/GroupMeLight.xaml"),
-        };
-
-        private readonly ResourceDictionary groupMeDarkTheme = new ResourceDictionary()
-        {
-            Source = new Uri("pack://application:,,,/Styles/GroupMeDark.xaml"),
-        };
-
-        private ResourceDictionary currentGroupMeTheme = null;
-
-        private ResourceDictionary CurrentGroupMeTheme
-        {
-            get
-            {
-                if (this.currentGroupMeTheme == null)
-                {
-                    foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
-                    {
-                        if (dictionary.Source?.ToString().Contains("GroupMe") ?? false)
-                        {
-                            this.currentGroupMeTheme = dictionary;
-                        }
-                    }
-                }
-
-                return this.currentGroupMeTheme;
-            }
-
-            set
-            {
-                Application.Current.Resources.MergedDictionaries.Remove(this.CurrentGroupMeTheme);
-                Application.Current.Resources.MergedDictionaries.Add(value);
-                this.currentGroupMeTheme = value;
-            }
+            // None of the WPF themeing needs delayed initialization.
+            this.Initialize();
         }
+
+        private bool IsLightTheme { get; set; } = true;
+
+        private string GMDCDynamicColorsPrefix => "GMDC.BaseColors";
+
+        private ResourceDictionary GMDCDynamicColors => new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.BaseColors.xaml") };
+
+        private string GMDCColorThemePrefix => "GMDC.Colors";
+
+        private Dictionary<ThemeOptions, ResourceDictionary> GMDCColorThemes { get; } = new Dictionary<ThemeOptions, ResourceDictionary>()
+        {
+            { ThemeOptions.Light, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.Colors.Light.xaml") } },
+            { ThemeOptions.Dark, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Themes/GMDC.Colors.Dark.xaml") } },
+        };
+
+        private string DefaultThemeStyle => "GMDC";
+
+        private string CurrentThemeStyle { get; set; }
+
+        private Dictionary<string, (ResourceDictionary light, ResourceDictionary dark)> ThemeStyles { get; } = new Dictionary<string, (ResourceDictionary light, ResourceDictionary dark)>();
+
+        private string GMDCAccessibilityChatFocusPrefix => "GMDC.Accessibility.ChatFocus";
+
+        private Dictionary<AccessibilityChatFocusOptions, ResourceDictionary> GMDCAccessibilityChatFocus { get; } = new Dictionary<AccessibilityChatFocusOptions, ResourceDictionary>()
+        {
+            { AccessibilityChatFocusOptions.None, null },
+            { AccessibilityChatFocusOptions.Bar, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.ChatFocus.Bar.xaml") } },
+            { AccessibilityChatFocusOptions.Border, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.ChatFocus.Border.xaml") } },
+        };
+
+        private string GMDCAccessibilityMessageFocusPrefix => "GMDC.Accessibility.MessageFocus";
+
+        private Dictionary<AccessibilityMessageFocusOptions, ResourceDictionary> GMDCAccessibilityMessageFocus { get; } = new Dictionary<AccessibilityMessageFocusOptions, ResourceDictionary>()
+        {
+            { AccessibilityMessageFocusOptions.None, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.MessageFocus.None.xaml") } },
+            { AccessibilityMessageFocusOptions.Border, new ResourceDictionary() { Source = new Uri("pack://application:,,,/Resources/Accessibility/GMDC.Accessibility.MessageFocus.Border.xaml") } },
+        };
 
         /// <inheritdoc/>
         public void Initialize()
         {
-            // No initialization needed.
+            // Add default theme style
+            this.ThemeStyles.Add(this.DefaultThemeStyle, (null, null));
+
+            // Load custom theme style
+            if (Directory.Exists(App.ThemesPath))
+            {
+                var files = Directory.GetFiles(App.ThemesPath, "*.xaml");
+                var themes = files
+                    .Select(f => Path.GetFileNameWithoutExtension(f))
+                    .Where(f => f.EndsWith(".Light", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".Dark", StringComparison.OrdinalIgnoreCase))
+                    .Select(f => f.Substring(0, f.LastIndexOf(".")))
+                    .Distinct();
+
+                foreach (var theme in themes)
+                {
+                    var lightThemePath = Path.Combine(App.ThemesPath, $"{theme}.Light.xaml");
+                    var darkThemePath = Path.Combine(App.ThemesPath, $"{theme}.Dark.xaml");
+                    ResourceDictionary lightDictionary = null;
+                    ResourceDictionary darkDictionary = null;
+
+                    if (File.Exists(lightThemePath))
+                    {
+                        lightDictionary = new ResourceDictionary() { Source = new Uri(lightThemePath) };
+                    }
+
+                    if (File.Exists(darkThemePath))
+                    {
+                        darkDictionary = new ResourceDictionary() { Source = new Uri(darkThemePath) };
+                    }
+
+                    if (!this.ThemeStyles.ContainsKey(theme))
+                    {
+                        this.ThemeStyles.Add(theme, (lightDictionary, darkDictionary));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -76,6 +121,48 @@ namespace GroupMeClient.WpfUI.Services
                     this.SetSystemTheme();
                     break;
             }
+
+            // Change the user applied styling to match the new base theme
+            this.UpdateThemeStyle(this.CurrentThemeStyle);
+        }
+
+        /// <inheritdoc/>
+        public void UpdateThemeStyle(string themeStyle)
+        {
+            if (string.IsNullOrEmpty(themeStyle) || !this.ThemeStyles.ContainsKey(themeStyle))
+            {
+                this.CurrentThemeStyle = this.DefaultThemeStyle;
+                this.ChangeStyle(this.ThemeStyles[this.DefaultThemeStyle]);
+            }
+            else
+            {
+                this.CurrentThemeStyle = themeStyle;
+                this.ChangeStyle(this.ThemeStyles[themeStyle]);
+            }
+        }
+
+        /// <summary>
+        /// Updates the current accessibility theming for the indicator that is applied to focused chats.
+        /// </summary>
+        /// <param name="option">The new option to apply.</param>
+        public void UpdateTheme(AccessibilityChatFocusOptions option)
+        {
+            this.ChangeTheme(this.GMDCAccessibilityChatFocusPrefix, this.GMDCAccessibilityChatFocus[option]);
+        }
+
+        /// <summary>
+        /// Updates the current accessibility theming for the indicator that is applied to selected messages.
+        /// </summary>
+        /// <param name="option">The new option to apply.</param>
+        public void UpdateTheme(AccessibilityMessageFocusOptions option)
+        {
+            this.ChangeTheme(this.GMDCAccessibilityMessageFocusPrefix, this.GMDCAccessibilityMessageFocus[option]);
+        }
+
+        /// <inheritdoc/>
+        public List<string> GetAvailableThemeStyles()
+        {
+            return this.ThemeStyles.Keys.ToList();
         }
 
         /// <summary>
@@ -83,8 +170,9 @@ namespace GroupMeClient.WpfUI.Services
         /// </summary>
         private void SetLightTheme()
         {
+            this.IsLightTheme = true;
             ControlzEx.Theming.ThemeManager.Current.ChangeTheme(Application.Current, "Light.Cyan");
-            this.CurrentGroupMeTheme = this.groupMeLightTheme;
+            this.ChangeTheme(this.GMDCColorThemePrefix, this.GMDCColorThemes[ThemeOptions.Light]);
         }
 
         /// <summary>
@@ -92,8 +180,9 @@ namespace GroupMeClient.WpfUI.Services
         /// </summary>
         private void SetDarkTheme()
         {
+            this.IsLightTheme = false;
             ControlzEx.Theming.ThemeManager.Current.ChangeTheme(Application.Current, "Dark.Cyan");
-            this.CurrentGroupMeTheme = this.groupMeDarkTheme;
+            this.ChangeTheme(this.GMDCColorThemePrefix, this.GMDCColorThemes[ThemeOptions.Dark]);
         }
 
         /// <summary>
@@ -117,6 +206,70 @@ namespace GroupMeClient.WpfUI.Services
         private void Windows_ThemeChangedEvent()
         {
             this.SetSystemTheme();
+
+            // Change the user applied styling to match the new base theme
+            this.UpdateThemeStyle(this.CurrentThemeStyle);
+        }
+
+        private void ChangeTheme(string themePrefix, ResourceDictionary newTheme)
+        {
+            ResourceDictionary currentTheme = null;
+
+            foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
+            {
+                if (dictionary.Source?.ToString().Contains(themePrefix) ?? false)
+                {
+                    currentTheme = dictionary;
+                    break;
+                }
+            }
+
+            if (currentTheme != null)
+            {
+                Application.Current.Resources.MergedDictionaries.Remove(currentTheme);
+            }
+
+            if (newTheme != null)
+            {
+                Application.Current.Resources.MergedDictionaries.Add(newTheme);
+            }
+        }
+
+        private void ChangeStyle((ResourceDictionary lightTheme, ResourceDictionary darkTheme) themeStyle)
+        {
+            // Remove the existing custom style
+            foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
+            {
+                if (dictionary.Contains("IsCustomStyle"))
+                {
+                    Application.Current.Resources.MergedDictionaries.Remove(dictionary);
+                    break;
+                }
+            }
+
+            // Apply a new custom style if available for the current base theme
+            var targetStyle = this.IsLightTheme ? themeStyle.lightTheme : themeStyle.darkTheme;
+            if (targetStyle != null)
+            {
+                Application.Current.Resources.MergedDictionaries.Add(targetStyle);
+            }
+
+            this.ResetDynamicBaseColors();
+        }
+
+        private void ResetDynamicBaseColors()
+        {
+            // Remove the existing custom style
+            foreach (var dictionary in Application.Current.Resources.MergedDictionaries)
+            {
+                if (dictionary.Source?.ToString().Contains(this.GMDCDynamicColorsPrefix) ?? false)
+                {
+                    Application.Current.Resources.MergedDictionaries.Remove(dictionary);
+                    break;
+                }
+            }
+
+            Application.Current.Resources.MergedDictionaries.Add(this.GMDCDynamicColors);
         }
     }
 }

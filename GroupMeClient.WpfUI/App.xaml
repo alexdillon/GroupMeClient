@@ -25,16 +25,12 @@
 
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
 
-                <ResourceDictionary Source="pack://application:,,,/Styles/GMDCGlobalResources.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Styles/GroupMeLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Resources/GMDCGlobalResources.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/Resources/Themes/GMDC.BaseColors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Resources/Themes/GMDC.Colors.Light.xaml" />
                 
-                <ResourceDictionary Source="pack://application:,,,/Styles/GroupNameDropdown.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Styles/CopyableHyperlink.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Styles/MessageControlResources.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Styles/PopupDialog.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Styles/ScrollBar.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Styles/SendTextBox.xaml" />
-                
+                <ResourceDictionary Source="pack://application:,,,/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!--
@@ -134,6 +130,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type ctrlvm:ViewReleaseNotesControlViewModel}">
                 <ctrlviews:ViewReleaseNotesControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type ctrlvm:HotkeyHelpControlViewModel}">
+                <ctrlviews:HotkeyHelpControl />
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type toast:ToastNotificationViewModel}">

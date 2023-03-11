@@ -1,14 +1,16 @@
-﻿<UserControl x:Class="GroupMeClient.WpfUI.Views.Controls.GroupContentsControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
-             xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
-             mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="500">
+﻿<extensions:FocusedUserControl 
+    x:Class="GroupMeClient.WpfUI.Views.Controls.GroupContentsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
+    xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    mc:Ignorable="d"
+    d:DesignHeight="700" d:DesignWidth="500">
 
     <UserControl.Resources>
         <Style x:Key="bottomBarButtonStyle" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button">
@@ -17,7 +19,7 @@
             <Setter Property="Width" Value="25" />
             <Setter Property="Height" Value="25" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{DynamicResource DividerLineBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ButtonGlyphBrush}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
             
@@ -30,6 +32,27 @@
         </Style>
     </UserControl.Resources>
 
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding ToggleMarkdownMode}"
+                    Gesture="CTRL+M" />
+        
+        <KeyBinding Command="{Binding OpenMessageSuggestions}"
+                    Gesture="CTRL+E" />
+
+        <KeyBinding Command="{Binding CloseGroup}"
+                    CommandParameter="{Binding Path=.}"
+                    Gesture="CTRL+W" />
+    </UserControl.InputBindings>
+
+    <behaviors:Interaction.Triggers>
+        <behaviors:EventTrigger EventName="ContainsKeyboardFocusChanged" >
+            <behaviors:ChangePropertyAction 
+                TargetObject="{Binding .}" 
+                PropertyName="IsFocused"
+                Value="{Binding IsKeyboardFocusWithin, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"/>
+        </behaviors:EventTrigger>
+    </behaviors:Interaction.Triggers>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -71,21 +94,60 @@
             <ToggleButton Style="{StaticResource GroupMeClient.Wpf.Styles.GroupNameDropdown}"
                           Grid.Column="1"
                           Tag="{Binding Title}"
+                          IsChecked="{Binding ShowPluginOptions}"
                           x:Name="toggleGroupOptionsButton"/>
 
             <!--Close Group Button-->
+            <!--Shown only in Regular Chat Mode-->
             <Button Grid.Column="2"
                     HorizontalAlignment="Right"
                     Width="35" Height="35"
                     BorderThickness="0"
-                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                     Command="{Binding Path=CloseGroup}"
                     CommandParameter="{Binding Path=.}">
-                <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
+                <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="{DynamicResource ButtonGlyphBrush}" Kind="X"/>
+
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsFullGMDC}" Value="True">
+                                <!--Only show the close button in regular (docked in GMDC) mode.-->
+                                <!--Don't show the close button when in MiniChat Mode-->
+                                <!--All it would do is close the copy in the main UI. The Windows X button
+                                is the intended close mechanism in MiniChat mode-->
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <!--Refresh Group Button-->
+            <!--Shown only in MiniChat Mode-->
+            <Button Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    Width="35" Height="35"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{Binding GlobalRefreshAllCommand}">
+                <iconPacks:PackIconMaterial Width="17" Height="17"  Kind="Refresh"/>
+
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource bottomBarButtonStyle}">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsFullGMDC}" Value="True">
+                                <!--Only show the refresh button in MiniChat mode.-->
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
 
             <!--Top Bar Underline-->
-            <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1"/>
+            <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1"/>
         </Grid>
 
         <!--Messages List-->
@@ -126,10 +188,10 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                <Border BorderThickness="0"
-                                        x:Name="highlightBorder"
+                                <Border x:Name="highlightBorder"
                                         Margin="0" >
                                     <ContentPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                                                      x:Name="PART_MessageListBoxItem_Presenter"
                                                       Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:GroupContentsControl}}}">
                                         <ContentPresenter.ContextMenu>
                                             <ContextMenu>
@@ -144,12 +206,27 @@
                                             </ContextMenu>
                                         </ContentPresenter.ContextMenu>
                                     </ContentPresenter>
+
+                                    <Border.Style>
+                                        <Style TargetType="{x:Type Border}">
+                                            <Setter Property="BorderThickness" Value="0"/>
+                                            <Setter Property="BorderBrush" Value="Transparent"/>
+                                            
+                                            <Style.Triggers>
+                                                <!--Border around selected (right clicked) message if accessibility border is turned on-->
+                                                <DataTrigger Binding="{Binding ElementName=PART_MessageListBoxItem_Presenter, Path=ContextMenu.IsOpen}" Value="True">
+                                                    <Setter Property="BorderThickness" Value="{DynamicResource GMDC.Accessibility.MessageFocus.BorderThickness}"/>
+                                                    <Setter Property="BorderBrush" Value="{DynamicResource GMDC.Accessibility.MessageFocus.BorderBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                 </Border>
 
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="true">
                                         <Setter TargetName="highlightBorder" Property="BorderThickness" Value="3"/>
-                                        <Setter TargetName="highlightBorder" Property="BorderBrush" Value="#1873BA"/>
+                                        <Setter TargetName="highlightBorder" Property="BorderBrush" Value="{DynamicResource SelectionBorderBrush}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -188,6 +265,19 @@
             </Button.Content>
         </Button>
 
+        <!--Markdown Preview -->
+        <Border Grid.Row="2"
+                Visibility="{Binding IsMarkdownMode, Converter={StaticResource boolToVisibilityConverter}}"
+                VerticalAlignment="Top"
+                Background="{DynamicResource MahApps.Brushes.Control.Background}"
+                BorderThickness="2,2,2,2"
+                Margin="1,0,18,0"
+                CornerRadius="5"
+                BorderBrush="{DynamicResource DividerLineBrush}">
+
+            <TextBlock extensions:TextBlockExtensions.InlineList="{Binding TypedMessageContents, Converter={StaticResource inlineConverter}}"/>
+        </Border>
+
         <!--Plugins Dropdown List-->
         <Border Grid.Row="2"
                 Visibility="{Binding IsChecked, ElementName=toggleGroupOptionsButton, Converter={StaticResource boolToVisibilityConverter}}"
@@ -207,9 +297,7 @@
                             BorderThickness="0"
                             FontSize="14"
                             FontWeight="SemiBold"
-                            Margin="5">
-
-                        </Button>
+                            Margin="5" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 
@@ -237,20 +325,63 @@
                     
                     <Grid.RowDefinitions>
                         <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="{Binding ScalingFactor, StringFormat='Zoom {0:0.00}x'}" Padding="0,0,15,0" Grid.Row="0" Grid.Column="0" />
+                    <TextBlock Text="{Binding ScalingFactor, StringFormat='Zoom {0:0.00}x'}" Padding="0,0,15,0" Grid.Row="0" Grid.Column="0" Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}" />
                     <Slider Minimum="0.50" Maximum="1.50" Value="{Binding ScalingFactor, Mode=TwoWay}" TickPlacement="BottomRight" TickFrequency="0.10" Grid.Row="0" Grid.Column="1" />
                 </Grid>
+
+                <Button 
+                    Content="MiniChat"
+                    Command="{Binding ShowMiniChat}"
+                    HorizontalContentAlignment="Left"
+                    Foreground="{DynamicResource PluginButtonFontBrush}" 
+                    BorderThickness="0"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Margin="5,20,0,0">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsFullGMDC}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <mah:ToggleSwitch 
+                    Content="Show Top Most"
+                    HorizontalContentAlignment="Left"
+                    Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
+                    IsOn="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Topmost}"
+                    BorderThickness="0"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Margin="5,20,0,0">
+                    <mah:ToggleSwitch.Style>
+                        <Style TargetType="mah:ToggleSwitch" BasedOn="{StaticResource {x:Type mah:ToggleSwitch}}">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.IsFullGMDC}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </mah:ToggleSwitch.Style>
+                </mah:ToggleSwitch>
             </StackPanel>
-          
         </Border>
 
         <!--Send Message Bar-->
         <Grid Grid.Row="3"
               Background="{DynamicResource MahApps.Brushes.Control.Background}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="18" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -261,7 +392,7 @@
             </Grid.RowDefinitions>
 
             <!--Send Bar Top Line-->
-            <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"
+            <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="5"
                     BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="0,0,0,1"
                     Height="4"
                     Margin="0,0,0,0"
@@ -269,25 +400,27 @@
 
             <!--Box showing the message that is being replied to-->
             <Grid Grid.Column="1" 
+                  Grid.ColumnSpan="2"
                   HorizontalAlignment="Stretch" 
                   MaxHeight="100" 
                   Visibility="{Binding MessageBeingRepliedTo, Converter={StaticResource nullToVisibilityConverter}, ConverterParameter={StaticResource True}}"
                   Background="{DynamicResource MahApps.Brushes.Control.Background}">
-          
-                <Border CornerRadius="2" BorderBrush="#637182" BorderThickness="2,2,2,0">
+
+                <Border CornerRadius="2" BorderBrush="{DynamicResource DividerLineBrush}" BorderThickness="2,2,2,0">
                     <Border CornerRadius="3" BorderBrush="{DynamicResource InProgressReplyBrush}" Margin="5,5,5,3" BorderThickness="2,2,2,2">
                         <UserControl Content="{Binding MessageBeingRepliedTo}"
-                                         Background="{DynamicResource InProgressReplyBrush}"/>
+                                     Background="{DynamicResource InProgressReplyBrush}"/>
                     </Border>
                 </Border>
 
                 <Button HorizontalAlignment="Right"
-                        Width="35" Height="35"
-                        BorderThickness="0"
-                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Width="30" Height="30"
+                        Background="Transparent"
+                        Margin="0,0,7,0"
+                        Style="{StaticResource bottomBarButtonStyle}"
                         Command="{Binding TerminateReply}"
                         CommandParameter="{Binding Path=.}">
-                    <iconPacks:PackIconOcticons Width="15" Height="15" Foreground="#637182" Kind="X"/>
+                    <iconPacks:PackIconOcticons Width="15" Height="15"  Kind="X"/>
                 </Button>
             </Grid>
 
@@ -301,9 +434,37 @@
                 <iconPacks:PackIconMaterial Kind="React" Width="15" Height="15" />
             </Button>
 
+            <!--Markdown Button-->
+            <Button Grid.Row="1" Grid.Column="1"
+                    Background="Transparent"
+                    Margin="0"
+                    Command="{Binding ToggleMarkdownMode}" >
+
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource bottomBarButtonStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMarkdownMode}" Value="True">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <iconPacks:PackIconMaterial Kind="LanguageMarkdown" Width="15" Height="15" />
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsMarkdownMode}" Value="False">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <iconPacks:PackIconMaterial Kind="LanguageMarkdownOutline" Width="15" Height="15" />
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
             <!--Message Text Box-->
             <extensions:MultiLineSendBox
-                Grid.Row="1" Grid.Column="1"
+                Grid.Row="1" Grid.Column="2"
                 Style="{StaticResource GroupMeClient.Wpf.Styles.SendTextBox}"
                 IsReadOnly="{Binding IsSending}"
                 extensions:FileDragDropPasteHelper.IsFileDragDropPasteEnabled="True"
@@ -325,7 +486,7 @@
             </extensions:MultiLineSendBox>
 
             <!--Plus Button-->
-            <Button Grid.Row="1" Grid.Column="2"
+            <Button Grid.Row="1" Grid.Column="3"
                     Style="{StaticResource bottomBarButtonStyle}"
                     Background="Transparent"
                     Margin="0,0,10,0"
@@ -335,7 +496,7 @@
             </Button>
 
             <!--Send Message Button-->
-            <Button Grid.Row="1" Grid.Column="3"
+            <Button Grid.Row="1" Grid.Column="4"
                     Style="{StaticResource bottomBarButtonStyle}"
                     Background="Transparent"
                     Margin="0,0,24,0"
@@ -350,4 +511,4 @@
                         Grid.ColumnSpan="1"
                         DataContext="{Binding SmallDialogManager}" />
     </Grid>
-</UserControl>
+</extensions:FocusedUserControl>

@@ -133,6 +133,10 @@ namespace GroupMeClient.WpfUI.Extensions
                     {
                         imageBytes = pngDataMs.ToArray();
                     }
+                    else if (pngData is byte[] bytes)
+                    {
+                        imageBytes = bytes;
+                    }
                 }
                 else if (Clipboard.ContainsData("DeviceIndependentBitmap"))
                 {

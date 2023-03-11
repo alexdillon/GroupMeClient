@@ -1,0 +1,10 @@
+﻿ <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
+
+    <Color x:Key="GMDC.Accessibility.MessageFocus.BorderColor">#1873BA</Color>
+    <SolidColorBrush options:Freeze="True" x:Key="GMDC.Accessibility.MessageFocus.BorderBrush" Color="{DynamicResource GMDC.Accessibility.MessageFocus.BorderColor}"/>
+
+    <Thickness x:Key="GMDC.Accessibility.MessageFocus.BorderThickness">3</Thickness>
+     
+</ResourceDictionary>

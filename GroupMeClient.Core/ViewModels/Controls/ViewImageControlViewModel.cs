@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
+using GroupMeClient.Core.Utilities;
 using GroupMeClientApi;
-using Microsoft.Win32;
-using SQLitePCL;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="ViewImageControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.ViewImageControl"/> control.
     /// </summary>
-    public class ViewImageControlViewModel : GalaSoft.MvvmLight.ViewModelBase, IDisposable
+    public class ViewImageControlViewModel : ObservableObject, IDisposable
     {
-        private Stream imageAttachmentStream;
+        private byte[] imageData;
         private bool isLoading;
         private double rotateAngle;
 
@@ -58,8 +59,17 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public Stream ImageStream
         {
-            get => this.imageAttachmentStream;
-            internal set => this.Set(() => this.ImageStream, ref this.imageAttachmentStream, value);
+            get
+            {
+                if (this.ImageData == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new ReadOnlyByteStream(this.ImageData);
+                }
+            }
         }
 
         /// <summary>
@@ -68,7 +78,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsLoading
         {
             get => this.isLoading;
-            private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
+            private set => this.SetProperty(ref this.isLoading, value);
         }
 
         /// <summary>
@@ -77,7 +87,17 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public double RotateAngle
         {
             get => this.rotateAngle;
-            private set => this.Set(() => this.RotateAngle, ref this.rotateAngle, value);
+            private set => this.SetProperty(ref this.rotateAngle, value);
+        }
+
+        private byte[] ImageData
+        {
+            get => this.imageData;
+            set
+            {
+                this.imageData = value;
+                this.OnPropertyChanged(nameof(this.ImageStream));
+            }
         }
 
         private string ImageUrl { get; }
@@ -87,7 +107,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <inheritdoc/>
         void IDisposable.Dispose()
         {
-            (this.imageAttachmentStream as IDisposable)?.Dispose();
+            // No unmanaged image resources anymore
         }
 
         private async Task LoadImageAttachment()
@@ -99,7 +119,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 return;
             }
 
-            this.ImageStream = new MemoryStream(image);
+            this.ImageData = image;
             this.IsLoading = false;
         }
 
@@ -108,7 +128,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             var imageUrlWithoutLongId = this.ImageUrl.Substring(0, this.ImageUrl.LastIndexOf('.'));
             var extension = Path.GetExtension(imageUrlWithoutLongId);
 
-            var fileDialogService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IFileDialogService>();
+            var fileDialogService = Ioc.Default.GetService<IFileDialogService>();
             var filters = new List<FileFilter>
             {
                 new FileFilter() { Name = "Image", Extensions = { extension } },
@@ -127,7 +147,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void CopyImageAction()
         {
-            var clipboardService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IClipboardService>();
+            var clipboardService = Ioc.Default.GetService<IClipboardService>();
 
             var rawData = new MemoryStream();
             this.ImageStream.Seek(0, SeekOrigin.Begin);

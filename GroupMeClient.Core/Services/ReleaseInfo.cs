@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GroupMeClient.Core.Controls.Documents;
 
 namespace GroupMeClient.Core.Services
 {
@@ -17,7 +18,12 @@ namespace GroupMeClient.Core.Services
         /// <summary>
         /// Gets or sets the release notes for this release.
         /// </summary>
-        public string ReleaseNotes { get; set; }
+        public string ReleaseNotesText { get; set; }
+
+        /// <summary>
+        /// Gets or sets the formatted release notes for this release.
+        /// </summary>
+        public IEnumerable<Inline> ReleaseNotes { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this version is a pre-release.

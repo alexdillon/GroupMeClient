@@ -4,7 +4,8 @@ namespace GroupMeClient.Core.Caching.Models
 {
     /// <summary>
     /// <see cref="GroupOrChatState"/> saves the state of a specific <see cref="GroupMeClientApi.Models.Group"/>
-    /// or <see cref="GroupMeClientApi.Models.Chat"/>.
+    /// or <see cref="GroupMeClientApi.Models.Chat"/>. This is used in the GMDC UI when computing unread message
+    /// notifications.
     /// </summary>
     public class GroupOrChatState
     {

@@ -2,16 +2,17 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels
 {
     /// <summary>
     /// <see cref="LoginViewModel"/> provides the ViewModel for the login screen.
     /// </summary>
-    public class LoginViewModel : ViewModelBase
+    public class LoginViewModel : ObservableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LoginViewModel"/> class.
@@ -50,7 +51,7 @@ namespace GroupMeClient.Core.ViewModels
 
         private void LaunchLogin()
         {
-            var osService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
+            var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
             osService.OpenWebBrowser(this.OAuthClient.GroupMeOAuthUrl);
         }
 

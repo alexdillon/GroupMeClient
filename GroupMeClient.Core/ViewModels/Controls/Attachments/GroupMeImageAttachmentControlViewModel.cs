@@ -2,33 +2,36 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Services;
+using GroupMeClient.Core.Utilities;
 using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 {
     /// <summary>
     /// <see cref="GroupMeImageAttachmentControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.GroupMeImageAttachmentControl"/> control.
     /// </summary>
-    public class GroupMeImageAttachmentControlViewModel : ViewModelBase, IDisposable
+    public class GroupMeImageAttachmentControlViewModel : ObservableObject, IDisposable
     {
-        private System.IO.Stream imageAttachmentStream;
+        private byte[] imageData;
         private bool isLoading;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupMeImageAttachmentControlViewModel"/> class.
         /// </summary>
         /// <param name="attachment">The attachment to display.</param>
+        /// <param name="groupId">The ID of the Group or Chat this image's parent message is in.</param>
         /// <param name="imageDownloader">The downloader to use for loading the image.</param>
         /// <param name="previewMode">The resolution in which to download and render the image.</param>
-        public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, ImageDownloader imageDownloader, GroupMeImageDisplayMode previewMode = GroupMeImageDisplayMode.Large)
+        public GroupMeImageAttachmentControlViewModel(ImageAttachment attachment, string groupId, ImageDownloader imageDownloader, GroupMeImageDisplayMode previewMode = GroupMeImageDisplayMode.Large)
         {
             this.ImageAttachment = attachment;
+            this.GroupOrChatId = groupId;
             this.ImageDownloader = imageDownloader;
             this.Clicked = new RelayCommand(this.ClickedAction);
             this.PreviewMode = previewMode;
@@ -68,10 +71,19 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         /// <summary>
         /// Gets the attached image.
         /// </summary>
-        public System.IO.Stream ImageAttachmentStream
+        public Stream ImageAttachmentStream
         {
-            get => this.imageAttachmentStream;
-            internal set => this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value);
+            get
+            {
+                if (this.ImageData == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new ReadOnlyByteStream(this.ImageData);
+                }
+            }
         }
 
         /// <summary>
@@ -80,7 +92,7 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         public bool IsLoading
         {
             get => this.isLoading;
-            private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
+            private set => this.SetProperty(ref this.isLoading, value);
         }
 
         private ImageAttachment ImageAttachment { get; }
@@ -89,10 +101,22 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 
         private ImageDownloader ImageDownloader { get; }
 
+        private string GroupOrChatId { get; }
+
+        private byte[] ImageData
+        {
+            get => this.imageData;
+            set
+            {
+                this.imageData = value;
+                this.OnPropertyChanged(nameof(this.ImageAttachmentStream));
+            }
+        }
+
         /// <inheritdoc/>
         public void Dispose()
         {
-            (this.imageAttachmentStream as IDisposable)?.Dispose();
+            // No unmanaged image data anymore
         }
 
         private static string GetGroupMeImageDisplayModeString(GroupMeImageDisplayMode mode)
@@ -116,25 +140,20 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         private async Task LoadImageAttachment()
         {
             var resolution = GetGroupMeImageDisplayModeString(this.PreviewMode);
-
             var image = await this.ImageDownloader.DownloadPostImageAsync($"{this.ImageAttachment.Url}.{resolution}");
-
-            if (image == null)
+            if (image != null)
             {
-                return;
+                this.IsLoading = false;
+                this.ImageData = image;
             }
-
-            this.ImageAttachmentStream?.Dispose();
-            this.ImageAttachmentStream = new System.IO.MemoryStream(image);
-            this.IsLoading = false;
         }
 
         private void ClickedAction()
         {
             var vm = new ViewImageControlViewModel(this.ImageAttachment.Url, this.ImageDownloader);
 
-            var request = new Messaging.DialogRequestMessage(vm);
-            Messenger.Default.Send(request);
+            var request = new Messaging.DialogRequestMessage(vm, destination: this.GroupOrChatId);
+            WeakReferenceMessenger.Default.Send(request);
         }
 
         private void GenerateSizedPlaceholder()
@@ -142,9 +161,8 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
             // Assign a dummy image of the same size to allow for immediate layout
             // operations to be completed accurately before the full image loads
             var dimensions = this.GetScaledImageDimensions();
-            var imageService = SimpleIoc.Default.GetInstance<IImageService>();
-            var bytes = imageService.CreateTransparentPng(dimensions.Item1, dimensions.Item2);
-            this.ImageAttachmentStream = new MemoryStream(bytes);
+            var imageService = Ioc.Default.GetService<IImageService>();
+            this.ImageData = imageService.CreateTransparentPng(dimensions.Item1, dimensions.Item2);
         }
 
         private Tuple<int, int> GetScaledImageDimensions()

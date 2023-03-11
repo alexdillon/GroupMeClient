@@ -4,11 +4,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Services;
 using GroupMeClientApi.Models;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -16,7 +18,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
     /// <see cref="PaginatedMessagesControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.PaginatedMessagesControlViewModel"/> control that displays paginated messages.
     /// Controls for sending messages are also included.
     /// </summary>
-    public class PaginatedMessagesControlViewModel : ViewModelBase
+    public class PaginatedMessagesControlViewModel : ObservableObject
     {
         private readonly TimeSpan maxMarkerDistanceTime = TimeSpan.FromMinutes(15);
         private IQueryable<Message> messages;
@@ -33,6 +35,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.GoBackCommand = new RelayCommand(this.GoBack, this.CanGoBack);
             this.GoForwardCommand = new RelayCommand(this.GoForward, this.CanGoForward);
+
+            this.InitiateReply = new RelayCommand<MessageControlViewModel>(this.InitiateReplyCommand);
 
             this.NewestAtBottom = false;
         }
@@ -90,17 +94,22 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <summary>
         /// Gets the action to be performed when the back button is clicked.
         /// </summary>
-        public RelayCommand GoBackCommand { get; }
+        public ICommand GoBackCommand { get; }
 
         /// <summary>
         /// Gets the action to be performed when the forward/next button is clicked.
         /// </summary>
-        public RelayCommand GoForwardCommand { get; }
+        public ICommand GoForwardCommand { get; }
 
         /// <summary>
         /// Gets or sets the action to be performed when a <see cref="Message"/> is selected.
         /// </summary>
         public ICommand MessageSelectedCommand { get; set; }
+
+        /// <summary>
+        /// Gets the action to be performed to initiate composing a reply to a specific message.
+        /// </summary>
+        public ICommand InitiateReply { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether a title is shown.
@@ -136,7 +145,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public IQueryable<Message> Messages
         {
             get => this.messages;
-            private set => this.Set(() => this.Messages, ref this.messages, value);
+            private set => this.SetProperty(ref this.messages, value);
         }
 
         /// <summary>
@@ -145,7 +154,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public MessageControlViewModelBase SelectedMessage
         {
             get => this.selectedMessage;
-            set => this.Set(() => this.SelectedMessage, ref this.selectedMessage, value);
+            set => this.SetProperty(ref this.selectedMessage, value);
         }
 
         private DateTime LastMarkerTime { get; set; }
@@ -207,7 +216,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task LoadPage(int pageNumber = 0, bool? isUp = null)
         {
-            var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+            var uiDispatcher = Ioc.Default.GetService<IUserInterfaceDispatchService>();
             await uiDispatcher.InvokeAsync(() =>
             {
                 var range = this.Messages.Skip(pageNumber * this.MessagesPerPage).Take(this.MessagesPerPage);
@@ -256,9 +265,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                     }
                 }
 
-                this.GoBackCommand.RaiseCanExecuteChanged();
-                this.GoForwardCommand.RaiseCanExecuteChanged();
-                this.RaisePropertyChanged(nameof(this.Title));
+                this.OnPropertyChanged(nameof(this.Title));
             });
         }
 
@@ -323,6 +330,17 @@ namespace GroupMeClient.Core.ViewModels.Controls
             // Cut to match the expected page size.
             int startIndex = result.FindIndex(m => m.Id == startAt.Id);
             return result.Skip(startIndex);
+        }
+
+        private void InitiateReplyCommand(MessageControlViewModel message)
+        {
+            var groupOrChatId = message.Message.GroupId ?? message.Message.Chat?.OtherUser.Id;
+
+            WeakReferenceMessenger.Default.Send(new Messaging.SwitchToPageRequestMessage(Messaging.SwitchToPageRequestMessage.Page.Chats));
+
+            WeakReferenceMessenger.Default.Send(new Messaging.ShowChatRequestMessage(
+                groupOrChatId: groupOrChatId,
+                startReply: message));
         }
     }
 }

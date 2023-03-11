@@ -4,13 +4,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="MessageEffectsControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.MessageEffectsControl"/> control.
     /// </summary>
-    public class MessageEffectsControlViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class MessageEffectsControlViewModel : ObservableObject
     {
         private string typedMessageContents;
         private string selectedMessageContents;
@@ -44,7 +46,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             set
             {
-                this.Set(() => this.TypedMessageContents, ref this.typedMessageContents, value);
+                this.SetProperty(ref this.typedMessageContents, value);
 
                 if (this.GeneratorCancel != null)
                 {
@@ -64,14 +66,14 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public string SelectedMessageContents
         {
             get => this.selectedMessageContents;
-            set => this.Set(() => this.SelectedMessageContents, ref this.selectedMessageContents, value);
+            set => this.SetProperty(ref this.selectedMessageContents, value);
         }
 
         private CancellationTokenSource GeneratorCancel { get; set; }
 
         private void GenerateResults(CancellationToken cancellationToken)
         {
-            var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+            var uiDispatcher = Ioc.Default.GetService<IUserInterfaceDispatchService>();
             uiDispatcher.Invoke(() =>
             {
                 this.GeneratedMessages.Clear();
@@ -83,7 +85,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             };
 
             // Run all generators in parallel in case one plugin hangs or runs very slowly
-            var pluginManager = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IPluginManagerService>();
+            var pluginManager = Ioc.Default.GetService<IPluginManagerService>();
             Parallel.ForEach(pluginManager.MessageComposePlugins, parallelOptions, async (plugin) =>
             {
                 if (parallelOptions.CancellationToken.IsCancellationRequested)

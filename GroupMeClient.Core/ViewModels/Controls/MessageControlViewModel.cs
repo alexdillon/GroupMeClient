@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Controls.Documents;
 using GroupMeClient.Core.Utilities;
 using GroupMeClient.Core.ViewModels.Controls.Attachments;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -29,6 +29,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private bool isStarred;
         private bool isHidden;
 
+        private bool skipMarkdown;
         private bool showDetails;
 
         /// <summary>
@@ -46,10 +47,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.Avatar = new AvatarControlViewModel(this.Message, this.Message.ImageDownloader);
             this.Inlines = new ObservableCollection<Inline>();
-            this.LikeAction = new RelayCommand(async () => { await this.LikeMessageAsync(); }, () => true, true);
+            this.LikeAction = new AsyncRelayCommand(this.LikeMessageAsync);
             this.StarAction = new RelayCommand(this.StarMessage);
             this.DeHideAction = new RelayCommand(this.DeHideMessage);
             this.ToggleMessageDetails = new RelayCommand(() => this.ShowDetails = !this.ShowDetails);
+            this.ToggleMarkdown = new RelayCommand(this.ToggleMarkdownHandler);
 
             this.ShowLikers = showLikers;
             this.ShowPreviewsOnlyForMultiImages = showPreviewsOnlyForMultiImages;
@@ -136,9 +138,14 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ICommand DeHideAction { get; }
 
         /// <summary>
-        /// Gets the command to be performed to toggle whether details are shwon for this <see cref="Message"/>.
+        /// Gets the command to be performed to toggle whether details are shown for this <see cref="Message"/>.
         /// </summary>
         public ICommand ToggleMessageDetails { get; }
+
+        /// <summary>
+        /// Gets the command to be performed to toggle whether Markdown is shown for this <see cref="Message"/>.
+        /// </summary>
+        public ICommand ToggleMarkdown { get; }
 
         /// <summary>
         /// Gets a value indicating the number of <see cref="MessageControlViewModel"/>s deep this <see cref="MessageControlViewModel"/> is nested. Top-level messages that
@@ -203,7 +210,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public AvatarControlViewModel Avatar
         {
             get => this.avatar;
-            private set => this.Set(() => this.Avatar, ref this.avatar, value);
+            private set => this.SetProperty(ref this.avatar, value);
         }
 
         /// <summary>
@@ -212,7 +219,17 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool ShowDetails
         {
             get => this.showDetails;
-            set => this.Set(() => this.ShowDetails, ref this.showDetails, value);
+            set => this.SetProperty(ref this.showDetails, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the message should be displayed in plain text,
+        /// and all Markdown processing is skipped.
+        /// </summary>
+        public bool SkipMarkdown
+        {
+            get => this.skipMarkdown;
+            set => this.SetProperty(ref this.skipMarkdown, value);
         }
 
         /// <summary>
@@ -222,7 +239,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public RepliedMessageControlViewModel RepliedMessage
         {
             get => this.repliedMessage;
-            set => this.Set(() => this.RepliedMessage, ref this.repliedMessage, value);
+            set => this.SetProperty(ref this.repliedMessage, value);
         }
 
         /// <summary>
@@ -305,8 +322,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             get
             {
-                var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
-                return this.Message.UserId == me.UserId;
+                try
+                {
+                    var me = this.Message.Group?.WhoAmI() ?? this.Message.Chat?.WhoAmI();
+                    return this.Message.UserId == me.UserId;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
         }
 
@@ -390,7 +414,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsMessageStarred
         {
             get => this.isStarred;
-            private set => this.Set(() => this.IsMessageStarred, ref this.isStarred, value);
+            private set => this.SetProperty(ref this.isStarred, value);
         }
 
         /// <summary>
@@ -399,7 +423,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsMessageHidden
         {
             get => this.isHidden;
-            private set => this.Set(() => this.IsMessageHidden, ref this.isHidden, value);
+            private set => this.SetProperty(ref this.isHidden, value);
         }
 
         private string HiddenText { get; set; } = string.Empty;
@@ -477,23 +501,73 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             int totalAttachedImages = this.Message.Attachments.OfType<ImageAttachment>().Count();
 
-            // Check if this is a GroupMe Desktop Client Reply-extension message
+            // Check if this is a replied message, and if it's GM Native Reply or GMDC Extension reply
+            var (repliedMessageId, isGroupMeNativeReply) = this.CheckReplyStatus();
+
+            if (!string.IsNullOrEmpty(repliedMessageId) && !isGroupMeNativeReply)
+            {
+                // GMDC Extension replies include a screenshot of the replied image
+                // for non-GMDC clients to see the original quoted message. Decrement the count
+                // of attached images to adjust for this.
+                totalAttachedImages--;
+            }
+
+            // Load GroupMe Image and Video Attachments
+            var doneWithAttachments = this.HandleGroupMeAttachments(totalAttachedImages);
+
+            // Handle if this is a reply message
+            if (!string.IsNullOrEmpty(repliedMessageId))
+            {
+                var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
+                var repliedMessageAttachment = new RepliedMessageControlViewModel(repliedMessageId, container, this.NestLevel);
+
+                // If the reply type is GMDC-extension,
+                // replace the photo of the original message that is included for non-GMDC clients with the real message
+                if (this.AttachedItems.Count > 0 && !isGroupMeNativeReply)
+                {
+                    var lastIndexOfPhoto = -1;
+                    for (int i = 0; i < this.AttachedItems.Count; i++)
+                    {
+                        if (this.AttachedItems[i] is GroupMeImageAttachmentControlViewModel)
+                        {
+                            lastIndexOfPhoto = i;
+                        }
+                    }
+
+                    if (lastIndexOfPhoto >= 0)
+                    {
+                        this.AttachedItems.RemoveAt(lastIndexOfPhoto);
+                    }
+                }
+
+                this.RepliedMessage = repliedMessageAttachment;
+            }
+
+            if (!doneWithAttachments)
+            {
+                // If this message type is allowed to have additional attachments,
+                // scan the message body for supported link types.
+                this.HandleLinkBasedAttachments();
+            }
+        }
+
+        private (string replyId, bool isGroupMeNative) CheckReplyStatus()
+        {
             var repliedMessageId = string.Empty;
-            bool isGroupMeNativeReply = false;
+            var isGroupMeNativeReply = false;
+
             if (MessageUtils.IsReplyGen1(this.Message))
             {
                 // Method 1, where /rmid:<message-id> is appended to the end of the message body
                 var token = Regex.Match(this.Message.Text, MessageUtils.RepliedMessageRegex).Value;
                 this.HiddenText = token + this.HiddenText;
                 repliedMessageId = token.Replace("\n/rmid:", string.Empty);
-                totalAttachedImages--; // Don't count the preview bitmap as an image
             }
             else if (MessageUtils.IsReplyGen2(this.Message))
             {
                 // Method 2, where gmdc-r<message-id> is included as the prefix of the message GUID
                 var parts = this.Message.SourceGuid.Split('-');
                 repliedMessageId = parts[1].Substring(1);
-                totalAttachedImages--; // Don't count the preview bitmap as an image
             }
             else if (this.Message.Attachments.OfType<ReplyAttachment>().Count() > 0)
             {
@@ -503,10 +577,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 isGroupMeNativeReply = true;
             }
 
-            bool hasMultipleImages = totalAttachedImages > 1;
-            bool doneWithAttachments = false;
+            return (replyId: repliedMessageId, isGroupMeNative: isGroupMeNativeReply);
+        }
 
-            // Load GroupMe Image and Video Attachments
+        private bool HandleGroupMeAttachments(int totalAttachedImages)
+        {
+            var doneWithAttachments = false;
+            var hasMultipleImages = totalAttachedImages > 1;
+            var groupOrChatId = this.Message.Group?.Id ?? this.Message.Chat?.Id;
+
             foreach (var attachment in this.Message.Attachments)
             {
                 if (attachment is ImageAttachment imageAttach)
@@ -517,7 +596,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                         displayMode = GroupMeImageAttachmentControlViewModel.GroupMeImageDisplayMode.Preview;
                     }
 
-                    var imageVm = new GroupMeImageAttachmentControlViewModel(imageAttach, this.Message.ImageDownloader, displayMode);
+                    var imageVm = new GroupMeImageAttachmentControlViewModel(imageAttach, groupOrChatId, this.Message.ImageDownloader, displayMode);
                     this.AttachedItems.Add(imageVm);
 
                     // Starting in 9/2019, GroupMe supports multiple images-per-message.
@@ -568,38 +647,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 }
             }
 
-            // Handle if this is a GroupMe Desktop Client Reply-extension message
-            if (!string.IsNullOrEmpty(repliedMessageId))
-            {
-                var container = (IMessageContainer)this.Message.Group ?? this.Message.Chat;
-                var repliedMessageAttachment = new RepliedMessageControlViewModel(repliedMessageId, container, this.NestLevel);
+            return doneWithAttachments;
+        }
 
-                // Replace the photo of the original message that is included for non-GMDC clients with the real message
-                if (this.AttachedItems.Count > 0 && !isGroupMeNativeReply)
-                {
-                    var lastIndexOfPhoto = -1;
-                    for (int i = 0; i < this.AttachedItems.Count; i++)
-                    {
-                        if (this.AttachedItems[i] is GroupMeImageAttachmentControlViewModel)
-                        {
-                            lastIndexOfPhoto = i;
-                        }
-                    }
-
-                    if (lastIndexOfPhoto >= 0)
-                    {
-                        this.AttachedItems.RemoveAt(lastIndexOfPhoto);
-                    }
-                }
-
-                this.RepliedMessage = repliedMessageAttachment;
-            }
-
-            if (doneWithAttachments)
-            {
-                return;
-            }
-
+        private void HandleLinkBasedAttachments()
+        {
             // Load Link-Based Attachments (Tweets, Web Images, Websites, etc.)
             var text = this.Message.Text ?? string.Empty;
             if (text.IndexOf(" ") > 0)
@@ -657,6 +709,15 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void LoadInlinesForMessageBody()
         {
+            if (MessageUtils.IsGMDCMarkdown(this.Message) && !this.SkipMarkdown)
+            {
+                // If message is sent as Markdown, process it entirely in Markdown
+                // and bypass the normal tokenization process.
+                this.Inlines.Clear();
+                this.Inlines.Add(new MarkdownMessage(this.Message.Text));
+                return;
+            }
+
             var text = this.Message.Text ?? string.Empty;
 
             var inlinesTemp = new List<Inline>();
@@ -825,7 +886,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void StarMessage()
         {
-            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            var persistManager = Ioc.Default.GetService<PersistManager>();
             using (var context = persistManager.OpenNewContext())
             {
                 if (this.IsMessageStarred)
@@ -844,7 +905,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void DeHideMessage()
         {
-            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            var persistManager = Ioc.Default.GetService<PersistManager>();
             using (var context = persistManager.OpenNewContext())
             {
                 if (this.IsMessageHidden)
@@ -859,25 +920,32 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void RedrawMessage()
         {
-            this.RaisePropertyChanged(nameof(this.Sender));
-            this.RaisePropertyChanged(nameof(this.SentTimeString));
-            this.RaisePropertyChanged(nameof(this.SenderPlatform));
-            this.RaisePropertyChanged(nameof(this.DidISendItColoring));
-            this.RaisePropertyChanged(nameof(this.DidISendIt));
+            this.OnPropertyChanged(nameof(this.Sender));
+            this.OnPropertyChanged(nameof(this.SentTimeString));
+            this.OnPropertyChanged(nameof(this.SenderPlatform));
+            this.OnPropertyChanged(nameof(this.DidISendItColoring));
+            this.OnPropertyChanged(nameof(this.DidISendIt));
 
             this.RedrawLikers();
         }
 
         private void RedrawLikers()
         {
-            this.RaisePropertyChanged(nameof(this.LikeStatus));
-            this.RaisePropertyChanged(nameof(this.LikeCount));
-            this.RaisePropertyChanged(nameof(this.LikedByAvatars));
+            this.OnPropertyChanged(nameof(this.LikeStatus));
+            this.OnPropertyChanged(nameof(this.LikeCount));
+            this.OnPropertyChanged(nameof(this.LikedByAvatars));
+        }
+
+        private void ToggleMarkdownHandler()
+        {
+            this.SkipMarkdown = !this.SkipMarkdown;
+            this.LoadInlinesForMessageBody();
+            this.OnPropertyChanged(string.Empty);
         }
 
         private void LoadStarAndHiddenStatus()
         {
-            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            var persistManager = Ioc.Default.GetService<PersistManager>();
             using (var cache = persistManager.OpenNewContext())
             {
                 this.IsMessageStarred = cache.StarredMessages.Find(this.Message.Id) != null;

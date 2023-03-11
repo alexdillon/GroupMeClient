@@ -8,19 +8,15 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    env:
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup Nuget.exe
-      uses: warrenbuckley/Setup-Nuget@v1
-    - name: Restore packages
-      run: nuget restore GroupMeClient.sln
-    - name: Setup MSBuild.exe
-      uses: warrenbuckley/Setup-MSBuild@v1
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Restore with MSBuild
+      run: msbuild GroupMeClient.WpfUI -t:restore
     - name: Build with MSBuild
-      run: msbuild  GroupMeClient.WpfUI -p:Configuration=Release
+      run: msbuild GroupMeClient.WpfUI -p:Configuration=Release
     - name: Get the version
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}

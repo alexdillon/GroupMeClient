@@ -11,8 +11,8 @@
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FontSize" Value="15" />
-        <Setter Property="RegularTextBrush" Value="{DynamicResource MahApps.Brushes.Text}" />
-        <Setter Property="ErrorTextBrush" Value="Red" />
+        <Setter Property="RegularTextBrush" Value="{DynamicResource MessageComposeBrush}" />
+        <Setter Property="ErrorTextBrush" Value="{DynamicResource MessageComposeBrush.Error}" />
         <Setter Property="AcceptsReturn" Value="True" />
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="SpellCheck.IsEnabled" Value="True" />

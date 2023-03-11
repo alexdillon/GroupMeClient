@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="GroupMeClient.WpfUI.Views.WindowHost"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:GroupMeClient.WpfUI.Views.Controls"
+             Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
+             FontFamily="{DynamicResource GroupMeFont}"
+             mc:Ignorable="d">
+    <Grid>
+        <ContentControl Content="{Binding Content}" />
+        
+        <!--Big Dialog Popup-->
+        <controls:Popup Grid.Row="0" Grid.Column="0"
+                        Grid.RowSpan="1"
+                        Grid.ColumnSpan="2"
+                        DataContext="{Binding DialogManagerRegular}" />
+
+        <!--Top Most Dialog Popup-->
+        <controls:Popup Grid.Row="0" Grid.Column="0"
+                        Grid.RowSpan="1"
+                        Grid.ColumnSpan="2"
+                        DataContext="{Binding DialogManagerTopMost}" />
+    </Grid>
+</UserControl>

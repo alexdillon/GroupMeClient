@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Utilities;
 using GroupMeClient.Core.ViewModels.Controls;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
-using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 using ReactiveUI;
 
 namespace GroupMeClient.Core.ViewModels
@@ -25,7 +25,7 @@ namespace GroupMeClient.Core.ViewModels
     /// <summary>
     /// <see cref="SearchViewModel"/> provides a ViewModel for the <see cref="Controls.SearchView"/> view.
     /// </summary>
-    public class SearchViewModel : ViewModelBase, IPluginUIIntegration
+    public class SearchViewModel : ObservableObject, IPluginUIIntegration
     {
         private string searchTerm = string.Empty;
         private string selectedGroupName = string.Empty;
@@ -37,6 +37,8 @@ namespace GroupMeClient.Core.ViewModels
         private DateTime filterStartDate;
         private DateTime filterEndDate = DateTime.Now.AddDays(1);
         private Member filterMessagesFrom;
+        private bool filterIsExact;
+        private bool filterIsANDTerms;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchViewModel"/> class.
@@ -52,11 +54,11 @@ namespace GroupMeClient.Core.ViewModels
             this.SortedGroupChats = new ObservableCollectionExtended<GroupControlViewModel>();
 
             var updatedSort = this.AllGroupsChats
-              .Connect()
-              .WhenPropertyChanged(c => c.LastUpdated)
-              .Throttle(TimeSpan.FromMilliseconds(250))
-              .ObserveOn(RxApp.MainThreadScheduler)
-              .Select(_ => Unit.Default);
+                .Connect()
+                .WhenPropertyChanged(c => c.LastUpdated)
+                .Throttle(TimeSpan.FromMilliseconds(250))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Select(_ => Unit.Default);
 
             this.AllGroupsChats.AsObservableList()
                 .Connect()
@@ -84,7 +86,7 @@ namespace GroupMeClient.Core.ViewModels
 
             this.Members = new ObservableCollection<Member>();
 
-            this.Loaded = new RelayCommand(async () => await this.LoadIndexedGroups(), true);
+            this.Loaded = new RelayCommand(() => Task.Run(this.LoadIndexedGroups));
         }
 
         /// <summary>
@@ -134,7 +136,7 @@ namespace GroupMeClient.Core.ViewModels
         public string SearchTerm
         {
             get => this.searchTerm;
-            set => this.SetSearchProperty(() => this.SearchTerm, ref this.searchTerm, value);
+            set => this.SetSearchProperty(ref this.searchTerm, value);
         }
 
         /// <summary>
@@ -143,7 +145,7 @@ namespace GroupMeClient.Core.ViewModels
         public bool FilterHasAttachedImage
         {
             get => this.filterHasAttachedImage;
-            set => this.SetSearchProperty(() => this.FilterHasAttachedImage, ref this.filterHasAttachedImage, value);
+            set => this.SetSearchProperty(ref this.filterHasAttachedImage, value);
         }
 
         /// <summary>
@@ -152,7 +154,7 @@ namespace GroupMeClient.Core.ViewModels
         public bool FilterHasAttachedLinkedImage
         {
             get => this.filterHasAttachedLinkedImage;
-            set => this.SetSearchProperty(() => this.FilterHasAttachedLinkedImage, ref this.filterHasAttachedLinkedImage, value);
+            set => this.SetSearchProperty(ref this.filterHasAttachedLinkedImage, value);
         }
 
         /// <summary>
@@ -161,7 +163,7 @@ namespace GroupMeClient.Core.ViewModels
         public bool FilterHasAttachedMentions
         {
             get => this.filterHasAttachedMentions;
-            set => this.SetSearchProperty(() => this.FilterHasAttachedMentions, ref this.filterHasAttachedMentions, value);
+            set => this.SetSearchProperty(ref this.filterHasAttachedMentions, value);
         }
 
         /// <summary>
@@ -170,7 +172,7 @@ namespace GroupMeClient.Core.ViewModels
         public bool FilterHasAttachedVideo
         {
             get => this.filterHasAttachedVideo;
-            set => this.SetSearchProperty(() => this.FilterHasAttachedVideo, ref this.filterHasAttachedVideo, value);
+            set => this.SetSearchProperty(ref this.filterHasAttachedVideo, value);
         }
 
         /// <summary>
@@ -179,7 +181,7 @@ namespace GroupMeClient.Core.ViewModels
         public bool FilterHasAttachedDocument
         {
             get => this.filterHasAttachedDocument;
-            set => this.SetSearchProperty(() => this.FilterHasAttachedDocument, ref this.filterHasAttachedDocument, value);
+            set => this.SetSearchProperty(ref this.filterHasAttachedDocument, value);
         }
 
         /// <summary>
@@ -188,7 +190,7 @@ namespace GroupMeClient.Core.ViewModels
         public DateTime FilterStartDate
         {
             get => this.filterStartDate;
-            set => this.SetSearchProperty(() => this.FilterStartDate, ref this.filterStartDate, value);
+            set => this.SetSearchProperty(ref this.filterStartDate, value);
         }
 
         /// <summary>
@@ -197,7 +199,34 @@ namespace GroupMeClient.Core.ViewModels
         public DateTime FilterEndDate
         {
             get => this.filterEndDate;
-            set => this.SetSearchProperty(() => this.FilterEndDate, ref this.filterEndDate, value);
+            set => this.SetSearchProperty(ref this.filterEndDate, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the search term should be queried exactly.
+        /// </summary>
+        public bool FilterIsExact
+        {
+            get => this.filterIsExact;
+            set
+            {
+                this.filterIsANDTerms = !value;
+                this.SetSearchProperty(ref this.filterIsExact, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the search term should match messages containing
+        /// each word in the query (word1 AND word2 AND word3).
+        /// </summary>
+        public bool FilterIsANDTerm
+        {
+            get => this.filterIsANDTerms;
+            set
+            {
+                this.filterIsExact = !value;
+                this.SetSearchProperty(ref this.filterIsANDTerms, value);
+            }
         }
 
         /// <summary>
@@ -206,7 +235,7 @@ namespace GroupMeClient.Core.ViewModels
         public Member FilterMessagesFrom
         {
             get => this.filterMessagesFrom;
-            set => this.SetSearchProperty(() => this.FilterMessagesFrom, ref this.filterMessagesFrom, value);
+            set => this.SetSearchProperty(ref this.filterMessagesFrom, value);
         }
 
         /// <summary>
@@ -215,7 +244,7 @@ namespace GroupMeClient.Core.ViewModels
         public string SelectedGroupName
         {
             get => this.selectedGroupName;
-            private set => this.Set(() => this.SelectedGroupName, ref this.selectedGroupName, value);
+            private set => this.SetProperty(ref this.selectedGroupName, value);
         }
 
         private GroupMeClientApi.GroupMeClient GroupMeClient { get; }
@@ -232,20 +261,24 @@ namespace GroupMeClient.Core.ViewModels
 
         private Timer RetryTimer { get; set; }
 
+        private bool LoadedCachedChats { get; set; } = false;
+
         /// <inheritdoc/>
         void IPluginUIIntegration.GotoContextView(Message message, IMessageContainer container)
         {
             var command = new Messaging.SwitchToPageRequestMessage(Messaging.SwitchToPageRequestMessage.Page.Search);
-            Messenger.Default.Send(command);
+            WeakReferenceMessenger.Default.Send(command);
 
-            this.OpenNewGroupChat(container);
+            this.OpenNewGroupChat(container, isHistorical: false);
             this.UpdateContextView(message);
         }
 
-        private void SetSearchProperty<T>(System.Linq.Expressions.Expression<Func<T>> propertyExpression, ref T field, T newValue)
+        private void SetSearchProperty<T>(ref T field, T newValue, [CallerMemberName] string callerName = "")
         {
-            this.Set(propertyExpression, ref field, newValue);
-            this.UpdateSearchResults();
+            if (this.SetProperty(ref field, newValue, callerName))
+            {
+                this.UpdateSearchResults();
+            }
         }
 
         private async Task LoadIndexedGroups()
@@ -260,13 +293,14 @@ namespace GroupMeClient.Core.ViewModels
                 this.CacheManager.SuperIndexer.EndTransaction();
 
                 this.AllGroupsChats.Clear();
+                this.LoadedCachedChats = false;
 
                 foreach (var group in groupsAndChats)
                 {
                     // Add Group/Chat to the list
                     var vm = new GroupControlViewModel(group)
                     {
-                        GroupSelected = new RelayCommand<GroupControlViewModel>((s) => this.OpenNewGroupChat(s.MessageContainer), (g) => true, true),
+                        GroupSelected = new RelayCommand<GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
                     };
                     this.AllGroupsChats.Add(vm);
                 }
@@ -278,9 +312,36 @@ namespace GroupMeClient.Core.ViewModels
                 System.Diagnostics.Debug.WriteLine($"Exception in {nameof(this.LoadIndexedGroups)} - {ex.Message}. Retrying...");
                 this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(async () => await this.LoadIndexedGroups());
             }
+
+            if (!this.LoadedCachedChats)
+            {
+                this.LoadedCachedChats = true;
+
+                using (var cache = this.CacheManager.OpenNewContext())
+                {
+                    var cachedGroupsAndChats = cache.GetGroupsAndChats();
+                    foreach (var cached in cachedGroupsAndChats)
+                    {
+                        var liveVersion = this.AllGroupsChats.Items.FirstOrDefault(g => g.Id == cached.Id);
+                        if (liveVersion == null)
+                        {
+                            this.AllGroupsChats.Add(new GroupControlViewModel(cached)
+                            {
+                                GroupSelected = new RelayCommand<GroupControlViewModel>(this.OpenNewGroupChat, (g) => true),
+                                IsHistorical = true,
+                            });
+                        }
+                    }
+                }
+            }
         }
 
-        private void OpenNewGroupChat(IMessageContainer group)
+        private void OpenNewGroupChat(GroupControlViewModel group)
+        {
+            this.OpenNewGroupChat(group.MessageContainer, group.IsHistorical);
+        }
+
+        private void OpenNewGroupChat(IMessageContainer group, bool isHistorical)
         {
             this.SelectedGroupChat = group;
 
@@ -292,16 +353,33 @@ namespace GroupMeClient.Core.ViewModels
             this.Members.Clear();
             if (this.SelectedGroupChat is Group g)
             {
-                foreach (var member in g.Members)
+                if (g.Members != null)
                 {
-                    this.Members.Add(member);
+                    foreach (var member in g.Members)
+                    {
+                        this.Members.Add(member);
+                    }
                 }
             }
             else if (this.SelectedGroupChat is Chat c)
             {
                 this.Members.Add(c.OtherUser);
-                this.Members.Add(c.WhoAmI());
+
+                try
+                {
+                    this.Members.Add(c.WhoAmI());
+                }
+                catch (Exception)
+                {
+                    // WhoAmI may not be available offline
+                    var conversationIdParts = c.ConversationId.Split('+');
+                    var meId = conversationIdParts.First(i => i != c.OtherUser.Id);
+                    this.Members.Add(Placeholders.CreatePlaceholderMember(meId, "Me"));
+                }
             }
+
+            // Historical groups no longer exist on GroupMe, so likes can't be synchronized anymore.
+            this.ContextView.SyncAndUpdate = !isHistorical;
 
             this.ContextView.DisplayMessages(null, null);
         }
@@ -317,6 +395,8 @@ namespace GroupMeClient.Core.ViewModels
             this.FilterHasAttachedMentions = false;
             this.FilterHasAttachedVideo = false;
             this.FilterHasAttachedDocument = false;
+
+            this.FilterIsExact = true;
 
             this.DeferSearchUpdating = false;
             if (!skipUpdating)
@@ -343,7 +423,7 @@ namespace GroupMeClient.Core.ViewModels
             this.ResultsView.DisplayMessages(null, null);
 
             var cacheContext = this.CacheManager.OpenNewContext();
-            var messagesForGroupChat = Caching.CacheManager.GetMessagesForGroup(this.SelectedGroupChat, cacheContext);
+            var messagesForGroupChat = cacheContext.GetMessagesForGroup(this.SelectedGroupChat);
 
             var startDate = this.FilterStartDate;
             var endDate = (this.FilterEndDate == DateTime.MinValue) ? DateTime.Now : this.FilterEndDate.AddDays(1);
@@ -370,8 +450,23 @@ namespace GroupMeClient.Core.ViewModels
                     .Where(m => m.UserId == userId);
             }
 
-            var results = messagesFromMemberForGroupChat
-                .Where(m => m.Text.ToLower().Contains(this.SearchTerm.ToLower()))
+            var results = messagesFromMemberForGroupChat;
+
+            // Apply query terms
+            if (this.FilterIsExact)
+            {
+                results = results.Where(m => m.Text.ToLower().Contains(this.SearchTerm.ToLower()));
+            }
+            else if (this.FilterIsANDTerm)
+            {
+                foreach (var keyword in this.SearchTerm.ToLower().Split(' '))
+                {
+                    results = results.Where(m => m.Text.ToLower().Contains(keyword));
+                }
+            }
+
+            // Apply time range filter
+            results = results
                 .Where(m => m.CreatedAtUnixTime >= startDateUnix)
                 .Where(m => m.CreatedAtUnixTime <= endDateUnix);
 
@@ -445,7 +540,7 @@ namespace GroupMeClient.Core.ViewModels
 
             var cacheContext = this.CacheManager.OpenNewContext();
 
-            var messagesForGroupChat = Caching.CacheManager.GetMessagesForGroup(this.SelectedGroupChat, cacheContext)
+            var messagesForGroupChat = cacheContext.GetMessagesForGroup(this.SelectedGroupChat)
                 .OrderBy(m => m.Id);
 
             this.ContextView.AssociateWith = this.SelectedGroupChat;

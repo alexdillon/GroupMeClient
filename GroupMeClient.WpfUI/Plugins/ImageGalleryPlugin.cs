@@ -9,6 +9,7 @@ using GroupMeClient.WpfUI.Plugins.Views;
 using GroupMeClientApi.Models;
 using GroupMeClientPlugin;
 using GroupMeClientPlugin.GroupChat;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.WpfUI.Plugins
 {
@@ -44,7 +45,7 @@ namespace GroupMeClient.WpfUI.Plugins
                 cleanup(cacheSession);
             };
 
-            var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+            var uiDispatcher = Ioc.Default.GetService<IUserInterfaceDispatchService>();
             uiDispatcher.Invoke(() =>
             {
                 window.Show();

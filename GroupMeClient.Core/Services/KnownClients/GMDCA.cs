@@ -21,6 +21,11 @@
         public static string GMDCAGuidReplyPrefix => "gmdca-r";
 
         /// <summary>
+        /// Gets the guid prefix applied to all messages sent as responses from GMDC.
+        /// </summary>
+        public static string GMDCAGuidMarkdownPrefix => "gmdca-m";
+
+        /// <summary>
         /// Gets the guid prefix applied to all messages sent from GMDC Toast Notifications.
         /// </summary>
         public static string GMDCAGuidQuickResponsePrefix => "gmdcatoast";
@@ -38,6 +43,9 @@
 
         /// <inheritdoc/>
         public string ClientGuidReplyPrefix => GMDCAGuidReplyPrefix;
+
+        /// <inheritdoc/>
+        public string ClientGuidMarkdownPrefix => GMDCAGuidMarkdownPrefix;
 
         /// <inheritdoc/>
         public string ClientGuidQuickResponsePrefix => GMDCAGuidQuickResponsePrefix;

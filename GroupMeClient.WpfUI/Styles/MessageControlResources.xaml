@@ -8,6 +8,9 @@
 
     <sys:Int32 x:Key="collapseNestLevel">1</sys:Int32>
 
+    <SolidColorBrush x:Key="MarkdownTableBrush" Color="{DynamicResource MahApps.Colors.ThemeForeground}"></SolidColorBrush>
+    <sys:Double x:Key="MarkdownFontSize">15</sys:Double>
+    
     <DataTemplate x:Key="MessageBody">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -51,19 +54,19 @@
             </controls:AvatarControl>
 
             <StackPanel Grid.Column="1" Grid.Row="1">
-                <TextBlock Text="{Binding Sender, Mode=OneTime}" FontSize="12" Foreground="{DynamicResource DividerLineBrush}" />
+                <TextBlock Text="{Binding Sender, Mode=OneTime}" FontSize="12" Foreground="{DynamicResource MessageFontBrush}" />
 
                 <ContentControl Content="{Binding RepliedMessage}" 
-                                    HorizontalAlignment="Left"
-                                    Margin="0,0,10,10" 
-                                    Visibility="{Binding RepliedMessage, Converter={StaticResource nullToVisibilityConverter}, ConverterParameter={StaticResource True}}" />
+                                HorizontalAlignment="Left"
+                                Margin="0,0,10,10" 
+                                Visibility="{Binding RepliedMessage, Converter={StaticResource nullToVisibilityConverter}, ConverterParameter={StaticResource True}}" />
 
                 <ItemsControl ItemsSource="{Binding AttachedItems}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <UserControl HorizontalAlignment="Left"
-                                             Content="{Binding .}"
-                                             MaxWidth="700" />
+                                         Content="{Binding .}"
+                                         MaxWidth="700" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
 
@@ -77,7 +80,7 @@
                 <extensions:SelectableTextBlock 
                         Padding="0"
                         Margin="0,0,0,20"
-                        FontSize="15" 
+                        FontSize="15"
                         TextWrapping="Wrap" 
                         extensions:TextBlockExtensions.InlineList="{Binding Inlines, Converter={StaticResource inlineConverter}, Mode=OneWay}">
 
@@ -93,15 +96,15 @@
 
             <!--Hidden Message Indicator-->
             <iconPacks:PackIconOcticons Width="15" Height="15"
-                                               Grid.Row="1"
-                                               Grid.Column="2"
-                                               VerticalAlignment="Top"
-                                               Margin="0,17,10,0"
-                                               HorizontalAlignment="Center"
-                                               Kind="X"
-                                               Visibility="{Binding IsMessageHidden, Converter={StaticResource boolToVisibilityConverter}}"
-                                               Foreground="Red"
-                                               Background="Transparent">
+                                        Grid.Row="1"
+                                        Grid.Column="2"
+                                        VerticalAlignment="Top"
+                                        Margin="0,17,10,0"
+                                        HorizontalAlignment="Center"
+                                        Kind="X"
+                                        Visibility="{Binding IsMessageHidden, Converter={StaticResource boolToVisibilityConverter}}"
+                                        Foreground="Red"
+                                        Background="Transparent">
                 <iconPacks:PackIconOcticons.ContextMenu>
                     <ContextMenu>
                         <MenuItem Command="{Binding DeHideAction}"
@@ -226,9 +229,12 @@
                 </Canvas.Style>
 
                 <Grid Width="{Binding ActualWidth, ElementName=likesCanvas}">
-                    <Border BorderThickness="1" CornerRadius="5" 
-                                BorderBrush="{DynamicResource DividerLineBrush}" Background="{DynamicResource LikerAreaBackgroundBrush}"
-                                Width="Auto" Height="65" HorizontalAlignment="Right">
+                    <Border BorderThickness="1" 
+                            CornerRadius="5" 
+                            BorderBrush="{DynamicResource DividerLineBrush}" 
+                            Background="{DynamicResource LikerAreaBackgroundBrush}"
+                            Width="Auto" Height="65" 
+                            HorizontalAlignment="Right">
 
                         <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                                           Margin="7"
@@ -268,12 +274,12 @@
             </Canvas>
 
             <!--Message Right-Click Details-->
-            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
-                            Orientation="Vertical"
-                            Background="{DynamicResource MessageDetailsBrush}"
-                            Height="45"
-                            ContextMenu="{StaticResource emptyContextMenu}"
-                            Visibility="{Binding ShowDetails, Converter={StaticResource boolToVisibilityConverter}}">
+            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"
+                        Orientation="Vertical"
+                        Background="{DynamicResource MessageDetailsBrush}"
+                        Height="45"
+                        ContextMenu="{StaticResource emptyContextMenu}"
+                        Visibility="{Binding ShowDetails, Converter={StaticResource boolToVisibilityConverter}}">
 
                 <behaviors:Interaction.Triggers>
                     <behaviors:EventTrigger EventName="MouseRightButtonUp" >
@@ -293,13 +299,20 @@
                                Foreground="{DynamicResource MessageFontBrush}"
                                Padding="20,0,0,0"/>
             </StackPanel>
+
+            <Button Grid.Row="3"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="5"
+                    HorizontalAlignment="Right"
+                    Visibility="{Binding ShowDetails, Converter={StaticResource boolToVisibilityConverter}}"
+                    Command="{Binding ToggleMarkdown}" />
         </Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="NestedWithDropDown" >
         <Expander IsExpanded="{Binding NestLevel, Mode=OneWay, FallbackValue={StaticResource True}, Converter={StaticResource isDeeplyNestedConverter}, ConverterParameter={StaticResource collapseNestLevel}}"
-                      Content="{Binding}"
-                      ContentTemplate="{StaticResource MessageBody}">
+                  Content="{Binding}"
+                  ContentTemplate="{StaticResource MessageBody}">
 
             <Expander.Style>
                 <Style TargetType="Expander">

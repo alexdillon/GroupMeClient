@@ -1,20 +1,22 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
 using GroupMeClient.Core.Services;
+using GroupMeClient.Core.Utilities;
 using GroupMeClientApi;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls.Attachments
 {
     /// <summary>
     /// <see cref="ImageLinkAttachmentControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.Attachments.ImageLinkAttachmentControl"/> control.
     /// </summary>
-    public class ImageLinkAttachmentControlViewModel : ViewModelBase, IHidesTextAttachment, IDisposable
+    public class ImageLinkAttachmentControlViewModel : ObservableObject, IHidesTextAttachment, IDisposable
     {
-        private System.IO.Stream imageAttachmentStream;
+        private byte[] imageData;
         private bool isLoading;
 
         /// <summary>
@@ -63,16 +65,25 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         public bool IsLoading
         {
             get => this.isLoading;
-            private set => this.Set(() => this.IsLoading, ref this.isLoading, value);
+            private set => this.SetProperty(ref this.isLoading, value);
         }
 
         /// <summary>
         /// Gets the attached image.
         /// </summary>
-        public System.IO.Stream ImageAttachmentStream
+        public Stream ImageAttachmentStream
         {
-            get => this.imageAttachmentStream;
-            internal set => this.Set(() => this.ImageAttachmentStream, ref this.imageAttachmentStream, value);
+            get
+            {
+                if (this.ImageData == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new ReadOnlyByteStream(this.ImageData);
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -81,6 +92,16 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         private string NavigateToUrl { get; }
 
         private ImageDownloader ImageDownloader { get; }
+
+        private byte[] ImageData
+        {
+            get => this.imageData;
+            set
+            {
+                this.imageData = value;
+                this.OnPropertyChanged(nameof(this.ImageAttachmentStream));
+            }
+        }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -91,26 +112,23 @@ namespace GroupMeClient.Core.ViewModels.Controls.Attachments
         private async Task LoadImageAttachment()
         {
             var image = await this.ImageDownloader.DownloadPostImageAsync($"{this.Url}");
-
-            if (image == null)
+            if (image != null)
             {
-                return;
+                this.ImageData = image;
+                this.IsLoading = false;
             }
-
-            this.ImageAttachmentStream = new System.IO.MemoryStream(image);
-            this.IsLoading = false;
         }
 
         private void ClickedAction()
         {
-            var osService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
+            var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
             var navigateUrl = !string.IsNullOrEmpty(this.NavigateToUrl) ? this.NavigateToUrl : this.Url;
             osService.OpenWebBrowser(navigateUrl);
         }
 
         private void CopyLinkAction()
         {
-            var clipboardService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IClipboardService>();
+            var clipboardService = Ioc.Default.GetService<IClipboardService>();
             var navigateUrl = !string.IsNullOrEmpty(this.NavigateToUrl) ? this.NavigateToUrl : this.Url;
             clipboardService.CopyText(navigateUrl);
         }

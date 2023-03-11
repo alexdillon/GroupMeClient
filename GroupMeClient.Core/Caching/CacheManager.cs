@@ -4,10 +4,13 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using GroupMeClient.Core.Caching.Models;
+using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Tasks;
+using GroupMeClientApi;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace GroupMeClient.Core.Caching
@@ -22,10 +25,11 @@ namespace GroupMeClient.Core.Caching
         /// </summary>
         /// <param name="databasePath">The name of the database file to open.</param>
         /// <param name="taskScheduler">The scheduler to use for indexing tasks.</param>
-        public CacheManager(string databasePath, TaskManager taskScheduler)
+        /// <param name="settingsManager">The application settings manager.</param>
+        public CacheManager(string databasePath, TaskManager taskScheduler, SettingsManager settingsManager)
         {
             this.Path = databasePath;
-            this.SuperIndexer = new SuperIndexer(this, taskScheduler);
+            this.SuperIndexer = new SuperIndexer(this, taskScheduler, settingsManager);
             this.HasBeenUpgradeChecked = false;
         }
 
@@ -37,38 +41,6 @@ namespace GroupMeClient.Core.Caching
         private string Path { get; }
 
         private bool HasBeenUpgradeChecked { get; set; }
-
-        /// <summary>
-        /// Returns a <see cref="Queryable"/> collection of all the messages in a given <see cref="IMessageContainer"/>
-        /// that are cached in the database.
-        /// </summary>
-        /// <param name="group">The <see cref="IMessageContainer"/> which to return messages for.</param>
-        /// <param name="cacheContext">The cache instance messages should be retreived from.</param>
-        /// <returns>Returns a <see cref="Queryable"/> collection of all the messages in a given <see cref="IMessageContainer"/>.</returns>
-        public static IQueryable<Message> GetMessagesForGroup(IMessageContainer group, CacheContext cacheContext)
-        {
-            if (group is Group g)
-            {
-                return cacheContext.Messages
-                    .AsNoTracking()
-                    .Where(m => m.GroupId == g.Id);
-            }
-            else if (group is Chat c)
-            {
-                // Chat.Id returns the Id of the other user
-                // However, GroupMe messages are natively returned with a Conversation Id instead
-                // Conversation IDs are user1+user2.
-                var conversationId = c.LatestMessage.ConversationId;
-
-                return cacheContext.Messages
-                    .AsNoTracking()
-                    .Where(m => m.ConversationId == conversationId);
-            }
-            else
-            {
-                return Enumerable.Empty<Message>().AsQueryable();
-            }
-        }
 
         /// <summary>
         /// Creates a new instance of the message cache context.
@@ -139,6 +111,16 @@ namespace GroupMeClient.Core.Caching
             /// </summary>
             public DbSet<GroupIndexStatus> IndexStatus { get; set; }
 
+            /// <summary>
+            /// Gets or sets the <see cref="Group"/> metadata stored in the database.
+            /// </summary>
+            public DbSet<Group> GroupMetadata { get; set; }
+
+            /// <summary>
+            /// Gets or sets the <see cref="Chat"/> metadata stored in the database.
+            /// </summary>
+            public DbSet<Chat> ChatMetadata { get; set; }
+
             private string DatabaseName { get; set; }
 
             /// <summary>
@@ -157,6 +139,82 @@ namespace GroupMeClient.Core.Caching
                 }
             }
 
+            /// <summary>
+            /// Returns a <see cref="IQueryable"/> of all the messages in a given <see cref="IMessageContainer"/>
+            /// that are cached in the database.
+            /// </summary>
+            /// <param name="group">The <see cref="IMessageContainer"/> which to return messages for.</param>
+            /// <returns>Returns a <see cref="Queryable"/> collection of all the messages in a given <see cref="IMessageContainer"/>.</returns>
+            public IQueryable<Message> GetMessagesForGroup(IMessageContainer group)
+            {
+                if (group is Group g)
+                {
+                    return this.Messages
+                        .AsNoTracking()
+                        .Where(m => m.GroupId == g.Id);
+                }
+                else if (group is Chat c)
+                {
+                    // Chat.Id returns the Id of the other user
+                    // Conversation IDs are user1+user2.
+                    return this.Messages
+                        .AsNoTracking()
+                        .Where(m => m.ConversationId == c.ConversationId);
+                }
+                else
+                {
+                    return Enumerable.Empty<Message>().AsQueryable();
+                }
+            }
+
+            /// <summary>
+            /// Returns a <see cref="IList{T}"/> of all the unique <see cref="Group"/>s and <see cref="Chat"/>s
+            /// stored in cache.
+            /// </summary>
+            /// <returns>An <see cref="IQueryable{T}"/> of all the unique <see cref="Group"/>s and <see cref="Chat"/>s.</returns>
+            public IList<IMessageContainer> GetGroupsAndChats()
+            {
+                var groupIds = this.Messages.Select(m => m.GroupId).Distinct().Where(i => i != null);
+                var chatIds = this.Messages.Select(m => m.ConversationId).Distinct().Where(i => i != null);
+
+                var results = new List<IMessageContainer>();
+
+                foreach (var id in groupIds)
+                {
+                    var group = this.GroupMetadata
+                        .Include(m => m.Members)
+                        .FirstOrDefault(m => m.Id == id);
+
+                    if (group == null)
+                    {
+                        group = Placeholders.CreatePlaceholderGroup(id, "Deleted Group");
+                    }
+
+                    group.AssociateWithClient(Ioc.Default.GetService<GroupMeClientApi.GroupMeClient>());
+                    results.Add(group);
+                }
+
+                foreach (var conversationId in chatIds)
+                {
+                    var chat = this.ChatMetadata
+                        .Include(c => c.OtherUser)
+                        .FirstOrDefault(c => c.ConversationId == conversationId);
+
+                    if (chat == null)
+                    {
+                        chat = Placeholders.CreatePlaceholderChat(
+                            id: conversationId, // This is technically wrong, but doesn't really matter
+                            otherUserName: "Deleted Chat",
+                            conversationId: conversationId);
+                    }
+
+                    chat.AssociateWithClient(Ioc.Default.GetService<GroupMeClientApi.GroupMeClient>());
+                    results.Add(chat);
+                }
+
+                return results;
+            }
+
             /// <inheritdoc/>
             protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             {
@@ -168,11 +226,14 @@ namespace GroupMeClient.Core.Caching
             {
                 // Set global ignores
                 modelBuilder.Ignore<GroupMeClientApi.GroupMeClient>();
-                modelBuilder.Ignore<Group>();
-                modelBuilder.Ignore<Chat>();
-                modelBuilder.Ignore<Member>();
+
+                modelBuilder.Entity<Message>().Ignore(m => m.Group);
+                modelBuilder.Entity<Message>().Ignore(m => m.Chat);
 
                 this.WorkaroundsForMessageConversion(modelBuilder);
+                this.WorkaroundsForGroupConversion(modelBuilder);
+                this.WorkaroundsForChatConversion(modelBuilder);
+                this.WorkaroundsForMemberConversion(modelBuilder);
             }
 
             /// <summary>
@@ -184,29 +245,75 @@ namespace GroupMeClient.Core.Caching
             {
                 // Set message primary key (Id)
                 modelBuilder.Entity<Message>()
-                    .HasKey(x => x.Id);
+                    .HasKey(m => m.Id);
 
                 // Index on GroupId to improve lookup speed
                 modelBuilder.Entity<Message>()
-                    .HasIndex(p => p.GroupId);
+                    .HasIndex(m => m.GroupId);
 
                 // Index on ConversationId to improve lookup speed
                 modelBuilder.Entity<Message>()
-                    .HasIndex(p => p.ConversationId);
+                    .HasIndex(m => m.ConversationId);
 
                 // Provide mapping for the Message.ICollection<FavoritedBy>
                 modelBuilder.Entity<Message>()
-                    .Property(x => x.FavoritedBy)
+                    .Property(m => m.FavoritedBy)
                     .HasConversion(
                         v => string.Join(",", v),
                         v => new List<string>(v.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)));
 
                 // Provide JSON serialization for Attachment list
                 modelBuilder.Entity<Message>()
-                    .Property(x => x.Attachments)
+                    .Property(m => m.Attachments)
                     .HasConversion(
                         v => JsonConvert.SerializeObject(v),
                         v => JsonConvert.DeserializeObject<List<Attachment>>(v));
+            }
+
+            /// <summary>
+            /// Provides workarounds to serialize the <see cref="Group"/> object with EntityFramework.
+            /// </summary>
+            /// <param name="modelBuilder">The EF ModelBuilder Object.</param>
+            protected void WorkaroundsForGroupConversion(ModelBuilder modelBuilder)
+            {
+                // Set group primary key (Id)
+                modelBuilder.Entity<Group>().HasKey(x => x.Id);
+
+                modelBuilder.Entity<Group>().Ignore(g => g.LatestMessage);
+                modelBuilder.Entity<Group>().Ignore(g => g.Messages);
+                modelBuilder.Entity<Group>().Ignore(g => g.MsgPreview);
+                modelBuilder.Entity<Group>().Ignore(g => g.ReadReceipt);
+            }
+
+            /// <summary>
+            /// Provides workarounds to serialize the <see cref="Chat"/> object with EntityFramework.
+            /// </summary>
+            /// <param name="modelBuilder">The EF ModelBuilder Object.</param>
+            protected void WorkaroundsForChatConversion(ModelBuilder modelBuilder)
+            {
+                // Set group primary key (Id)
+                modelBuilder.Entity<Chat>().HasKey(x => x.Id);
+
+                modelBuilder.Entity<Chat>().Ignore(c => c.LatestMessage);
+                modelBuilder.Entity<Chat>().Ignore(c => c.Messages);
+                modelBuilder.Entity<Chat>().Ignore(c => c.ReadReceipt);
+            }
+
+            /// <summary>
+            /// Provides workarounds to serialize the <see cref="Member"/> object with EntityFramework.
+            /// </summary>
+            /// <param name="modelBuilder">The EF ModelBuilder Object.</param>
+            protected void WorkaroundsForMemberConversion(ModelBuilder modelBuilder)
+            {
+                // Set group primary key (Id)
+                modelBuilder.Entity<Member>().HasKey(m => m.Id);
+
+                // Provide mapping for the Message.ICollection<FavoritedBy>
+                modelBuilder.Entity<Member>()
+                    .Property(x => x.Roles)
+                    .HasConversion(
+                        v => string.Join(",", v),
+                        v => new List<string>(v.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)));
             }
 
             /// <summary>

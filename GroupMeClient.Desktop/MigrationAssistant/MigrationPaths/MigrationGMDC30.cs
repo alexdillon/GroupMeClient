@@ -13,7 +13,7 @@ namespace GroupMeClient.Desktop.MigrationAssistant
     {
         public const int MigrationVersion = 1;
 
-        public bool DoMigration(Startup.StartupParameters parameters)
+        public bool DoMigration(StartupExtensions.StartupParameters parameters)
         {
             // In GMDC 30:
             // - The Migration Version field in Core Settings is 1.0
@@ -86,7 +86,7 @@ namespace GroupMeClient.Desktop.MigrationAssistant
 
         private void FixStarredHiddenMessages(string persistPath, string cachePath)
         {
-            var cacheManager = new CacheManager(cachePath, null);
+            var cacheManager = new CacheManager(cachePath, null, null);
             var persistManager = new PersistManager(persistPath);
         
             using (var persistContext = persistManager.OpenNewContext())

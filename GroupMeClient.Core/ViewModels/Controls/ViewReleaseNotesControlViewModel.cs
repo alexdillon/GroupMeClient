@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using GalaSoft.MvvmLight;
 using GroupMeClient.Core.Services;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="ViewReleaseNotesControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.ViewReleaseNotesControl"/> control.
     /// </summary>
-    public class ViewReleaseNotesControlViewModel : ViewModelBase
+    public class ViewReleaseNotesControlViewModel : ObservableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewReleaseNotesControlViewModel"/> class.

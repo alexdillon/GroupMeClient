@@ -1,36 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
-    <FontFamily x:Key="GroupMeFont">Segoe UI</FontFamily>
-
-    <sys:Boolean x:Key="IsLightTheme">False</sys:Boolean>
-    <sys:Boolean x:Key="IsDarkTheme">True</sys:Boolean>
-
-    <Color x:Key="DividerLineColor">#637182</Color>
-    <Color x:Key="MessageFontColor">#637182</Color>
-    <Color x:Key="MessageDetailsColor">#FFD3D3D3</Color>
-    <Color x:Key="GroupsSidebarFontColor">#637182</Color>
-    <Color x:Key="ScrollToBottomButtonColor">#637182</Color>
-    <Color x:Key="SidebarColor">#125A91</Color>
-    <Color x:Key="PluginButtonFontColor">#414A59</Color>
-    <Color x:Key="MessageISentBackdropColor">#09304C</Color>
-    <Color x:Key="MessageTheySentBackdropColor">#252525</Color>
-    <Color x:Key="MessageILikedColor">#F77070</Color>
-    <Color x:Key="MessageTheyLikedColor">#999999</Color>
-    <Color x:Key="LikerAreaBackgroundColor">#000000</Color>
-    <Color x:Key="TweetBackgroundColor">#000000</Color>
-    <Color x:Key="NotificationBackgroundColor">#000000</Color>
-    <Color x:Key="PluginMenuColor">#000000</Color>
-    <Color x:Key="FileIconColor">#FFFFFF</Color>
-    <Color x:Key="InProgressReplyColor">#000000</Color>
 
     <SolidColorBrush options:Freeze="True" x:Key="DividerLineBrush" Color="{DynamicResource DividerLineColor}"/>
+    <SolidColorBrush options:Freeze="True" x:Key="ButtonGlyphBrush" Color="{DynamicResource ButtonGlyphColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="MessageFontBrush" Color="{DynamicResource MessageFontColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="MessageDetailsBrush" Color="{DynamicResource MessageDetailsColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="GroupsSidebarFontBrush" Color="{DynamicResource GroupsSidebarFontColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="ScrollToBottomButtonBrush" Color="{DynamicResource ScrollToBottomButtonColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="SidebarBrush" Color="{DynamicResource SidebarColor}"/>
+    <SolidColorBrush options:Freeze="True" x:Key="SidebarBrush.Hover" Color="{DynamicResource SidebarColor.Hover}"/>
     <SolidColorBrush options:Freeze="True" x:Key="PluginButtonFontBrush" Color="{DynamicResource PluginButtonFontColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="MessageISentBackdropBrush" Color="{DynamicResource MessageISentBackdropColor}"/>
     <SolidColorBrush options:Freeze="True" x:Key="MessageTheySentBackdropBrush" Color="{DynamicResource MessageTheySentBackdropColor}"/>
@@ -42,4 +21,9 @@
     <SolidColorBrush options:Freeze="True" x:Key="PluginMenuBrush" Color="{DynamicResource PluginMenuColor}" />
     <SolidColorBrush options:Freeze="True" x:Key="FileIconBrush" Color="{DynamicResource FileIconColor}" />
     <SolidColorBrush options:Freeze="True" x:Key="InProgressReplyBrush" Color="{DynamicResource InProgressReplyColor}" />
+    <SolidColorBrush options:Freeze="True" x:Key="CodeSpanShadeBrush" Color="{DynamicResource CodeSpanShadeColor}" />
+    <SolidColorBrush options:Freeze="True" x:Key="SelectionBorderBrush" Color="{DynamicResource SelectionBorderColor}" />
+    <SolidColorBrush options:Freeze="True" x:Key="HyperlinkBrush" Color="{DynamicResource HyperlinkColor}" />
+    <SolidColorBrush options:Freeze="True" x:Key="HyperlinkBrush.Hover" Color="{DynamicResource HyperlinkColor.Hover}" />
+    <SolidColorBrush options:Freeze="True" x:Key="UnreadBadgeBrush" Color="{DynamicResource UnreadBadgeColor}" />
 </ResourceDictionary>

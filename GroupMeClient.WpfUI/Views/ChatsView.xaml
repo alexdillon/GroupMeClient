@@ -8,6 +8,7 @@
              xmlns:extensions="clr-namespace:GroupMeClient.WpfUI.Extensions"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             extensions:InputBindingBehavior.PropagateInputBindingsToWindow="True"
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
@@ -21,7 +22,28 @@
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding Path=MarkAllAsRead}"
+                    Gesture="CTRL+Q" />
+
+        <KeyBinding Command="{Binding Path=OpenTopChat}"
+                    CommandParameter="0"
+                    Gesture="CTRL+1" />
+        <KeyBinding Command="{Binding Path=OpenTopChat}"
+                    CommandParameter="1"
+                    Gesture="CTRL+2" />
+        <KeyBinding Command="{Binding Path=OpenTopChat}"
+                    CommandParameter="2"
+                    Gesture="CTRL+3" />
+        <KeyBinding Command="{Binding Path=OpenTopChat}"
+                    CommandParameter="3"
+                    Gesture="CTRL+4" />
+        <KeyBinding Command="{Binding Path=OpenTopChat}"
+                    CommandParameter="4"
+                    Gesture="CTRL+5" />
+    </UserControl.InputBindings>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -94,57 +116,56 @@
                     </Grid.RowDefinitions>
 
                     <ToggleButton Grid.Column="0"
-                              IsChecked="{Binding MiniBarModeEnabled, Mode=TwoWay}"
-                              HorizontalAlignment="Left" VerticalAlignment="Center"
-                              Margin="15,0,0,0"
-                              Height="Auto" FontSize="17" FontWeight="SemiBold"
-                              BorderThickness="0"
-                              Background="{DynamicResource MahApps.Brushes.Control.Background}"
-                              Focusable="False"
-                              Content="Chats" 
-                              Style="{StaticResource FlatButtonNoCaps}"
-                              x:Name="toggleMiniSidebar" />
+                                  IsChecked="{Binding MiniBarModeEnabled, Mode=TwoWay}"
+                                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                  Margin="15,0,0,0"
+                                  Height="Auto" FontSize="17" FontWeight="SemiBold"
+                                  BorderThickness="0"
+                                  Background="{DynamicResource MahApps.Brushes.Control.Background}"
+                                  Focusable="False"
+                                  Content="Chats" 
+                                  Style="{StaticResource FlatButtonNoCaps}"
+                                  x:Name="toggleMiniSidebar" />
 
                     <TextBox Grid.Column="1"
-                         Visibility="{Binding IsChecked, ElementName=toggleSearchBox, Converter={StaticResource boolToVisibilityConverter}}"
-                         Controls:TextBoxHelper.Watermark="Search..."
-                         AcceptsReturn="False"
-                         VerticalContentAlignment="Center"
-                         Height="35"
-                         Margin="10,0,0,0"
-                         BorderThickness="0"
-                         Text="{Binding GroupChatFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                         x:Name="searchTextBox"/>
+                             Visibility="{Binding IsChecked, ElementName=toggleSearchBox, Converter={StaticResource boolToVisibilityConverter}}"
+                             Controls:TextBoxHelper.Watermark="Search..."
+                             AcceptsReturn="False"
+                             VerticalContentAlignment="Center"
+                             Height="35"
+                             Margin="10,0,0,0"
+                             BorderThickness="0"
+                             Text="{Binding GroupChatFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                             x:Name="searchTextBox"/>
 
                     <ToggleButton Grid.Column="2"
-                              Width="35" Height="35"
-                              BorderThickness="0"
-                              ToolTip="Search Chats"
-                              HorizontalAlignment="Left"
-                              x:Name="toggleSearchBox"
-                              Command="{Binding SearchToggled}"
-                              CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"
-                              extensions:EventButtonFocusExtensions.ElementToFocus="{Binding ElementName=searchTextBox}">
+                                  Width="35" Height="35"
+                                  BorderThickness="0"
+                                  ToolTip="Search Chats"
+                                  HorizontalAlignment="Left"
+                                  x:Name="toggleSearchBox"
+                                  Command="{Binding SearchToggled}"
+                                  CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}"
+                                  extensions:EventButtonFocusExtensions.ElementToFocus="{Binding ElementName=searchTextBox}">
                         <ToggleButton.ContentTemplate>
                             <DataTemplate>
-                                <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="#637182" Kind="Magnify"/>
+                                <iconPacks:PackIconMaterial Width="15" Height="15" Foreground="{DynamicResource ButtonGlyphBrush}" Kind="Magnify"/>
                             </DataTemplate>
                         </ToggleButton.ContentTemplate>
                     </ToggleButton>
 
                     <Button Grid.Column="3"
-                        Width="35" Height="35"
-                        BorderThickness="0"
-                        Foreground="#637182"
-                        Style="{DynamicResource MahApps.Styles.Button}"
-                        ToolTip="Mark All Messages as Read"
-                        Margin="5,0,0,0"
-                        Command="{Binding Path=MarkAllAsRead}"
-                        CommandParameter="{Binding Path=.}">
+                            Width="35" Height="35"
+                            BorderThickness="0"
+                            Foreground="{DynamicResource DividerLineBrush}"
+                            Style="{DynamicResource MahApps.Styles.Button}"
+                            ToolTip="Mark All Messages as Read"
+                            Margin="5,0,0,0"
+                            Command="{Binding Path=MarkAllAsRead}">
 
                         <Button.ContentTemplate>
                             <DataTemplate>
-                                <iconPacks:PackIconEntypo Width="15" Height="15" Foreground="{DynamicResource DividerLineBrush}" Kind="Unread"/>
+                                <iconPacks:PackIconEntypo Width="15" Height="15" Foreground="{DynamicResource ButtonGlyphBrush}" Kind="Unread"/>
                             </DataTemplate>
                         </Button.ContentTemplate>
                     </Button>

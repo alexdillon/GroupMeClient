@@ -5,13 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Controls;
 using GroupMeClient.Core.Services;
 using GroupMeClientApi;
 using GroupMeClientApi.Models.Attachments;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
@@ -28,7 +28,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// </summary>
         public SendImageControlViewModel()
         {
-            this.SendButtonClicked = new RelayCommand(async () => await this.SendAsync(), () => !this.IsSending);
+            this.SendButtonClicked = new AsyncRelayCommand(this.SendAsync, () => !this.IsSending);
 
             this.ImagesCollection = new ObservableCollection<SendableImage>();
             this.AddImage = new RelayCommand(this.AddBlankImage);
@@ -61,7 +61,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public SendableImage SelectedImage
         {
             get => this.selectedImage;
-            set => this.Set(() => this.SelectedImage, ref this.selectedImage, value);
+            set => this.SetProperty(ref this.selectedImage, value);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public int UploadPercentage
         {
             get => this.uploadPercentage;
-            private set => this.Set(() => this.UploadPercentage, ref this.uploadPercentage, value);
+            private set => this.SetProperty(ref this.uploadPercentage, value);
         }
 
         /// <inheritdoc/>
@@ -167,7 +167,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <summary>
         /// <see cref="SendableImage"/> represents an image that is being prepared to be attached to a message and sent.
         /// </summary>
-        public class SendableImage : ViewModelBase, IDisposable
+        public class SendableImage : ObservableObject, IDisposable
         {
             private Stream imageStream;
 
@@ -195,7 +195,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             public Stream ImageStream
             {
                 get => this.imageStream;
-                private set => this.Set(() => this.ImageStream, ref this.imageStream, value);
+                private set => this.SetProperty(ref this.imageStream, value);
             }
 
             /// <summary>
@@ -222,7 +222,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             {
                 var supportedImages = ImageAttachment.SupportedExtensions.ToList();
 
-                var fileDialogService = SimpleIoc.Default.GetInstance<IFileDialogService>();
+                var fileDialogService = Ioc.Default.GetService<IFileDialogService>();
                 var filters = new List<FileFilter>
                 {
                     new FileFilter() { Name = "Images", Extensions = supportedImages },

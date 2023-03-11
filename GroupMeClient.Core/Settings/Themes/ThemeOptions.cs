@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 
-namespace GroupMeClient.Core.Settings
+namespace GroupMeClient.Core.Settings.Themes
 {
     /// <summary>
-    /// <see cref="ThemeOptions"/> specifies the different theme options that can be applied to the UI.
+    /// Color theme options that can be applied to the GMDC UI.
     /// </summary>
     public enum ThemeOptions
     {

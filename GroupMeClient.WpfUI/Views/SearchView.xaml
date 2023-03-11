@@ -80,7 +80,7 @@
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="true">
                                         <Setter TargetName="highlightBorder" Property="BorderThickness" Value="3"/>
-                                        <Setter TargetName="highlightBorder" Property="BorderBrush" Value="#1873BA"/>
+                                        <Setter TargetName="highlightBorder" Property="BorderBrush" Value="{DynamicResource SelectionBorderBrush}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -164,6 +164,12 @@
                         <TextBlock Text="Ending Date" Grid.Row="1" Grid.Column="0" Padding="5" />
                         <DatePicker SelectedDate="{Binding FilterEndDate, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" />
                     </Grid>
+
+                    <WrapPanel Margin="0,3,0,2">
+                        <TextBlock Text="Match:" Margin="0,0,10,0"/>
+                        <RadioButton Content="Exact" IsChecked="{Binding FilterIsExact}" Margin="0,0,20,0" />
+                        <RadioButton Content="Contains Words" IsChecked="{Binding FilterIsANDTerm}"/>
+                    </WrapPanel>
                     
                     <CheckBox Content="Has Image Attachment" IsChecked="{Binding FilterHasAttachedImage, Mode=TwoWay}" />
                     <CheckBox Content="Has Linked Attachment" IsChecked="{Binding FilterHasAttachedLinkedImage, Mode=TwoWay}" />

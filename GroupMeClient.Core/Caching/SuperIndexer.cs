@@ -5,8 +5,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GroupMeClient.Core.Settings;
 using GroupMeClient.Core.Tasks;
 using GroupMeClientApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupMeClient.Core.Caching
 {
@@ -21,15 +23,19 @@ namespace GroupMeClient.Core.Caching
         /// </summary>
         /// <param name="cacheManager">A manager for the caching database.</param>
         /// <param name="taskManager">The manager to use for indexing tasks.</param>
-        public SuperIndexer(CacheManager cacheManager, TaskManager taskManager)
+        /// <param name="settingsManager">The settings manager for the application.</param>
+        public SuperIndexer(CacheManager cacheManager, TaskManager taskManager, SettingsManager settingsManager)
         {
             this.CacheManager = cacheManager;
             this.TaskManager = taskManager;
+            this.SettingsManager = settingsManager;
         }
 
         private CacheManager CacheManager { get; }
 
         private TaskManager TaskManager { get; }
+
+        private SettingsManager SettingsManager { get; }
 
         private IEnumerable<IMessageContainer> GroupsAndChats { get; set; }
 
@@ -38,6 +44,8 @@ namespace GroupMeClient.Core.Caching
         private ConcurrentDictionary<string, List<Message>> GroupUpdates { get; } = new ConcurrentDictionary<string, List<Message>>();
 
         private ManualResetEvent WaitingOnGroupAndChatListings { get; } = new ManualResetEvent(true);
+
+        private DateTime LastMetadataUpdate { get; set; } = DateTime.MinValue;
 
         /// <summary>
         /// Begins an asychronous transaction to execute a background scan with an up-to-date
@@ -108,6 +116,58 @@ namespace GroupMeClient.Core.Caching
 
                 using (var context = this.CacheManager.OpenNewContext())
                 {
+                    // Update Group and Chat metadata in cache
+                    if (DateTime.Now.Subtract(this.LastMetadataUpdate) > this.SettingsManager.CoreSettings.MetadataCacheInterval)
+                    {
+                        this.LastMetadataUpdate = DateTime.Now;
+
+                        // Remove old metadata. Doing a removal and addition in the same cycle was causing
+                        // OtherUserId foreign key for Chats to be null. Doing true updates with cascading deletes
+                        // should be possible, but this can be done easily in SQLite without any further migrations (GMDC 33.0.3)
+                        foreach (var metaData in this.GroupsAndChats)
+                        {
+                            if (metaData is Group groupMetadata)
+                            {
+                                var existing = context.GroupMetadata
+                                    .Include(g => g.Members)
+                                    .FirstOrDefault(g => g.Id == groupMetadata.Id);
+                                if (existing != null)
+                                {
+                                    foreach (var member in existing.Members)
+                                    {
+                                        context.Remove(member);
+                                    }
+
+                                    context.GroupMetadata.Remove(existing);
+                                }
+                            }
+                            else if (metaData is Chat chatMetadata)
+                            {
+                                var existingChat = context.ChatMetadata.FirstOrDefault(c => c.Id == metaData.Id);
+                                if (existingChat != null)
+                                {
+                                    context.Remove(existingChat);
+                                }
+
+                                var existingMember = context.Find<Member>(chatMetadata.OtherUser.Id);
+                                if (existingMember != null)
+                                {
+                                    context.Remove(existingMember);
+                                }
+                            }
+                        }
+
+                        context.SaveChanges();
+
+                        foreach (var addMetaData in this.GroupsAndChats)
+                        {
+                            context.Add(addMetaData);
+                        }
+
+                        context.SaveChanges();
+                    }
+
+                    // Process updates for each group and chat
                     var fullyUpdatedGroupIds = new List<string>();
                     foreach (var id in this.GroupUpdates.Keys)
                     {
@@ -183,6 +243,11 @@ namespace GroupMeClient.Core.Caching
 
         private List<string> CheckForOutdatedCache(IEnumerable<IMessageContainer> groupsAndChats)
         {
+            if (groupsAndChats == null)
+            {
+                return new List<string>();
+            }
+
             var outdatedGroupsAndChatsIds = new List<string>();
             using (var context = this.CacheManager.OpenNewContext())
             {

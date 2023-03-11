@@ -9,9 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Caching.Models;
 using GroupMeClient.Core.Services;
@@ -22,6 +19,10 @@ using GroupMeClientApi.Models;
 using GroupMeClientApi.Push;
 using GroupMeClientApi.Push.Notifications;
 using GroupMeClientPlugin.Notifications;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 using ReactiveUI;
 
 namespace GroupMeClient.Core.ViewModels
@@ -29,7 +30,7 @@ namespace GroupMeClient.Core.ViewModels
     /// <summary>
     /// <see cref="ChatsViewModel"/> provides a ViewModel for the Chats page in the GroupMe Desktop Client.
     /// </summary>
-    public class ChatsViewModel : ViewModelBase, INotificationSink
+    public class ChatsViewModel : ObservableObject, INotificationSink
     {
         private string groupChatFilter = string.Empty;
         private bool miniBarModeEnabled = false;
@@ -50,11 +51,13 @@ namespace GroupMeClient.Core.ViewModels
 
             this.AllGroupsChats = new SourceList<GroupControlViewModel>();
             this.ActiveGroupsChats = new ObservableCollection<GroupContentsControlViewModel>();
+            this.ActiveMiniChats = new ObservableCollection<GroupContentsControlViewModel>();
 
-            Messenger.Default.Register<Messaging.ShowChatRequestMessage>(this, this.ShowChatRequest);
+            WeakReferenceMessenger.Default.Register<ChatsViewModel, Messaging.ShowChatRequestMessage>(this, (r, m) => r.ShowChatRequest(m));
 
             this.MarkAllAsRead = new RelayCommand(this.MarkAllGroupsChatsRead);
             this.SearchToggled = new RelayCommand<bool>((t) => this.GroupChatFilter = t ? this.GroupChatFilter : string.Empty);
+            this.OpenTopChat = new RelayCommand<object>(this.OpenTopChatHandler);
 
             this.SortedFilteredGroupChats = new ObservableCollectionExtended<GroupControlViewModel>();
 
@@ -92,6 +95,11 @@ namespace GroupMeClient.Core.ViewModels
         public ObservableCollection<GroupContentsControlViewModel> ActiveGroupsChats { get; private set; }
 
         /// <summary>
+        /// Gets a collection of all the Groups and Chats currently popped out into a MiniChat.
+        /// </summary>
+        public ObservableCollection<GroupContentsControlViewModel> ActiveMiniChats { get; private set; }
+
+        /// <summary>
         /// Gets the action to be performed to mark all Groups/Chats as "read".
         /// </summary>
         public ICommand MarkAllAsRead { get; }
@@ -102,12 +110,17 @@ namespace GroupMeClient.Core.ViewModels
         public ICommand SearchToggled { get; }
 
         /// <summary>
+        /// Gets the action to be performed to open one of the user's top chats.
+        /// </summary>
+        public ICommand OpenTopChat { get; }
+
+        /// <summary>
         /// Gets or sets the string entered to filter the available groups or chat with.
         /// </summary>
         public string GroupChatFilter
         {
             get => this.groupChatFilter;
-            set => this.Set(() => this.GroupChatFilter, ref this.groupChatFilter, value);
+            set => this.SetProperty(ref this.groupChatFilter, value);
         }
 
         /// <summary>
@@ -116,7 +129,7 @@ namespace GroupMeClient.Core.ViewModels
         public bool MiniBarModeEnabled
         {
             get => this.miniBarModeEnabled;
-            set => this.Set(() => this.MiniBarModeEnabled, ref this.miniBarModeEnabled, value);
+            set => this.SetProperty(ref this.miniBarModeEnabled, value);
         }
 
         private SourceList<GroupControlViewModel> AllGroupsChats { get; }
@@ -137,6 +150,8 @@ namespace GroupMeClient.Core.ViewModels
 
         private Timer RetryTimer { get; set; }
 
+        private IEnumerable<GroupContentsControlViewModel> AllChats => Enumerable.Concat(this.ActiveGroupsChats, this.ActiveMiniChats).Distinct();
+
         /// <inheritdoc/>
         async Task INotificationSink.GroupUpdated(LineMessageCreateNotification notification, IMessageContainer container)
         {
@@ -144,7 +159,7 @@ namespace GroupMeClient.Core.ViewModels
 
             _ = Task.Run(async () => await this.LoadGroupsAndChats(true));
 
-            var groupVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
+            var groupVm = this.AllChats.FirstOrDefault(g => g.Id == container.Id);
             if (groupVm != null)
             {
                 await groupVm.LoadNewMessages();
@@ -157,7 +172,7 @@ namespace GroupMeClient.Core.ViewModels
         async Task INotificationSink.ChatUpdated(DirectMessageCreateNotification notification, IMessageContainer container)
         {
             _ = Task.Run(async () => await this.LoadGroupsAndChats(true));
-            var chatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
+            var chatVm = this.AllChats.FirstOrDefault(g => g.Id == container.Id);
             if (chatVm != null)
             {
                 await chatVm.LoadNewMessages();
@@ -169,7 +184,7 @@ namespace GroupMeClient.Core.ViewModels
         /// <inheritdoc/>
         Task INotificationSink.MessageUpdated(Message message, string alert, IMessageContainer container)
         {
-            var groupChatVm = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == container.Id);
+            var groupChatVm = this.AllChats.FirstOrDefault(g => g.Id == container.Id);
             groupChatVm?.UpdateMessageLikes(message);
 
             return Task.CompletedTask;
@@ -195,7 +210,7 @@ namespace GroupMeClient.Core.ViewModels
         public async Task RefreshEverything()
         {
             await this.LoadGroupsAndChats(true);
-            foreach (var container in this.ActiveGroupsChats)
+            foreach (var container in this.AllChats)
             {
                 await container.LoadNewMessages();
             }
@@ -252,7 +267,7 @@ namespace GroupMeClient.Core.ViewModels
                     // Code to update the UI needs to be run on the Application Dispatcher
                     // This is typically the case, but Timer events from ReliabilityStateMachine for
                     // retry-callbacks will NOT run on the original thread.
-                    var uiDispatcher = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+                    var uiDispatcher = Ioc.Default.GetService<IUserInterfaceDispatchService>();
                     await uiDispatcher.InvokeAsync(() =>
                     {
                         // calculate how many new messages have been added since the group/chat was last read
@@ -262,7 +277,7 @@ namespace GroupMeClient.Core.ViewModels
                         {
                             // strange errors can occur when the Group Listing lags behind the
                             // actual group contents. If this occurs, cancel and reload the sidebar.
-                            this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(async () => await this.LoadGroupsAndChats());
+                            this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(() => Task.Run(() => this.LoadGroupsAndChats()));
                             return;
                         }
 
@@ -272,7 +287,7 @@ namespace GroupMeClient.Core.ViewModels
                             // create a new GroupControl ViewModel for this Group
                             var vm = new GroupControlViewModel(group)
                             {
-                                GroupSelected = new RelayCommand<GroupControlViewModel>((g) => this.OpenNewGroupChat(g), (g) => true, true),
+                                GroupSelected = new RelayCommand<GroupControlViewModel>((g) => this.OpenNewGroupChat(g)),
                                 TotalUnreadCount = unreadMessages,
                             };
                             this.AllGroupsChats.Add(vm);
@@ -284,7 +299,7 @@ namespace GroupMeClient.Core.ViewModels
                             existingVm.TotalUnreadCount = unreadMessages;
                         }
 
-                        var openChatGroup = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == group.Id);
+                        var openChatGroup = this.AllChats.FirstOrDefault(g => g.Id == group.Id);
                         if (openChatGroup != null)
                         {
                             // chat is open and already receiving new messages, so mark all messages as "read"
@@ -304,7 +319,7 @@ namespace GroupMeClient.Core.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Exception in {nameof(this.LoadGroupsAndChats)} - {ex.Message}. Retrying...");
-                this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(async () => await this.LoadGroupsAndChats());
+                this.RetryTimer = this.ReliabilityStateMachine.GetRetryTimer(() => Task.Run(() => this.LoadGroupsAndChats()));
             }
             finally
             {
@@ -320,11 +335,12 @@ namespace GroupMeClient.Core.ViewModels
             {
                 this.OpenNewGroupChat(
                     group: groupOrChat,
-                    skipClose: !this.SettingsManager.UISettings.StrictlyEnforceMultiChatLimits);
+                    skipClose: !this.SettingsManager.UISettings.StrictlyEnforceMultiChatLimits,
+                    startReply: requestMessage.StartReply);
             }
         }
 
-        private void OpenNewGroupChat(GroupControlViewModel group, bool skipClose = false)
+        private void OpenNewGroupChat(GroupControlViewModel group, bool skipClose = false, MessageControlViewModel startReply = null)
         {
             if (this.ActiveGroupsChats.Any(g => g.Id == group.Id))
             {
@@ -332,6 +348,17 @@ namespace GroupMeClient.Core.ViewModels
                 var openGroup = this.ActiveGroupsChats.First(g => g.Id == group.Id);
                 var indexOpenGroup = this.ActiveGroupsChats.IndexOf(openGroup);
                 this.ActiveGroupsChats.Move(indexOpenGroup, 0);
+
+                if (startReply != null)
+                {
+                    openGroup.InitiateReply.Execute(startReply);
+                }
+            }
+            else if (this.ActiveMiniChats.Any(g => g.Id == group.Id))
+            {
+                // this chat is already open as a MiniChat, just copy it into the main UI
+                var openGroup = this.ActiveMiniChats.First(g => g.Id == group.Id);
+                this.ActiveGroupsChats.Insert(0, openGroup);
             }
             else
             {
@@ -339,7 +366,15 @@ namespace GroupMeClient.Core.ViewModels
                 var groupContentsDisplay = new GroupContentsControlViewModel(group.MessageContainer, this.SettingsManager)
                 {
                     CloseGroup = new RelayCommand<GroupContentsControlViewModel>(this.CloseChat),
+                    CloseMiniChat = new RelayCommand<GroupContentsControlViewModel>(this.CloseMiniChat),
+                    RegisterAsMiniChat = new RelayCommand<GroupContentsControlViewModel>(this.RegisterMiniChat),
                 };
+
+                groupContentsDisplay.ObservableForProperty(x => x.IsFocused)
+                    .Subscribe(prop =>
+                    {
+                        group.IsHighlighted = prop.Value;
+                    });
 
                 this.ActiveGroupsChats.Insert(0, groupContentsDisplay);
 
@@ -349,6 +384,11 @@ namespace GroupMeClient.Core.ViewModels
                 this.MarkGroupChatAsRead(group);
 
                 this.PublishTotalUnreadCount();
+
+                if (startReply != null)
+                {
+                    groupContentsDisplay.InitiateReply.Execute(new MessageControlViewModel(startReply));
+                }
             }
 
             if (!skipClose)
@@ -370,13 +410,44 @@ namespace GroupMeClient.Core.ViewModels
             this.SaveRestoreState();
         }
 
+        private void RegisterMiniChat(GroupContentsControlViewModel groupContentsControlViewModel)
+        {
+            if (!this.ActiveMiniChats.Any(g => g.Id == groupContentsControlViewModel.Id))
+            {
+                this.ActiveMiniChats.Add(groupContentsControlViewModel);
+            }
+        }
+
         private void CloseChat(GroupContentsControlViewModel groupContentsControlViewModel)
         {
-            this.ActiveGroupsChats.Remove(groupContentsControlViewModel);
-            this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
+            var miniChatCopy = this.ActiveMiniChats.FirstOrDefault(g => g.Id == groupContentsControlViewModel.Id);
 
-            ((IDisposable)groupContentsControlViewModel).Dispose();
+            // Remove the chat from the UI
+            this.ActiveGroupsChats.Remove(groupContentsControlViewModel);
+
+            if (miniChatCopy == null)
+            {
+                // Only unsubscribe and destroy the group contents if no minichat is using the same GCCVM
+                this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
+                ((IDisposable)groupContentsControlViewModel).Dispose();
+            }
+
             this.SaveRestoreState();
+        }
+
+        private void CloseMiniChat(GroupContentsControlViewModel groupContentsControlViewModel)
+        {
+            var uiCopy = this.ActiveGroupsChats.FirstOrDefault(g => g.Id == groupContentsControlViewModel.Id);
+
+            // Remove the chat from the list of maintained MiniChats
+            this.ActiveMiniChats.Remove(groupContentsControlViewModel);
+
+            if (uiCopy == null)
+            {
+                // Only unsubscribe and destroy the group contents if no main chat in the full UI is using the same GCCVM
+                this.PushClient.Unsubscribe(groupContentsControlViewModel.MessageContainer);
+                ((IDisposable)groupContentsControlViewModel).Dispose();
+            }
         }
 
         private void MarkAllGroupsChatsRead()
@@ -414,12 +485,12 @@ namespace GroupMeClient.Core.ViewModels
             }
 
             var updateRequest = new Messaging.UnreadRequestMessage(count);
-            Messenger.Default.Send(updateRequest);
+            WeakReferenceMessenger.Default.Send(updateRequest);
         }
 
         private void CheckForRestore()
         {
-            var restoreService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IRestoreService>();
+            var restoreService = Ioc.Default.GetService<IRestoreService>();
             if (restoreService.ShouldRestoreState)
             {
                 using (var persistContext = this.PersistManager.OpenNewContext())
@@ -445,6 +516,26 @@ namespace GroupMeClient.Core.ViewModels
                 var state = this.PersistManager.GetDefaultRecoveryState(persistContext);
                 state.OpenChats = new List<string>(this.ActiveGroupsChats.Select(x => x.Id));
                 persistContext.SaveChanges();
+            }
+        }
+
+        private void OpenTopChatHandler(object indexObj)
+        {
+            int index;
+            if (indexObj is int i)
+            {
+                index = i;
+            }
+            else
+            {
+                int.TryParse(indexObj.ToString(), out index);
+            }
+
+            if (index < this.SortedFilteredGroupChats.Count)
+            {
+                this.OpenNewGroupChat(
+                    group: this.SortedFilteredGroupChats[index],
+                    skipClose: false);
             }
         }
     }

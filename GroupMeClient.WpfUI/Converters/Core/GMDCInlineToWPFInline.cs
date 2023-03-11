@@ -1,8 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using GroupMeClient.Core.Services;
 using GroupMeClient.WpfUI.Extensions;
+using GroupMeClient.WpfUI.Markdown;
+using Markdig;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Neo.Markdig.Xaml;
 
 namespace GroupMeClient.WpfUI.Converters
 {
@@ -10,7 +17,8 @@ namespace GroupMeClient.WpfUI.Converters
     /// <see cref="GMDCInlineToWPFInline"/> provides conversions between GMDC Core abstract text types,
     /// and WPF TextElements defined in <see cref="System.Windows.Documents"/>.
     /// </summary>
-    [ValueConversion(typeof(ObservableCollection<Core.Controls.Documents.Inline>), typeof(ObservableCollection<System.Windows.Documents.Inline>))]
+    [ValueConversion(typeof(IEnumerable<Core.Controls.Documents.Inline>), typeof(ObservableCollection<System.Windows.Documents.Inline>))]
+    [ValueConversion(typeof(string), typeof(ObservableCollection<System.Windows.Documents.Inline>))]
     public class GMDCInlineToWPFInline : IValueConverter
     {
         /// <inheritdoc/>
@@ -18,11 +26,24 @@ namespace GroupMeClient.WpfUI.Converters
         {
             var results = new ObservableCollection<System.Windows.Documents.Inline>();
 
-            if (value is ObservableCollection<Core.Controls.Documents.Inline> inlines)
+            if (value is IEnumerable<Core.Controls.Documents.Inline> inlines)
             {
                 foreach (var inline in inlines)
                 {
-                    results.Add(this.GMDCInlineToWpfInline(inline));
+                    var part = this.GMDCInlineToWpfInline(inline);
+                    if (part != null)
+                    {
+                        results.Add(part);
+                    }
+                }
+            }
+            else if (value is string str)
+            {
+                // Treat plain text as markdown.
+                var markdown = this.GMDCInlineToWpfInline(new Core.Controls.Documents.MarkdownMessage(str));
+                if (markdown != null)
+                {
+                    results.Add(markdown);
                 }
             }
 
@@ -37,7 +58,35 @@ namespace GroupMeClient.WpfUI.Converters
 
         private System.Windows.Documents.Inline GMDCInlineToWpfInline(Core.Controls.Documents.Inline value)
         {
-            if (value is Core.Controls.Documents.Run run)
+            if (value is Core.Controls.Documents.MarkdownMessage md)
+            {
+                var pipeline = new MarkdownPipelineBuilder()
+                  .UseXamlSupportedExtensions()
+                  .Build();
+
+                if (!string.IsNullOrEmpty(md?.Content))
+                {
+                    var doc = GMDCMarkdown.ToFlowDocument(md.Content, pipeline);
+                    var reader = new RichTextBox
+                    {
+                        Document = doc,
+                        Background = System.Windows.Media.Brushes.Transparent,
+                        IsReadOnly = true,
+                        IsDocumentEnabled = true,
+                        VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                        HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                        BorderThickness = new System.Windows.Thickness(0),
+                        Padding = new System.Windows.Thickness(0),
+                        Margin = new System.Windows.Thickness(0),
+                    };
+
+                    reader.CommandBindings.Add(new CommandBinding(MarkdownXaml.Hyperlink, new ExecutedRoutedEventHandler(this.HyperlinkHandler)));
+
+                    var wrapper = new System.Windows.Documents.InlineUIContainer(reader);
+                    return wrapper;
+                }
+            }
+            else if (value is Core.Controls.Documents.Run run)
             {
                 return this.GMDCRunToWpfRun(run);
             }
@@ -81,11 +130,7 @@ namespace GroupMeClient.WpfUI.Converters
                 NavigateUri = hyperlink.NavigateUri,
             };
 
-            result.RequestNavigate += (object sender, System.Windows.Navigation.RequestNavigateEventArgs e) =>
-            {
-                var osService = GalaSoft.MvvmLight.Ioc.SimpleIoc.Default.GetInstance<IOperatingSystemUIService>();
-                osService.OpenWebBrowser(hyperlink.NavigateUri.ToString());
-            };
+            result.RequestNavigate += this.HyperlinkHandler;
 
             return result;
         }
@@ -104,6 +149,25 @@ namespace GroupMeClient.WpfUI.Converters
                 default:
                     return System.Windows.FontWeights.Regular;
             }
+        }
+
+        private void HyperlinkHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Parameter is Uri uri)
+            {
+                this.HyperlinkHandler(uri);
+            }
+        }
+
+        private void HyperlinkHandler(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            this.HyperlinkHandler(e.Uri);
+        }
+
+        private void HyperlinkHandler(Uri uri)
+        {
+            var osService = Ioc.Default.GetService<IOperatingSystemUIService>();
+            osService.OpenWebBrowser(uri.ToString());
         }
     }
 }

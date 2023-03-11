@@ -1,15 +1,15 @@
 ﻿using System.Threading.Tasks;
-using GalaSoft.MvvmLight;
 using GroupMeClient.Core.Controls.Media;
 using GroupMeClientApi;
 using GroupMeClientApi.Models;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace GroupMeClient.Core.ViewModels.Controls
 {
     /// <summary>
     /// <see cref="AvatarControlViewModel"/> provides the ViewModel for a control to display a GroupMe Avatar.
     /// </summary>
-    public class AvatarControlViewModel : ViewModelBase
+    public class AvatarControlViewModel : ObservableObject
     {
         private GenericImageSource avatarRound;
         private GenericImageSource avatarSquare;
@@ -51,7 +51,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public GenericImageSource AvatarRound
         {
             get => this.avatarRound;
-            private set => this.Set(() => this.AvatarRound, ref this.avatarRound, value);
+            private set => this.SetProperty(ref this.avatarRound, value);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public GenericImageSource AvatarSquare
         {
             get => this.avatarSquare;
-            private set => this.Set(() => this.AvatarSquare, ref this.avatarSquare, value);
+            private set => this.SetProperty(ref this.avatarSquare, value);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
             else
             {
-                image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl, isGroup);
+                 image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl, isGroup);
             }
 
             this.CurrentlyRenderedUrl = this.AvatarSource.ImageOrAvatarUrl;

@@ -9,17 +9,19 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Binding;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
 using GroupMeClient.Core.Caching;
 using GroupMeClient.Core.Controls;
+using GroupMeClient.Core.Messaging;
 using GroupMeClient.Core.Plugins;
 using GroupMeClient.Core.Plugins.ViewModels;
 using GroupMeClient.Core.Services;
 using GroupMeClient.Core.Utilities;
 using GroupMeClientApi.Models;
 using GroupMeClientApi.Models.Attachments;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.DependencyInjection;
+using Microsoft.Toolkit.Mvvm.Input;
+using Microsoft.Toolkit.Mvvm.Messaging;
 using ReactiveUI;
 
 namespace GroupMeClient.Core.ViewModels.Controls
@@ -28,7 +30,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
     /// <see cref="GroupContentsControlViewModel"/> provides a ViewModel for the <see cref="Views.Controls.GroupContentsControl"/> control that displays the contents (messages) of a Group or Chat.
     /// Controls for sending messages are also included.
     /// </summary>
-    public class GroupContentsControlViewModel : ViewModelBase, IDragDropPasteTarget, IDisposable
+    public class GroupContentsControlViewModel : ObservableObject, IDragDropPasteTarget, IDisposable
     {
         private IMessageContainer messageContainer;
         private AvatarControlViewModel topBarAvatar;
@@ -38,6 +40,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
         private bool isSending;
         private double scalingFactor = 1.0;
         private bool showDisplayOptions;
+        private bool showPluginOptions;
+        private bool isMarkdownMode;
+        private bool isFocused;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GroupContentsControlViewModel"/> class.
@@ -48,28 +53,30 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             this.ReloadSem = new SemaphoreSlim(1, 1);
 
-            this.SendMessage = new RelayCommand(async () => await this.SendMessageAsync(), () => !this.IsSending, true);
+            this.SendMessage = new AsyncRelayCommand(this.SendMessageAsync, () => !this.IsSending);
             this.SendAttachment = new RelayCommand(this.SendFileImageAttachment);
             this.OpenMessageSuggestions = new RelayCommand(this.OpenMessageSuggestionsDialog);
-            this.ReloadView = new RelayCommand(async () => await this.LoadMoreAsync(), true);
+            this.ReloadView = new AsyncRelayCommand(this.LoadMoreAsync);
             this.GroupChatPluginActivated = new RelayCommand<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>(this.ActivateGroupPlugin);
             this.SelectionChangedCommand = new RelayCommand<object>(this.SelectionChangedHandler);
-            this.InitiateReply = new RelayCommand<MessageControlViewModel>(m => this.InitiateReplyCommand(m), true);
-            this.HideMessage = new RelayCommand<MessageControlViewModel>(m => this.HideMessageCommand(m), true);
-            this.TerminateReply = new RelayCommand(() => this.MessageBeingRepliedTo = null, true);
-            this.ToggleDisplayOptions = new RelayCommand(() => this.ShowDisplayOptions = !this.ShowDisplayOptions, true);
+            this.InitiateReply = new RelayCommand<MessageControlViewModel>(this.InitiateReplyCommand);
+            this.HideMessage = new RelayCommand<MessageControlViewModel>(this.HideMessageCommand);
+            this.TerminateReply = new RelayCommand(() => this.MessageBeingRepliedTo = null);
+            this.ShowMiniChat = new RelayCommand(this.PopoutMiniChat);
+            this.GlobalRefreshAllCommand = new RelayCommand(this.SendGlobalRefresh);
+            this.ToggleDisplayOptions = new RelayCommand(() => this.ShowDisplayOptions = !this.ShowDisplayOptions);
+            this.ToggleMarkdownMode = new RelayCommand(() => this.IsMarkdownMode = !this.IsMarkdownMode);
 
             this.SmallDialogManager = new PopupViewModel()
             {
-                ClosePopup = new RelayCommand(this.ClosePopupHandler),
-                EasyClosePopup = null,  // EasyClose makes it too easy to accidently close the send dialog.
-                PopupDialog = null,
+                ClosePopupCallback = new RelayCommand(this.ClosePopupHandler),
+                EasyClosePopupCallback = null,  // EasyClose makes it too easy to accidently close the send dialog.
             };
 
             this.ReliabilityStateMachine = new ReliabilityStateMachine();
 
             this.GroupChatPlugins = new ObservableCollection<GroupMeClientPlugin.GroupChat.IGroupChatPlugin>();
-            var pluginManager = SimpleIoc.Default.GetInstance<IPluginManagerService>();
+            var pluginManager = Ioc.Default.GetService<IPluginManagerService>();
             foreach (var plugin in pluginManager.GroupChatPlugins)
             {
                 this.GroupChatPlugins.Add(plugin);
@@ -84,9 +91,9 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 .Bind(this.MessagesSorted)
                 .Subscribe();
 
-            this.CacheManager = SimpleIoc.Default.GetInstance<CacheManager>();
-            this.PersistManager = SimpleIoc.Default.GetInstance<PersistManager>();
-            this.PluginHost = SimpleIoc.Default.GetInstance<PluginHost>();
+            this.CacheManager = Ioc.Default.GetService<CacheManager>();
+            this.PersistManager = Ioc.Default.GetService<PersistManager>();
+            this.PluginHost = Ioc.Default.GetService<PluginHost>();
         }
 
         /// <summary>
@@ -124,19 +131,34 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ICommand CloseGroup { get; set; }
 
         /// <summary>
-        /// Gets or sets the action to be performed when a message is ready to send.
+        /// Gets or sets the action to be performed to close this as a MiniChat.
         /// </summary>
-        public ICommand SendMessage { get; set; }
+        public ICommand CloseMiniChat { get; set; }
 
         /// <summary>
-        /// Gets or sets the action to be performed when the user wants to send an attachment file.
+        /// Gets or sets the action to be performed to register this chat as being a MiniChat.
         /// </summary>
-        public ICommand SendAttachment { get; set; }
+        public ICommand RegisterAsMiniChat { get; set; }
 
         /// <summary>
-        /// Gets or sets the action to be performd when the user has selected the Message Effects Generator.
+        /// Gets the action to be performed when a message is ready to send.
         /// </summary>
-        public ICommand OpenMessageSuggestions { get; set; }
+        public ICommand SendMessage { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when the user wants to send an attachment file.
+        /// </summary>
+        public ICommand SendAttachment { get; }
+
+        /// <summary>
+        /// Gets the action to be performd when the user has selected the Message Effects Generator.
+        /// </summary>
+        public ICommand OpenMessageSuggestions { get; }
+
+        /// <summary>
+        /// Gets the action to be performed when the user has selected markdown mode.
+        /// </summary>
+        public ICommand ToggleMarkdownMode { get; }
 
         /// <summary>
         /// Gets the action to be performed when more messages need to be loaded.
@@ -165,6 +187,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public ICommand SelectionChangedCommand { get; }
 
         /// <summary>
+        /// Gets the action to be be performed to send a message to globally refresh all data
+        /// in GMDC.
+        /// </summary>
+        public ICommand GlobalRefreshAllCommand { get; }
+
+        /// <summary>
         /// Gets the collection of ViewModels for <see cref="Message"/>s to be displayed, sorted in ascending order.
         /// </summary>
         public IObservableCollection<MessageControlViewModelBase> MessagesSorted { get; private set; }
@@ -184,6 +212,11 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// Gets the action to be performed to toggle the <see cref="ShowDisplayOptions"/> property.
         /// </summary>
         public ICommand ToggleDisplayOptions { get; }
+
+        /// <summary>
+        /// Gets the action to be performed to pop out this chat as a MiniChat.
+        /// </summary>
+        public ICommand ShowMiniChat { get; }
 
         /// <summary>
         /// Gets the title of the <see cref="Group"/> or <see cref="Chat"/>.
@@ -211,7 +244,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public IMessageContainer MessageContainer
         {
             get => this.messageContainer;
-            set => this.Set(() => this.MessageContainer, ref this.messageContainer, value);
+            set => this.SetProperty(ref this.messageContainer, value);
         }
 
         /// <summary>
@@ -220,7 +253,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public AvatarControlViewModel TopBarAvatar
         {
             get => this.topBarAvatar;
-            private set => this.Set(() => this.TopBarAvatar, ref this.topBarAvatar, value);
+            private set => this.SetProperty(ref this.topBarAvatar, value);
         }
 
         /// <summary>
@@ -229,7 +262,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public string TypedMessageContents
         {
             get => this.typedMessageContents;
-            set => this.Set(() => this.TypedMessageContents, ref this.typedMessageContents, value);
+            set => this.SetProperty(ref this.typedMessageContents, value);
         }
 
         /// <summary>
@@ -238,7 +271,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsSelectionAllowed
         {
             get => this.isSelectionAllowed;
-            set => this.Set(() => this.IsSelectionAllowed, ref this.isSelectionAllowed, value);
+            set => this.SetProperty(ref this.isSelectionAllowed, value);
         }
 
         /// <summary>
@@ -248,7 +281,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public MessageControlViewModel MessageBeingRepliedTo
         {
             get => this.messageBeingRepliedTo;
-            set => this.Set(() => this.MessageBeingRepliedTo, ref this.messageBeingRepliedTo, value);
+            set => this.SetProperty(ref this.messageBeingRepliedTo, value);
         }
 
         /// <summary>
@@ -257,7 +290,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsSending
         {
             get => this.isSending;
-            private set => this.Set(() => this.IsSending, ref this.isSending, value);
+            private set => this.SetProperty(ref this.isSending, value);
         }
 
         /// <summary>
@@ -266,7 +299,25 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public double ScalingFactor
         {
             get => this.scalingFactor;
-            set => this.Set(() => this.ScalingFactor, ref this.scalingFactor, value);
+            set => this.SetProperty(ref this.scalingFactor, value);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the current message is in markdown mode.
+        /// </summary>
+        public bool IsMarkdownMode
+        {
+            get => this.isMarkdownMode;
+            private set => this.SetProperty(ref this.isMarkdownMode, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this chat currently has input focus.
+        /// </summary>
+        public bool IsFocused
+        {
+            get => this.isFocused;
+            set => this.SetProperty(ref this.isFocused, value);
         }
 
         /// <summary>
@@ -275,7 +326,26 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool ShowDisplayOptions
         {
             get => this.showDisplayOptions;
-            private set => this.Set(() => this.ShowDisplayOptions, ref this.showDisplayOptions, value);
+            private set
+            {
+                this.SetProperty(ref this.showDisplayOptions, value);
+                this.showPluginOptions = false;
+                this.OnPropertyChanged(nameof(this.ShowPluginOptions));
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the plugin menu should be shown.
+        /// </summary>
+        public bool ShowPluginOptions
+        {
+            get => this.showPluginOptions;
+            set
+            {
+                this.SetProperty(ref this.showPluginOptions, value);
+                this.showDisplayOptions = false;
+                this.OnPropertyChanged(nameof(this.ShowDisplayOptions));
+            }
         }
 
         private CacheManager CacheManager { get; }
@@ -310,7 +380,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             await this.LoadMoreAsync(updateNewest: true);
 
             // Rebind the title incase the group metadata was updated
-            this.RaisePropertyChanged(nameof(this.Title));
+            this.OnPropertyChanged(nameof(this.Title));
 
             if (this.TopBarAvatar != null && this.MessageContainer.ImageOrAvatarUrl != this.TopBarAvatar.CurrentlyRenderedUrl)
             {
@@ -391,7 +461,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
             this.ShowImageSendDialog(new List<Stream>() { memoryStream });
         }
 
-        private async Task LoadMoreAsync(bool updateNewest = false)
+        private Task LoadMoreAsync()
+        {
+            return this.LoadMoreAsync(updateNewest: false);
+        }
+
+        private async Task LoadMoreAsync(bool updateNewest)
         {
             await this.ReloadSem.WaitAsync();
 
@@ -436,12 +511,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 return;
             }
 
-            var uiDispatcher = SimpleIoc.Default.GetInstance<IUserInterfaceDispatchService>();
+            var uiDispatcher = Ioc.Default.GetService<IUserInterfaceDispatchService>();
             await uiDispatcher.InvokeAsync(() =>
             {
                 var maxTimeDifference = TimeSpan.FromMinutes(15);
 
-                this.AllMessages.Edit(innerList =>
+                this.AllMessages.Edit(async innerList =>
                 {
                     using (var persistContext = this.PersistManager.OpenNewContext())
                     {
@@ -527,7 +602,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                                 lastSentMessage.Message.CreatedAtTime,
                                 false,
                                 (msgId + 1).ToString(),
-                                (lastSentMessage as MessageControlViewModel).DidISendIt);
+                                lastSentMessage.DidISendIt);
 
                             innerList.Add(sentMarker);
                         }
@@ -540,7 +615,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                         if (lastReceivedMessage != null && this.MessageContainer is Chat c)
                         {
-                            var result = Task.Run(async () => await c.SendReadReceipt(lastReceivedMessage.Message)).Result;
+                            await c.SendReadReceipt(lastReceivedMessage.Message);
                         }
                     }
                 });
@@ -556,7 +631,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         {
             if (!string.IsNullOrEmpty(this.TypedMessageContents))
             {
-                var clientIdentity = SimpleIoc.Default.GetInstance<IClientIdentityService>();
+                var clientIdentity = Ioc.Default.GetService<IClientIdentityService>();
 
                 this.IsSending = true;
                 var newMessage = Message.CreateMessage(
@@ -569,10 +644,10 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void SendFileImageAttachment()
         {
-            var supportedImages = GroupMeClientApi.Models.Attachments.ImageAttachment.SupportedExtensions.ToList();
-            var supportedFiles = GroupMeClientApi.Models.Attachments.FileAttachment.GroupMeDocumentMimeTypeMapper.SupportedExtensions.ToList();
+            var supportedImages = ImageAttachment.SupportedExtensions.ToList();
+            var supportedFiles = FileAttachment.GroupMeDocumentMimeTypeMapper.SupportedExtensions.ToList();
 
-            var fileDialogService = SimpleIoc.Default.GetInstance<IFileDialogService>();
+            var fileDialogService = Ioc.Default.GetService<IFileDialogService>();
             var filters = new List<FileFilter>
             {
                 new FileFilter() { Name = "Images", Extensions = supportedImages },
@@ -613,7 +688,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
             var contents = contentSendDialog.TypedMessageContents;
 
-            var clientIdentity = SimpleIoc.Default.GetInstance<IClientIdentityService>();
+            var clientIdentity = Ioc.Default.GetService<IClientIdentityService>();
 
             var message = Message.CreateMessage(
                 contents,
@@ -632,34 +707,34 @@ namespace GroupMeClient.Core.ViewModels.Controls
             }
         }
 
-        private async Task<Message> InjectReplyData(Message responseMessage)
+        private void InjectReplyData(Message responseMessage)
         {
-            var renderingService = SimpleIoc.Default.GetInstance<IMessageRendererService>();
-            var currentlyDisplayedVersion = this.AllMessages.Items.First(m => m.Id == this.MessageBeingRepliedTo.Id);
-            var renderedOriginalMessage = renderingService.RenderMessageToPngImage(this.MessageBeingRepliedTo.Message, currentlyDisplayedVersion);
-            var renderedImageAttachment = await GroupMeClientApi.Models.Attachments.ImageAttachment.CreateImageAttachment(renderedOriginalMessage, this.MessageContainer);
+            responseMessage.Attachments.RemoveAll(m => m is ReplyAttachment);
+            responseMessage.Attachments.Add(ReplyAttachment.CreateReplyAttachment(this.MessageBeingRepliedTo.Message));
+        }
 
-            var attachments = responseMessage.Attachments.ToList();
-            attachments.Add(renderedImageAttachment);
-
-            var clientIdentity = SimpleIoc.Default.GetInstance<IClientIdentityService>();
-
-            var amendedMessage = Message.CreateMessage(
-                responseMessage.Text,
-                attachments,
-                guidPrefix: $"{clientIdentity.ClientGuidReplyPrefix}{this.MessageBeingRepliedTo.Message.Id}",
+        private Message ConvertToMarkdown(Message msg)
+        {
+            var clientIdentity = Ioc.Default.GetService<IClientIdentityService>();
+            return Message.CreateMessage(
+                msg.Text,
+                msg.Attachments,
+                guidPrefix: $"{clientIdentity.ClientGuidMarkdownPrefix}",
                 guid: this.SendingMessageGuid);
-
-            return amendedMessage;
         }
 
         private async Task<bool> SendMessageAsync(Message newMessage)
         {
             bool success;
 
-            if (this.messageBeingRepliedTo != null)
+            if (this.MessageBeingRepliedTo != null)
             {
-                newMessage = await this.InjectReplyData(newMessage);
+                this.InjectReplyData(newMessage);
+            }
+
+            if (this.IsMarkdownMode)
+            {
+                newMessage = this.ConvertToMarkdown(newMessage);
             }
 
             success = await this.MessageContainer.SendMessage(newMessage);
@@ -670,11 +745,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
                 this.TypedMessageContents = string.Empty;
                 this.MessageBeingRepliedTo = null;
+                this.IsMarkdownMode = false;
                 this.SendingMessageGuid = Guid.NewGuid().ToString();
             }
             else
             {
-                var messageBoxService = SimpleIoc.Default.GetInstance<IMessageBoxService>();
+                var messageBoxService = Ioc.Default.GetService<IMessageBoxService>();
                 messageBoxService.ShowMessageBox(new MessageBoxParams()
                 {
                     Title = "GroupMe Desktop Client",
@@ -712,7 +788,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
             {
                 MessageContainer = this.MessageContainer,
                 TypedMessageContents = this.TypedMessageContents,
-                SendMessage = new RelayCommand<List<Attachment>>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
+                SendMessage = new AsyncRelayCommand<List<Attachment>>(this.SendContentMessageAsync, (a) => !this.IsSending),
             };
 
             foreach (var image in imagesData)
@@ -720,7 +796,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 dialog.ImagesCollection.Add(new SendImageControlViewModel.SendableImage(image));
             }
 
-            this.SmallDialogManager.PopupDialog = dialog;
+            this.SmallDialogManager.OpenPopup(dialog, Guid.Empty);
         }
 
         private void ShowFileSendDialog(string fileName)
@@ -753,16 +829,16 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 FileName = Path.GetFileName(fileName),
                 MessageContainer = this.MessageContainer,
                 TypedMessageContents = this.TypedMessageContents,
-                SendMessage = new RelayCommand<List<Attachment>>(async (a) => await this.SendContentMessageAsync(a), (a) => !this.IsSending, true),
+                SendMessage = new AsyncRelayCommand<List<Attachment>>(this.SendContentMessageAsync, (a) => !this.IsSending),
             };
 
-            this.SmallDialogManager.PopupDialog = dialog;
+            this.SmallDialogManager.OpenPopup(dialog, Guid.Empty);
         }
 
         private void ClosePopupHandler()
         {
             (this.SmallDialogManager.PopupDialog as IDisposable)?.Dispose();
-            this.SmallDialogManager.PopupDialog = null;
+            this.SmallDialogManager.ClosePopup();
         }
 
         private void ActivateGroupPlugin(GroupMeClientPlugin.GroupChat.IGroupChatPlugin plugin)
@@ -778,7 +854,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 UpdateMessage = new RelayCommand(this.UseMessageEffectSuggestion),
             };
 
-            this.SmallDialogManager.PopupDialog = dialog;
+            this.SmallDialogManager.OpenPopup(dialog, Guid.Empty);
         }
 
         private void UseMessageEffectSuggestion()
@@ -807,13 +883,39 @@ namespace GroupMeClient.Core.ViewModels.Controls
 
         private void HideMessageCommand(MessageControlViewModel message)
         {
-            var persistManager = SimpleIoc.Default.GetInstance<PersistManager>();
+            var persistManager = Ioc.Default.GetService<PersistManager>();
             using (var context = persistManager.OpenNewContext())
             {
                 context.HideMessage(message.Message);
                 this.AllMessages.Remove(message);
                 context.SaveChanges();
             }
+        }
+
+        private void PopoutMiniChat()
+        {
+            var windowService = Ioc.Default.GetService<IWindowService>();
+            windowService.ShowWindow(new WindowParams()
+            {
+                Content = this,
+                Title = this.Title,
+                Width = 350,
+                Height = 550,
+                TopMost = true,
+                StartingLocation = this.Settings.UISettings.MiniChatOpenLocation,
+                StartingX = this.Settings.UISettings.MiniChatManualX,
+                StartingY = this.Settings.UISettings.MiniChatManualY,
+                Tag = this.Id,
+                CloseCallback = () => this.CloseMiniChat?.Execute(this),
+            });
+
+            this.RegisterAsMiniChat.Execute(this);
+            this.ShowDisplayOptions = false;
+        }
+
+        private void SendGlobalRefresh()
+        {
+            WeakReferenceMessenger.Default.Send(new RefreshAllMessage());
         }
     }
 }
