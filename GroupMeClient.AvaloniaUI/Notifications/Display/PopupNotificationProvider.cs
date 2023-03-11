@@ -28,6 +28,7 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display
         /// <summary>
         /// Creates a <see cref="PopupNotificationProvider"/> to display operating system level notifications.
         /// </summary>
+        /// <param name="settingsManager">The application settings manager.</param>
         /// <returns>A PopupNotificationProvider.</returns>
         public static PopupNotificationProvider CreatePlatformNotificationProvider(SettingsManager settingsManager)
         {
