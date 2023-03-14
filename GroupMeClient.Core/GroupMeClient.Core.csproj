@@ -46,7 +46,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Octokit" Version="5.0.2" />
-    <PackageReference Include="ReactiveUI" Version="18.4.25" />
+    <PackageReference Include="ReactiveUI" Version="18.4.26" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.4" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>

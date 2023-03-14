@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net48</TargetFrameworks>
+    <TargetFrameworks>net6.0-windows10.0.17763.0</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <RootNamespace>GroupMeClient.WpfUI</RootNamespace>
     <AssemblyName>GroupMeClient</AssemblyName>
@@ -11,14 +11,6 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net4'))">
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-  </PropertyGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
-    <!--Needed to keep System.Reactive.targets from throwing an error when targetting net48 in an SDK-style project-->
-    <KnownFrameworkReference Update="Microsoft.WindowsDesktop.App.WPF" IsWindowsOnly="false" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="stylecop.json" />
@@ -34,6 +26,7 @@
     </PackageReference>
     <PackageReference Include="MahApps.Metro.IconPacks.Entypo">
       <Version>4.11.0</Version>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="MahApps.Metro.IconPacks.FontAwesome">
       <Version>4.11.0</Version>
@@ -49,6 +42,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>7.0.0</Version>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting">
       <Version>7.0.1</Version>
@@ -57,12 +51,15 @@
       <Version>3.1.32</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf">
       <Version>1.1.39</Version>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="MvvmLightLibsStd10">
       <Version>5.4.1.1</Version>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="Neo.Markdig.Xaml">
       <Version>1.0.10</Version>
@@ -77,9 +74,11 @@
     </PackageReference>
     <PackageReference Include="Octokit">
       <Version>5.0.2</Version>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="ReactiveUI.WPF">
-      <Version>18.4.25</Version>
+      <Version>18.4.26</Version>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers">
       <Version>1.1.118</Version>
@@ -91,6 +90,7 @@
     </PackageReference>
     <PackageReference Include="XamlAnimatedGif">
       <Version>2.1.1</Version>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
   </ItemGroup>
 
