@@ -8,6 +8,8 @@
              xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
+             x:DataType="vm:GroupContentsControlViewModel"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="900"
              Background="{DynamicResource MessageBackdropBrush}">
 
@@ -170,8 +172,8 @@
             VerticalAlignment="Bottom"
             Classes="round"
             Margin="0,0,30,20"
-            IsVisible="{Binding Path=IsNotAtBottom, ElementName=messageList}"
-            Command="{Binding #messagesList.Scroll.ScrollToEnd}"
+            IsVisible="{ReflectionBinding Path=IsNotAtBottom, ElementName=messageList}"
+            Command="{ReflectionBinding #messagesList.Scroll.ScrollToEnd}"
             Background="{DynamicResource ScrollToBottomButtonBrush}"
             BorderBrush="{DynamicResource ScrollToBottomButtonBrush}" >
       <Button.Styles>
@@ -221,7 +223,7 @@
             <DataTemplate>
               <Button
                   Content="{Binding PluginName}"
-                  Command="{Binding RelativeSource={RelativeSource FindAncestor, 
+                  Command="{ReflectionBinding RelativeSource={RelativeSource FindAncestor, 
                                          AncestorType={x:Type controls:GroupContentsControl}}, Path=DataContext.GroupChatPluginActivated}"
                   CommandParameter="{Binding Path=.}"
                   HorizontalContentAlignment="Left"
@@ -312,7 +314,7 @@
     </Grid>
 
     <!--Popup Dialog-->
-    <ContentControl Content="{Binding PopupManager}"
+    <ContentControl Content="{Binding SmallDialogManager}"
                     Grid.RowSpan="4"
                     Grid.ColumnSpan="1"/>
 </Grid>

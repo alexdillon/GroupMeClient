@@ -12,6 +12,8 @@
         xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="GroupMeClient.AvaloniaUI.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        x:CompileBindings="True"
         FontFamily="{DynamicResource GroupMeFont}"
         Title="GroupMe Desktop Client"
         >

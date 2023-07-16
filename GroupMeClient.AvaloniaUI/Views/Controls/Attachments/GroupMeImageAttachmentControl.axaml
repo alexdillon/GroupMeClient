@@ -7,6 +7,8 @@
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:microcube="clr-namespace:MicroCubeAvalonia.Controls;assembly=MicroCubeAvalonia"
              xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls.Attachments"
+             x:DataType="vm:GroupMeImageAttachmentControlViewModel"
              mc:Ignorable="d"
              d:DesignHeight="200" d:DesignWidth="200"
              Background="{DynamicResource ThemeBackgroundBrush}">

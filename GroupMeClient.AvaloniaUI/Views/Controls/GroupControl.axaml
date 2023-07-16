@@ -7,6 +7,8 @@
              xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
              xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
+             x:DataType="vm:GroupControlViewModel"
              Background="{DynamicResource ThemeBackgroundBrush}"
              mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="150">
 

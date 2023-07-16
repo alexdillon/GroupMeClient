@@ -4,6 +4,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:microcube="clr-namespace:MicroCubeAvalonia.Controls;assembly=MicroCubeAvalonia"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
+             x:DataType="vm:LoadingControlViewModel"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450">
   <Grid ColumnDefinitions="*"
         RowDefinitions="Auto, *">

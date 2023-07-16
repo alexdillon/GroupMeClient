@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
+             x:DataType="vm:AvatarControlViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="300">
 
@@ -13,7 +15,7 @@
         <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
       </Grid.Resources>
 
-      <Ellipse IsVisible="{Binding IsRounded}">
+      <Ellipse IsVisible="{Binding AvatarSource.IsRoundedAvatar}">
         <Ellipse.Fill>
           <!--TODO 11-->
           <!--RenderOptions.BitmapInterpolationMode="MediumQuality"-->
@@ -22,7 +24,7 @@
         </Ellipse.Fill>
       </Ellipse>
 
-      <Rectangle IsVisible="{Binding IsRounded, Converter={StaticResource inverseBoolConverter}}">
+      <Rectangle IsVisible="{Binding AvatarSource.IsRoundedAvatar, Converter={StaticResource inverseBoolConverter}}">
         <Rectangle.Fill>
           <!--TODO 11-->
           <!--RenderOptions.BitmapInterpolationMode="MediumQuality"-->

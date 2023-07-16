@@ -9,6 +9,8 @@
              xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
              xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
              xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
+             x:DataType="vm:MessageEffectsControlViewModel"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200"
              Background="Black">
   

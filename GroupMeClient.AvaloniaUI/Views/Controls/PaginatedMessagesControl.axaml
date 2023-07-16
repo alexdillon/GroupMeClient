@@ -9,6 +9,8 @@
              xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
              xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
              xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
+             x:DataType="vm:PaginatedMessagesControlViewModel"
              mc:Ignorable="d" 
              d:DesignWidth="800" d:DesignHeight="450">
   <Grid>
@@ -83,7 +85,7 @@
                                   ContentTemplate="{TemplateBinding ContentTemplate}"
                                   Content="{TemplateBinding Content}"
                                   Padding="0"
-                                  IsHitTestVisible="{Binding IsSelectable}"
+                                  IsHitTestVisible="{ReflectionBinding IsSelectable}"
                                   VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                   HorizontalContentAlignment="Stretch"/>
                 </ControlTemplate>
@@ -105,7 +107,7 @@
                                     ContentTemplate="{TemplateBinding ContentTemplate}"
                                     Content="{TemplateBinding Content}"
                                     Padding="0"
-                                    IsHitTestVisible="{Binding IsSelectable}"
+                                    IsHitTestVisible="{ReflectionBinding IsSelectable}"
                                     VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                     HorizontalContentAlignment="Stretch"/>
                 </Border>
@@ -124,7 +126,7 @@
 
       <i:Interaction.Behaviors>
         <ia:EventTriggerBehavior EventName="SelectionChanged">
-          <ia:InvokeCommandAction Command="{Binding DataContext.MessageSelectedCommand, RelativeSource={RelativeSource AncestorType=controls:PaginatedMessagesControl}}"
+          <ia:InvokeCommandAction Command="{ReflectionBinding DataContext.MessageSelectedCommand, RelativeSource={RelativeSource AncestorType=controls:PaginatedMessagesControl}}"
                                   CommandParameter="{Binding #messagesList.SelectedItem}" />
         </ia:EventTriggerBehavior>
       </i:Interaction.Behaviors>

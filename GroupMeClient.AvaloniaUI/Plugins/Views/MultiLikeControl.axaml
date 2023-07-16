@@ -1,10 +1,14 @@
-﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.MultiLikeControl"
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Plugins.Views.MultiLikeControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:vm="using:GroupMeClient.Core.Plugins.ViewModels"
+             x:DataType="vm:MultiLikeControlViewModel"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200">
+  <!--TODO 11: DataType-->
+  
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="200"/>

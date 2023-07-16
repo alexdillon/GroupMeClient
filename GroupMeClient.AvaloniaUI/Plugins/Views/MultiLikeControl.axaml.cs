@@ -4,7 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace GroupMeClient.AvaloniaUI.Views.Controls
+namespace GroupMeClient.AvaloniaUI.Plugins.Views
 {
     public partial class MultiLikeControl : UserControl
     {

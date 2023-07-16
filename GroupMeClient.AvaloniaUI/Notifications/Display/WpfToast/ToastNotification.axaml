@@ -5,6 +5,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
              xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
+             xmlns:vm="using:GroupMeClient.AvaloniaUI.Notifications.Display.WpfToast"
+             x:DataType="vm:ToastNotificationViewModel"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="100">
   
   <Grid ColumnDefinitions="Auto,*,Auto">

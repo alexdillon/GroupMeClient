@@ -9,6 +9,8 @@
              xmlns:microcube="clr-namespace:MicroCubeAvalonia.Controls;assembly=MicroCubeAvalonia"
              xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
              xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
+             x:DataType="vm:SendFileControlViewModel"
              mc:Ignorable="d" d:DesignHeight="200" d:DesignWidth="200"
              Background="Black">
   <Grid>
@@ -21,7 +23,7 @@
     </Grid.RowDefinitions>
 
     <i:Interaction.Behaviors>
-      <extensions:FocusOnLoadBehavior FocusControl="{Binding #FileMessageCaption}" />
+      <extensions:FocusOnLoadBehavior FocusControl="{ReflectionBinding #FileMessageCaption}" />
     </i:Interaction.Behaviors>
 
     <Grid ColumnDefinitions="55, *">

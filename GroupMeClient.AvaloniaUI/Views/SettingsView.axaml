@@ -6,6 +6,8 @@
              xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
              xmlns:settings="clr-namespace:GroupMeClient.Core.Settings;assembly=GroupMeClient.Core"
              xmlns:themes="clr-namespace:GroupMeClient.Core.Settings.Themes;assembly=GroupMeClient.Core"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels"
+             x:DataType="vm:SettingsViewModel"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450">
   <UserControl.Styles>
     <Style Selector="HeaderedContentControl">

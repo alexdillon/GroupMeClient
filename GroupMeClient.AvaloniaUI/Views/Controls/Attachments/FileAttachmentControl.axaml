@@ -8,6 +8,8 @@
              xmlns:microcube="clr-namespace:MicroCubeAvalonia.Controls;assembly=MicroCubeAvalonia"
              xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
              xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls.Attachments"
+             x:DataType="vm:FileAttachmentControlViewModel"
              mc:Ignorable="d"
              d:DesignHeight="100" d:DesignWidth="400">
 

@@ -7,6 +7,8 @@
              xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls.Attachments"
+             x:DataType="vm:VideoAttachmentControlViewModel"
              mc:Ignorable="d" d:DesignHeight="200" d:DesignWidth="200"
              Background="White">
 
