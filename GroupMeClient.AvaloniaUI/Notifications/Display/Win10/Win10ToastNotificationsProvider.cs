@@ -13,6 +13,7 @@ using GroupMeClientPlugin.Notifications.Display;
 using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Microsoft.Toolkit.Uwp.Notifications;
 
+// TODO 11 - Fix all of this for .NET 6
 namespace GroupMeClient.AvaloniaUI.Notifications.Display.Win10
 {
     /// <summary>
@@ -26,14 +27,14 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display.Win10
         /// <param name="settingsManager">The settings instance to use.</param>
         public Win10ToastNotificationsProvider(SettingsManager settingsManager)
         {
-            this.ToastNotifier = ToastNotificationManagerCompat.CreateToastNotifier();
-            ToastNotificationManagerCompat.OnActivated += this.ToastNotificationManagerCompat_OnActivated;
-
-            this.SettingsManager = settingsManager;
-            this.ChatsViewModel = Ioc.Default.GetService<ChatsViewModel>();
+            //this.ToastNotifier = ToastNotificationManagerCompat.CreateToastNotifier();
+            //ToastNotificationManagerCompat.OnActivated += this.ToastNotificationManagerCompat_OnActivated;
+            //
+            //this.SettingsManager = settingsManager;
+            //this.ChatsViewModel = Ioc.Default.GetService<ChatsViewModel>();
         }
 
-        private ToastNotifierCompat ToastNotifier { get; }
+        //private ToastNotifierCompat ToastNotifier { get; }
 
         private bool HasPerformedCleanup { get; set; } = false;
 
@@ -66,11 +67,11 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display.Win10
                                     isRounded: roundedAvatar)),
                         hintCrop: roundedAvatar ? ToastGenericAppLogoCrop.Circle : ToastGenericAppLogoCrop.Default);
 
-                toastBuilder.Show(toast =>
-                    {
-                        toast.Tag = Guid.NewGuid().ToString().Substring(0, 15);
-                        toast.Group = containerId;
-                    });
+                //toastBuilder.Show(toast =>
+                //    {
+                //        toast.Tag = Guid.NewGuid().ToString().Substring(0, 15);
+                //        toast.Group = containerId;
+                //    });
             }
         }
 
@@ -101,12 +102,12 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display.Win10
 
                 this.AddInteractiveElements(toastBuilder, containerId, avatar);
 
-                toastBuilder
-                    .Show(toast =>
-                    {
-                        toast.Tag = $"{containerId}{messageId}";
-                        toast.Group = containerId;
-                    });
+                //toastBuilder
+                //    .Show(toast =>
+                //    {
+                //        toast.Tag = $"{containerId}{messageId}";
+                //        toast.Group = containerId;
+                //    });
             }
         }
 
@@ -136,12 +137,12 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display.Win10
 
                 this.AddInteractiveElements(toastBuilder, containerId, avatar);
 
-                toastBuilder
-                    .Show(toast =>
-                    {
-                        toast.Tag = $"{containerId}{messageId}";
-                        toast.Group = containerId;
-                    });
+                //toastBuilder
+                //    .Show(toast =>
+                //    {
+                //        toast.Tag = $"{containerId}{messageId}";
+                //        toast.Group = containerId;
+                //    });
             }
         }
 
@@ -151,10 +152,10 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display.Win10
             this.GroupMeClient = client;
         }
 
-        private void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
-        {
-            ActivationHandler.HandleActivation(e.Argument, e.UserInput);
-        }
+        //private void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
+        //{
+        //    ActivationHandler.HandleActivation(e.Argument, e.UserInput);
+        //}
 
         /// <summary>
         /// Determines whether notifications should be shown for a given chat.
@@ -228,7 +229,7 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display.Win10
         {
             if (this.SettingsManager.UISettings.EnableUWPNotificationQuickExpiration)
             {
-                ToastNotificationManagerCompat.History.RemoveGroup(containerId);
+                //ToastNotificationManagerCompat.History.RemoveGroup(containerId);
             }
         }
 

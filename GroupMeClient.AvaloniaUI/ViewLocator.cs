@@ -11,7 +11,7 @@ namespace GroupMeClient.AvaloniaUI
     public class ViewLocator : IDataTemplate
     {
         /// <inheritdoc/>
-        public IControl Build(object data)
+        Control ITemplate<object, Control>.Build(object data)
         {
             var originalName = data.GetType().FullName;
 

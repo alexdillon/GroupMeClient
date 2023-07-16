@@ -15,20 +15,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Remove="IconPack\IconControl.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="IconPack\IconControl.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaXaml Include="IconPack\IconControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Controls\ProgressRing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.18" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="IconPack\IconControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
+    <PackageReference Include="Avalonia" Version="11.0.0" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0" />
   </ItemGroup>
 
   <ItemGroup>

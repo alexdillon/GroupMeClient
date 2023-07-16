@@ -18,7 +18,7 @@ namespace GroupMeClient.AvaloniaUI.Services
         /// <inheritdoc/>
         public Task InvokeAsync(Action action)
         {
-            return Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(action);
+            return Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(action).GetTask();
         }
     }
 }

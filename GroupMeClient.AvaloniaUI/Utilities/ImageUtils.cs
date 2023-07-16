@@ -13,7 +13,7 @@ namespace GroupMeClient.AvaloniaUI.Utilities
         /// </summary>
         /// <param name="image">The source image.</param>
         /// <returns>A png encoded array of raw bytes.</returns>
-        public static byte[] BitmapSourceToBytes(IBitmap image)
+        public static byte[] BitmapSourceToBytes(Bitmap image)
         {
             using var stream = new MemoryStream();
             image.Save(stream);
@@ -25,7 +25,7 @@ namespace GroupMeClient.AvaloniaUI.Utilities
         /// </summary>
         /// <param name="image">The raw image data.</param>
         /// <returns>A Wpf <see cref="ImageSource"/>.</returns>
-        public static IBitmap BytesToImageSource(byte[] image)
+        public static Bitmap BytesToImageSource(byte[] image)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace GroupMeClient.AvaloniaUI.Utilities
         /// <param name="maxWidth">The maximum image width.</param>
         /// <param name="maxHeight">The maximum image height.</param>
         /// <returns>A Wpf <see cref="ImageSource"/>.</returns>
-        public static IBitmap BytesToImageSource(byte[] image, int maxWidth, int maxHeight)
+        public static Bitmap BytesToImageSource(byte[] image, int maxWidth, int maxHeight)
         {
             // TODO: Can the maximum width and height optimizations be applied in Avalonia?
             return BytesToImageSource(image);

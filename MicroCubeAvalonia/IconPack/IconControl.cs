@@ -12,21 +12,18 @@ namespace MicroCubeAvalonia.IconPack
     {
         public static readonly AvaloniaProperty KindProperty =
             AvaloniaProperty.Register<IconControl, string>(
-                "Kind",
-                inherits: true,
-                notifying: (o, b) => UpdatedBindings(o));
+                nameof(Kind),
+                inherits: true);
 
         public static readonly AvaloniaProperty BindableKindProperty =
             AvaloniaProperty.Register<IconControl, object>(
-                "BindableKind",
-                inherits: true,
-                notifying: (o, b) => UpdatedBindings(o));
+                nameof(BindableKind),
+                inherits: true);
 
         public static readonly DirectProperty<IconControl, Geometry> IconDataProperty =
             AvaloniaProperty.RegisterDirect<IconControl, Geometry>(
-            "IconData",
-            (ic) =>
-            ic.iconData);
+                "IconData",
+                (ic) => ic.iconData);
 
         private Geometry iconData;
 
@@ -56,14 +53,17 @@ namespace MicroCubeAvalonia.IconPack
             }
         }
 
-        private static void UpdatedBindings(IAvaloniaObject avaloniaObject)
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {
-            if (avaloniaObject is IconControl ic)
+            if (change.Property == KindProperty || 
+                change.Property == BindableKindProperty)
             {
-                ic.UpdateData();
+                this.UpdateData();
             }
+            base.OnPropertyChanged(change);
         }
 
+        
         private void UpdateData()
         {
             var newIconPathData = string.Empty;

@@ -68,13 +68,13 @@ namespace GroupMeClient.AvaloniaUI.Extensions
             }
         }
 
-        private TranslateTransform GetTranslateTransform(IControl element)
+        private TranslateTransform GetTranslateTransform(Control element)
         {
             return (TranslateTransform)(element.RenderTransform as TransformGroup)
               .Children.First(tr => tr is TranslateTransform);
         }
 
-        private ScaleTransform GetScaleTransform(IControl element)
+        private ScaleTransform GetScaleTransform(Control element)
         {
             return (ScaleTransform)(element.RenderTransform as TransformGroup)
               .Children.First(tr => tr is ScaleTransform);

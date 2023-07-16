@@ -1,5 +1,7 @@
 ﻿using System.Windows;
 using GroupMeClient.Core.Services;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 
 namespace GroupMeClient.AvaloniaUI.Services
 {
@@ -11,46 +13,45 @@ namespace GroupMeClient.AvaloniaUI.Services
         /// <inheritdoc/>
         public void ShowMessageBox(MessageBoxParams parameters)
         {
-            //var msg = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(new MessageBox.Avalonia.DTO.MessageBoxStandardParams
-            //{
-            //    ButtonDefinitions = MessageBox.Avalonia.Enums.ButtonEnum.Ok,
-            //    ContentTitle = parameters.Title,
-            //    ContentMessage = parameters.Message,
-            //    Icon = MessageBox.Avalonia.Enums.Icon.Error,
-            //});
-            //msg.ShowDialog(GroupMeClient.AvaloniaUI.Program.GroupMeMainWindow).Wait();
+            var msg = MessageBoxManager.GetMessageBoxStandard(new MsBox.Avalonia.Dto.MessageBoxStandardParams
+            {
+                ButtonDefinitions = this.GetButtons(parameters.MessageBoxButtons),
+                ContentTitle = parameters.Title,
+                ContentMessage = parameters.Message,
+                Icon = this.GetImage(parameters.MessageBoxIcons),
+            });
 
-            //TODO10
+            msg.ShowAsync().Wait();
         }
 
-        private MessageBox.Avalonia.Enums.ButtonEnum GetButtons(MessageBoxParams.Buttons buttons)
+        private ButtonEnum GetButtons(MessageBoxParams.Buttons buttons)
         {
             switch (buttons)
             {
                 case MessageBoxParams.Buttons.Ok:
-                    return MessageBox.Avalonia.Enums.ButtonEnum.Ok;
+                    return ButtonEnum.Ok;
 
                 default:
-                    return MessageBox.Avalonia.Enums.ButtonEnum.Ok;
+                    return ButtonEnum.Ok;
             }
         }
 
-        private MessageBox.Avalonia.Enums.Icon GetImage(MessageBoxParams.Icon image)
+        private Icon GetImage(MessageBoxParams.Icon image)
         {
             switch (image)
             {
                 case MessageBoxParams.Icon.Error:
-                    return MessageBox.Avalonia.Enums.Icon.Error;
+                    return Icon.Error;
 
                 case MessageBoxParams.Icon.Success:
-                    return MessageBox.Avalonia.Enums.Icon.Info;
+                    return Icon.Info;
 
                 case MessageBoxParams.Icon.Warning:
-                    return MessageBox.Avalonia.Enums.Icon.Warning;
+                    return Icon.Warning;
 
                 case MessageBoxParams.Icon.None:
                 default:
-                    return MessageBox.Avalonia.Enums.Icon.None;
+                    return Icon.None;
             }
         }
     }

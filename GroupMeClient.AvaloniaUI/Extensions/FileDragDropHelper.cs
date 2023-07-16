@@ -89,7 +89,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
             obj.SetValue(FileDragDropTargetProperty, value);
         }
 
-        private static void OnFileDragDropEnabled(IAvaloniaObject d)
+        private static void OnFileDragDropEnabled(AvaloniaObject d)
         {
             if (d is Control control)
             {

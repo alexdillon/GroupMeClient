@@ -32,7 +32,7 @@ namespace GroupMeClient.AvaloniaUI.Converters
             throw new NotSupportedException();
         }
 
-        private IBitmap MemoryStreamToImage(MemoryStream ms)
+        private Bitmap MemoryStreamToImage(MemoryStream ms)
         {
             var bytes = ms.ToArray();
             return Utilities.ImageUtils.BytesToImageSource(bytes);

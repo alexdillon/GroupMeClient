@@ -6,12 +6,9 @@ using Avalonia.Markup.Xaml;
 
 namespace GroupMeClient.AvaloniaUI.Views.Controls
 {
-    /// <summary>
-    /// Interaction logic for AvatarControl.xaml
-    /// </summary>
-    public partial class AvatarControl : UserControl
+    public partial class MultiLikeControl : UserControl
     {
-        public AvatarControl()
+        public MultiLikeControl()
         {
             this.InitializeComponent();
         }

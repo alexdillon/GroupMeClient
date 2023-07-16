@@ -116,11 +116,12 @@ namespace GroupMeClient.WpfUI.Notifications.Activation
                     .SetContent("Send")
                     .AddArgument(NotificationArguments.Action, LaunchActions.SendReplyMessage))
                 .AddAudio(new ToastAudio() { Silent = true })
-                .Show(toast =>
-                {
-                    toast.Tag = $"{containerId}{messageId}";
-                    toast.Group = containerId;
-                });
+                //.Show(toast =>
+                //{
+                //    toast.Tag = $"{containerId}{messageId}";
+                //    toast.Group = containerId;
+                //});
+                ; // TODO 11
         }
 
         private static void ShowReplyConfirmation(string containerId, string messageId)
@@ -129,11 +130,12 @@ namespace GroupMeClient.WpfUI.Notifications.Activation
                 .AddArgument(NotificationArguments.ConversationId, containerId)
                 .AddText("Message Sent Successfully", AdaptiveTextStyle.Title)
                 .AddAudio(new ToastAudio() { Silent = true })
-                .Show(toast =>
-                {
-                    toast.Tag = $"{containerId}{messageId}";
-                    toast.Group = containerId;
-                });
+                //.Show(toast =>
+                //{
+                //    toast.Tag = $"{containerId}{messageId}";
+                //    toast.Group = containerId;
+                //});
+                ; // TODO 11
         }
     }
 }

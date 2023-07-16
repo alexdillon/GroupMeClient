@@ -60,7 +60,7 @@
                 <iconPack:IconControl Kind="PackIconMaterialKind.Menu" Width="22" Height="22" />
               </ToggleButton>
 
-              <ListBox Items="{TemplateBinding Items}"
+              <ListBox ItemsSource="{TemplateBinding Items}"
                        Foreground="{TemplateBinding SidebarForeground}"
                        Background="Transparent"
                        BorderThickness="0"
@@ -98,7 +98,7 @@
                 </ListBox.Styles>
               </ListBox>
 
-              <ListBox Items="{TemplateBinding OptionItems}"
+              <ListBox ItemsSource="{TemplateBinding OptionItems}"
                        Foreground="{TemplateBinding SidebarForeground}"
                        Background="Transparent"
                        BorderThickness="0"

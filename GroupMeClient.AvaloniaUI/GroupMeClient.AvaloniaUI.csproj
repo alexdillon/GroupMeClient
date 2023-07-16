@@ -1,161 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>GroupMeClient.AvaloniaUI</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;SA1633</NoWarn>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
-
+  
   <ItemGroup>
-
     <AvaloniaResource Include="Assets\*" />
     <AvaloniaResource Include="Assets\Fonts\*" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Controls\DefaultTheme.xaml" />
-    <None Remove="Controls\LikeIcon.xaml" />
-    <None Remove="GroupMeDark.xaml" />
-    <None Remove="GroupMeLight.xaml" />
-    <None Remove="MainWindow.xaml" />
-    <None Remove="Notifications\Display\WpfToast\ToastHolder.xaml" />
-    <None Remove="Notifications\Display\WpfToast\ToastNotification.xaml" />
-    <None Remove="stylecop.json" />
-    <None Remove="Views\ChatsView.xaml" />
-    <None Remove="Views\Controls\Attachments\FileAttachmentControl.xaml" />
-    <None Remove="Views\Controls\Attachments\GenericLinkAttachmentControl.xaml" />
-    <None Remove="Views\Controls\Attachments\GroupMeImageAttachmentControl.xaml" />
-    <None Remove="Views\Controls\Attachments\ImageLinkAttachmentControl.xaml" />
-    <None Remove="Views\Controls\Attachments\TwitterAttachmentControl.xaml" />
-    <None Remove="Views\Controls\Attachments\VideoAttachmentControl.xaml" />
-    <None Remove="Views\Controls\AvatarControl.xaml" />
-    <None Remove="Views\Controls\GroupContentsControl.xaml" />
-    <None Remove="Views\Controls\GroupControl.xaml" />
-    <None Remove="Views\Controls\InlineReadSentMarkerControl.xaml" />
-    <None Remove="Views\Controls\InlineTimestampControl.xaml" />
-    <None Remove="Views\Controls\LoadingControl.xaml" />
-    <None Remove="Views\Controls\MessageControl.xaml" />
-    <None Remove="Views\Controls\MessageEffectsControl.xaml" />
-    <None Remove="Views\Controls\MultiLikeControl.xaml" />
-    <None Remove="Views\Controls\PaginatedMessagesControl.xaml" />
-    <None Remove="Views\Controls\Popup.xaml" />
-    <None Remove="Views\Controls\SendFileControl.xaml" />
-    <None Remove="Views\Controls\SendImageControl.xaml" />
-    <None Remove="Views\Controls\ViewImageControl.xaml" />
-    <None Remove="Views\LoginView.xaml" />
-    <None Remove="Views\SearchView.xaml" />
-    <None Remove="Views\SettingsView.xaml" />
+    <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="stylecop.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <AvaloniaResource Include="Controls\DefaultTheme.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="GroupMeDark.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="GroupMeLight.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Notifications\Display\WpfToast\ToastHolder.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Notifications\Display\WpfToast\ToastNotification.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\ChatsView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\Attachments\FileAttachmentControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\Attachments\GenericLinkAttachmentControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\Attachments\GroupMeImageAttachmentControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\Attachments\ImageLinkAttachmentControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\Attachments\TwitterAttachmentControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\Attachments\VideoAttachmentControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\AvatarControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\GroupContentsControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\GroupControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\InlineReadSentMarkerControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\InlineTimestampControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\LoadingControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\MessageControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\MessageEffectsControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\MultiLikeControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\PaginatedMessagesControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\Popup.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\SendFileControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\SendImageControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\Controls\ViewImageControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\LoginView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\SearchView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-    <AvaloniaResource Include="Views\SettingsView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.18" />
-    <PackageReference Include="MessageBox.Avalonia" Version="2.1.0" />
+    <PackageReference Include="Avalonia" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.0" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.0.0.1" />
+    <PackageReference Include="MessageBox.Avalonia" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
@@ -163,7 +40,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0" />
   </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\GroupMeClient.Core\GroupMeClient.Core.csproj" />
     <ProjectReference Include="..\GroupMeClient.Desktop\GroupMeClient.Desktop.csproj" />

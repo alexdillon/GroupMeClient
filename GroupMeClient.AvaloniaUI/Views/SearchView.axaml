@@ -1,0 +1,275 @@
+﻿<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.SearchView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="clr-namespace:GroupMeClient.AvaloniaUI.Views"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+             xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
+             xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
+             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
+             xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
+             mc:Ignorable="d"
+             d:DesignWidth="800" d:DesignHeight="450">
+
+  <i:Interaction.Behaviors>
+    <ia:EventTriggerBehavior EventName="Initialized">
+      <ia:InvokeCommandAction Command="{Binding Loaded}"/>
+    </ia:EventTriggerBehavior>
+  </i:Interaction.Behaviors>
+  
+  <Grid ColumnDefinitions="350, *, *"
+        RowDefinitions="55, *">
+
+    <!--Chats Header-->
+    <Grid Grid.Column="0" Grid.Row="0"
+          Background="{DynamicResource ThemeBackgroundBrush}"
+          ColumnDefinitions="Auto, *, Auto, Auto"
+          RowDefinitions="55">
+
+      <!--Padding-->
+      <TextBlock Grid.Column="0"
+                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                 Margin="15,0,0,0"
+                 FontSize="17" FontWeight="SemiBold"
+                 Text="Chats" />
+
+      <Border Grid.Column="0" Grid.ColumnSpan="4" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+    </Grid>
+
+    <!--All Groups and Chats List-->
+    <ListBox ItemsSource="{Binding SortedGroupChats}"
+             Grid.Column="0" Grid.Row="1"
+             BorderThickness="0"
+             ScrollViewer.VerticalScrollBarVisibility="Visible"
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+             Padding="0"
+             Background="{DynamicResource ThemeBackgroundBrush}"
+             UseLayoutRounding="True"
+             SelectionMode="Single">
+
+      <ListBox.ItemsPanel>
+        <ItemsPanelTemplate>
+          <!--TODO 11-->
+          <!--Use this to control virualization-->
+          <StackPanel />
+          <!--<VirtualizingStackPanel />-->
+        </ItemsPanelTemplate>
+      </ListBox.ItemsPanel>
+
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem">
+          <Setter Property="HorizontalContentAlignment" Value="Left"/>
+          <Setter Property="VerticalContentAlignment" Value="Top"/>
+          <Setter Property="Template">
+            <Setter.Value>
+              <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                <ContentPresenter Name="PART_ContentPresenter"
+                                  Background="{TemplateBinding Background}"
+                                  BorderThickness="0"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Content="{TemplateBinding Content}"
+                                  Padding="0"
+                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                  HorizontalContentAlignment="Stretch"/>
+              </ControlTemplate>
+            </Setter.Value>
+          </Setter>
+        </Style>
+      
+        <Style Selector="ListBoxItem[IsSelected=true]">
+          <Setter Property="Template">
+            <Setter.Value>
+              <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                <Border BorderBrush="{DynamicResource SidebarBrush}"
+                        BorderThickness="3">
+                  <ContentPresenter Name="PART_ContentPresenter"
+                                    Background="{TemplateBinding Background}"
+                                    BorderThickness="0"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    Content="{TemplateBinding Content}"
+                                    Padding="0"
+                                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    HorizontalContentAlignment="Stretch"/>
+                </Border>
+              </ControlTemplate>
+            </Setter.Value>
+          </Setter>
+        </Style>
+      </ListBox.Styles>
+
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <ContentControl Content="{Binding Path=.}" />
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <!--Search Area-->
+    <Grid Grid.Column="1" Grid.Row="0"
+          ColumnDefinitions="Auto, *"
+          RowDefinitions="55, *">
+
+      <!--Padding-->
+      <TextBlock Grid.Column="0"
+                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                 Margin="15,0,0,0"
+                 FontSize="17" FontWeight="SemiBold"
+                 Text="Search Messages" />
+
+      <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+    </Grid>
+
+    <DockPanel Grid.Column="1" Grid.Row="1"
+               VerticalAlignment="Stretch">
+      <TextBox DockPanel.Dock="Top"
+               Margin="15,5,25,0"
+               Watermark="Search..."
+               FontSize="16"
+               Text="{Binding SearchTerm, Mode=TwoWay}" />
+
+      <Expander Header="Seach Options"
+                DockPanel.Dock="Top"
+                Margin="15,5,25,0"
+                Background="{DynamicResource ThemeBackgroundBrush}"
+                BorderBrush="Transparent"
+                HorizontalAlignment="Stretch">
+
+        <Expander.Styles>
+            <Style Selector="Expander /template/ ToggleButton#PART_toggle:pointerover /template/ Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource ThemeBackgroundBrush}" />
+            </Style>
+        </Expander.Styles>
+          
+        <StackPanel>
+          <Grid ColumnDefinitions="Auto, *"
+                RowDefinitions="Auto, Auto">
+
+            <TextBlock Text="Starting Date" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+            <DatePicker SelectedDate="{Binding FilterStartDate, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" />
+            <TextBlock Text="Ending Date" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
+            <DatePicker SelectedDate="{Binding FilterEndDate, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" />
+          </Grid>
+
+          <CheckBox Content="Has Image Attachment" IsChecked="{Binding FilterHasAttachedImage, Mode=TwoWay}" />
+          <CheckBox Content="Has Linked Attachment" IsChecked="{Binding FilterHasAttachedLinkedImage, Mode=TwoWay}" />
+          <CheckBox Content="Has Video Attachment" IsChecked="{Binding FilterHasAttachedVideo, Mode=TwoWay}" />
+          <CheckBox Content="Mentions Other Group Members" IsChecked="{Binding FilterHasAttachedMentions, Mode=TwoWay}" />
+
+          <Button Margin="0,5,0,0" Command="{Binding ResetFilters}">
+            <Button.Content>
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Reset  " />
+                <iconPack:IconControl Kind="PackIconFontAwesomeKind.EraserSolid" VerticalAlignment="Center" Width="15" Height="15" />
+              </StackPanel>
+            </Button.Content>
+          </Button>
+        </StackPanel>
+      </Expander>
+
+      <controls:PaginatedMessagesControl Content="{Binding ResultsView}"/>
+    </DockPanel>
+
+    <!--Context Area-->
+    <Grid Grid.Column="2" Grid.Row="0"
+          ColumnDefinitions="Auto, Auto, *"
+          RowDefinitions="55, *">
+
+      <!--Padding-->
+      <TextBlock Grid.Column="0"
+                 HorizontalAlignment="Left" VerticalAlignment="Center"
+                 Margin="15,0,0,0"
+                 FontSize="17" FontWeight="SemiBold"
+                 Text="{Binding SelectedGroupName}" />
+
+      <!--Plugins Drop Down Menu Button-->
+      <!--Group Name and Plugins Drop Down Menu Button-->
+      <ToggleButton Grid.Column="1"
+                    Width="25" Height="25"
+                    BorderThickness="0"
+                    HorizontalAlignment="Left"
+                    FontSize="17" FontWeight="SemiBold"
+                    Background="{DynamicResource ThemeBackgroundBrush}"
+                    x:Name="toggleGroupOptionsButton">
+
+        <ToggleButton.Styles>
+          <Style Selector="ToggleButton:checked /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
+          </Style>
+          <Style Selector="ToggleButton:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
+          </Style>
+        </ToggleButton.Styles>
+
+        <!--Toggle Button Content, The Group Name and the Dropdown Arrow-->
+        <Grid ColumnDefinitions="*,Auto" Background="{DynamicResource ThemeBackgroundBrush}">
+          <!--Chat Name Label-->
+          <!--TextTrimming="CharacterEllipsis"-->
+          <TextBlock Grid.Column="0"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                  FontSize="17" FontWeight="SemiBold"
+                  TextWrapping="NoWrap"
+                  Text="{Binding Title}">
+          </TextBlock>
+
+          <!--Plugin Dropdown Arrow-->
+          <iconPack:IconControl Grid.Column="1" Width="15" Height="15" Margin="5,0,0,0" Kind="PackIconOcticonsKind.TriangleDown">
+            <i:Interaction.Behaviors>
+              <ia:DataTriggerBehavior Binding="{Binding IsChecked, ElementName=toggleGroupOptionsButton}" ComparisonCondition="Equal" Value="True">
+                <ia:ChangePropertyAction PropertyName="Kind" Value="PackIconOcticonsKind.TriangleUp"/>
+              </ia:DataTriggerBehavior>
+              <ia:DataTriggerBehavior Binding="{Binding IsChecked, ElementName=toggleGroupOptionsButton}" ComparisonCondition="NotEqual" Value="True">
+                <ia:ChangePropertyAction PropertyName="Kind" Value="PackIconOcticonsKind.TriangleDown"/>
+              </ia:DataTriggerBehavior>
+            </i:Interaction.Behaviors>
+          </iconPack:IconControl>
+        </Grid>
+      </ToggleButton>
+          
+      <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" BorderBrush="#637182" BorderThickness="0,0,0,1" Margin="0,0,15,0"/>
+    </Grid>
+
+    <controls:PaginatedMessagesControl Grid.Column="2" Grid.Row="1"
+                                       Content="{Binding ContextView}" />
+
+    <!--Plugins Dropdown List-->
+    <Border Grid.Column="2" Grid.Row="1"
+            IsVisible="{Binding #toggleGroupOptionsButton.IsChecked}"
+            VerticalAlignment="Top"
+            BorderThickness="20,10,20,30"
+            BorderBrush="{DynamicResource PluginMenuBrush}">
+      <ItemsControl ItemsSource="{Binding GroupChatCachePlugins}"
+                    Background="{DynamicResource PluginMenuBrush}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Button
+                Content="{Binding PluginName}"
+                Command="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                     AncestorType={x:Type views:SearchView}}, Path=DataContext.GroupChatCachePluginActivated}"
+                CommandParameter="{Binding Path=.}"
+                HorizontalContentAlignment="Left"
+                Background="{DynamicResource PluginButtonBackgroundBrush}"
+                Foreground="{DynamicResource PluginButtonFontBrush}"
+                BorderThickness="0"
+                FontSize="14"
+                FontWeight="SemiBold"
+                Margin="5" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+      </ItemsControl>
+    </Border>
+
+    <!--Popup Dialog-->
+    <ContentControl Content="{Binding PopupManager}"
+                    Grid.Column="0" Grid.Row="0"
+                    Grid.ColumnSpan="3"
+                    Grid.RowSpan="2"/>
+  </Grid>
+</UserControl>

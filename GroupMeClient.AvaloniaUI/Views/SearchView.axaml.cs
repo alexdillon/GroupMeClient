@@ -6,11 +6,11 @@ using Avalonia.Markup.Xaml;
 
 namespace GroupMeClient.AvaloniaUI.Views
 {
-    public partial class MainWindow : Window
+    public partial class SearchView : UserControl
     {
-        public MainWindow()
+        public SearchView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

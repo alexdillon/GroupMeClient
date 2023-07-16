@@ -78,21 +78,21 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         {
             base.OnAttached();
 
+            // TODO 11
             Observable.FromEventPattern(this.AssociatedObject, nameof(this.AssociatedObject.LayoutUpdated))
                 .Take(1)
                 .Subscribe(_ =>
                 {
                     var scrollViewer = this.AssociatedObject.Scroll as ScrollViewer;
-
-                    scrollViewer.GetObservable(ScrollViewer.VerticalScrollBarMaximumProperty)
-                    .Subscribe(vscroll =>
+                    scrollViewer.GetObservable(ScrollViewer.ScrollBarMaximumProperty)
+                    .Subscribe(scrollMax =>
                     {
-                        this.verticalHeightMax = vscroll;
+                        this.verticalHeightMax = scrollMax.Y;
 
                         if (this.LockedToBottom)
                         {
                             // Scroll to bottom
-                            scrollViewer.SetValue(ScrollViewer.VerticalScrollBarValueProperty, this.verticalHeightMax);
+                            scrollViewer.SetValue(ScrollViewer.OffsetProperty, scrollViewer.Offset.WithY(this.verticalHeightMax));
                         }
                     })
                     .DisposeWith(this.disposables);

@@ -1,5 +1,6 @@
 ﻿using System;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Xaml.Interactivity;
 
@@ -51,7 +52,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
 
         private void AssociatedObject_AttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
         {
-            FocusManager.Instance.Focus(this.FocusControl);
+            this.FocusControl.Focus();
         }
     }
 }

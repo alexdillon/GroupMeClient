@@ -6,12 +6,9 @@ using Avalonia.Markup.Xaml;
 
 namespace GroupMeClient.AvaloniaUI.Views.Controls
 {
-    /// <summary>
-    /// Interaction logic for AvatarControl.xaml
-    /// </summary>
-    public partial class AvatarControl : UserControl
+    public partial class GroupControl : UserControl
     {
-        public AvatarControl()
+        public GroupControl()
         {
             this.InitializeComponent();
         }

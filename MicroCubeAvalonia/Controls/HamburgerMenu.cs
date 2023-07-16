@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Media;
 
@@ -11,7 +10,7 @@ namespace MicroCubeAvalonia.Controls
     {
         private bool? isPaneOpen = false;
 
-        public static AvaloniaProperty<bool?> IsPaneOpenProperty =
+        public static DirectProperty<HamburgerMenu, bool?> IsPaneOpenProperty =
             AvaloniaProperty.RegisterDirect<HamburgerMenu, bool?>(
                 nameof(IsPaneOpen),
                 o => o.IsPaneOpen,
@@ -43,17 +42,15 @@ namespace MicroCubeAvalonia.Controls
             AvaloniaProperty.Register<HamburgerMenu, HamburgerMenuItem>(
                 nameof(SelectedItem),
                 inherits: true,
-                defaultBindingMode: BindingMode.TwoWay,
-                notifying: (a,b) => SelectionChanged(a, b, isOption: false));
+                defaultBindingMode: BindingMode.TwoWay);
 
         public static AvaloniaProperty SelectedOptionProperty =
               AvaloniaProperty.Register<HamburgerMenu, HamburgerMenuItem>(
                   nameof(SelectedOption),
                   inherits: true,
-                  defaultBindingMode: BindingMode.TwoWay,
-                  notifying: (a, b) => SelectionChanged(a, b, isOption: true));
+                  defaultBindingMode: BindingMode.TwoWay);
 
-        public static AvaloniaProperty<object> SelectedContentProperty =
+        public static DirectProperty<HamburgerMenu, object> SelectedContentProperty =
             AvaloniaProperty.RegisterDirect<HamburgerMenu, object>(
                 nameof(SelectedContent),
                 (hm) => hm.SelectedContent);
@@ -127,7 +124,7 @@ namespace MicroCubeAvalonia.Controls
             get => this.SelectedItem?.Tag ?? this.SelectedOption?.Tag;
         }
 
-        public static void SelectionChanged(IAvaloniaObject avaloniaObject, bool done, bool isOption)
+        public static void SelectionChanged(AvaloniaObject avaloniaObject, bool done, bool isOption)
         {
             if (avaloniaObject is HamburgerMenu hamburgerMenu && done)
             {
@@ -142,6 +139,20 @@ namespace MicroCubeAvalonia.Controls
 
                 hamburgerMenu.RaisePropertyChanged<object>(SelectedContentProperty, null, hamburgerMenu.SelectedContent);
             }
+        }
+
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+        {
+            if (change.Property == SelectedItemProperty)
+            {
+                SelectionChanged(this, done: true, isOption: false);
+            }
+            else if (change.Property == SelectedOptionProperty)
+            {
+                SelectionChanged(this, done: true, isOption: true);
+            }
+
+            base.OnPropertyChanged(change);
         }
     }
 }

@@ -6,9 +6,9 @@ using Avalonia.Markup.Xaml;
 
 namespace GroupMeClient.AvaloniaUI.Views
 {
-    public partial class MainWindow : Window
+    public partial class ChatsView : UserControl
     {
-        public MainWindow()
+        public ChatsView()
         {
             InitializeComponent();
         }

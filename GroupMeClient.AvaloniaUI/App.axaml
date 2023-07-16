@@ -4,38 +4,31 @@
              x:Class="GroupMeClient.AvaloniaUI.App"
              Name="GroupMe Desktop Client">
 
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
+  <Application.DataTemplates>
+    <local:ViewLocator/>
+  </Application.DataTemplates>
 
-    <NativeMenu.Menu>
-        <NativeMenu>
-            <NativeMenuItem Header="About GroupMe Desktop Client" Command="{Binding AboutCommand}" />
-        </NativeMenu>
-    </NativeMenu.Menu>
+  <Application.Styles>
 
-    <Application.Styles>
-        <StyleInclude Source="avares://Avalonia.Themes.Default/Accents/BaseLight.xaml"/>
-        <StyleInclude Source="avares://GroupMeClient.AvaloniaUI/GroupMeLight.xaml"/>
-      
-      <StyleInclude Source="avares://GroupMeClient.AvaloniaUI/Controls/DefaultTheme.xaml" />
+    <SimpleTheme />
+    
+    <StyleInclude Source="avares://GroupMeClient.AvaloniaUI/GroupMeLight.axaml"/>
+    <StyleInclude Source="avares://GroupMeClient.AvaloniaUI/Controls/DefaultTheme.axaml" />
 
-        <StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml"/>
-        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml"/>
-        <StyleInclude Source="avares://MicroCubeAvalonia/DefaultTheme.xaml"/>
+    <StyleInclude Source="avares://MicroCubeAvalonia/DefaultTheme.xaml"/>
 
-        <Style Selector="TextBox.verticalCenter /template/ Panel">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
+    <Style Selector="TextBox.verticalCenter /template/ Panel">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
 
-        <Style Selector="Button.styleless">
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Padding" Value="0" />
-        </Style>
+    <Style Selector="Button.styleless">
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Margin" Value="0" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
 
-        <Style Selector="Button.styleless:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="{TemplateBinding Background}"/>
-        </Style>
-    </Application.Styles>
+    <Style Selector="Button.styleless:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="{TemplateBinding Background}"/>
+    </Style>
+  </Application.Styles>
 </Application>

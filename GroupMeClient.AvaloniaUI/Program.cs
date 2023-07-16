@@ -1,7 +1,6 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using GroupMeClient.AvaloniaUI.ViewModels;
 using GroupMeClient.AvaloniaUI.Views;
@@ -19,19 +18,16 @@ namespace GroupMeClient.AvaloniaUI
         /// The main entry point for the application.
         /// </summary>
         /// <param name="args">The command line arguments to launch with.</param>
-        public static void Main(string[] args)
-        {
-            // Initialization code. Don't use any Avalonia, third-party APIs or any
-            // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-            // yet and stuff might break.
-            BuildAvaloniaApp().Start(AppMain, args);
-        }
+        [STAThread]
+        public static void Main(string[] args) => BuildAvaloniaApp()
+           .StartWithClassicDesktopLifetime(args);
 
         // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
+        public static AppBuilder BuildAvaloniaApp() =>
+            AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .LogToDebug()
+                .WithInterFont()
+                .LogToTrace()
                 .UseReactiveUI();
 
         public static MainWindow GroupMeMainWindow;
