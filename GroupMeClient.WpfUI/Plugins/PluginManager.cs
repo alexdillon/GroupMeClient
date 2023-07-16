@@ -137,9 +137,7 @@ namespace GroupMeClient.WpfUI.Plugins
                 var assemblies = new List<Assembly>(dllFileNames.Length);
                 foreach (string dllFile in dllFileNames)
                 {
-                    var an = AssemblyName.GetAssemblyName(dllFile);
-                    var assembly = Assembly.Load(an);
-                    assemblies.Add(assembly);
+                    assemblies.Add(LoadPlugin(dllFile));
                 }
 
                 var pluginType = typeof(PluginBase);
@@ -209,6 +207,12 @@ namespace GroupMeClient.WpfUI.Plugins
 
             // Load plugins that ship directly in GMDC/Wpf
             this.GroupChatPluginsBuiltIn.Add(new ImageGalleryPlugin());
+        }
+
+        private static Assembly LoadPlugin(string fullPath)
+        {
+            PluginLoadContext loadContext = new PluginLoadContext(fullPath);
+            return loadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(fullPath)));
         }
     }
 }
