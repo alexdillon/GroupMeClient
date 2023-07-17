@@ -11,8 +11,8 @@ namespace GroupMeClient.Core.ViewModels.Controls
     /// </summary>
     public class AvatarControlViewModel : ObservableObject
     {
-        private GenericImageSource avatarRound;
-        private GenericImageSource avatarSquare;
+        private GenericImageSource avatarImage;
+        private bool isRound;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AvatarControlViewModel"/> class.
@@ -22,7 +22,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <param name="fullQuality">Whether the full resolution avatar should be downloaded and rendered at full quality.</param>
         public AvatarControlViewModel(IAvatarSource avatarSource, ImageDownloader imageDownloader, bool fullQuality = false)
         {
-            this.AvatarSource = avatarSource;
+            this.OriginalSource = avatarSource;
             this.ImageDownloader = imageDownloader;
             this.IsFullQuality = fullQuality;
 
@@ -32,7 +32,7 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <summary>
         /// Gets the <see cref="IAvatarSource"/> this control is displaying.
         /// </summary>
-        public IAvatarSource AvatarSource { get; }
+        public IAvatarSource OriginalSource { get; }
 
         /// <summary>
         /// Gets the <see cref="ImageDownloader"/> that should be used to retreive avatars.
@@ -45,23 +45,21 @@ namespace GroupMeClient.Core.ViewModels.Controls
         public bool IsFullQuality { get; } = false;
 
         /// <summary>
-        /// Gets the image that should be used for rounded avatars.
-        /// If the avatar shouldn't be rounded, null is returned.
+        /// Gets the avatar image.
         /// </summary>
-        public GenericImageSource AvatarRound
+        public GenericImageSource AvatarImage
         {
-            get => this.avatarRound;
-            private set => this.SetProperty(ref this.avatarRound, value);
+            get => this.avatarImage;
+            private set => this.SetProperty(ref this.avatarImage, value);
         }
 
         /// <summary>
-        /// Gets the image that should be used for square avatars.
-        /// If the avatar shouldn't be rectangular, null is returned.
+        /// Gets a value indicating whether this avatar is round.
         /// </summary>
-        public GenericImageSource AvatarSquare
+        public bool IsRound
         {
-            get => this.avatarSquare;
-            private set => this.SetProperty(ref this.avatarSquare, value);
+            get => this.isRound;
+            private set => this.SetProperty(ref this.isRound, value);
         }
 
         /// <summary>
@@ -75,12 +73,12 @@ namespace GroupMeClient.Core.ViewModels.Controls
         /// <returns>A <see cref="Task"/> with the download status.</returns>
         public async Task LoadAvatarAsync()
         {
-            var isGroup = !this.AvatarSource.IsRoundedAvatar;
+            var isGroup = !this.OriginalSource.IsRoundedAvatar;
             byte[] image;
 
             if (this.IsFullQuality)
             {
-                if (string.IsNullOrEmpty(this.AvatarSource.ImageOrAvatarUrl))
+                if (string.IsNullOrEmpty(this.OriginalSource.ImageOrAvatarUrl))
                 {
                     image = isGroup ?
                         this.ImageDownloader.GetDefaultGroupAvatar() :
@@ -88,26 +86,17 @@ namespace GroupMeClient.Core.ViewModels.Controls
                 }
                 else
                 {
-                    image = await this.ImageDownloader.DownloadPostImageAsync(this.AvatarSource.ImageOrAvatarUrl);
+                    image = await this.ImageDownloader.DownloadPostImageAsync(this.OriginalSource.ImageOrAvatarUrl);
                 }
             }
             else
             {
-                 image = await this.ImageDownloader.DownloadAvatarImageAsync(this.AvatarSource.ImageOrAvatarUrl, isGroup);
+                 image = await this.ImageDownloader.DownloadAvatarImageAsync(this.OriginalSource.ImageOrAvatarUrl, isGroup);
             }
 
-            this.CurrentlyRenderedUrl = this.AvatarSource.ImageOrAvatarUrl;
-
-            var bitmapImage = new GenericImageSource(image);
-
-            if (this.AvatarSource.IsRoundedAvatar)
-            {
-                this.AvatarRound = bitmapImage;
-            }
-            else
-            {
-                this.AvatarSquare = bitmapImage;
-            }
+            this.CurrentlyRenderedUrl = this.OriginalSource.ImageOrAvatarUrl;
+            this.AvatarImage = new GenericImageSource(image);
+            this.IsRound = this.OriginalSource.IsRoundedAvatar;
         }
     }
 }

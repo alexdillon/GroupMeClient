@@ -14,14 +14,24 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Image Grid.Column="0" Grid.Row="0" 
-               Width="Auto" Height="Auto"
-               Source="{Binding AvatarSquare, Converter={StaticResource imageSourceConverter}}"/>
-        
-        <Ellipse Grid.Column="0" Grid.Row="0" Width="Auto" Height="Auto">
-            <Ellipse.Fill>
-                <ImageBrush ImageSource="{Binding AvatarRound, Converter={StaticResource imageSourceConverter}}" />
-            </Ellipse.Fill>
-        </Ellipse>
+        <Border Grid.Column="0"
+                Grid.Row="0"
+                Width="Auto"
+                Height="Auto">
+            <Border.Background>
+                <ImageBrush ImageSource="{Binding AvatarImage, Converter={StaticResource imageSourceConverter}}" />
+            </Border.Background>
+
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="0" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsRound}" Value="True">
+                            <Setter Property="CornerRadius" Value="{Binding ActualWidth, RelativeSource={RelativeSource Mode=Self}}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
     </Grid>
 </UserControl>
