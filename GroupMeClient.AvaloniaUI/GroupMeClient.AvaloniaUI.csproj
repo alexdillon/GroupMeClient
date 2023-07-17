@@ -20,6 +20,15 @@
     <AvaloniaResource Include="Assets\*" />
     <AvaloniaResource Include="Assets\Fonts\*" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Assets\Fonts\WeblySleekUI_Full\weblysleekuil.ttf" />
+    <None Remove="Assets\Fonts\WeblySleekUI_Full\weblysleekuili.ttf" />
+    <None Remove="Assets\Fonts\WeblySleekUI_Full\weblysleekuisb.ttf" />
+    <None Remove="Assets\Fonts\WeblySleekUI_Full\weblysleekuisbi.ttf" />
+    <None Remove="Assets\Fonts\WeblySleekUI_Full\weblysleekuisl.ttf" />
+    <None Remove="Assets\Fonts\WeblySleekUI_Full\weblysleekuisli.ttf" />
+  </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />

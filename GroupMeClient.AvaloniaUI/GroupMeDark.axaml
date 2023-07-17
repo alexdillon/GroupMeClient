@@ -3,7 +3,7 @@
        xmlns:sys="clr-namespace:System;assembly=netstandard">
 
   <Style.Resources>
-    <FontFamily x:Key="GroupMeFont">avares://GroupMeClient.AvaloniaUI/Assets/Fonts/Webly*.ttf#WeblySleek UI</FontFamily>
+    <FontFamily x:Key="GroupMeFont">WeblySleek UI</FontFamily>
     
     <Color x:Key="LoadingSpinnerDarkColor">#CC119EDA</Color>
     <Color x:Key="MenuButtonLightColor">#FF505050</Color>

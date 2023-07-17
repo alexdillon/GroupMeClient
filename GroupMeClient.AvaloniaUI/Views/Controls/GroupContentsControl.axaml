@@ -48,11 +48,11 @@
         <!--Toggle Button Content, The Group Name and the Dropdown Arrow-->
         <Grid ColumnDefinitions="*,Auto" Background="{DynamicResource ThemeBackgroundBrush}">
           <!--Chat Name Label-->
-          <!--TextTrimming="CharacterEllipsis"-->
           <TextBlock Grid.Column="0"
                   HorizontalAlignment="Stretch" VerticalAlignment="Center"
                   FontSize="17" FontWeight="SemiBold"
                   TextWrapping="NoWrap"
+                  TextTrimming="CharacterEllipsis"
                   Text="{Binding Title}">
           </TextBlock>
 

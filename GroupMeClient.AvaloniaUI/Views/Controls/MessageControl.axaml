@@ -7,7 +7,6 @@
              xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
              xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
-             xmlns:converters="clr-namespace:GroupMeClient.AvaloniaUI.Converters"
              xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
              xmlns:vmcontrols="clr-namespace:GroupMeClient.Core.ViewModels.Controls;assembly=GroupMeClient.Core"
              xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
@@ -65,7 +64,7 @@
 
       <TextBlock Margin="0,0,0,20"
                  FontSize="15"
-                 Text="{Binding Inlines, Converter={StaticResource inlineConverter}}"
+                 Inlines="{Binding Inlines, Converter={StaticResource inlineConverter}}"
                  TextWrapping="Wrap">
         <!--<extensions:SelectableTextBlock
             FontSize="15"

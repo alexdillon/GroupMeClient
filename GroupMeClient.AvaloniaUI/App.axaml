@@ -13,9 +13,8 @@
     <SimpleTheme />
     
     <StyleInclude Source="avares://GroupMeClient.AvaloniaUI/GroupMeLight.axaml"/>
-
     <StyleInclude Source="avares://MicroCubeAvalonia/DefaultTheme.xaml"/>
-
+    
     <Style Selector="TextBox.verticalCenter /template/ Panel">
       <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
@@ -32,13 +31,15 @@
   </Application.Styles>
 
   <Application.Resources>
+    <!--Custom Assets-->
+    <FontFamily x:Key="WeblySleekUIFont">avares://GroupMeClient.AvaloniaUI/Assets/Fonts/WeblySleekUI_Full/weblysleekui*.ttf#WeblySleek UI</FontFamily>
+    
+    <!--Global Converters-->
     <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
     <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
-
     <converters:IsZeroConverter x:Key="isZeroConverter" />
-    <converters:GMDCInlineToWPFInline x:Key="inlineConverter" />
+    <converters:GMDCInlineToAvaloniaInline x:Key="inlineConverter" />
     <converters:LikeStatusToBool x:Key="likeStatusToBoolConverter" />
     <converters:LikeStatusToIcon x:Key="likeStatusToIconConverter" />
-    
   </Application.Resources>
 </Application>

@@ -18,12 +18,12 @@
     <controls:AvatarControl Width="25" Height="25"
                             Margin="5,0,0,0"
                             Content="{Binding Avatar}"/>
-    <!--TextTrimming="CharacterEllipsis"-->
     <TextBlock Grid.Column="1"
                FontSize="11"
                FontWeight="Regular"
                Text="{Binding Message}"
                TextWrapping="Wrap"
+               TextTrimming="CharacterEllipsis"
                MaxHeight="50"
                VerticalAlignment="Center"
                Margin="5"/>
