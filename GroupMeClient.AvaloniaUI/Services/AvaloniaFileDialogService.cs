@@ -21,7 +21,7 @@ namespace GroupMeClient.AvaloniaUI.Services
             openFileDialog.Title = title;
             openFileDialog.Filters = this.MakeAvaloniaFilters(filters);
 
-            return Task.Run(async () => await openFileDialog.ShowAsync(Program.GroupMeMainWindow)).Result.First();
+            return Task.Run(async () => await openFileDialog.ShowAsync(Program.GMDCMainWindow)).Result.First();
         }
 
         /// <inheritdoc/>
@@ -32,7 +32,7 @@ namespace GroupMeClient.AvaloniaUI.Services
             saveFileDialog.Filters = this.MakeAvaloniaFilters(filters);
             saveFileDialog.InitialFileName = defaultFileName;
 
-            return Task.Run(async () => await saveFileDialog.ShowAsync(Program.GroupMeMainWindow).ConfigureAwait(false)).Result;
+            return Task.Run(async () => await saveFileDialog.ShowAsync(Program.GMDCMainWindow).ConfigureAwait(false)).Result;
         }
 
         private List<FileDialogFilter> MakeAvaloniaFilters(IEnumerable<FileFilter> filters)

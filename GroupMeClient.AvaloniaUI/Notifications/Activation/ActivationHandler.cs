@@ -45,7 +45,7 @@ namespace GroupMeClient.WpfUI.Notifications.Activation
                 }
 
                 // Actions are currently routed through the MainViewModel which is kinda hacky but works ¯\_(ツ)_/¯.
-                var mainViewModel = Program.GroupMeMainWindow.DataContext as MainViewModel;
+                var mainViewModel = Program.GMDCMainWindow.DataContext as MainViewModel;
 
                 switch (action)
                 {

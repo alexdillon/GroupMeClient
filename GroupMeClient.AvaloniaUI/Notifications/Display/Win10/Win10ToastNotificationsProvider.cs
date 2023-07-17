@@ -169,7 +169,7 @@ namespace GroupMeClient.AvaloniaUI.Notifications.Display.Win10
             bool isActive = false;
             Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                isActive = Program.GroupMeMainWindow?.IsActive ?? false;
+                isActive = Program.GMDCMainWindow?.IsActive ?? false;
 
                 foreach (var miniChat in this.ChatsViewModel.ActiveMiniChats)
                 {

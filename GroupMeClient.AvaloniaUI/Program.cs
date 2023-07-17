@@ -1,11 +1,8 @@
 ﻿using System;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using GroupMeClient.AvaloniaUI.ViewModels;
 using GroupMeClient.AvaloniaUI.Views;
-using GroupMeClient.Core.Services;
-using Microsoft.Toolkit.Mvvm.DependencyInjection;
 
 namespace GroupMeClient.AvaloniaUI
 {
@@ -15,6 +12,11 @@ namespace GroupMeClient.AvaloniaUI
     public class Program
     {
         /// <summary>
+        /// Gets the main window instance for this application.
+        /// </summary>
+        public static MainWindow GMDCMainWindow { get; private set; }
+
+        /// <summary>
         /// The main entry point for the application.
         /// </summary>
         /// <param name="args">The command line arguments to launch with.</param>
@@ -22,30 +24,35 @@ namespace GroupMeClient.AvaloniaUI
         public static void Main(string[] args) => BuildAvaloniaApp()
            .StartWithClassicDesktopLifetime(args);
 
-        // Avalonia configuration, don't remove; also used by visual designer.
+        /// <summary>
+        /// Configures the Avalonia framework for this application.
+        /// </summary>
+        /// <returns>A configured <see cref="AppBuilder"/>.</returns>
+        /// <remarks>
+        /// Avalonia configuration, don't remove; also used by visual designer.
+        /// </remarks>
         public static AppBuilder BuildAvaloniaApp() =>
             AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()
-                .LogToTrace()
                 .UseReactiveUI();
 
-        public static MainWindow GroupMeMainWindow;
-
-        // Your application's entry point. Here you can initialize your MVVM framework, DI
-        // container, etc.
-        private static void AppMain(Application app, string[] args)
+        /// <summary>
+        /// Creates a main window for GMDC. If the main window
+        /// has already been created, this will return the existing instance.
+        /// </summary>
+        /// <returns>The <see cref="MainWindow"/>.</returns>
+        public static MainWindow CreateMainWindow()
         {
-            GroupMeMainWindow = new MainWindow
+            if (GMDCMainWindow == null)
             {
-                DataContext = new MainViewModel(),
-            };
+                GMDCMainWindow = new MainWindow
+                {
+                    DataContext = new MainViewModel(),
+                };
+            }
 
-            // Initialize the theme engine now that the UI has been defined
-            var themeService = Ioc.Default.GetRequiredService<IThemeService>();
-            themeService.Initialize();
-
-            app.Run(GroupMeMainWindow);
+            return GMDCMainWindow;
         }
     }
 }

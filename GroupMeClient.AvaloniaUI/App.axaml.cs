@@ -3,9 +3,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using GroupMeClient.AvaloniaUI.ViewModels;
-using GroupMeClient.AvaloniaUI.Views;
 using GroupMeClient.Core;
+using GroupMeClient.Core.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Mvvm.DependencyInjection;
@@ -14,7 +13,7 @@ using System.IO;
 
 namespace GroupMeClient.AvaloniaUI
 {
-    public class App : Application
+    public partial class App : Application
     {
         private readonly IHost host;
 
@@ -93,7 +92,6 @@ namespace GroupMeClient.AvaloniaUI
         /// </summary>
         public static Core.StartupExtensions.StartupParameters StartupParams { get; set; }
 
-        /// <inheritdoc/>
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -103,10 +101,11 @@ namespace GroupMeClient.AvaloniaUI
         {
             if (this.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = new MainViewModel(),
-                };
+                desktop.MainWindow = Program.CreateMainWindow();
+
+                // Initialize the theme engine now that the UI has been defined
+                var themeService = Ioc.Default.GetRequiredService<IThemeService>();
+                themeService.Initialize();
             }
 
             base.OnFrameworkInitializationCompleted();

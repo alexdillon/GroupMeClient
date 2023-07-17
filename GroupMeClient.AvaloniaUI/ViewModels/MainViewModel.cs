@@ -404,7 +404,7 @@ namespace GroupMeClient.AvaloniaUI.ViewModels
                 // safe to shutdown now.
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
-                    Program.GroupMeMainWindow.Close();
+                    Program.GMDCMainWindow.Close();
                 });
             }
         }
