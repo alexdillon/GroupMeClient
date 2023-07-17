@@ -23,12 +23,6 @@
     </Design.DataContext>
 
   <Grid>
-    <Grid.Resources>
-      <ResourceDictionary>
-        <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
-      </ResourceDictionary>
-    </Grid.Resources>
-    
     <microcube:HamburgerMenu Items="{Binding MenuItems}" 
                              OptionItems="{Binding MenuOptionItems}"
                              SelectedItem="{Binding SelectedItem}"

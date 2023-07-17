@@ -15,13 +15,6 @@
              ClipToBounds="False"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="200">
 
-  <UserControl.Resources>
-    <converters:IsZeroConverter x:Key="isZeroConverter" />
-    <converters:GMDCInlineToWPFInline x:Key="inlineConverter" />
-    <converters:LikeStatusToBool x:Key="likeStatusToBoolConverter" />
-    <converters:LikeStatusToIcon x:Key="likeStatusToIconConverter" />
-  </UserControl.Resources>
-
   <Grid
     extensions:MessageBrushExtensions.MessageISentBrush="{DynamicResource MessageISentBackdropBrush}"
     extensions:MessageBrushExtensions.MessageTheySentBrush="{DynamicResource MessageTheySentBackdropBrush}"

@@ -34,5 +34,11 @@
   <Application.Resources>
     <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
     <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
+
+    <converters:IsZeroConverter x:Key="isZeroConverter" />
+    <converters:GMDCInlineToWPFInline x:Key="inlineConverter" />
+    <converters:LikeStatusToBool x:Key="likeStatusToBoolConverter" />
+    <converters:LikeStatusToIcon x:Key="likeStatusToIconConverter" />
+    
   </Application.Resources>
 </Application>

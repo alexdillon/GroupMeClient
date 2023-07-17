@@ -11,12 +11,6 @@
              x:DataType="vm:ChatsViewModel"
              x:Class="GroupMeClient.AvaloniaUI.Views.ChatsView">
 
-  <UserControl.Resources>
-    <ResourceDictionary>
-      <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
-    </ResourceDictionary>
-  </UserControl.Resources>
-
   <UserControl.Styles>
     <Style Selector="Button.RoundedMenu">
       <Setter Property="Background" Value="{DynamicResource MenuButtonLightBrush}" />

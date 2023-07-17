@@ -15,10 +15,7 @@
 
   <Border BorderThickness="8" BorderBrush="{DynamicResource ThemeBackgroundBrush}">
     <Grid>
-      <Grid.Resources>
-        <converters:StreamToImageSourceConverter x:Key="imageSourceConverter" />
-      </Grid.Resources>
-      
+     
       <!--gif:AnimationBehavior.SourceStream="{Binding ImageAttachmentStream}"-->
       <Image MaxWidth="500"
              MaxHeight="600"

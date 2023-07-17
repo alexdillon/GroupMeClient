@@ -26,10 +26,6 @@
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <Grid.Resources>
-      <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
-    </Grid.Resources>
-
     <Image Grid.Row="0"
            Grid.RowSpan="2"
            MaxWidth="300"

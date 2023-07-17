@@ -18,11 +18,7 @@
         <ia:InvokeCommandAction Command="{Binding Clicked}"/>
       </ia:EventTriggerBehavior>
     </i:Interaction.Behaviors>
-    
-    <Grid.Resources>
-      <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
-    </Grid.Resources>
-
+   
     <Image Grid.Row="0"
            Grid.RowSpan="2"
            MaxWidth="600"

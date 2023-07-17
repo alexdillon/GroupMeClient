@@ -30,10 +30,6 @@
       <RowDefinition Height="40"/>
     </Grid.RowDefinitions>
 
-    <Grid.Resources>
-      <converters:InverseBoolConverter x:Key="inverseBooleanConverter" />
-    </Grid.Resources>
-
     <Grid.ContextMenu>
       <ContextMenu>
         <MenuItem Header="Open Document" Command="{Binding Clicked}" CommandParameter="{x:Null}" />

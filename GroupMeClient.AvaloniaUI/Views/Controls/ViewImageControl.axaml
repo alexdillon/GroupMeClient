@@ -14,11 +14,6 @@
              Background="Transparent">
 
   <Grid ClipToBounds="False">
-    <Grid.Resources>
-      <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
-      <converters:StreamToImageSourceConverter x:Key="imageSourceConverter" />
-    </Grid.Resources>
-
     <microcube:ProgressRing IsVisible="{Binding IsLoading}"
                             Width="60" Height="60"
                             HorizontalAlignment="Center"
