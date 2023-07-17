@@ -9,28 +9,21 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="300">
 
-    <Grid>
-      <Grid.Resources>
-        <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
-        <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
-      </Grid.Resources>
+  <Border Classes.round="{Binding IsRound}"
+          Classes.square="{Binding !IsRound}">
 
-      <Ellipse IsVisible="{Binding AvatarSource.IsRoundedAvatar}">
-        <Ellipse.Fill>
-          <!--TODO 11-->
-          <!--RenderOptions.BitmapInterpolationMode="MediumQuality"-->
-          <ImageBrush Source="{Binding AvatarRound, Converter={StaticResource imageSourceConverter}}" 
-                       />
-        </Ellipse.Fill>
-      </Ellipse>
+    <Border.Background>
+      <ImageBrush Source="{Binding AvatarImage, Converter={StaticResource imageSourceConverter}}" />
+    </Border.Background>
 
-      <Rectangle IsVisible="{Binding AvatarSource.IsRoundedAvatar, Converter={StaticResource inverseBoolConverter}}">
-        <Rectangle.Fill>
-          <!--TODO 11-->
-          <!--RenderOptions.BitmapInterpolationMode="MediumQuality"-->
-          <ImageBrush Source="{Binding AvatarSquare, Converter={StaticResource imageSourceConverter}}"
-                       />
-        </Rectangle.Fill>
-      </Rectangle>
-    </Grid>
+    <Border.Styles>
+      <Style Selector="Border.round">
+        <!--Binding to the actual width with {Binding $self.Bounds.Width} doesn't seem to update correctly-->
+        <Setter Property="CornerRadius" Value="1000" />
+      </Style>
+      <Style Selector="Border.square">
+        <Setter Property="CornerRadius" Value="0" />
+      </Style>
+    </Border.Styles>
+  </Border>
 </UserControl>

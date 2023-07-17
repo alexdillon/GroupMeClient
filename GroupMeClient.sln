@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.452
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupMeClient.WpfUI", "GroupMeClient.WpfUI\GroupMeClient.WpfUI.csproj", "{3648A5D4-7C27-4340-81D0-5AA1C9B1C447}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClient.WpfUI", "GroupMeClient.WpfUI\GroupMeClient.WpfUI.csproj", "{3648A5D4-7C27-4340-81D0-5AA1C9B1C447}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClient.Core", "GroupMeClient.Core\GroupMeClient.Core.csproj", "{7B65EF69-3008-4741-BAE7-F764CA30B0B2}"
 EndProject
@@ -12,6 +12,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupMeClient.AvaloniaUI", "GroupMeClient.AvaloniaUI\GroupMeClient.AvaloniaUI.csproj", "{AC305049-DD23-4530-9A2E-5168B234B023}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroCubeAvalonia", "MicroCubeAvalonia\MicroCubeAvalonia.csproj", "{2FB0DDFD-D2A4-47E6-99DC-37A70594192B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AvaloniaUI", "AvaloniaUI", "{48874E08-6FD3-41D9-AA56-C39DCD30B74F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GMDC", "GMDC", "{DB178A3F-E64D-4AD3-AA2C-B05FD840D6EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WpfUI", "WpfUI", "{C728877A-717A-43D3-A1D7-E6112EA5C791}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +48,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3648A5D4-7C27-4340-81D0-5AA1C9B1C447} = {C728877A-717A-43D3-A1D7-E6112EA5C791}
+		{7B65EF69-3008-4741-BAE7-F764CA30B0B2} = {DB178A3F-E64D-4AD3-AA2C-B05FD840D6EB}
+		{ABF76E74-20EE-402A-A96C-DA569466F689} = {DB178A3F-E64D-4AD3-AA2C-B05FD840D6EB}
+		{AC305049-DD23-4530-9A2E-5168B234B023} = {48874E08-6FD3-41D9-AA56-C39DCD30B74F}
+		{2FB0DDFD-D2A4-47E6-99DC-37A70594192B} = {48874E08-6FD3-41D9-AA56-C39DCD30B74F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AFB9E28D-376F-49DC-B337-F3DBC06937E8}

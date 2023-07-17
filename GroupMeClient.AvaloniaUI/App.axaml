@@ -1,6 +1,7 @@
 ﻿<Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:GroupMeClient.AvaloniaUI"
+             xmlns:converters="using:GroupMeClient.AvaloniaUI.Converters"
              x:Class="GroupMeClient.AvaloniaUI.App"
              Name="GroupMe Desktop Client">
 
@@ -9,11 +10,9 @@
   </Application.DataTemplates>
 
   <Application.Styles>
-
     <SimpleTheme />
     
     <StyleInclude Source="avares://GroupMeClient.AvaloniaUI/GroupMeLight.axaml"/>
-    <StyleInclude Source="avares://GroupMeClient.AvaloniaUI/Controls/DefaultTheme.axaml" />
 
     <StyleInclude Source="avares://MicroCubeAvalonia/DefaultTheme.xaml"/>
 
@@ -31,4 +30,9 @@
       <Setter Property="Background" Value="{TemplateBinding Background}"/>
     </Style>
   </Application.Styles>
+
+  <Application.Resources>
+    <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
+    <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
+  </Application.Resources>
 </Application>
