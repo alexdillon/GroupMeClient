@@ -86,33 +86,31 @@
     </Grid>
 
     <!--Messages List-->
-    <!--VirtualizingStackPanel.IsVirtualizing="True"
-    VirtualizingStackPanel.VirtualizationMode="Standard"
-    VirtualizingStackPanel.ScrollUnit="Pixel"-->
-    <ListBox ItemsSource="{Binding MessagesSorted}"
-             Grid.Row="2" Grid.Column="0"
-             BorderThickness="0"
-             Background="{DynamicResource MessageBackdropBrush}"
-             UseLayoutRounding="True"
-             SelectionMode="Multiple"
-             ScrollViewer.VerticalScrollBarVisibility="Visible"
-             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-             DragDrop.AllowDrop="True"
-             extensions:InfiniteScrollBehaviorPositionHelper.IsNotAtBottom="True"
-             extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
-             extensions:FileDragDropHelper.FileDragDropTarget="{Binding Path=.}"
-             x:Name="messagesList">
-
-      <i:Interaction.Behaviors>
-        <extensions:InfiniteScrollBehavior ReachedTopCommand="{Binding ReloadView}" />
-      </i:Interaction.Behaviors>
+    <extensions:ListBoxExt 
+      ItemsSource="{Binding MessagesSorted}"
+      Grid.Row="2" Grid.Column="0"
+      BorderThickness="0"
+      Background="{DynamicResource MessageBackdropBrush}"
+      UseLayoutRounding="True"
+      SelectionMode="Multiple"
+      ScrollViewer.VerticalScrollBarVisibility="Visible"
+      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+      ReachedTopCommand="{Binding ReloadView}"
+      DragDrop.AllowDrop="True"
+      extensions:FileDragDropHelper.IsFileDragDropEnabled="True"
+      extensions:FileDragDropHelper.FileDragDropTarget="{Binding Path=.}"
+      x:Name="messagesList">
 
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
-          <!--TODO 11-->
-          <!--Use this to control virualization-->
+          <!--Use this to control virtualization. TODO-->
+        
           <StackPanel />
           <!--<VirtualizingStackPanel />-->
+
+          <!--VirtualizingStackPanel.IsVirtualizing="True"
+              VirtualizingStackPanel.VirtualizationMode="Standard"
+              VirtualizingStackPanel.ScrollUnit="Pixel"-->
         </ItemsPanelTemplate>
       </ListBox.ItemsPanel>
 
@@ -164,7 +162,7 @@
                                  CommandParameter="{Binding SelectedItems, ElementName=messagesList}" />
         </i:EventTrigger>
       </i:Interaction.Triggers>-->
-    </ListBox>
+    </extensions:ListBoxExt>
 
     <!--Scroll-To-Bottom Button-->
     <Button Grid.Row="2"
@@ -172,10 +170,11 @@
             VerticalAlignment="Bottom"
             Classes="round"
             Margin="0,0,30,20"
-            IsVisible="{ReflectionBinding Path=IsNotAtBottom, ElementName=messageList}"
+            IsVisible="{ReflectionBinding !#messagesList.IsAtBottom}"
             Command="{ReflectionBinding #messagesList.Scroll.ScrollToEnd}"
             Background="{DynamicResource ScrollToBottomButtonBrush}"
             BorderBrush="{DynamicResource ScrollToBottomButtonBrush}" >
+
       <Button.Styles>
         <Style Selector="Button">
           <Setter Property="Template">
