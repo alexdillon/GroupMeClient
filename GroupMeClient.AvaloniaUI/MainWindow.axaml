@@ -69,7 +69,7 @@
                                 Grid.Column="0"
                                 Foreground="White"
                                 Width="16" Height="16"
-                                IsVisible="{Binding IsRefreshing, Converter={StaticResource inverseBoolConverter}}"/>
+                                IsVisible="{Binding !IsRefreshing}"/>
 
           <microcube:ProgressRing IsVisible="{Binding IsRefreshing}"
                                   Grid.Column="0"

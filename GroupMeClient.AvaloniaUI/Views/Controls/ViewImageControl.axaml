@@ -40,7 +40,7 @@
             Background="Transparent"
             BorderThickness="0"
             Command="{Binding Path=SaveImage}"
-            IsVisible="{Binding IsLoading, Converter={StaticResource inverseBoolConverter}}">
+            IsVisible="{Binding !IsLoading}">
       <iconPack:IconControl Width="15" Height="15"
                             Background="Transparent"
                             Kind="PackIconEntypoKind.Save" />
@@ -55,7 +55,7 @@
             Background="Transparent"
             BorderThickness="0"
             Command="{Binding Path=CopyImage}"
-            IsVisible="{Binding IsLoading, Converter={StaticResource inverseBoolConverter}}">
+            IsVisible="{Binding !IsLoading}">
       <iconPack:IconControl Width="15" Height="15"
                             Background="Transparent"
                             Kind="PackIconFontAwesomeKind.CopySolid" />

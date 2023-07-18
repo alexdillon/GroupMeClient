@@ -43,7 +43,7 @@
                           Background="Transparent"
                           Grid.Column="0" Grid.Row="0"
                           VerticalAlignment="Center"
-                          IsVisible="{Binding IsLoading, Converter={StaticResource inverseBooleanConverter}}"
+                          IsVisible="{Binding !IsLoading}"
                           Width="30" Height="30"/>
 
     <microcube:ProgressRing IsVisible="{Binding IsLoading}"

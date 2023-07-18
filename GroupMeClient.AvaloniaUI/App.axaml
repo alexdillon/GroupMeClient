@@ -35,7 +35,6 @@
     <FontFamily x:Key="WeblySleekUIFont">avares://GroupMeClient.AvaloniaUI/Assets/Fonts/WeblySleekUI_Full/weblysleekui*.ttf#WeblySleek UI</FontFamily>
     
     <!--Global Converters-->
-    <converters:InverseBoolConverter x:Key="inverseBoolConverter" />
     <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
     <converters:IsZeroConverter x:Key="isZeroConverter" />
     <converters:GMDCInlineToAvaloniaInline x:Key="inlineConverter" />

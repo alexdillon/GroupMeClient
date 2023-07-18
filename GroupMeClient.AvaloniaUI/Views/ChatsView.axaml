@@ -92,7 +92,7 @@
                       Foreground="{DynamicResource DividerLineBrush}"
                       HorizontalAlignment="Left"
                       x:Name="toggleSearchBox"
-                      IsVisible="{Binding #toggleMiniSidebar.IsChecked, Converter={StaticResource inverseBoolConverter}}"
+                      IsVisible="{Binding !#toggleMiniSidebar.IsChecked}"
                       Command="{Binding SearchToggled}"
                       CommandParameter="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">
           <iconPack:IconControl Width="15" Height="15" Kind="PackIconMaterialKind.Magnify" />
@@ -104,7 +104,7 @@
                 BorderThickness="0"
                 Foreground="{DynamicResource DividerLineBrush}"
                 Margin="5,0,0,0"
-                IsVisible="{Binding #toggleMiniSidebar.IsChecked, Converter={StaticResource inverseBoolConverter}}"
+                IsVisible="{Binding !#toggleMiniSidebar.IsChecked}"
                 Command="{Binding Path=MarkAllAsRead}"
                 CommandParameter="{Binding Path=.}">
           <iconPack:IconControl Width="15" Height="15" Kind="PackIconEntypoKind.Unread" />
