@@ -65,7 +65,7 @@
               Margin="0,0,0,0"
               VerticalAlignment="Bottom"/>
 
-      <TextBox x:Name="ImageMessageCaption"
+      <TextBox x:Name="FileMessageCaption"
                Grid.Row="1" Grid.Column="1"
                MinHeight="49"
                Classes="verticalCenter"

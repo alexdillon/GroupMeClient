@@ -3,6 +3,8 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Platform.Storage;
+using GroupMeClient.Core.Controls;
 
 namespace GroupMeClient.AvaloniaUI.Extensions
 {
@@ -14,7 +16,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <summary>
         /// Gets a property indicating if FileDragDrop is supported.
         /// </summary>
-        public static readonly AvaloniaProperty IsFileDragDropEnabledProperty =
+        public static readonly AvaloniaProperty<bool> IsFileDragDropEnabledProperty =
             AvaloniaProperty.RegisterAttached<Control, bool>(
                 "IsFileDragDropEnabled",
                 typeof(FileDragDropHelper),
@@ -23,30 +25,15 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <summary>
         /// Gets a property containing the File Drag Drop handler target.
         /// </summary>
-        public static readonly AvaloniaProperty FileDragDropTargetProperty =
-            AvaloniaProperty.RegisterAttached<Control, FileDragDropHelper>(
+        public static readonly AvaloniaProperty<IDragDropPasteTarget> FileDragDropTargetProperty =
+            AvaloniaProperty.RegisterAttached<Control, IDragDropPasteTarget>(
                 "FileDragDropTarget",
-                typeof(FileDragDropHelper));
+                typeof(FileDragDropHelper),
+                defaultValue: null);
 
-        /// <summary>
-        /// <see cref="IDragDropTarget"/> enables receiving updates when data is dropped onto a control.
-        /// </summary>
-        /// <remarks>
-        /// Adapted from https://stackoverflow.com/a/37608994.
-        /// </remarks>
-        public interface IDragDropTarget
+        static FileDragDropHelper()
         {
-            /// <summary>
-            /// Executed when a file has been dragged onto the target.
-            /// </summary>
-            /// <param name="filepaths">The file name(s) dropped.</param>
-            void OnFileDrop(string[] filepaths);
-
-            /// <summary>
-            /// Executed when an image has been dragged onto the target.
-            /// </summary>
-            /// <param name="image">The raw image data that was dropped.</param>
-            void OnImageDrop(byte[] image);
+            IsFileDragDropEnabledProperty.Changed.Subscribe(x => HandleIsFileDropEnabledChanged(x.Sender, x.NewValue.Value));
         }
 
         /// <summary>
@@ -89,15 +76,27 @@ namespace GroupMeClient.AvaloniaUI.Extensions
             obj.SetValue(FileDragDropTargetProperty, value);
         }
 
-        private static void OnFileDragDropEnabled(AvaloniaObject d)
+        /// <summary>
+        /// <see cref="CommandProperty"/> changed event handler.
+        /// </summary>
+        private static void HandleIsFileDropEnabledChanged(AvaloniaObject element, bool isEnabled)
         {
-            if (d is Control control)
+            if (element is Control control)
             {
-                control.AddHandler(DragDrop.DropEvent, OnDrop);
-
-                /*CommandManager.AddPreviewExecutedHandler(control, OnPreviewExecuted);
-                CommandManager.AddPreviewCanExecuteHandler(control, OnPreviewCanExecute);*/
+                if (isEnabled)
+                {
+                    // Enable handler
+                    control.AddHandler(DragDrop.DropEvent, OnDrop);
+                }
+                else
+                {
+                    // Remove handler
+                    control.RemoveHandler(DragDrop.DropEvent, OnDrop);
+                }
             }
+
+            /*CommandManager.AddPreviewExecutedHandler(control, OnPreviewExecuted);
+              CommandManager.AddPreviewCanExecuteHandler(control, OnPreviewCanExecute);*/
         }
 
         private static void OnDrop(object sender, DragEventArgs dragEventArgs)
@@ -108,16 +107,20 @@ namespace GroupMeClient.AvaloniaUI.Extensions
             }
 
             var target = d.GetValue(FileDragDropTargetProperty);
-            if (target is IDragDropTarget fileTarget)
+            if (target is IDragDropPasteTarget fileTarget)
             {
-                if (dragEventArgs.Data.Contains(DataFormats.FileNames))
+                if (dragEventArgs.Data.Contains(DataFormats.Files))
                 {
-                    fileTarget.OnFileDrop(dragEventArgs.Data.GetFileNames().ToArray());
+                    fileTarget.OnFileDrop(dragEventArgs.Data
+                        .GetFiles()
+                        .Select(f => f.TryGetLocalPath())
+                        .Where(p => !string.IsNullOrEmpty(p))
+                        .ToArray());
                 }
             }
             else
             {
-                throw new Exception("FileDragDropTarget object must be of type IFileDragDropTarget");
+                throw new Exception($"FileDragDropTarget object must be of type {nameof(IDragDropPasteTarget)}");
             }
         }
 

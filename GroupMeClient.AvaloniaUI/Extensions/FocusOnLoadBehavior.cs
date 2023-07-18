@@ -14,19 +14,22 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <summary>
         /// Gets an Avalonia Property for the control to focus on load.
         /// </summary>
-        public static readonly AvaloniaProperty FocusControlProperty =
-            AvaloniaProperty.Register<FocusOnLoadBehavior, IInputElement>(
+        public static readonly DirectProperty<FocusOnLoadBehavior, IInputElement> FocusControlProperty =
+            AvaloniaProperty.RegisterDirect<FocusOnLoadBehavior, IInputElement>(
                 nameof(FocusControl),
-                inherits: false,
+                o => o.FocusControl,
+                (o, v) => o.FocusControl = v,
                 defaultBindingMode: Avalonia.Data.BindingMode.OneTime);
+
+        private IInputElement focusControl;
 
         /// <summary>
         /// Gets or sets the command to execute when send behavior is invoked.
         /// </summary>
         public IInputElement FocusControl
         {
-            get => (IInputElement)this.GetValue(FocusControlProperty);
-            set => this.SetValue(FocusControlProperty, value);
+            get => this.focusControl;
+            set => this.SetAndRaise(FocusControlProperty, ref this.focusControl, value);
         }
 
         /// <inheritdoc />
@@ -52,7 +55,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
 
         private void AssociatedObject_AttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
         {
-            this.FocusControl.Focus();
+            this.FocusControl?.Focus();
         }
     }
 }
