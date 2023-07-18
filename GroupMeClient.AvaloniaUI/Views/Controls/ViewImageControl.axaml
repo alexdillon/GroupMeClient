@@ -26,7 +26,7 @@
          MaxWidth="{ReflectionBinding $parent[6].Bounds.Width}"
          MaxHeight="{ReflectionBinding $parent[6].Bounds.Height}"
          Stretch="Uniform"
-         Source="{Binding ImageStream, Converter={StaticResource imageSourceConverter}}"
+         Source="{Binding ImageStream, Converter={StaticResource imageStreamConverter}}"
          HorizontalAlignment="Center">
       </Image>
     </extensions:ZoomBorder>

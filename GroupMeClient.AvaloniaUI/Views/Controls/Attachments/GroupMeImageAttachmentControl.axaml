@@ -23,7 +23,7 @@
              Stretch="Uniform"
              HorizontalAlignment="Left"
              UseLayoutRounding="True"
-             Source="{Binding ImageAttachmentStream, Converter={StaticResource imageSourceConverter}}">
+             Source="{Binding ImageAttachmentStream, Converter={StaticResource imageStreamConverter}}">
 
         <i:Interaction.Behaviors>
           <ia:EventTriggerBehavior EventName="PointerPressed">
