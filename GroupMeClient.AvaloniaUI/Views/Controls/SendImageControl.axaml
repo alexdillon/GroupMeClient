@@ -9,36 +9,114 @@
              xmlns:microcube="clr-namespace:MicroCubeAvalonia.Controls;assembly=MicroCubeAvalonia"
              xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
              xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
+             xmlns:converters="using:GroupMeClient.AvaloniaUI.Converters"
              xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
              x:DataType="vm:SendImageControlViewModel"
+             ClipToBounds="False"
              mc:Ignorable="d" d:DesignHeight="200" d:DesignWidth="200"
              Background="Black">
-  <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="Auto"/>
-    </Grid.RowDefinitions>
-
+  <Grid ColumnDefinitions="*"
+        RowDefinitions="*, Auto">
+   
     <i:Interaction.Behaviors>
       <extensions:FocusOnLoadBehavior FocusControl="{Binding #ImageMessageCaption}" />
     </i:Interaction.Behaviors>
 
-    <Image Grid.Row="0"
-           MaxWidth="900"
-           Stretch="Uniform"
-           StretchDirection="DownOnly"
-           HorizontalAlignment="Center"
-           Source="{Binding SelectedImage}" />
+    <!--Add Image Button-->
+    <!--TODO extensions:EventButtonFocusExtensions.ElementToFocus="{Binding ElementName=ImageMessageCaption}"-->
+    <Button Width="30"
+            Height="30"
+            Margin="0,-30,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Classes="styleless"
+            Foreground="White"
+            Background="Transparent"
+            BorderThickness="0"
+            Command="{Binding Path=AddImage}">
+      <iconPack:IconControl Width="15" Height="15"
+                            Background="Transparent"
+                            Kind="PackIconEntypoKind.Plus" />
+    </Button>
+    
+    <!--Delete Image Button-->
+    <!--TODO extensions:EventButtonFocusExtensions.ElementToFocus="{Binding ElementName=ImageMessageCaption}"-->
+    <Button Width="30"
+            Height="30"
+            Margin="30,-30,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Classes="styleless"
+            Foreground="White"
+            Background="Transparent"
+            BorderThickness="0"
+            Command="{Binding DeleteImage}"
+            IsVisible="{Binding ImagesCollection.Count, Converter={x:Static converters:NumericConverters.IsNotOneConverter}}">
+      <iconPack:IconControl Width="15" Height="15" Kind="PackIconFontAwesomeKind.TrashAltSolid"/>
+    </Button>
+
+    <TabControl Grid.Row="0"
+                SelectedIndex="0"
+                SelectedItem="{Binding SelectedImage, Mode=TwoWay}"
+                Padding="0"
+                BorderThickness="0"
+                Background="Black"
+                ItemsSource="{Binding ImagesCollection}">
+
+      <TabControl.ItemTemplate>
+        <DataTemplate>
+          <!--TODO, Add the index number of the image to the tab text-->
+          <TextBlock Text="Image"
+                     FontSize="14"
+                     Foreground="White"/>
+        </DataTemplate>
+      </TabControl.ItemTemplate>
+
+      <TabControl.ContentTemplate>
+        <DataTemplate x:CompileBindings="False">
+          <Grid>
+            <Image Grid.Row="0"
+                   MaxWidth="900"
+                   Stretch="Uniform"
+                   StretchDirection="DownOnly"
+                   HorizontalAlignment="Center"
+                   Source="{Binding ImageStream, Converter={StaticResource imageStreamConverter}}" />
+
+            <Button Content="Select or Paste an Image"
+                    Margin="5"
+                    Padding="10"
+                    FontSize="14"
+                    IsVisible="{Binding ImageStream, Converter={x:Static ObjectConverters.IsNull}}"
+                    Command="{Binding SelectImageFile}"/>
+          </Grid>
+        </DataTemplate>
+      </TabControl.ContentTemplate>
+
+      <TabControl.Styles>
+        <Style Selector="TabItem">
+          <Setter Property="IsVisible" 
+                  Value="{ReflectionBinding $parent[controls:SendImageControl].DataContext.ImagesCollection.Count,
+                            Converter={x:Static converters:NumericConverters.IsNotOneConverter}}" />
+        </Style>
+      </TabControl.Styles>
+    </TabControl>
+
+    <ProgressBar Grid.Row="0"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Bottom"
+                 Value="{Binding UploadPercentage, Mode=OneWay}"
+                 Foreground="{DynamicResource MessageTheyLikedBrush}"
+                 Opacity="0.8"
+                 IsVisible="{Binding !!UploadPercentage}"
+                 Height="13"/>
 
     <microcube:ProgressRing IsVisible="{Binding IsSending}"
                             Foreground="{DynamicResource LoadingSpinnerDarkBrush}"
                             Width="60" Height="60"
                             HorizontalAlignment="Center"/>
 
-    <Grid Grid.Column="0" Grid.Row="3"
+    <Grid Grid.Column="0" 
+          Grid.Row="3"
           Background="{DynamicResource ThemeBackgroundBrush}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="40" />

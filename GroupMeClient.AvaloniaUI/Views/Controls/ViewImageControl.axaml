@@ -13,14 +13,14 @@
              ClipToBounds="False"
              Background="Transparent">
 
-  <Grid ClipToBounds="False">
+  <Grid>
     <microcube:ProgressRing IsVisible="{Binding IsLoading}"
                             Width="60" Height="60"
                             HorizontalAlignment="Center"
                             Background="Transparent"
                             Foreground="{DynamicResource LoadingSpinnerDarkBrush}"/>
 
-    <extensions:ZoomBorder >
+    <extensions:ZoomBorder>
       <!--gif:AnimationBehavior.SourceStream="{Binding ImageStream}"-->
       <Image
          MaxWidth="{ReflectionBinding $parent[6].Bounds.Width}"

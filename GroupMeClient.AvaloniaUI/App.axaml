@@ -37,7 +37,6 @@
     <!--Global Converters-->
     <converters:GenericImageSourceToImageSource x:Key="imageSourceConverter" />
     <converters:StreamToImageSourceConverter x:Key="imageStreamConverter" />
-    <converters:IsZeroConverter x:Key="isZeroConverter" />
     <converters:GMDCInlineToAvaloniaInline x:Key="inlineConverter" />
     <converters:LikeStatusToBool x:Key="likeStatusToBoolConverter" />
     <converters:LikeStatusToIcon x:Key="likeStatusToIconConverter" />
