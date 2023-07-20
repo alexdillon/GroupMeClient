@@ -3,33 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
              xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
              x:DataType="vm:InlineReadSentMarkerControlViewModel"
              mc:Ignorable="d"
              d:DesignHeight="20" d:DesignWidth="400">
 
-  <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
-
-    <i:Interaction.Behaviors>
-      <extensions:BackgroundBinaryChangerBehavior Condition="{Binding DidISendIt}"
-                                                  TrueValue="{DynamicResource MessageISentBackdropBrush}"
-                                                  FalseValue="{DynamicResource MessageTheySentBackdropBrush}" />
-    </i:Interaction.Behaviors>
+  <Panel
+    HorizontalAlignment="Stretch"
+    extensions:MessageBrushExtensions.MessageISentBrush="{DynamicResource MessageISentBackdropBrush}"
+    extensions:MessageBrushExtensions.MessageTheySentBrush="{DynamicResource MessageTheySentBackdropBrush}"
+    extensions:MessageBrushExtensions.MessageSender="{Binding DidISendIt}">
     
     <TextBlock Text="{Binding LabelString, Mode=OneTime}"
-           HorizontalAlignment="Left"
-           FontWeight="Regular"
-           FontSize="11"
-           Foreground="{DynamicResource MessageFontBrush}"
-           Margin="55,-15,0,0"/>
-  </Grid>
+               HorizontalAlignment="Left"
+               FontWeight="Regular"
+               FontSize="11"
+               Foreground="{DynamicResource MessageFontBrush}"
+               Margin="55,-15,0,0"/>
+  </Panel>
 </UserControl>

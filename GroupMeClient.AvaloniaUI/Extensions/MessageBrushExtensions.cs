@@ -35,7 +35,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
                AvaloniaProperty.RegisterAttached<Grid, bool>(
                 "MessageSender",
                 typeof(MessageBrushExtensions),
-                defaultValue: default(bool));
+                defaultValue: default);
 
         /// <summary>
         /// Initializes static members of the <see cref="MessageBrushExtensions"/> class.
@@ -112,23 +112,23 @@ namespace GroupMeClient.AvaloniaUI.Extensions
 
         private static void PropertyChanged(AvaloniaPropertyChangedEventArgs e)
         {
-            if (e.Sender is Grid gd)
+            if (e.Sender is Panel panel)
             {
-                UpdateData(gd);
+                UpdateData(panel);
             }
         }
 
         private static void UpdateData(Control element)
         {
-            if (element is Grid grid)
+            if (element is Panel panel)
             {
                 if (GetMessageSender(element))
                 {
-                    grid.Background = GetMessageISentBrush(element);
+                    panel.Background = GetMessageISentBrush(element);
                 }
                 else
                 {
-                    grid.Background = GetMessageTheySentBrush(element);
+                    panel.Background = GetMessageTheySentBrush(element);
                 }
             }
         }

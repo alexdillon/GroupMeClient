@@ -3,31 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-             xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
              xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
              xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
              x:DataType="vm:InlineTimestampControlViewModel"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="20">
+
+  <Panel
+    HorizontalAlignment="Stretch"
+    extensions:MessageBrushExtensions.MessageISentBrush="{DynamicResource MessageISentBackdropBrush}"
+    extensions:MessageBrushExtensions.MessageTheySentBrush="{DynamicResource MessageTheySentBackdropBrush}"
+    extensions:MessageBrushExtensions.MessageSender="{Binding DidISendIt}">
   
-  <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
-
-    <i:Interaction.Behaviors>
-      <extensions:BackgroundBinaryChangerBehavior Condition="{Binding DidISendIt}"
-                                                  TrueValue="{DynamicResource MessageISentBackdropBrush}"
-                                                  FalseValue="{DynamicResource MessageTheySentBackdropBrush}" />
-    </i:Interaction.Behaviors>
-
     <TextBlock Text="{Binding TimestampString, Mode=OneTime}"
-           HorizontalAlignment="Center"
-           FontWeight="SemiBold"
-           FontSize="11"
-           Margin="0, 8, 0, 5"/>
-  </Grid>
+               HorizontalAlignment="Center"
+               FontWeight="SemiBold"
+               FontSize="11"
+               Margin="0, 8, 0, 5"/>
+  </Panel>
 </UserControl>
