@@ -31,8 +31,8 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// <summary>
         /// An Avalonia Attached property to represent if the sender was the user.
         /// </summary>
-        public static readonly AvaloniaProperty<bool> MessageSenderProperty =
-               AvaloniaProperty.RegisterAttached<Grid, bool>(
+        public static readonly AvaloniaProperty<bool?> MessageSenderProperty =
+               AvaloniaProperty.RegisterAttached<Grid, bool?>(
                 "MessageSender",
                 typeof(MessageBrushExtensions),
                 defaultValue: default);
@@ -94,9 +94,9 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// </summary>
         /// <param name="element">The <see cref="Control"/ to assign the property value to.</param>
         /// <returns>True if the sender is the current user.</returns>
-        public static bool GetMessageSender(Control element)
+        public static bool? GetMessageSender(Control element)
         {
-            return (bool)element.GetValue(MessageSenderProperty);
+            return (bool?)element.GetValue(MessageSenderProperty);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         /// </summary>
         /// <param name="element">The <see cref="Control"/ to assign the property value to.</param>
         /// <param name="value">The sender type value.</param>
-        public static void SetMessageSender(Control element, bool value)
+        public static void SetMessageSender(Control element, bool? value)
         {
             element.SetValue(MessageSenderProperty, value);
             UpdateData(element);
@@ -122,13 +122,18 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         {
             if (element is Panel panel)
             {
-                if (GetMessageSender(element))
+                var didISendItColoring = GetMessageSender(element);
+                if (didISendItColoring == true)
                 {
                     panel.Background = GetMessageISentBrush(element);
                 }
-                else
+                else if (didISendItColoring == false)
                 {
                     panel.Background = GetMessageTheySentBrush(element);
+                }
+                else
+                {
+                    // If null, leave the background unchanged
                 }
             }
         }

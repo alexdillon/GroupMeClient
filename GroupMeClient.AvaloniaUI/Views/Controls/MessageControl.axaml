@@ -8,164 +8,206 @@
              xmlns:iconPack="clr-namespace:MicroCubeAvalonia.IconPack;assembly=MicroCubeAvalonia"
              xmlns:controls="clr-namespace:GroupMeClient.AvaloniaUI.Views.Controls"
              xmlns:extensions="clr-namespace:GroupMeClient.AvaloniaUI.Extensions"
-             xmlns:vmcontrols="clr-namespace:GroupMeClient.Core.ViewModels.Controls;assembly=GroupMeClient.Core"
+             xmlns:converters="using:GroupMeClient.AvaloniaUI.Converters"
              xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls"
              x:DataType="vm:MessageControlViewModel"
              ClipToBounds="False"
+             Classes.nested="{Binding NestLevel, Converter={x:Static converters:IsGreaterThanConverter.Instance}, ConverterParameter=1}"
              mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="200">
 
-  <Grid
-    extensions:MessageBrushExtensions.MessageISentBrush="{DynamicResource MessageISentBackdropBrush}"
-    extensions:MessageBrushExtensions.MessageTheySentBrush="{DynamicResource MessageTheySentBackdropBrush}"
-    extensions:MessageBrushExtensions.MessageSender="{Binding DidISendIt}">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="55" />
-      <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="Auto" />
-    </Grid.ColumnDefinitions>
+  <UserControl.Resources>
+    <!--Data template for a single message that is not collapsed-->
+    <DataTemplate x:Key="MessageBody"
+                  x:DataType="vm:MessageControlViewModel">
+      <Grid
+        extensions:MessageBrushExtensions.MessageISentBrush="{DynamicResource MessageISentBackdropBrush}"
+        extensions:MessageBrushExtensions.MessageTheySentBrush="{DynamicResource MessageTheySentBackdropBrush}"
+        extensions:MessageBrushExtensions.MessageSender="{Binding DidISendItColoring}">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="55" />
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
 
-    <Grid.RowDefinitions>
-      <RowDefinition Height="10"/>
-      <RowDefinition Height="*" />
-      <RowDefinition Height="Auto" />
-    </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="10"/>
+          <RowDefinition Height="*" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-    <extensions:RightClickButton
-      Grid.Column="0"
-      Grid.Row="1"
-      Classes="styleless"
-      ClickMode="Press"
-      Background="Transparent"
-      VerticalAlignment="Top"
-      Command="{Binding ToggleMessageDetails}">
-      <controls:AvatarControl
-           Width="40" 
-           Height="40" 
-           DataContext="{Binding Avatar}"/>
-    </extensions:RightClickButton>
-
-    <StackPanel Grid.Column="1" Grid.Row="1">
-      <TextBlock Text="{Binding Sender}" FontSize="12" Foreground="{DynamicResource MessageFontBrush}" />
-
-      <ItemsControl ItemsSource="{Binding AttachedItems}">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate>
-            <UserControl
-                MaxWidth="700"
-                HorizontalAlignment="Left"
-                Content="{Binding Path=.}"/>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <WrapPanel />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-      </ItemsControl>
-
-      <SelectableTextBlock Margin="0,0,0,20"
-                           FontSize="15"
-                           Inlines="{Binding Inlines, Converter={StaticResource inlineConverter}}"
-                           TextWrapping="Wrap" />
-    </StackPanel>
-
-    <Grid Grid.Column="2" Grid.Row="1"
-          MaxHeight="60"
-          VerticalAlignment="Top"
+        <!--Sender Avatar-->
+        <extensions:RightClickButton
+          Grid.Column="0"
+          Grid.Row="1"
+          Classes="styleless"
+          ClickMode="Press"
           Background="Transparent"
-          x:Name="likeButtonArea">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="15" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="10" />
-        <RowDefinition Height="10" />
-      </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="3"/>
-        <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="12"/>
-      </Grid.ColumnDefinitions>
+          VerticalAlignment="Top"
+          Command="{Binding ToggleMessageDetails}">
+          <controls:AvatarControl
+               Width="40"
+               Height="40"
+               DataContext="{Binding Avatar}"/>
+        </extensions:RightClickButton>
 
-      <iconPack:IconControl Width="17" Height="17"
-                            Grid.Row="1" Grid.Column="1"
-                            HorizontalAlignment="Center"
-                            Background="Transparent"
-                            extensions:LikeIconExtensions.BrushWhenILiked="{DynamicResource MessageILikedBrush}"
-                            extensions:LikeIconExtensions.BrushWhenTheyLiked="{DynamicResource MessageTheyLikedBrush}"
-                            extensions:LikeIconExtensions.LikeStatus="{Binding LikeStatus}"
-                            Name="likeIcon"/>
-        
-      <TextBlock Grid.Row="2" Grid.Column="1"
-                 HorizontalAlignment="Center"
-                 ClipToBounds="False"
-                 Margin="2,0,0,0"
-                 Foreground="{DynamicResource MessageFontBrush}" 
-                 FontSize="10" FontWeight="Thin"
-                 Text="{Binding LikeCount}" />
+        <!--Main Message Contents (stacked)-->
+        <!--Sender Name / Attachments / Replies / Body-->
+        <StackPanel Grid.Column="1" Grid.Row="1">
+          <!--Sender Name-->
+          <TextBlock Text="{Binding Sender}" FontSize="12" Foreground="{DynamicResource MessageFontBrush}" />
 
-      <i:Interaction.Behaviors>
-        <ia:EventTriggerBehavior EventName="PointerPressed">
-          <ia:InvokeCommandAction Command="{Binding LikeAction}" />
-        </ia:EventTriggerBehavior>
-      </i:Interaction.Behaviors>
-    </Grid>
-
-    <Canvas x:Name="likesCanvas"
-            Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-45,20,0"
-            IsVisible="False"
-            Background="Transparent"
-            extensions:LikesCanvasExtension.LikeCount ="{Binding LikeCount}"
-            extensions:LikesCanvasExtension.IsMouseOverArea ="{Binding #likeButtonArea.IsPointerOver}"
-            extensions:LikesCanvasExtension.IsMouseOverPopup="{Binding #likesBubble.IsPointerOver}">
-
-      <Grid Width="{Binding $parent[Canvas].Bounds.Width}">
-        <Border BorderThickness="1" CornerRadius="5"
-                BorderBrush="{DynamicResource MessageFontBrush}" 
-                Background="{DynamicResource LikerAreaBackgroundBrush}"
-                Height="65" HorizontalAlignment="Right"
-                x:Name="likesBubble">
-
-          <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-                        Margin="7"
-                        ItemsSource="{Binding LikedByAvatars}">
-
+          <!--Replied Message-->
+          <ContentControl Content="{Binding RepliedMessage}"
+                              HorizontalAlignment="Left"
+                              Margin="0,0,10,10"
+                              IsVisible="{Binding RepliedMessage, Converter={x:Static ObjectConverters.IsNotNull}}" />
+          
+          <!--Attachments-->
+          <ItemsControl ItemsSource="{Binding AttachedItems}">
             <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <ContentControl Content="{Binding Avatar}" 
-                                Width="35" Height="35" 
-                                Margin="3,0,3,0" 
-                                ToolTip.Tip="{Binding Name}"/>
+                <UserControl
+                    MaxWidth="700"
+                    HorizontalAlignment="Left"
+                    Content="{Binding Path=.}"/>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
 
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal" />
+                <WrapPanel />
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
           </ItemsControl>
-        </Border>
+
+          <!--Body-->
+          <SelectableTextBlock Margin="0,0,0,20"
+                               FontSize="15"
+                               Inlines="{Binding Inlines, Converter={StaticResource inlineConverter}}"
+                               TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Grid Grid.Column="2" Grid.Row="1"
+              MaxHeight="60"
+              VerticalAlignment="Top"
+              Background="Transparent"
+              x:Name="likeButtonArea">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="15" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="10" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3"/>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="12"/>
+          </Grid.ColumnDefinitions>
+
+          <iconPack:IconControl Width="17" Height="17"
+                                Grid.Row="1" Grid.Column="1"
+                                HorizontalAlignment="Center"
+                                Background="Transparent"
+                                extensions:LikeIconExtensions.BrushWhenILiked="{DynamicResource MessageILikedBrush}"
+                                extensions:LikeIconExtensions.BrushWhenTheyLiked="{DynamicResource MessageTheyLikedBrush}"
+                                extensions:LikeIconExtensions.LikeStatus="{Binding LikeStatus}"
+                                Name="likeIcon"/>
+
+          <TextBlock Grid.Row="2" Grid.Column="1"
+                     HorizontalAlignment="Center"
+                     ClipToBounds="False"
+                     Margin="2,0,0,0"
+                     Foreground="{DynamicResource MessageFontBrush}"
+                     FontSize="10" FontWeight="Thin"
+                     Text="{Binding LikeCount}" />
+
+          <i:Interaction.Behaviors>
+            <ia:EventTriggerBehavior EventName="PointerPressed">
+              <ia:InvokeCommandAction Command="{Binding LikeAction}" />
+            </ia:EventTriggerBehavior>
+          </i:Interaction.Behaviors>
+        </Grid>
+
+        <Canvas x:Name="likesCanvas"
+                Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-45,20,0"
+                IsVisible="False"
+                Background="Transparent"
+                extensions:LikesCanvasExtension.LikeCount ="{Binding LikeCount}"
+                extensions:LikesCanvasExtension.IsMouseOverArea ="{Binding #likeButtonArea.IsPointerOver}"
+                extensions:LikesCanvasExtension.IsMouseOverPopup="{Binding #likesBubble.IsPointerOver}">
+
+          <Grid Width="{Binding $parent[Canvas].Bounds.Width}">
+            <Border BorderThickness="1" CornerRadius="5"
+                    BorderBrush="{DynamicResource MessageFontBrush}"
+                    Background="{DynamicResource LikerAreaBackgroundBrush}"
+                    Height="65" HorizontalAlignment="Right"
+                    x:Name="likesBubble">
+
+              <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                            Margin="7"
+                            ItemsSource="{Binding LikedByAvatars}">
+
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <ContentControl Content="{Binding Avatar}"
+                                    Width="35" Height="35"
+                                    Margin="3,0,3,0"
+                                    ToolTip.Tip="{Binding Name}"/>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+              </ItemsControl>
+            </Border>
+          </Grid>
+        </Canvas>
+
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
+                    Orientation="Vertical"
+                    Background="{DynamicResource MessageDetailsBrush}"
+                    Height="45"
+                    IsVisible="{Binding ShowDetails}">
+
+          <TextBlock Text="{Binding SentTimeString, StringFormat=Sent: \{0\}}"
+                     FontWeight="Regular"
+                     FontSize="11"
+                     Foreground="{DynamicResource MessageFontBrush}"
+                     Margin="20,0,0,0" />
+
+          <TextBlock Text="{Binding SenderPlatform, StringFormat=Client: \{0\}}"
+                     FontWeight="Regular"
+                     FontSize="11"
+                     Margin="20,0,0,0"
+                     Foreground="{DynamicResource MessageFontBrush}" />
+        </StackPanel>
       </Grid>
-    </Canvas>
+    </DataTemplate>
 
-    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
-                Orientation="Vertical"
-                Background="{DynamicResource MessageDetailsBrush}"
-                Height="45"
-                IsVisible="{Binding ShowDetails}">
+    <!--Data template for a collapsed message-->
+    <DataTemplate x:Key="NestedWithDropDown"
+                  x:DataType="vm:MessageControlViewModel">
+      <Expander IsExpanded="False"
+                Content="{Binding}"
+                ContentTemplate="{StaticResource MessageBody}"
+                Header="..." />
+    </DataTemplate>
+  </UserControl.Resources>
 
-      <TextBlock Text="{Binding SentTimeString, StringFormat=Sent: \{0\}}"
-                 FontWeight="Regular"
-                 FontSize="11"
-                 Foreground="{DynamicResource MessageFontBrush}"
-                 Margin="20,0,0,0" />
+  <!--Pick which DataTemplate (nested or not) should be applied to the current message-->
+  <UserControl.Styles>
+    <Style Selector="controls|MessageControl:not(.nested)">
+      <Setter Property="ContentTemplate" Value="{StaticResource MessageBody}" />
+      <Setter Property="Content" Value="{Binding .}" />
+    </Style>
 
-      <TextBlock Text="{Binding SenderPlatform, StringFormat=Client: \{0\}}"
-                 FontWeight="Regular"
-                 FontSize="11"
-                 Margin="20,0,0,0"
-                 Foreground="{DynamicResource MessageFontBrush}" />
-    </StackPanel>
-  </Grid>
+    <Style Selector="controls|MessageControl.nested">
+      <Setter Property="ContentTemplate" Value="{StaticResource NestedWithDropDown}" />
+      <Setter Property="Content" Value="{Binding .}" />
+    </Style>
+  </UserControl.Styles>
+  
 </UserControl>

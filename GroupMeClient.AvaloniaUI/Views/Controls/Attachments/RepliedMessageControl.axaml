@@ -1,0 +1,18 @@
+<UserControl x:Class="GroupMeClient.AvaloniaUI.Views.Controls.Attachments.RepliedMessageControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GroupMeClient.Core.ViewModels.Controls.Attachments"
+             x:DataType="vm:RepliedMessageControlViewModel"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200">
+  
+  <Border BorderBrush="LightGray" 
+          BorderThickness="1,1,1,1" 
+          CornerRadius="3">
+    <ContentPresenter Content="{Binding Message}"
+                      HorizontalAlignment="Left"
+                      MinWidth="300"
+                      Background="{DynamicResource TweetBackgroundBrush}"/>
+  </Border>
+</UserControl>
