@@ -78,7 +78,6 @@ namespace GroupMeClient.AvaloniaUI.Extensions
         public static IBrush GetBrushWhenTheyLiked(Control element)
         {
             return element.GetValue(BrushWhenTheyLikedProperty) as IBrush;
-           
         }
 
         /// <summary>
